@@ -424,7 +424,14 @@ ng build --prod
 node server.js
 ~~~
 
+## Polyfills (Indexing in Google and Older browser support)
+The Google Bot doesn't use a modern browser (??) so we need to install polyfills
 
+Go to `polyfills.ts`. Uncomment al the IE10 and IE11 require polyfills. Then run:
+
+~~~
+npm install --save classlist.js
+~~~
 
 # Disused notes about using ng-pwa-tools
 
