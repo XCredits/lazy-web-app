@@ -37,7 +37,9 @@ export class UserRegisterChartComponent implements OnInit {
         },
         () => {
           this.snackBar.open('Network error', 'Dismiss', {
-            duration: 5000
+            duration: 5000,
+            verticalPosition: 'top',
+            horizontalPosition: 'right',
           });
         }
         );
@@ -90,7 +92,9 @@ export class UserRegisterChartComponent implements OnInit {
         },
         () => {
           this.snackBar.open('Network error', 'Dismiss', {
-            duration: 5000
+            duration: 5000,
+            verticalPosition: 'top',
+            horizontalPosition: 'right',
           });
         }
         );
