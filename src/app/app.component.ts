@@ -1,8 +1,9 @@
 
 import {filter} from 'rxjs/operators';
-import { Component, ViewChild, OnChanges } from '@angular/core';
+import { Component, ViewChild, OnChanges, OnInit } from '@angular/core';
 // Imports needed for router import for title
-import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
+import { ActivatedRoute, NavigationStart, NavigationEnd, Router } from '@angular/router';
+import { Location, PopStateEvent } from '@angular/common';
 import { UserService } from './user.service';
 import { AnalyticsService } from './analytics.service';
 
@@ -11,8 +12,9 @@ import { AnalyticsService } from './analytics.service';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent implements OnChanges {
+export class AppComponent implements OnInit {
   @ViewChild('sideNavDrawer') sideNavDrawer;
+  @ViewChild('routerOutletParent') routerOutletEle;
   screenWidth: number;
   mobileWidth = false; // boolean
   title: string;
@@ -21,6 +23,10 @@ export class AppComponent implements OnChanges {
   userIsAdmin: boolean;
   drawerMode: string;
   drawerOpened: boolean;
+  // Scroll position maintainer
+  private lastPoppedScrollTop: number;
+  private currentRouteId: number;
+  private yScrollStack: number[] = [];
 
 
   // Edit the area below to create main nav links
@@ -141,9 +147,33 @@ export class AppComponent implements OnChanges {
     this.setSideBar(); // set the sidebar values
   }
 
-  // set sidebar after every change
-  ngOnChanges() {
+  ngOnInit() {
+    // set sidebar after every change
     this.setSideBar();
+
+    this.router.events.subscribe((ev: any) => {
+      if (ev instanceof NavigationStart) {
+        if (this.routerOutletEle.nativeElement) { // this has been placed here as a hack since this element is not ready on first load
+          const el = this.routerOutletEle.nativeElement;
+          this.yScrollStack[this.currentRouteId] = el.scrollTop;
+          // Determine if we are going back
+          if (ev.restoredState && ev.restoredState.navigationId
+              && this.yScrollStack[ev.restoredState.navigationId]) {
+            this.lastPoppedScrollTop =
+                this.yScrollStack[ev.restoredState.navigationId];
+          } else {
+            this.lastPoppedScrollTop = 0;
+          }
+        }
+      } else if (ev instanceof NavigationEnd) {
+        if (this.routerOutletEle.nativeElement) { // this has been placed here as a hack since this element is not ready on first load
+          this.currentRouteId = ev.id;
+          const el = this.routerOutletEle.nativeElement;
+          el.scrollTop = this.lastPoppedScrollTop ?
+              this.lastPoppedScrollTop : 0;
+        }
+      }
+    });
   }
 }
 
