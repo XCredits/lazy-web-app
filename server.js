@@ -40,12 +40,9 @@ app.use('/', function(req, res, next) {
   next();
 });
 
-app.use(express.static(path.join(__dirname, 'dist')));
-
-const port = process.env.PORT || '3000';
-app.set('port', port);
-
 app.use(socialController);
+
+app.use(express.static(path.join(__dirname, 'dist')));
 
 routes(app);
 
@@ -56,6 +53,9 @@ app.get('*', function(req, res) {
 app.post('*', function(req, res) {
   res.status(404).json({message: 'Route not found.'});
 });
+
+const port = process.env.PORT || '3000';
+app.set('port', port);
 
 const server = http.createServer(app);
 
