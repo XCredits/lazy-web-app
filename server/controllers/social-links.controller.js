@@ -1,6 +1,20 @@
 
 
 const customPath = {
+  '/': {
+    path: '/home',
+    url: process.env.URL_ORIGIN,
+    title: process.env.SITE_NAME,
+    description: 'LazyWebApp is a lazy App!!!',
+    image: '/assets/img/social-default.jpg',
+  },
+  '/home': {
+    path: '/home',
+    url: process.env.URL_ORIGIN + '/home',
+    title: process.env.SITE_NAME,
+    description: 'LazyWebApp is a lazy App!!!',
+    image: '/assets/img/social-default.jpg',
+  },
   '/register': {
     url: process.env.URL_ORIGIN + '/register',
     title: 'Register for ' + process.env.SITE_NAME,
