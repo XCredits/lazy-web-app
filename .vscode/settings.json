@@ -2,5 +2,10 @@
   "editor.tabSize": 2,
   "editor.rulers": [0, 80],
   "files.eol": "\n",
-  "eslint.enable": true
+  "eslint.enable": true,
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/bower_components": true,
+    "**/dist": true,
+  }
 }
