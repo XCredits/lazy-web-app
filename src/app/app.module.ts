@@ -3,8 +3,7 @@ import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule} from '@angular/common/http'; // Deprecation https://angular.io/api/http/HttpModule
 import { RouterModule } from '@angular/router';
-import { LocalStorageModule } from 'angular-2-local-storage';
-import {NgxWebstorageModule} from 'ngx-webstorage';
+import { NgxWebstorageModule } from 'ngx-webstorage';
 import { AppComponent } from './app.component';
 import { UserService } from './user.service';
 import { StatsService } from './stats.service';
@@ -117,11 +116,6 @@ import { FooterComponent } from './footer/footer.component';
       prefix: 'app',
       separator: '.',
       caseSensitive: true
-    }),
-
-    LocalStorageModule.withConfig({
-        prefix: 'app',
-        storageType: 'localStorage'
     }),
 
     RouterModule.forRoot([
