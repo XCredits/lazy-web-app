@@ -113,7 +113,11 @@ import { FooterComponent } from './footer/footer.component';
     FormsModule,
     ReactiveFormsModule,
     HttpClientModule,
-    NgxWebstorageModule.forRoot(),
+    NgxWebstorageModule.forRoot({
+      prefix: 'app',
+      separator: '.',
+      caseSensitive: true
+    }),
 
     LocalStorageModule.withConfig({
         prefix: 'app',
