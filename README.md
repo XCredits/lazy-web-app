@@ -52,7 +52,21 @@ use lazywebapp
 db.createUser ({user:'lazywebapp',pwd:'password', roles:[{role:'dbAdmin', db:'lazywebapp'}]})
 ~~~
 
-7) In your project (lazywebapp) terminal, run
+7) In the project, create a new file called '.env' and copy the contents of the file '.env.example' which can be found in the lazy web app project.
+
+8) Run the following command to have the Angular built and server restarted when code changes
+
+~~~bash
+npm run dev
+~~~
+
+9) Open [localhost:4200](http://localhost:4200/) or [localhost:3000](http://localhost:3000/) in your browser. You should see a basic Angular app displayed. You are now running a local server.
+
+## Using step-by-step running
+
+Alternatively, instead of using 'npm run dev' you can run your project this way
+
+1) In your project (lazywebapp) terminal, run
 
 ~~~bash
 ng build
@@ -60,20 +74,10 @@ ng build
 
 to compile the Angular front-end components into the `dist` folder
 
-8) Run
+8) Then run
 
 ~~~bash
 node server.js
-~~~
-
-9) Open [localhost:3000](http://localhost:3000/) in your browser. You should see a basic Angular app displayed. You are now running a local server. 
-
-## Using simple running
-
-Alternatively, skip steps 7-9 and instead run the following command to have the Angular built and server restarted when code changes
-
-~~~bash
-npm run dev
 ~~~
 
 # Instructions for running this server on Google App Engine
