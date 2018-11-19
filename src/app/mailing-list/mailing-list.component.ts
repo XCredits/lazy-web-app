@@ -61,16 +61,16 @@ export class MailingListComponent implements OnInit {
           this.waiting = false;
           this.formSuccess = true;
           // this.snackBar.open('Successfully subscribed to the mailing list', 'Dismiss', {
-          //   duration: 5000,
-          //   verticalPosition: 'top',
-          //   horizontalPosition: 'right',
-          // });
+          //    duration: 5000,
+          //    verticalPosition: 'top',
+          //    horizontalPosition: 'right',
+          //  });
           this.analytics.mailingList();
         },
         errorResponse => {
           this.waiting = false;
-          this.formSuccess = false;
           this.formErrorMessage = 'There was a problem submitting the form.';
+          console.log(errorResponse);
         });
   };
 }

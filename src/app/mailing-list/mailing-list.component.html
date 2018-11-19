@@ -1,10 +1,11 @@
 <div class="simple-form-aligner">
   <mat-card class="simple-form-card">
-    <mat-card-title> Join the mailing list </mat-card-title>
+    <mat-card-title>Join the mailing list </mat-card-title>
     <mat-card-subtitle>
         Be the first to hear new announcements about XCredits
     </mat-card-subtitle>
     <mat-card-content>
+      <div *ngIf='!formSuccess'> 
       <form [formGroup]="form" (ngSubmit)="submit(form.value)">
         <div class="form-group">
           <mat-form-field class="simple-form-field-50">
@@ -41,9 +42,11 @@
           </span>
         </div>
         </form>
+        </div>
+        <div *ngIf='formSuccess'>
+            Successfully subscribed to mailing list
+        </div> 
     </mat-card-content>
   </mat-card>
-  <div ng-show="!formErrorMessage">
-    You have successfully subscribed to mailing list.
-  </div> 
 </div>
+
