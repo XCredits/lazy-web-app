@@ -52,7 +52,7 @@ use lazywebapp
 db.createUser ({user:'lazywebapp',pwd:'password', roles:[{role:'dbAdmin', db:'lazywebapp'}]})
 ~~~
 
-7) In the project, create a new file called '.env' and copy the contents of the file '.env.example' which can be found in the lazy web app project.
+7) In the project, create a new file called '.env' in root and copy into this new file, the contents of '.env.example' which can be found in the lazy web app project.
 
 8) Run the following command to have the Angular built and server restarted when code changes
 
