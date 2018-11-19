@@ -27,42 +27,32 @@ npm install
 6) Start the MongoDB server
 
 [Install MongoDB](https://www.mongodb.com/download-center?jmp=nav#community).
-Create the folder
+Create the folder structure
 
 ~~~bash
 C:\data\db\
 ~~~
 
-Navigate to
+To start the MongDB server, open up a new terminal and run the following. The path will look something like this but may look different depending on version number and where you installed files (these commands are for windows powershell)
 
 ~~~bash
-cd "C:\Program Files\MongoDB\Server\3.4\bin"
+"C:\Program Files\MongoDB\Server\3.4\bin\mongod.exe"
 ~~~
 
-Run
+To connect to the MongoDB server, open up another terminal and run the following (these commands are for windows powershell)
 
 ~~~bash
-mongod.exe
+"C:\Program Files\MongoDB\Server\3.4\bin\mongo.exe"
 ~~~
 
-to start the MongoDB server.
-
-Run
-
-~~~bash
-mongo.exe
-~~~
-
-to connect to the server.
-
-Run
+In the terminal where you have connected to the server, run
 
 ~~~bash
 use lazywebapp
 db.createUser ({user:'lazywebapp',pwd:'password', roles:[{role:'dbAdmin', db:'lazywebapp'}]})
 ~~~
 
-7) Run
+7) In your project (lazywebapp) terminal, run
 
 ~~~bash
 ng build
