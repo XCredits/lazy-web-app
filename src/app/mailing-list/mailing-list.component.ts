@@ -70,7 +70,6 @@ export class MailingListComponent implements OnInit {
         errorResponse => {
           this.waiting = false;
           this.formErrorMessage = 'There was a problem submitting the form.';
-          console.log(errorResponse);
         });
   };
 }
