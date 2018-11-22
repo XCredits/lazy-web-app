@@ -10,11 +10,11 @@ const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const socialController = require('./server/controllers/social.controller');
 const routes = require('./server/routes');
+const db_1 = require("db");
 
 app.use(bodyParser.urlencoded({extended: true})); // extended gives full JSON
 app.use(bodyParser.json());
 app.use(cookieParser());
-
 
 app.use('/', function(req, res, next) {
   let redirect = false;
@@ -56,6 +56,8 @@ app.post('*', function(req, res) {
 
 const port = process.env.PORT || '3000';
 app.set('port', port);
+
+db_1.dbSetup();
 
 const server = http.createServer(app);
 
