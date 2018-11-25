@@ -9,6 +9,7 @@ const http = require('http');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const socialController = require('./server/controllers/social.controller');
+const tracking = require('./server/services/tracking.service');
 const routes = require('./server/routes');
 
 app.use(bodyParser.urlencoded({extended: true})); // extended gives full JSON
@@ -41,6 +42,8 @@ app.use('/', function(req, res, next) {
 });
 
 app.use(socialController);
+
+app.use(tracking.browserIdCookie);
 
 app.use(express.static(path.join(__dirname, 'dist')));
 
