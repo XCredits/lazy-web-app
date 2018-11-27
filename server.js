@@ -10,7 +10,6 @@ const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const socialController = require('./server/controllers/social.controller');
 const routes = require('./server/routes');
-const db_1 = require('./server/db');
 
 app.use(bodyParser.urlencoded({extended: true})); // extended gives full JSON
 app.use(bodyParser.json());
@@ -28,7 +27,6 @@ app.use('/', function(req, res, next) {
       return res.status(400)
           .send({message: 'Do not make API requests using http, use https'});
     }
-    db_1.dbSetup();
   }
   // Remove www
   let strippedHostname = req.hostname;
