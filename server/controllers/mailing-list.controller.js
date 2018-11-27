@@ -47,7 +47,6 @@ function joinMailingList(req, res) {
             })
             .catch((err)=>{
               console.log('Error in the mailing list service');
-              console.log(err);
             });
       })
       .then(()=>{
@@ -56,7 +55,6 @@ function joinMailingList(req, res) {
             })
             .catch((err)=>{
               console.log('Error in the send email service');
-              console.log(err);
             });
       })
       .catch((error) => {
