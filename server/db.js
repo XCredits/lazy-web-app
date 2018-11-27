@@ -1,6 +1,6 @@
 const Promise = require('bluebird');  
-const DatabaseService = require('../services/database.service');
-const ProductModel = require('../models/product.model');
+const DatabaseService = require('./services/database.service');
+const ProductModel = require('./models/product.model');
 
 function productDbDemo() {
     const databaseService = new DatabaseService('./database.sqlite3');
