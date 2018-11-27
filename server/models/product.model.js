@@ -1,6 +1,6 @@
 class ProductSchema {
-  constructor(dao) {
-    this.dao = dao;
+  constructor(databaseService) {
+    this.databaseService = databaseService;
   } 
 
   createTable() {
@@ -8,38 +8,38 @@ class ProductSchema {
     CREATE TABLE IF NOT EXISTS products (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name TEXT)`;
-    return this.dao.run(sql)
+    return this.databaseService.run(sql)
   }
 
   create(name) {
-    return this.dao.run(
+    return this.databaseService.run(
       'INSERT INTO products (name) VALUES (?)',
       [name])
   }
 
   update(project) {
     const { id, name } = project
-    return this.dao.run(
+    return this.databaseService.run(
       `UPDATE products SET name = ? WHERE id = ?`,
       [name, id]
     )
   }
 
   delete(id) {
-    return this.dao.run(
+    return this.databaseService.run(
       `DELETE FROM products WHERE id = ?`,
       [id]
     )
   }
 
   getById(id) {
-    return this.dao.get(
+    return this.databaseService.get(
       `SELECT * FROM products WHERE id = ?`,
       [id])
   }
 
   getAll() {
-    return this.dao.all(`SELECT * FROM products`)
+    return this.databaseService.all(`SELECT * FROM products`)
   }
   
 }
