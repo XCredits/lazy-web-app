@@ -1,19 +1,43 @@
-const bluebird = require('bluebird');
-const sqlite3Callback = require('sqlite3');
+const Promise = require('bluebird');  
+const DatabaseService = require('../services/database.service');
+const ProductModel = require('../models/product.model');
 
-// import * as bluebird from 'bluebird';
-// import * as sqlite3Callback from 'sqlite3';
+function productDbDemo() {
+    const databaseService = new DatabaseService('./database.sqlite3');
+    const productModel = new ProductModel(databaseService);
 
-const sqlite3 = bluebird.Promise.promisifyAll(sqlite3Callback.verbose());
+    productModel.createTable()
+        .then(() => {
+            const products = [
+                {
+                    name: 'Apple',
+                },
+                {
+                    name: 'Orange',
+                },
+            ];
+            return new Promise.all(products.map((product) => {
+                const {name} = product;
+                return productModel.create(name);
+            }))
+        })
+        .then(() => productModel.getAll()
+        .then((products) => {
+            console.dir(products);
+            return new Promise((resolve, reject) => {
+                products.forEach(function(product) {
+                    console.log(`Product Id: ${product.id}`);
+                    console.log(`Product Name: ${product.name}`);
+                });
+            })
+            resolve('Success');     
+        })
+        .catch((err) => {
+            console.log('Error:')
+            console.dir(err);
+            //console.log(JSON.stringify(err))
+        })
+    )    
+}
 
-module.exports = function dbSetup() {
-  const connection = new sqlite3.Database('databasename');
-  connection.runAsync('CREATE TABLE if not exists dummy_table (info TEXT)');
-  connection.runAsync('INSERT into dummy_table(col1,col2,col3) VALUES (apple,pear,orange)');
-  //const tblValue = connection.prepare("INSERT INTO dummy_table VALUES (?)");
-  let data = connection.get('SELECT * FROM dummy_table');
-  console.log(data);
-  // for (var i = 0, , i++) {
-  //   tblValue.runAsync('Table data ' + i);
-  // }
-};
+productDbDemo();
