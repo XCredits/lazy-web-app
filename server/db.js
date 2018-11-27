@@ -35,7 +35,6 @@ function productDbDemo() {
         .catch((err) => {
             console.log('Error:')
             console.dir(err);
-            //console.log(JSON.stringify(err))
         })
     )    
 }
