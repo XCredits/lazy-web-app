@@ -8,6 +8,7 @@ const path = require('path');
 const http = require('http');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
+const _ = require('lodash');
 const socialController = require('./server/controllers/social.controller');
 const tracking = require('./server/services/tracking.service');
 const routes = require('./server/routes');
@@ -16,6 +17,26 @@ app.use(bodyParser.urlencoded({extended: true})); // extended gives full JSON
 app.use(bodyParser.json());
 app.use(cookieParser());
 
+// Force cookies to be secure by replacing cookie function
+app.use(function(req, res, next) {
+  if (process.env.SECURE_COOKIES === 'TRUE') {
+    return function(req, res, next) {
+      let cookieFunction = res.cookie;
+      res.cookie = function(name, value, options) {
+        let newOptions = {};
+        if (typeof options !== 'undefined') {
+          newOptions = _.cloneDeep(options);
+        }
+        if (typeof newOptions.secure === 'undefined') {
+          newOptions.secure = isSecureCookies;
+        }
+        return cookieFunction.call(res, name, value, newOptions);
+      };
+      next();
+    };
+  }
+  return next();
+});
 
 app.use('/', function(req, res, next) {
   let redirect = false;
