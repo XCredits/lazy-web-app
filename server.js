@@ -13,6 +13,9 @@ const socialController = require('./server/controllers/social.controller');
 const tracking = require('./server/services/tracking.service');
 const routes = require('./server/routes');
 
+const helmet = require('helmet');
+app.use(helmet());
+
 app.use(bodyParser.urlencoded({extended: true})); // extended gives full JSON
 app.use(bodyParser.json());
 app.use(cookieParser());
