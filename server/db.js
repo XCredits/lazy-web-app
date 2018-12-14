@@ -4,6 +4,9 @@ const ProductModel = require('./models/product.model');
 const GenericItemModel = require('./models/generic-item.model'); 
 const sqlite3 = require('sqlite3');
 //const Promise = require('util');  
+//const dbService = require('@xcredits/xcredits-core');
+
+//console.log(dbService.dbVersionNumber);
 
 function productDbDemo() {
     //instantiate data service object
