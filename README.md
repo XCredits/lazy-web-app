@@ -124,6 +124,24 @@ gcloud init
 gcloud config set compute/region us-central1
 ~~~
 
+11) Set up a MongoDB cluster
+Set the whiteliste, IP to:
+~~~
+0.0.0.0/0
+~~~
+such that any Google server can access the 
+
+Create a user and a hard password. 
+
+Update the .env file
+
+
+
+
+
+
+
+
 11) Run the following commands
 
 ~~~bash
