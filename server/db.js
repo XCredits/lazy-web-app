@@ -94,167 +94,204 @@ function genericDbDemo() {
         );
 }
 
-genericDbDemo();
+//genericDbDemo();
 
+function genericDbLoopDemo() {
+    //instantiate data service object
+    const databaseService = new DatabaseService('./database.sqlite3');
+    //instantiate product object
+    const genericModel = new GenericItemModel(databaseService);
 
+    // //create table
+    // genericModel.createTableLoopStep1('TableC')
+    //     .then(() => {
+    //         genericModel.createTableLoopStep2(
+    //             //'TableC', [ 'C', 'CC', 'CCC' ]);
+    //             'TableC', [ {field: 'xx'} , {field: 'yy'} , {field: 'zz'} ]);
+    //         console.log('Success adding columns');
+    //     })
+    //     .catch((err) => {
+    //         console.log('Error:');
+    //         console.dir(err);
+    //     });
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-const dbFilePath = 'xcreditsDb.sqlite';
-var dbConnection;
-//var dbConnection = new sqlite3.Database(dbFilePath);
-
-
-//open database
-const openDatabase = (dbFilePath) => {
-    dbConnection = new sqlite3.Database(dbFilePath, (err) => {
-        if (err) {
-        console.log('From Expressjs: Could not connect to database', err);
-        } else {
-        console.log('From Expressjs: Connected to database');
-        };  
-    });
+    //create table
+    genericModel.createTable('TableC', [ 
+        {name: 'xxx', type: 'text'}, 
+        {name: 'yyy', type: 'text'}, 
+        {name: 'zzz', type: 'text'} ])
+        .then(() => {
+            console.log('Success creating table');
+        })        
+        .catch((err) => {
+            console.log('Error:');
+            console.dir(err);
+        });
 }
 
-//promisify open database function
-const openDatabaseAsync = Promise.promisify(openDatabase);
+genericDbLoopDemo();
 
-//call open database function
-openDatabaseAsync(dbFilePath) 
-    .then((msg) => console.log(`Success msg: ${msg}`))
-    .catch((err) => console.log(`Error: ${err}`));
 
-  //create table 
-  function createTable() {
-    //const dbConnectionRun = Promise.promisify(dbConnection.run);
-    return dbConnection.run(
-      `CREATE TABLE IF NOT EXISTS genericTable (
-        keyPath INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT,
-        password TEXT
-      )`,
-      function (err) {
-        if (err) {
-          console.log(`Error: ${err}`);
-        } else {
-          console.log(`Success: created table`)
-        }
-      }
-    )
-  }
 
-  //promisify create table function
-  const createTableAsync = Promise.promisify(createTable);
 
-  //delete table
-  function deleteTable(tableName) {
-    dbConnection.run(
-      `DROP TABLE IF EXISTS genericTable`,
-      [tableName],
-      function (err) {
-        if (err) {
-          console.log(`Error: ${err}`);
-        } else {
-          console.log(`Success: deleted table`)
-        }
-      }
-    )
-  }
 
-  //promisify delete table function
-  const deleteTableAsync = Promise.promisify(deleteTable);
 
-  //add entry to table
-  function setFunction(name, password) {
 
-    const dbConnectionRunAsync = Promise.promisify(dbConnection.run);
-    return dbConnectionRunAsync(
-        'INSERT INTO genericTable (name, password) VALUES (?, ?)',
-        [name, password])
-        .then((res) => {
-            return console.log(res);
-            console.log('Added to table');
-            //res = console.log('Add to table');
-            // res1 = res;
-            // return res1;
-        })
-        .catch((error) => {
-            retutnconsole.log(error);
-            console.log('Error adding to table');
-            //return console.log('Error adding to table');
-        });  
-  };
 
-  var name = 'John';
-  var password = 'password1';
 
-  //setFunction(name, password);
-    // .then((msg) = console.log('Success'))
-    // .catch((err) = console.log('Error'));
+
+
+
+
+
+
+
+
+
+// const dbFilePath = 'xcreditsDb.sqlite';
+// var dbConnection;
+// //var dbConnection = new sqlite3.Database(dbFilePath);
+
+
+// //open database
+// const openDatabase = (dbFilePath) => {
+//     dbConnection = new sqlite3.Database(dbFilePath, (err) => {
+//         if (err) {
+//         console.log('From Expressjs: Could not connect to database', err);
+//         } else {
+//         console.log('From Expressjs: Connected to database');
+//         };  
+//     });
+// }
+
+// //promisify open database function
+// const openDatabaseAsync = Promise.promisify(openDatabase);
+
+// //call open database function
+// openDatabaseAsync(dbFilePath) 
+//     .then((msg) => console.log(`Success msg: ${msg}`))
+//     .catch((err) => console.log(`Error: ${err}`));
+
+//   //create table 
+//   function createTable() {
+//     //const dbConnectionRun = Promise.promisify(dbConnection.run);
+//     return dbConnection.run(
+//       `CREATE TABLE IF NOT EXISTS genericTable (
+//         keyPath INTEGER PRIMARY KEY AUTOINCREMENT,
+//         name TEXT,
+//         password TEXT
+//       )`,
+//       function (err) {
+//         if (err) {
+//           console.log(`Error: ${err}`);
+//         } else {
+//           console.log(`Success: created table`)
+//         }
+//       }
+//     )
+//   }
+
+//   //promisify create table function
+//   const createTableAsync = Promise.promisify(createTable);
+
+//   //delete table
+//   function deleteTable(tableName) {
+//     dbConnection.run(
+//       `DROP TABLE IF EXISTS genericTable`,
+//       [tableName],
+//       function (err) {
+//         if (err) {
+//           console.log(`Error: ${err}`);
+//         } else {
+//           console.log(`Success: deleted table`)
+//         }
+//       }
+//     )
+//   }
+
+//   //promisify delete table function
+//   const deleteTableAsync = Promise.promisify(deleteTable);
+
+//   //add entry to table
+//   function setFunction(name, password) {
+
+//     const dbConnectionRunAsync = Promise.promisify(dbConnection.run);
+//     return dbConnectionRunAsync(
+//         'INSERT INTO genericTable (name, password) VALUES (?, ?)',
+//         [name, password])
+//         .then((res) => {
+//             return console.log(res);
+//             console.log('Added to table');
+//             //res = console.log('Add to table');
+//             // res1 = res;
+//             // return res1;
+//         })
+//         .catch((error) => {
+//             retutnconsole.log(error);
+//             console.log('Error adding to table');
+//             //return console.log('Error adding to table');
+//         });  
+//   };
+
+//   var name = 'John';
+//   var password = 'password1';
+
+//   //setFunction(name, password);
+//     // .then((msg) = console.log('Success'))
+//     // .catch((err) = console.log('Error'));
   
-  //promisify set Function function
-  //const setFunctionAsync = Promise.promisify(setFunction);
+//   //promisify set Function function
+//   //const setFunctionAsync = Promise.promisify(setFunction);
 
-  function getAllFunction() {
-    dbConnection.all(
-      `SELECT * FROM genericTable`,
-      function(err, rows) {
-        if (err) {
-          console.log(`Error: ${err}`);
-        } else {
-          console.log(`Success: got all items from table`);
-          console.log(rows);
-          // rows.array.forEach((row: any) => {
-          //   console.log(row.keyPath);
-          //   console.log(row.name);
-          //   console.log(row.obj);
-          // });
-        }
-      }
-    )
-  }
+//   function getAllFunction() {
+//     dbConnection.all(
+//       `SELECT * FROM genericTable`,
+//       function(err, rows) {
+//         if (err) {
+//           console.log(`Error: ${err}`);
+//         } else {
+//           console.log(`Success: got all items from table`);
+//           console.log(rows);
+//           // rows.array.forEach((row: any) => {
+//           //   console.log(row.keyPath);
+//           //   console.log(row.name);
+//           //   console.log(row.obj);
+//           // });
+//         }
+//       }
+//     )
+//   }
 
-  //promisify set Function function
-  const getAllFunctionAsync = Promise.promisify(getAllFunction);
+//   //promisify set Function function
+//   const getAllFunctionAsync = Promise.promisify(getAllFunction);
 
-  function getFunction() {
-    dbConnection.all(
-      `SELECT * FROM genericTable`,
-      function(err, rows) {
-        if (err) {
-          console.log(`Error: ${err}`);
-        } else {
-          console.log(`Success: got all items from table`);
-          console.log(rows);
-          // rows.array.forEach((row: any) => {
-          //   console.log(row.keyPath);
-          //   console.log(row.name);
-          //   console.log(row.obj);
-          // });
-        }
-      }
-    )
-  }
+//   function getFunction() {
+//     dbConnection.all(
+//       `SELECT * FROM genericTable`,
+//       function(err, rows) {
+//         if (err) {
+//           console.log(`Error: ${err}`);
+//         } else {
+//           console.log(`Success: got all items from table`);
+//           console.log(rows);
+//           // rows.array.forEach((row: any) => {
+//           //   console.log(row.keyPath);
+//           //   console.log(row.name);
+//           //   console.log(row.obj);
+//           // });
+//         }
+//       }
+//     )
+//   }
 
-//createTableAsync()
- //  .then(()=>{
- //    return getAllFunction   });
+// //createTableAsync()
+//  //  .then(()=>{
+//  //    return getAllFunction   });
 
-//var name = 'John';
-//var password = 'password1';
-//setFunction(name, password);
-    // .then((msg) = console.log('Success'))
-    // .catch((err) = console.log('Error'));
+// //var name = 'John';
+// //var password = 'password1';
+// //setFunction(name, password);
+//     // .then((msg) = console.log('Success'))
+//     // .catch((err) = console.log('Error'));
 
-  //getAllFunctionAsync();
+//   //getAllFunctionAsync();
