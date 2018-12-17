@@ -14,6 +14,17 @@ class GenericItemSchema {
   };
 
   //create table method
+  createTableLoop(tableName, columns = [{}]) {
+    columns.foreach(function(column){
+      console.log(column);
+    })
+    const sql = `
+    CREATE TABLE IF NOT EXISTS ${tableName} (
+      name TEXT)`;
+    return this.databaseService.run(sql);
+  };
+
+  //create table method
   deleteTable(tableName) {
     const sql = `
     DROP TABLE IF EXISTS ${tableName}`;
