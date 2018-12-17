@@ -117,9 +117,9 @@ function genericDbLoopDemo() {
 
     //create table
     genericModel.createTable('TableC', [ 
-        {name: 'xxx', type: 'text'}, 
-        {name: 'yyy', type: 'text'}, 
-        {name: 'zzz', type: 'text'} ])
+        {name: 'xxxx', type: 'text'}, 
+        {name: 'yyyy', type: 'text'}, 
+        {name: 'zzzz', type: 'text'} ])
         .then(() => {
             console.log('Success creating table');
         })        

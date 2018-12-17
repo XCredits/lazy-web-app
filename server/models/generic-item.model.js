@@ -11,32 +11,15 @@ class GenericItemSchema {
     //   id INTEGER PRIMARY KEY AUTOINCREMENT,
     //   name TEXT)`;
     
-    const sqlString = `CREATE TABLE IF NOT EXISTS ${tableDetails.name} (${fields[0]} TEXT`
+    let sql = `CREATE TABLE IF NOT EXISTS ${tableDetails.name} (${fields[0]} TEXT`
     const fieldStringArray = [];
     fields.forEach(field=>{
       fieldStringArray.push(`${field.name} ${field.type}`);
     });
     const sqlSubstring = fieldStringArray.join(', ');
-    sqlString += sqlSubstring + ')';
+    sql += sqlSubstring + ')';
 
     return this.databaseService.run(sql);
-  };
-
-  //create table method
-  createTableLoopStep1(tableName) {
-    const sql = `
-    CREATE TABLE IF NOT EXISTS ${tableName} (id INTEGER PRIMARY KEY AUTOINCREMENT)`;
-    return this.databaseService.run(sql);
-  };
-
-  //create table method{
-  createTableLoopStep2(tableName, fields = []) {
-    var nameArray = fields.map(a => a.name);
-    var typeResult = fields.map(a => a.type);
-    resultArray.forEach((field) => {
-      const sql = `ALTER TABLE ${tableName} ADD COLUMN ${field} TEXT`;
-      return this.databaseService.run(sql);
-    });
   };
 
   //create table method
