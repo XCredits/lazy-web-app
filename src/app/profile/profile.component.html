@@ -1,22 +1,45 @@
-
-<div class="container">
+<div class="imgcontainer">
+    <img src="https://www.w3schools.com/howto/img_avatar2.png" alt="Avatar" class="avatar">
+</div>
+<div class="container" style="text-align:center">
   <mat-card>
-    <mat-card-content>
-      <h2 class="example-h2">Profile</h2>
-
-      <section>
-        Given name: {{user?.givenName}} 
-        <!-- Safe navigation operator https://angular.io/guide/template-syntax#safe-navigation-operator -->
-      </section>
-      <section>
-        Family name: {{user?.familyName}}
-      </section>
-      <section>
-        Username: {{user?.username}}
-      </section>
-      <section>
-        Email: {{user?.email}}
-      </section>
+    <mat-card-title>
+      <h2 class="example-h2">Profile</h2></mat-card-title>
+      <mat-card-content>
+        <div style="font-size:1.5rem"> 
+          <div>
+            Given name: <span style= "font-weight:bolder">{{user?.givenName}}</span>
+            <button class="simple-form-button-profile" color="primary" (click)= "toggleGiven()" mat-raised-button value="submit" name="submit">{{ givenName }}</button>
+          </div>
+          <ng-container *ngIf="given">
+              <app-change-given-name></app-change-given-name>
+          </ng-container>
+            <!-- Safe navigation operator https://angular.io/guide/template-syntax#safe-navigation-operator -->
+          <div>
+            Family name: <span style= "font-weight:bolder">{{user?.familyName}}</span>
+            <button class="simple-form-button-profile" color="primary" (click)= "toggleFamily()" mat-raised-button value="submit" name="submit">{{ familyName }}</button>
+          </div>
+          <ng-container *ngIf="family">
+            <app-change-family-name></app-change-family-name>
+          </ng-container>
+          <div>
+            Username: <span style= "font-weight:bolder">{{user?.username}}</span>
+            <button class="simple-form-button-profile" color="primary" (click)= "toggle()" mat-raised-button value="submit" name="submit">{{ userName }}</button>
+          </div>
+          <ng-container *ngIf="show">
+              <app-change-username></app-change-username>
+          </ng-container>
+          <div *ngIf="!open; else notOpen"> 
+            {{ email }} <span style= "font-weight:bolder">{{user?.email}}</span>
+            <a color="primary" (click)= "opening()" value="submit" name="submit"><mat-icon style="font-size:18px; cursor:pointer;">create</mat-icon> </a>
+          </div>
+          <ng-template #notOpen>
+            <app-change-email></app-change-email>
+          </ng-template>
+          <div style="display:inline-block">
+            Hello<app-editable-input></app-editable-input>
+          </div>
+      </div>
     </mat-card-content>
-  </mat-card>
+    </mat-card>
 </div>

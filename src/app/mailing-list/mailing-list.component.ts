@@ -29,19 +29,21 @@ export class MailingListComponent implements OnInit {
           this.form = new FormGroup ({
             givenName: new FormControl(user.givenName),
             familyName: new FormControl(user.familyName),
-            email: new FormControl(user.email,
-                [Validators.required, Validators.email]),
+            username: new FormControl(user.username),
           });
         });
     } else {
       this.form = new FormGroup ({
         givenName: new FormControl(''),
         familyName: new FormControl(''),
-        email: new FormControl('', [Validators.required, Validators.email]),
+        username: new FormControl(''),
       });
     }
   }
+  something() {
+    console.log('Hello');
 
+  }
   submit = function (formData) {
     if (this.form.invalid) {
       return;
@@ -52,7 +54,7 @@ export class MailingListComponent implements OnInit {
     this.http.post('/api/join-mailing-list', {
         'givenName': formData.givenName,
         'familyName': formData.familyName,
-        'email': formData.email
+        'username': formData.username
         })
         .subscribe(
         data => {

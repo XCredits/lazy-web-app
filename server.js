@@ -59,6 +59,6 @@ app.set('port', port);
 
 const server = http.createServer(app);
 
-server.listen(port, function() {
+server.listen(3000, function() {
   console.log(`Running on localhost:${port}`);
 });

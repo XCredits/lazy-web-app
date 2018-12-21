@@ -1,0 +1,101 @@
+<div *ngIf="!submitSuccess" class="simple-form-aligner">
+  <!-- <mat-card class="simple-form-card-profile">
+    <mat-card-title>Change Email </mat-card-title>
+    <mat-card-subtitle>Enter your new Email.
+    </mat-card-subtitle>
+    <mat-card-content>
+      <form [formGroup]="form" (ngSubmit)="submit(form.value)">
+        <div class="form-group">
+          <mat-form-field class="simple-form-field-100">
+            <input matInput placeholder="New Email" name="email" formControlName="email">
+          </mat-form-field>
+          <br>
+          <button 
+              [disabled]="waiting"
+              class="simple-form-button" 
+              color="primary" 
+              mat-raised-button 
+              type="submit" 
+              value="submit">
+            Change Email
+          </button>
+          <mat-progress-spinner
+              *ngIf="waiting"
+              color="primary"
+              mode="indeterminate"
+              class="simple-form-spinner"
+              [diameter]=22>
+          </mat-progress-spinner>
+          <span 
+              *ngIf='formErrorMessage' 
+              class="text-error-color">
+            {{formErrorMessage}}
+          </span>
+        </div>
+        </form>
+    </mat-card-content>
+  </mat-card> -->
+  <form [formGroup]="form" (ngSubmit)="submit(form.value)">
+    Email: <input matInput placeholder="New Email" name="email" formControlName="email">
+    <button 
+        [disabled]="waiting"
+        class="simple-form-button-change" 
+        color="primary" 
+        mat-raised-button 
+        type="submit" 
+        value="submit">
+      Change Email
+    </button>
+    <mat-progress-spinner
+        *ngIf="waiting"
+        color="primary"
+        mode="indeterminate"
+        class="simple-form-spinner"
+        [diameter]=22>
+    </mat-progress-spinner>
+    <span 
+        *ngIf='formErrorMessage' 
+        class="text-error-color">
+      {{formErrorMessage}}
+    </span>
+    <button (click)=something() mat-raised-button class="simple-form-button-cancel"> Cancel </button>
+  </form>
+    <!-- <form [formGroup]="form" (ngSubmit)="submit(form.value)">
+      <div class="form-group">
+        Email:  <input matInput placeholder="New Email" name="email"> 
+        <button 
+              [disabled]="waiting"
+              class="simple-form-button" 
+              color="primary" 
+              mat-raised-button 
+              type="submit" 
+              value="submit">
+            Change Email
+          </button>
+          <mat-progress-spinner
+              *ngIf="waiting"
+              color="primary"
+              mode="indeterminate"
+              class="simple-form-spinner"
+              [diameter]=22>
+          </mat-progress-spinner>
+          <span 
+              *ngIf='formErrorMessage' 
+              class="text-error-color">
+            {{formErrorMessage}}
+          </span>
+        <button (click)=something() mat-raised-button> Cancel </button>
+        </div> -->
+      <!-- </form> -->
+</div>
+
+<!-- <div *ngIf="submitSuccess" class="simple-form-aligner">
+  <mat-card class="simple-form-card">
+    <mat-card-title>Change Email</mat-card-title>
+    <mat-card-content>Your Email has been updated.
+      <a routerLink="/home">
+        Go to the home page.
+      </a>
+    </mat-card-content>
+  </mat-card>
+</div> -->

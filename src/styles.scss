@@ -46,6 +46,17 @@ body {
   }
 }
 
+.imgcontainer {
+  text-align: center;
+  margin: 24px 0 12px 0;
+}
+
+img.avatar {
+  width: 40%;
+  border-radius: 50%;
+}
+
+
 @media screen and (min-width: 768px) {
   .mobile-visible{
     display: none;
@@ -64,8 +75,29 @@ body {
   max-width: 100%;
 }
 
+.simple-form-card-profile {
+  width:400px;
+  max-width: 100%;
+  margin-bottom: 10px;
+}
+
 .simple-form-button {
   align-self: flex-end;
+}
+
+button.simple-form-button-profile {
+  align-self: flex-end;
+  margin-left: 5px;
+}
+
+button.simple-form-button-cancel {
+  align-self: flex-end;
+  margin-left: 15px;
+}
+
+button.simple-form-button-change {
+  align-self: flex-end;
+  margin-left: 10px;
 }
 
 .simple-form-field-100 {
