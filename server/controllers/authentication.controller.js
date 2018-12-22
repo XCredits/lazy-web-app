@@ -46,7 +46,7 @@ const statsService = require('../services/stats.service.js');
 const emailService = require('../services/email.service.js');
 const Session = require('../models/session.model.js');
 const jwt = require('jsonwebtoken');
-const auth = require('../config/jwt-auth.js');
+const auth = require('./jwt-auth.controller.js');
 const passport = require('passport');
 const crypto = require('crypto');
 require('../config/passport.js');
