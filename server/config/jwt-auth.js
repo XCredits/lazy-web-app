@@ -15,7 +15,7 @@ module.exports = {
   jwt: function(req, res, next) {
     if (!req.cookies.JWT) {
       return res.status(401)
-        .json({message: 'JWT authenthication error: JWT cookie not set'});
+        .json({message: 'JWT authentication error: JWT cookie not set'});
     }
     let payload;
     try {
@@ -23,14 +23,14 @@ module.exports = {
     } catch (err) {
       clearTokens(res);
       return res.status(401)
-        .json({message: 'JWT authenthication error: JWT is not verified'});
+        .json({message: 'JWT authentication error: JWT is not verified'});
     }
     // Get out XSRF header & compare to XSRF
     // Don't block non-mutating requests
     if (req.method !== 'GET' && req.method !== 'HEAD') {
       if (req.header('X-XSRF-TOKEN') !== payload.xsrf) {
         return res.status(401)
-          .json({message: 'JWT authenthication error: XSRF does not match'});
+          .json({message: 'JWT authentication error: XSRF does not match'});
       }
     }
     if (typeof payload.sub !== 'string' ||
@@ -58,7 +58,7 @@ module.exports = {
   jwtRefreshToken: function(req, res, next) {
     if (!req.cookies.JWT_REFRESH_TOKEN) {
       return res.status(401)
-        .json({message: 'JWT Refresh Token authenthication error: JWT Refresh Token cookie not set'});
+        .json({message: 'JWT Refresh Token authentication error: JWT Refresh Token cookie not set'});
     }
     let payload;
     try {
@@ -67,14 +67,14 @@ module.exports = {
     } catch (err) {
       clearTokens(res);
       return res.status(401)
-        .json({message: 'JWT Refresh Token authenthication error: JWT Refresh Token is not verified'});
+        .json({message: 'JWT Refresh Token authentication error: JWT Refresh Token is not verified'});
     }
     // Get out XSRF header & compare to XSRF
     // Don't block non-mutating requests
     if (req.method !== 'GET' && req.method !== 'HEAD') {
       if (req.header('X-XSRF-TOKEN') !== payload.xsrf) {
         return res.status(401)
-          .json({message: 'JWT Refresh Token authenthication error: XSRF does not match'});
+          .json({message: 'JWT Refresh Token authentication error: XSRF does not match'});
       }
     }
 
@@ -90,7 +90,7 @@ module.exports = {
         .then((session) => {
           if (!session) {
             return res.status(401)
-                .json({message: 'JWT Refresh Token authenthication error: Session not found in DB'});
+                .json({message: 'JWT Refresh Token authentication error: Session not found in DB'});
           }
           // Success
           req.jwtRefreshToken = payload;
@@ -101,7 +101,7 @@ module.exports = {
         })
         .catch((err) => {
           return res.status(401)
-              .json({message: 'JWT Refresh Token authenthication error: Problem getting session from DB'});
+              .json({message: 'JWT Refresh Token authentication error: Problem getting session from DB'});
         });
   },
 
@@ -115,7 +115,7 @@ module.exports = {
       payload = jwt.verify(req.body.jwt, process.env.JWT_KEY);
     } catch (err) {
       return res.status(401)
-        .send({message: 'JWT temporary link authenthication error: JWT is not verified'});
+        .send({message: 'JWT temporary link authentication error: JWT is not verified'});
     }
 
     if (typeof payload.sub !== 'string') {
