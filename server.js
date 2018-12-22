@@ -22,7 +22,7 @@ app.use(cookieParser());
 
 // Force cookies to be secure by replacing cookie function
 app.use(function(req, res, next) {
-  if (process.env.SECURE_COOKIES === 'TRUE') {
+  if (req.hostname !== 'localhost') {
     let cookieFunction = res.cookie;
     res.cookie = function(name, value, options) {
       let newOptions = {};
