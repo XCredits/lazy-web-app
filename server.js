@@ -23,19 +23,16 @@ app.use(cookieParser());
 // Force cookies to be secure by replacing cookie function
 app.use(function(req, res, next) {
   if (process.env.SECURE_COOKIES === 'TRUE') {
-    return function(req, res, next) {
-      let cookieFunction = res.cookie;
-      res.cookie = function(name, value, options) {
-        let newOptions = {};
-        if (typeof options !== 'undefined') {
-          newOptions = _.cloneDeep(options);
-        }
-        if (typeof newOptions.secure === 'undefined') {
-          newOptions.secure = isSecureCookies;
-        }
-        return cookieFunction.call(res, name, value, newOptions);
-      };
-      next();
+    let cookieFunction = res.cookie;
+    res.cookie = function(name, value, options) {
+      let newOptions = {};
+      if (typeof options !== 'undefined') {
+        newOptions = _.cloneDeep(options);
+      }
+      if (typeof newOptions.secure === 'undefined') {
+        newOptions.secure = true;
+      }
+      return cookieFunction.call(res, name, value, newOptions);
     };
   }
   return next();
