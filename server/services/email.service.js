@@ -163,11 +163,4 @@ module.exports = {
     };
     return sendgridMail.send(msg);
   },
-  // module.exports.sendUsernameRetrieval({
-  //   email: 'test@test.com',
-  //   givenName: 'Robert',
-  //   familyName: 'Smith',
-  //   userNameArr: ['username', 'other_username'],
-  // });
-
 };
