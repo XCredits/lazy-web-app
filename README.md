@@ -161,7 +161,7 @@ Deployed service [default] to [https://test-project-197703.appspot.com]
 
 3) Click "I've integrated the code above." and Click "Verify integration".
 
-4) Comment out the `#SENDGRID_VERIFICATION` section of the at the top of the
+4) Un-comment the `#SENDGRID_VERIFICATION` section of the at the top of the
   `email.service.js` file.
 
 5) Start the server in development mode in order to send an email and verify 
