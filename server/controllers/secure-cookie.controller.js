@@ -1,4 +1,5 @@
 'use strict';
+const _ = require('lodash');
 
 module.exports = function(req, res, next) {
   if (req.hostname !== 'localhost') {

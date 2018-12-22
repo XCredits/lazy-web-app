@@ -8,7 +8,6 @@ const path = require('path');
 const http = require('http');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
-const _ = require('lodash');
 const secureCookieController =
     require('./server/controllers/secure-cookie.controller');
 const hostHttpsRedirectController =
