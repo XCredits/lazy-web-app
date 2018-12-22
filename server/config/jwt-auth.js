@@ -1,4 +1,3 @@
-// const validator = require('validator');
 const jwt = require('jsonwebtoken');
 const Session = require('../models/session.model.js');
 
