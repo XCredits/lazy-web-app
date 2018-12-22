@@ -124,16 +124,28 @@ gcloud init
 gcloud config set compute/region us-central1
 ~~~
 
-11) Run the following commands
+11) Set up a MongoDB cluster
+Set the whitelist, IP to:
+~~~
+0.0.0.0/0
+~~~
+such that any Google server can access the 
+
+Create a user and a hard password. 
+
+Update the .env file
+
+
+12) Run the following commands
 
 ~~~bash
 ng build --prod
 gcloud app deploy
 ~~~
 
-12) Wait for the app to deploy.
+13) Wait for the app to deploy.
 
-13) Visit the address that is displayed when the deploy command finishes.
+14) Visit the address that is displayed when the deploy command finishes.
 
 ~~~bash
 Deployed service [default] to [https://test-project-197703.appspot.com]
@@ -147,7 +159,7 @@ Deployed service [default] to [https://test-project-197703.appspot.com]
 
 2) Add the SendGrid API key to the .env file
 
-3) Click "I've integrated the code above." and Click "Verifiy integration".
+3) Click "I've integrated the code above." and Click "Verify integration".
 
 4) Comment out the `#SENDGRID_VERIFICATION` section of the at the top of the
   `email.service.js` file.
