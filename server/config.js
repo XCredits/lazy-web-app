@@ -6,6 +6,7 @@ process.env.JWT_TEMPORARY_LINK_TOKEN_EXPIRY = 60*60*1000; // Expiry in ms (1 hou
 
 if (!process.env.GOOGLE_CLOUD_PROJECT) {
   process.env.IS_LOCAL = 'TRUE';
+  process.env.SECURE_COOKIES = 'TRUE';
 }
 
 // Default to production

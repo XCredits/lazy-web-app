@@ -446,7 +446,6 @@ function createAndSendRefreshAndSessionJwt(user, req, res) {
         // XSRF token to the X-XSRF-TOKEN header.
         // Read more: https://stormpath.com/blog/angular-xsrf
         res.cookie('XSRF-TOKEN', xsrf, {
-          secure: !process.env.IS_LOCAL,
           maxAge: 20 * 365 * 24 * 60 * 60 * 1000, // 20 year expiry
         });
         const token = setJwtCookie({
@@ -496,7 +495,6 @@ function setJwtCookie({res, userId, username, isAdmin, xsrf, sessionId}) {
   // Set the cookie
   res.cookie('JWT', jwtString, {
       httpOnly: true,
-      secure: !process.env.IS_LOCAL,
       maxAge: process.env.JWT_EXPIRY,
     });
   return {jwtString, jwtObj};
@@ -521,7 +519,6 @@ function setJwtRefreshTokenCookie(
   // Set the cookie
   res.cookie('JWT_REFRESH_TOKEN', jwtString, {
       httpOnly: true,
-      secure: !process.env.IS_LOCAL,
       maxAge: process.env.JWT_REFRESH_TOKEN_EXPIRY,
     });
   return {jwtString, jwtObj};
