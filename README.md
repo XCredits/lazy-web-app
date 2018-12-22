@@ -167,7 +167,7 @@ Deployed service [default] to [https://test-project-197703.appspot.com]
 5) Start the server in development mode in order to send an email and verify 
   that the installation works.
 
-6) COMMENT OUT THE `#SENDGRID_VERIFICATION` again!
+6) Comment `#SENDGRID_VERIFICATION` again!
 
 # How this app was created
 ## Install Angular
