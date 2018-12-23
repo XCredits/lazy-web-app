@@ -22,7 +22,7 @@
 
   <style>
     body {
-      background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.7));
+      background: linear-gradient(rgb(63,81,181), rgb(47,60,132));
     }
 
     .loading-page{
@@ -31,11 +31,16 @@
       margin-top:25%;
       width: 50%;
       max-width: 800px;
+      text-align: center;
+      color: white;
+      text-shadow: 0px 2px 20px #000;
+      size: 20pt;
     }
     .loading-page > img{
       width: 100%;
       -webkit-filter: drop-shadow(0px 5px 20px #000 );
       filter: drop-shadow(0px 5px 20px #000);
+      margin-bottom: 30px;
     }
   </style> 
 </head>
@@ -43,6 +48,7 @@
   <app-root>
     <div class="loading-page">
       <img src="/assets/img/logo-square-white.png">
+      Loading
     </div>
   </app-root>
 </body>
