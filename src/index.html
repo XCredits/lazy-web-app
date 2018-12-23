@@ -19,8 +19,31 @@
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
   </script>
+
+  <style>
+    body {
+      background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.7));
+    }
+
+    .loading-page{
+      height: 100vh;
+      margin:0 auto;
+      margin-top:25%;
+      width: 50%;
+      max-width: 800px;
+    }
+    .loading-page > img{
+      width: 100%;
+      -webkit-filter: drop-shadow(0px 5px 20px #000 );
+      filter: drop-shadow(0px 5px 20px #000);
+    }
+  </style> 
 </head>
 <body>
-  <app-root>Loading...</app-root>
+  <app-root>
+    <div class="loading-page">
+      <img src="/assets/img/logo-square-white.png">
+    </div>
+  </app-root>
 </body>
 </html>
