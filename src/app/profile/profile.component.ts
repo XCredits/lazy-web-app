@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Button } from 'protractor';
-
+import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { UserService } from '../user.service';
 
 @Component({
   selector: 'app-profile',
@@ -9,72 +9,51 @@ import { Button } from 'protractor';
   styleUrls: ['./profile.component.scss']
 })
 export class ProfileComponent implements OnInit {
-  user: User;
-  show = false;
-  open = false;
-  given = false;
-  family = false;
-  buttonName = 'Change Email';
-  userName = 'Change Username';
-  givenName = 'Change Given Name';
-  familyName = 'Change Family Name';
-  email = 'Email:';
-  constructor(private http: HttpClient) { }
+  form: FormGroup;
+  waiting = false;
+  formErrorMessage: string;
+
+  constructor(
+    private http: HttpClient,
+    private userService: UserService,
+  ) { }
 
   ngOnInit() {
-    this.http.get<User>('/api/user/details', {})
-        .subscribe((user) =>  {
-          this.user = user;
+    if (this.userService.isLoggedIn()) {
+    this.userService.userObservable
+        .subscribe(user => {
+          this.form = new FormGroup ({
+            givenName: new FormControl(user.givenName),
+            familyName: new FormControl(user.familyName),
+            username: new FormControl(user.username),
+            email: new FormControl(user.email),
+          });
         });
-  }
-  toggle() {
-    this.show = !this.show;
-    if (this.show) {
-      this.userName = 'Revert';
     } else {
-      this.userName = 'Change Username';
+      this.form = new FormGroup ({
+        givenName: new FormControl(''),
+        familyName: new FormControl(''),
+        username: new FormControl(''),
+        email: new FormControl(''),
+      });
     }
   }
+  something() {
+    console.log('Hello');
 
-  opening() {
-    this.open = !this.open;
-    if (this.open) {
-      this.buttonName = 'Revert';
-      this.email = 'New Emal:';
-    } else {
-      this.buttonName = 'Change Email';
-    }
   }
-
-  toggleGiven() {
-    this.given = !this.given;
-    if (this.given) {
-      this.givenName = 'Revert';
-    } else {
-      this.givenName = 'Change Given Name';
+  submit = function (formData) {
+    if (this.form.invalid) {
+      return;
     }
-  }
-
-  toggleFamily() {
-    this.family = !this.family;
-    if (this.family) {
-      this.familyName = 'Revert';
-    } else {
-      this.familyName = 'Change Family Name';
-    }
-  }
-
-
-
-}
-
-interface User {
-  id: string;
-  username: string;
-  givenName: string;
-  familyName: string;
-  email: string;
-  password: string;
-  isLoggedIn: boolean;
-  isAdmin: boolean;
+    // Clear state from previous submissions
+    this.formErrorMessage = undefined;
+    this.waiting = true;
+    this.http.post('/api/join-mailing-list', {
+        'givenName': formData.givenName,
+        'familyName': formData.familyName,
+        'username': formData.username,
+        'email': formData.email
+        });
+  };
 }

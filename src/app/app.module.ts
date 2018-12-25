@@ -83,7 +83,6 @@ import { ChangeEmailComponent } from './change-email/change-email.component';
 import { ChangeUsernameComponent } from './change-username/change-username.component';
 import { ChangeGivenNameComponent } from './change-given-name/change-given-name.component';
 import { ChangeFamilyNameComponent } from './change-family-name/change-family-name.component';
-import { EditableModule } from './editable/editable.module';
 
 @NgModule({
   declarations: [
@@ -121,7 +120,6 @@ import { EditableModule } from './editable/editable.module';
     FormsModule,
     ReactiveFormsModule,
     HttpClientModule,
-    EditableModule,
     NgxWebstorageModule.forRoot({
       prefix: 'app',
       separator: '.',

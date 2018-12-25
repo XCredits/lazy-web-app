@@ -29,14 +29,14 @@ export class MailingListComponent implements OnInit {
           this.form = new FormGroup ({
             givenName: new FormControl(user.givenName),
             familyName: new FormControl(user.familyName),
-            username: new FormControl(user.username),
+            email: new FormControl(user.email),
           });
         });
     } else {
       this.form = new FormGroup ({
         givenName: new FormControl(''),
         familyName: new FormControl(''),
-        username: new FormControl(''),
+        email: new FormControl(''),
       });
     }
   }
@@ -54,7 +54,7 @@ export class MailingListComponent implements OnInit {
     this.http.post('/api/join-mailing-list', {
         'givenName': formData.givenName,
         'familyName': formData.familyName,
-        'username': formData.username
+        'email': formData.email
         })
         .subscribe(
         data => {
