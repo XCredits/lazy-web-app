@@ -60,10 +60,6 @@ module.exports = function(app) {
   app.get('/api/user/refresh-jwt', auth.jwtRefreshToken, refreshJwt);
   app.get('/api/user/details', auth.jwt, userDetails);
   app.post('/api/user/change-password', auth.jwtRefreshToken, changePassword);
-  app.post('/api/user/change-email', auth.jwtRefreshToken, changeEmail);
-  app.post('/api/user/change-username', auth.jwtRefreshToken, changeUsername);
-  app.post('/api/user/change-given-name', auth.jwtRefreshToken, changeGivenName);
-  app.post('/api/user/change-family-name', auth.jwtRefreshToken, changeFamilyName);
   app.post('/api/user/request-reset-password', requestResetPassword);
   app.post('/api/user/reset-password',
       auth.jwtTemporaryLinkToken, resetPassword);
@@ -266,108 +262,6 @@ function changePassword(req, res) {
             });
   });
 }
-
-/**
- * Change Email
- * @param {*} req request object
- * @param {*} res response object
- * @return {*}
- */
-function changeEmail(req, res) {
-  const email = req.body.email;
-  console.log(email);
-  if (typeof email !== 'string' || !validator.isEmail(email)) {
-    console.log('inside');
-    return res.status(422).json({message: 'Request failed validation'});
-  }
-  return User.findOne({_id: req.userId})
-    .then((user) => {
-      user.email = email;
-      return user.save(() =>{
-        return res.send({message: 'Email Changed successfully'});
-      })
-      .catch((err)=> {
-        console.log(err);
-        return res.status(500).send({message: 'Email change failed'});
-      });
-    });
-}
-
-/**
- * Change Username
- * @param {*} req request object
- * @param {*} res response object
- * @return {*}
- */
-function changeUsername(req, res) {
-  const username = req.body.username;
-  console.log(username);
-  if (typeof username !== 'string' || !usernameRegex.test(username)) {
-    return res.status(422).json({message: 'Request failed validation'});
-  }
-  return User.findOne({_id: req.userId})
-    .then((user) => {
-      user.username = username;
-      return user.save(() =>{
-        return res.send({message: 'Username Ccanged successfully'});
-      })
-      .catch((err)=> {
-        console.log(err);
-        return res.status(500).send({message: 'Username change failed'});
-      });
-    });
-}
-
-/**
- * Change givenName
- * @param {*} req request object
- * @param {*} res response object
- * @return {*}
- */
-function changeGivenName(req, res) {
-  const givenName = req.body.givenName;
-  console.log(givenName);
-  if (typeof givenName !== 'string') {
-    return res.status(422).json({message: 'Request failed validation'});
-  }
-  return User.findOne({_id: req.userId})
-    .then((user) => {
-      user.givenName = givenName;
-      return user.save(() =>{
-        return res.send({message: 'Given name changed successfully'});
-      })
-      .catch((err)=> {
-        console.log(err);
-        return res.status(500).send({message: 'Given name change failed'});
-      });
-    });
-}
-
-/**
- * Change Family Name
- * @param {*} req request object
- * @param {*} res response object
- * @return {*}
- */
-function changeFamilyName(req, res) {
-  const familyName = req.body.familyName;
-  console.log(familyName);
-  if (typeof familyName !== 'string') {
-    return res.status(422).json({message: 'Request failed validation'});
-  }
-  return User.findOne({_id: req.userId})
-    .then((user) => {
-      user.familyName = familyName;
-      return user.save(() =>{
-        return res.send({message: 'Family name changed successfully'});
-      })
-      .catch((err)=> {
-        console.log(err);
-        return res.status(500).send({message: 'Family Name change failed'});
-      });
-    });
-}
-
 
 /**
  * handle a request to reset the password

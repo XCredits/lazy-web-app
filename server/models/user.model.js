@@ -49,7 +49,6 @@ UserSchema.methods.frontendData = function() {
     familyName: this.familyName,
     username: this.username,
     email: this.email,
-    password: '********',
     emailConfirmed: this.emailConfirmed,
     timeRegistered: this.timeRegistered,
     isAdmin: this.isAdmin,
