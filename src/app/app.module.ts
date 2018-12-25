@@ -79,11 +79,6 @@ import { UserRegisterChartComponent } from './user-register-chart/user-register-
 import { TermsComponent } from './terms/terms.component';
 import { PrivacyComponent } from './privacy/privacy.component';
 import { FooterComponent } from './footer/footer.component';
-import { ChangeEmailComponent } from './change-email/change-email.component';
-import { ChangeUsernameComponent } from './change-username/change-username.component';
-import { ChangeGivenNameComponent } from './change-given-name/change-given-name.component';
-import { ChangeFamilyNameComponent } from './change-family-name/change-family-name.component';
-
 @NgModule({
   declarations: [
     AppComponent,
@@ -109,11 +104,7 @@ import { ChangeFamilyNameComponent } from './change-family-name/change-family-na
     UserRegisterChartComponent,
     TermsComponent,
     PrivacyComponent,
-    FooterComponent,
-    ChangeEmailComponent,
-    ChangeUsernameComponent,
-    ChangeGivenNameComponent,
-    ChangeFamilyNameComponent
+    FooterComponent
   ],
   imports: [
     BrowserModule,

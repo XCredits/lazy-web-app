@@ -34,9 +34,6 @@ UserSchema.methods.checkPassword = function(password) {
   return bcrypt.compareSync(password, this.passwordHash);
 };
 
-UserSchema.methods.passwordLength = function(password) {
-  return password.length;
-};
 
 /**
  * removes secret data we don't want to send to the front-end
@@ -49,7 +46,6 @@ UserSchema.methods.frontendData = function() {
     familyName: this.familyName,
     username: this.username,
     email: this.email,
-    password: '********',
     emailConfirmed: this.emailConfirmed,
     timeRegistered: this.timeRegistered,
     isAdmin: this.isAdmin,

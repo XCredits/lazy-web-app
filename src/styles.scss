@@ -75,29 +75,8 @@ img.avatar {
   max-width: 100%;
 }
 
-.simple-form-card-profile {
-  width:400px;
-  max-width: 100%;
-  margin-bottom: 10px;
-}
-
 .simple-form-button {
   align-self: flex-end;
-}
-
-button.simple-form-button-profile {
-  align-self: flex-end;
-  margin-left: 5px;
-}
-
-button.simple-form-button-cancel {
-  align-self: flex-end;
-  margin-left: 15px;
-}
-
-button.simple-form-button-change {
-  align-self: flex-end;
-  margin-left: 10px;
 }
 
 .simple-form-field-100 {
@@ -106,10 +85,6 @@ button.simple-form-button-change {
 
 .simple-form-field-50 {
   width: 49%;
-}
-.simple-form-field-50-profile {
-  width: 49%;
-  margin-left: 7px;
 }
 
 .simple-form-spinner {
