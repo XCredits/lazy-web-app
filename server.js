@@ -8,7 +8,10 @@ const path = require('path');
 const http = require('http');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
-const _ = require('lodash');
+const secureCookieController =
+    require('./server/controllers/secure-cookie.controller');
+const hostHttpsRedirectController =
+    require('./server/controllers/host-https-redirect.controller');
 const socialController = require('./server/controllers/social.controller');
 const tracking = require('./server/services/tracking.service');
 const routes = require('./server/routes');
@@ -21,49 +24,9 @@ app.use(bodyParser.json());
 app.use(cookieParser());
 
 // Force cookies to be secure by replacing cookie function
-app.use(function(req, res, next) {
-  if (process.env.SECURE_COOKIES === 'TRUE') {
-    return function(req, res, next) {
-      let cookieFunction = res.cookie;
-      res.cookie = function(name, value, options) {
-        let newOptions = {};
-        if (typeof options !== 'undefined') {
-          newOptions = _.cloneDeep(options);
-        }
-        if (typeof newOptions.secure === 'undefined') {
-          newOptions.secure = isSecureCookies;
-        }
-        return cookieFunction.call(res, name, value, newOptions);
-      };
-      next();
-    };
-  }
-  return next();
-});
+app.use(secureCookieController);
 
-app.use('/', function(req, res, next) {
-  let redirect = false;
-  // Redirect non-https
-  if (req.headers['x-forwarded-proto'] === 'http' && // if using http
-      req.hostname !== 'localhost') { // & not a local install
-    if (req.method === 'GET') { // if it is a GET request
-      redirect = true;
-    } else { // if it is a POST, DELETE etc
-      // Throw an error
-      return res.status(400)
-          .send({message: 'Do not make API requests using http, use https'});
-    }
-  }
-  // Remove www
-  let strippedHostname = req.hostname;
-  if (strippedHostname.startsWith('www.')) {
-    strippedHostname = strippedHostname.slice(4);
-  }
-  if (redirect) {
-    return res.redirect('https://' + strippedHostname + req.originalUrl);
-  }
-  next();
-});
+app.use(hostHttpsRedirectController);
 
 app.use(socialController);
 

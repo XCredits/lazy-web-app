@@ -4,7 +4,7 @@
 //    access to a session database
 // 2) Using JWT Refresh Tokens to allow persistent sessions
 // 3) Storing JWT Refresh Tokens such that the refresher can be revoked, meaning
-//    compromised tokens will only remaing for a short while after revoking
+//    compromised tokens will only remaining for a short while after revoking
 // 4) Storing JWTs on the client side in HTTP-only, Secure cookies, so
 //    client-side JavaScript can't leak JWTs to some third party, which is
 //    useful if using unverified third-party JavaScript on your site
@@ -29,7 +29,7 @@
 // When a user is logged in, but their privileges do not allow them to access
 // the content, the rejection should always be a 403. This does not result in
 // the user being redirected, instead they are informed that they cannot access
-// the content specifed. In some cases, it may be necessary to prevent the user
+// the content specified. In some cases, it may be necessary to prevent the user
 // from knowing that a resource exists at all. In those cases, it is best to
 // return a 404.
 
@@ -46,7 +46,7 @@ const statsService = require('../services/stats.service.js');
 const emailService = require('../services/email.service.js');
 const Session = require('../models/session.model.js');
 const jwt = require('jsonwebtoken');
-const auth = require('../config/jwt-auth.js');
+const auth = require('./jwt-auth.controller.js');
 const passport = require('passport');
 const crypto = require('crypto');
 require('../config/passport.js');
@@ -202,7 +202,7 @@ function login(req, res) {
  * @param {*} res response object
  */
 function refreshJwt(req, res) {
-  // The refresh token is verfied by auth.jwtRefreshToken
+  // The refresh token is verified by auth.jwtRefreshToken
   // Pull the user data from the refresh JWT
   const token = setJwtCookie({
     res,
