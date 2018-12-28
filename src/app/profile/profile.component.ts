@@ -12,6 +12,11 @@ export class ProfileComponent implements OnInit {
   form: FormGroup;
   waiting = false;
   formErrorMessage: string;
+  originalGiven: any;
+  disableButton = true;
+  originalFamily: any;
+  originalEmail: any;
+  user: User;
 
   constructor(
     private http: HttpClient,
@@ -19,41 +24,71 @@ export class ProfileComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    this.http.get<User>('/api/user/details', {})
+        .subscribe((user) =>  {
+          this.user = user;
+        });
     if (this.userService.isLoggedIn()) {
-    this.userService.userObservable
+      this.userService.userObservable
         .subscribe(user => {
           this.form = new FormGroup ({
             givenName: new FormControl(user.givenName),
             familyName: new FormControl(user.familyName),
-            username: new FormControl(user.username),
             email: new FormControl(user.email),
+            username: new FormControl(user.username),
           });
         });
     } else {
       this.form = new FormGroup ({
         givenName: new FormControl(''),
         familyName: new FormControl(''),
-        username: new FormControl(''),
         email: new FormControl(''),
+        username: new FormControl(''),
       });
     }
+    this.form.valueChanges.subscribe(changes => this.wasFormChanged(changes));
   }
-  something() {
-    console.log('Hello');
+  private wasFormChanged(currentValue) {
+    const fields = ['givenName', 'familyName', 'email', 'username'];
 
+    for (let i = 0; i < fields.length; i++) {
+      const fieldName = fields[i];
+      if (this.user[fieldName] !== currentValue[fieldName]) {
+        this.disableButton = false;
+        return;
+      }
+    }
+    this.disableButton = true;
   }
+
   submit = function (formData) {
     if (this.form.invalid) {
       return;
     }
     // Clear state from previous submissions
     this.formErrorMessage = undefined;
-    this.waiting = true;
-    this.http.post('/api/join-mailing-list', {
-        'givenName': formData.givenName,
-        'familyName': formData.familyName,
-        'username': formData.username,
-        'email': formData.email
-        });
+    this.http.post('/api/user/change-all', {
+      'email': formData.email,
+      'givenName': formData.givenName,
+      'familyName': formData.familyName,
+      'username': formData.username,
+    })
+    .subscribe(data => {
+      this.submitSuccess = true;
+      this.userService.updateUserDetails();
+    },
+    errorResponse => {
+      this.waiting = false;
+      this.formErrorMessage = 'There was a problem submitting the form.';
+    });
   };
+}
+interface User {
+  id: string;
+  username: string;
+  givenName: string;
+  familyName: string;
+  email: string;
+  isLoggedIn: boolean;
+  isAdmin: boolean;
 }
