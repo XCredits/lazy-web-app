@@ -14,6 +14,7 @@ export class MailingListComponent implements OnInit {
   form: FormGroup;
   waiting = false;
   formErrorMessage: string;
+  formSuccess: string;
 
   constructor(
     private http: HttpClient,
@@ -50,6 +51,7 @@ export class MailingListComponent implements OnInit {
     }
     // Clear state from previous submissions
     this.formErrorMessage = undefined;
+    this.formSuccess = false;
     this.waiting = true;
     this.http.post('/api/join-mailing-list', {
         'givenName': formData.givenName,
@@ -59,11 +61,12 @@ export class MailingListComponent implements OnInit {
         .subscribe(
         data => {
           this.waiting = false;
-          this.snackBar.open('Successfully subscribed to the mailing list', 'Dismiss', {
-            duration: 5000,
-            verticalPosition: 'top',
-            horizontalPosition: 'right',
-          });
+          this.formSuccess = true;
+          // this.snackBar.open('Successfully subscribed to the mailing list', 'Dismiss', {
+          //    duration: 5000,
+          //    verticalPosition: 'top',
+          //    horizontalPosition: 'right',
+          //  });
           this.analytics.mailingList();
         },
         errorResponse => {
