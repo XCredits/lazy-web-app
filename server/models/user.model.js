@@ -34,6 +34,7 @@ UserSchema.methods.checkPassword = function(password) {
   return bcrypt.compareSync(password, this.passwordHash);
 };
 
+
 /**
  * removes secret data we don't want to send to the front-end
  * @return {*}

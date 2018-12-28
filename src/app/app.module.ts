@@ -79,7 +79,6 @@ import { UserRegisterChartComponent } from './user-register-chart/user-register-
 import { TermsComponent } from './terms/terms.component';
 import { PrivacyComponent } from './privacy/privacy.component';
 import { FooterComponent } from './footer/footer.component';
-
 @NgModule({
   declarations: [
     AppComponent,
@@ -105,7 +104,7 @@ import { FooterComponent } from './footer/footer.component';
     UserRegisterChartComponent,
     TermsComponent,
     PrivacyComponent,
-    FooterComponent,
+    FooterComponent
   ],
   imports: [
     BrowserModule,
