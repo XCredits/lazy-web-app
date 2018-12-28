@@ -1,6 +1,6 @@
 const validator = require('validator');
 const User = require('../models/user.model.js');
-const auth = require('../config/jwt-auth.js');
+const auth = require('./jwt-auth.controller.js');
 const usernameRegex = /^[a-zA-Z0-9_.-]*$/;
 
 module.exports = function(app) {
