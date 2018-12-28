@@ -1,4 +1,4 @@
-<div *ngIf="!submitSuccess" class="simple-form-aligner">
+<div class="simple-form-aligner">
   <mat-card class="simple-form-card">
     <form [formGroup]="form" (ngSubmit)="submit(form.value)">
       <mat-card-title style="text-align:center;"> Profile </mat-card-title>
@@ -38,7 +38,14 @@
           <span 
               *ngIf='formErrorMessage' 
               class="text-error-color">
-            {{formErrorMessage}}
+              {{formErrorMessage}}
+          </span>
+          <br>
+          <span *ngIf="submitSuccess">
+              <br>
+              <mat-card-subtitle class="successMessage">
+                Profile has been updated sucessfully.
+              </mat-card-subtitle> 
           </span>
         </div>
       </mat-card-content>
@@ -46,4 +53,3 @@
   </mat-card>
 </div>
 
-<span *ngIf="submitSuccess">Success </span>

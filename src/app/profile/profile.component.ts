@@ -73,10 +73,11 @@ export class ProfileComponent implements OnInit {
     })
     .subscribe(data => {
       this.submitSuccess = true;
+      this.disableButton = true;
       this.userService.updateUserDetails();
     },
     errorResponse => {
-      this.waiting = false;
+      this.disableButton = true;
       this.formErrorMessage = 'There was a problem submitting the form.';
     });
   };
