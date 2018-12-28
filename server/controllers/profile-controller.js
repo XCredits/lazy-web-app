@@ -14,11 +14,13 @@ module.exports = function(app) {
  * @return {*}
  */
 function changeProfile(req, res) {
+  const userId = req.userId;
   const email = req.body.email;
   const givenName = req.body.givenName;
   const familyName = req.body.familyName;
   const username = req.body.username;
   if (typeof email !== 'string' ||
+      typeof userId !== 'string' ||
       typeof givenName !== 'string' ||
       typeof familyName !== 'string' ||
       typeof username !== 'string' ||
@@ -26,22 +28,21 @@ function changeProfile(req, res) {
       !validator.isEmail(email)) {
     return res.status(422).json({message: 'Request failed validation'});
   }
-  return User.findOne({_id: req.userId})
-    .then((user) => {
-      user.email = email;
-      user.givenName = givenName;
-      user.familyName = familyName;
-      user.username = username;
-      return user.save(() =>{
-        return res.send({message: 'All Changed successfully'});
+  return User.findOne({_id: userId})
+      .then((user) => {
+        user.email = email;
+        user.givenName = givenName;
+        user.familyName = familyName;
+        user.username = username;
+        return user.save()
+            .then(() => {
+              return res.send({message: 'Details Changed successfully'});
+            })
+            .catch((err) => {
+              return res.status(500).send({message: 'Error in saving changes'});
+            });
       })
-      .catch((err)=> {
-        console.log(err);
-        return res.status(500).send({message: 'All changes failed'});
+      .catch((err) => {
+        return res.status(500).send({message: 'UserId not found'});
       });
-    })
-    .catch((err)=> {
-      console.log(err);
-      return res.status(500).send({message: 'userId not found'});
-    });
 }

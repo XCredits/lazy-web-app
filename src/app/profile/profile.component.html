@@ -46,32 +46,4 @@
   </mat-card>
 </div>
 
-<div *ngIf="submitSuccess" class="simple-form-aligner">
-  <mat-card class="simple-form-card">
-    <form [formGroup]="form">
-      <mat-card-title style="text-align:center">Profile</mat-card-title>
-      <mat-card-content>
-        <div class="form-group">
-          <mat-form-field class="simple-form-field-50">
-            <input matInput placeholder="Given name" name="givenName" formControlName="givenName">
-          </mat-form-field>
-          <mat-form-field class="simple-form-field-50">
-              <input matInput placeholder="Family name" name="familyName" formControlName="familyName">
-            </mat-form-field>
-            <br>
-            <mat-form-field>
-              <input matInput placeholder="Email" name="email" formControlName="email">
-            </mat-form-field>
-            <br>
-            <mat-form-field>
-                <input matInput placeholder="Username" name="username" formControlName="username">
-            </mat-form-field>
-            <br>
-            Your Profile has been updated <a routerLink="/home">
-              Go to the home page.
-            </a>
-        </div>
-      </mat-card-content>
-    </form> 
-  </mat-card>
-</div>
+<span *ngIf="submitSuccess">Success </span>

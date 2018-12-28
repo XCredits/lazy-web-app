@@ -51,16 +51,14 @@ export class ProfileComponent implements OnInit {
   private wasFormChanged(currentValue) {
     const fields = ['givenName', 'familyName', 'email', 'username'];
 
-    for (let i = 0; i < fields.length; i++) {
-      const fieldName = fields[i];
-      if (this.user[fieldName] !== currentValue[fieldName]) {
+    this.disableButton = true;
+    fields.forEach(element => {
+      if (this.user[element] !== currentValue[element]) {
         this.disableButton = false;
         return;
       }
-    }
-    this.disableButton = true;
+    });
   }
-
   submit = function (formData) {
     if (this.form.invalid) {
       return;
@@ -83,6 +81,7 @@ export class ProfileComponent implements OnInit {
     });
   };
 }
+
 interface User {
   id: string;
   username: string;

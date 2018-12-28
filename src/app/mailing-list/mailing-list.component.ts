@@ -30,14 +30,15 @@ export class MailingListComponent implements OnInit {
           this.form = new FormGroup ({
             givenName: new FormControl(user.givenName),
             familyName: new FormControl(user.familyName),
-            email: new FormControl(user.email),
+            email: new FormControl(user.email,
+              [Validators.required, Validators.email]),
           });
         });
     } else {
       this.form = new FormGroup ({
         givenName: new FormControl(''),
         familyName: new FormControl(''),
-        email: new FormControl(''),
+        email: new FormControl('', [Validators.required, Validators.email]),
       });
     }
   }
@@ -62,11 +63,11 @@ export class MailingListComponent implements OnInit {
         data => {
           this.waiting = false;
           this.formSuccess = true;
-          // this.snackBar.open('Successfully subscribed to the mailing list', 'Dismiss', {
-          //    duration: 5000,
-          //    verticalPosition: 'top',
-          //    horizontalPosition: 'right',
-          //  });
+          this.snackBar.open('Successfully subscribed to the mailing list', 'Dismiss', {
+             duration: 5000,
+             verticalPosition: 'top',
+             horizontalPosition: 'right',
+           });
           this.analytics.mailingList();
         },
         errorResponse => {
