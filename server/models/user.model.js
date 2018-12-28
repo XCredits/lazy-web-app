@@ -7,6 +7,7 @@ let UserSchema = new Schema({
     givenName: {type: String},
     familyName: {type: String},
     username: {type: String, unique: true, required: true},
+    usernameDisplay: {type: String, unique: true, required: true},
     email: {type: String},
     emailConfirmed: {type: Boolean, default: false},
     timeRegistered: {type: Date, default: Date.now},
