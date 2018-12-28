@@ -67,7 +67,7 @@ export class ProfileComponent implements OnInit {
     }
     // Clear state from previous submissions
     this.formErrorMessage = undefined;
-    this.http.post('/api/user/change-all', {
+    this.http.post('/api/user/save-details', {
       'email': formData.email,
       'givenName': formData.givenName,
       'familyName': formData.familyName,
