@@ -1,7 +1,7 @@
 const validator = require('validator');
 const User = require('../models/user.model.js');
 const auth = require('./jwt-auth.controller.js');
-const usernameRegex = /^[a-zA-Z0-9_.-]*$/;
+const {isValidUsername} = require('./utils.controller.js');
 
 module.exports = function(app) {
   app.post('/api/user/save-details', auth.jwtRefreshToken, changeProfile);
@@ -24,7 +24,7 @@ function changeProfile(req, res) {
       typeof givenName !== 'string' ||
       typeof familyName !== 'string' ||
       typeof username !== 'string' ||
-      !usernameRegex.test(username) ||
+      !isValidUsername(username) ||
       !validator.isEmail(email)) {
     return res.status(422).json({message: 'Request failed validation'});
   }
