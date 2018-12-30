@@ -31,7 +31,7 @@ export class MailingListComponent implements OnInit {
             givenName: new FormControl(user.givenName),
             familyName: new FormControl(user.familyName),
             email: new FormControl(user.email,
-                [Validators.required, Validators.email]),
+              [Validators.required, Validators.email]),
           });
         });
     } else {
@@ -42,7 +42,10 @@ export class MailingListComponent implements OnInit {
       });
     }
   }
+  something() {
+    console.log('Hello');
 
+  }
   submit = function (formData) {
     if (this.form.invalid) {
       return;
@@ -60,11 +63,11 @@ export class MailingListComponent implements OnInit {
         data => {
           this.waiting = false;
           this.formSuccess = true;
-          // this.snackBar.open('Successfully subscribed to the mailing list', 'Dismiss', {
-          //    duration: 5000,
-          //    verticalPosition: 'top',
-          //    horizontalPosition: 'right',
-          //  });
+          this.snackBar.open('Successfully subscribed to the mailing list', 'Dismiss', {
+             duration: 5000,
+             verticalPosition: 'top',
+             horizontalPosition: 'right',
+           });
           this.analytics.mailingList();
         },
         errorResponse => {
