@@ -15,9 +15,6 @@ export class ProfileComponent implements OnInit {
   waiting = false;
   submitSuccess = false;
   formErrorMessage: string;
-  originalGiven: any;
-  originalFamily: any;
-  originalEmail: any;
   user: User;
 
   constructor(
