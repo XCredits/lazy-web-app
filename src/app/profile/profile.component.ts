@@ -10,12 +10,11 @@ import { UserService } from '../user.service';
 })
 export class ProfileComponent implements OnInit {
   form: FormGroup;
-  waiting = false;
-  formErrorMessage: string;
-  originalGiven: any;
+
   disableButton = true;
-  originalFamily: any;
-  originalEmail: any;
+  waiting = false;
+  submitSuccess = false;
+  formErrorMessage: string;
   user: User;
 
   constructor(
@@ -28,8 +27,7 @@ export class ProfileComponent implements OnInit {
         .subscribe((user) =>  {
           this.user = user;
         });
-    if (this.userService.isLoggedIn()) {
-      this.userService.userObservable
+    this.userService.userObservable
         .subscribe(user => {
           this.form = new FormGroup ({
             givenName: new FormControl(user.givenName),
@@ -38,27 +36,20 @@ export class ProfileComponent implements OnInit {
             username: new FormControl(user.username),
           });
         });
-    } else {
-      this.form = new FormGroup ({
-        givenName: new FormControl(''),
-        familyName: new FormControl(''),
-        email: new FormControl(''),
-        username: new FormControl(''),
-      });
-    }
     this.form.valueChanges.subscribe(changes => this.wasFormChanged(changes));
   }
+
   private wasFormChanged(currentValue) {
     const fields = ['givenName', 'familyName', 'email', 'username'];
-
-    for (let i = 0; i < fields.length; i++) {
-      const fieldName = fields[i];
-      if (this.user[fieldName] !== currentValue[fieldName]) {
+    this.disableButton = true;
+    this.submitSuccess = false;
+    this.formErrorMessage = undefined;
+    fields.forEach(element => {
+      if (this.user[element] !== currentValue[element]) {
         this.disableButton = false;
         return;
       }
-    }
-    this.disableButton = true;
+    });
   }
 
   submit = function (formData) {
@@ -66,23 +57,29 @@ export class ProfileComponent implements OnInit {
       return;
     }
     // Clear state from previous submissions
+    this.waiting = true;
+    this.submitSuccess = false;
     this.formErrorMessage = undefined;
     this.http.post('/api/user/save-details', {
-      'email': formData.email,
-      'givenName': formData.givenName,
-      'familyName': formData.familyName,
-      'username': formData.username,
-    })
-    .subscribe(data => {
-      this.submitSuccess = true;
-      this.userService.updateUserDetails();
-    },
-    errorResponse => {
-      this.waiting = false;
-      this.formErrorMessage = 'There was a problem submitting the form.';
-    });
+          'email': formData.email,
+          'givenName': formData.givenName,
+          'familyName': formData.familyName,
+          'username': formData.username,
+        })
+        .subscribe(data => {
+          this.waiting = false;
+          this.submitSuccess = true;
+          this.disableButton = true;
+          this.userService.updateUserDetails();
+        },
+        errorResponse => {
+          this.waiting = false;
+          this.disableButton = true;
+          this.formErrorMessage = 'There was a problem submitting the form.';
+        });
   };
 }
+
 interface User {
   id: string;
   username: string;
