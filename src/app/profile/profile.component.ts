@@ -27,8 +27,7 @@ export class ProfileComponent implements OnInit {
         .subscribe((user) =>  {
           this.user = user;
         });
-    if (this.userService.isLoggedIn()) {
-      this.userService.userObservable
+    this.userService.userObservable
         .subscribe(user => {
           this.form = new FormGroup ({
             givenName: new FormControl(user.givenName),
@@ -37,14 +36,6 @@ export class ProfileComponent implements OnInit {
             username: new FormControl(user.username),
           });
         });
-    } else {
-      this.form = new FormGroup ({
-        givenName: new FormControl(''),
-        familyName: new FormControl(''),
-        email: new FormControl(''),
-        username: new FormControl(''),
-      });
-    }
     this.form.valueChanges.subscribe(changes => this.wasFormChanged(changes));
   }
 
