@@ -10,11 +10,12 @@ import { UserService } from '../user.service';
 })
 export class ProfileComponent implements OnInit {
   form: FormGroup;
+
+  disableButton = true;
   waiting = false;
+  submitSuccess = false;
   formErrorMessage: string;
   originalGiven: any;
-  disableButton = true;
-  submitSuccess = false;
   originalFamily: any;
   originalEmail: any;
   user: User;
@@ -49,10 +50,12 @@ export class ProfileComponent implements OnInit {
     }
     this.form.valueChanges.subscribe(changes => this.wasFormChanged(changes));
   }
+
   private wasFormChanged(currentValue) {
     const fields = ['givenName', 'familyName', 'email', 'username'];
-
     this.disableButton = true;
+    this.submitSuccess = false;
+    this.formErrorMessage = undefined;
     fields.forEach(element => {
       if (this.user[element] !== currentValue[element]) {
         this.disableButton = false;
@@ -60,27 +63,32 @@ export class ProfileComponent implements OnInit {
       }
     });
   }
+
   submit = function (formData) {
     if (this.form.invalid) {
       return;
     }
     // Clear state from previous submissions
+    this.waiting = true;
+    this.submitSuccess = false;
     this.formErrorMessage = undefined;
     this.http.post('/api/user/save-details', {
-      'email': formData.email,
-      'givenName': formData.givenName,
-      'familyName': formData.familyName,
-      'username': formData.username,
-    })
-    .subscribe(data => {
-      this.submitSuccess = true;
-      this.disableButton = true;
-      this.userService.updateUserDetails();
-    },
-    errorResponse => {
-      this.disableButton = true;
-      this.formErrorMessage = 'There was a problem submitting the form.';
-    });
+          'email': formData.email,
+          'givenName': formData.givenName,
+          'familyName': formData.familyName,
+          'username': formData.username,
+        })
+        .subscribe(data => {
+          this.waiting = false;
+          this.submitSuccess = true;
+          this.disableButton = true;
+          this.userService.updateUserDetails();
+        },
+        errorResponse => {
+          this.waiting = false;
+          this.disableButton = true;
+          this.formErrorMessage = 'There was a problem submitting the form.';
+        });
   };
 }
 
