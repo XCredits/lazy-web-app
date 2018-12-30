@@ -47,7 +47,7 @@ const emailService = require('../services/email.service.js');
 const Session = require('../models/session.model.js');
 const jwt = require('jsonwebtoken');
 const auth = require('./jwt-auth.controller.js');
-const {isValidUsername} = require('./utils.controller.js');
+const {isValidDisplayUsername, normalizeUsername} = require('./utils.controller.js');
 const passport = require('passport');
 const crypto = require('crypto');
 require('../config/passport.js');
@@ -78,23 +78,21 @@ function register(req, res) {
   const givenName = req.body.givenName;
   const familyName = req.body.familyName;
   const password = req.body.password;
-  let username = req.body.username;
+  const displayUsername = req.body.username;
 
   // Validate
   if (typeof email !== 'string' ||
       typeof givenName !== 'string' ||
       typeof familyName !== 'string' ||
-      typeof username !== 'string' ||
+      typeof displayUsername !== 'string' ||
       typeof password !== 'string' ||
       !validator.isEmail(email) ||
-      !isValidUsername(username) ||
+      !isValidDisplayUsername(displayUsername) ||
       !validator.isLength(password, 8)
     ) {
     return res.status(422).json({message: 'Request failed validation'});
   }
-
-  // Sanitize
-  username = username.toLowerCase();
+  const username = normalizeUsername(displayUsername);
 
   // check that there is not an existing user with this username
   return User.findOne({username: username})
@@ -106,6 +104,7 @@ function register(req, res) {
         user.givenName = givenName;
         user.familyName = familyName;
         user.username = username;
+        user.displayUsername = displayUsername;
         user.email = email;
         user.createPasswordHash(password);
         return user.save()
@@ -169,18 +168,18 @@ function register(req, res) {
  * @return {*}
  */
 function login(req, res) {
-  const username = req.body.username;
+  const displayUsername = req.body.username;
   // note length should not be checked when logging in
   const password = req.body.password;
   // Validate
-  if (typeof username !== 'string' ||
+  if (typeof displayUsername !== 'string' ||
       typeof password !== 'string' ||
-      !isValidUsername(username)
+      !isValidDisplayUsername(displayUsername)
     ) {
     return res.status(422).json({message: 'Request failed validation'});
   }
   // Sanitize (update username)
-  req.body.username = username.toLowerCase();
+  req.body.username = normalizeUsername(displayUsername);
 
   passport.authenticate('local', function(err, user, info) {
     if (err) {
@@ -282,15 +281,14 @@ function changePassword(req, res) {
  * @return {*}
  */
 function requestResetPassword(req, res) {
-  let username = req.body.username;
+  const displayUsername = req.body.username;
   // Validate
   if (typeof username !== 'string' ||
-      !isValidUsername(username)
+      !isValidDisplayUsername(displayUsername)
     ) {
     return res.status(422).json({message: 'Request failed validation'});
   }
-  // Sanitize
-  username = username.toLowerCase();
+  const username = normalizeUsername(displayUsername);
 
   return User.findOne({username: username})
       .then((user)=>{

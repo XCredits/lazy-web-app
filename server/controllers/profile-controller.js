@@ -1,10 +1,10 @@
 const validator = require('validator');
 const User = require('../models/user.model.js');
 const auth = require('./jwt-auth.controller.js');
-const {isValidUsername} = require('./utils.controller.js');
+const {isValidDisplayUsername, normalizeUsername} = require('./utils.controller.js');
 
 module.exports = function(app) {
-  app.post('/api/user/save-details', auth.jwtRefreshToken, changeProfile);
+  app.post('/api/user/save-details', auth.jwtRefreshToken, saveDetails);
 };
 
 /**
@@ -13,27 +13,29 @@ module.exports = function(app) {
  * @param {*} res response object
  * @return {*}
  */
-function changeProfile(req, res) {
+function saveDetails(req, res) {
   const userId = req.userId;
   const email = req.body.email;
   const givenName = req.body.givenName;
   const familyName = req.body.familyName;
-  const username = req.body.username;
+  const displayUsername = req.body.username;
   if (typeof email !== 'string' ||
       typeof userId !== 'string' ||
       typeof givenName !== 'string' ||
       typeof familyName !== 'string' ||
-      typeof username !== 'string' ||
-      !isValidUsername(username) ||
+      typeof displayUsername !== 'string' ||
+      !isValidDisplayUsername(displayUsername) ||
       !validator.isEmail(email)) {
     return res.status(422).json({message: 'Request failed validation'});
   }
+  const username = normalizeUsername(displayUsername);
   return User.findOne({_id: userId})
       .then((user) => {
         user.email = email;
         user.givenName = givenName;
         user.familyName = familyName;
         user.username = username;
+        user.displayUsername = displayUsername;
         return user.save()
             .then(() => {
               return res.send({message: 'Details Changed successfully'});

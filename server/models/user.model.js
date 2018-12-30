@@ -2,12 +2,13 @@ const mongoose = require('mongoose');
 mongoose.Promise = require('bluebird');
 const Schema = mongoose.Schema;
 const bcrypt = require('bcrypt');
+const {normalizeUsername} = require('../controllers/utils.controller.js');
 
 let UserSchema = new Schema({
     givenName: {type: String},
     familyName: {type: String},
     username: {type: String, unique: true, required: true},
-    strippedUsername: {type: String, unique: true, required: true},
+    displayUsername: {type: String, required: true},
     email: {type: String},
     emailConfirmed: {type: Boolean, default: false},
     timeRegistered: {type: Date, default: Date.now},
@@ -19,6 +20,7 @@ let UserSchema = new Schema({
 );
 
 UserSchema.index({username: 1});
+UserSchema.index({displayUsername: 1});
 UserSchema.index({email: 1});
 
 
@@ -45,7 +47,7 @@ UserSchema.methods.frontendData = function() {
     givenName: this.givenName,
     familyName: this.familyName,
     username: this.username,
-    strippedUsername: this.strippedUsername,
+    displayUsername: this.displayUsername,
     email: this.email,
     emailConfirmed: this.emailConfirmed,
     timeRegistered: this.timeRegistered,
@@ -53,5 +55,10 @@ UserSchema.methods.frontendData = function() {
     profileImage: this.profileImage,
   };
 };
+
+
+UserSchema.pre('save', function() {
+  this.displayUsername = normalizeUsername(this.username);
+});
 
 module.exports = mongoose.model('User', UserSchema);
