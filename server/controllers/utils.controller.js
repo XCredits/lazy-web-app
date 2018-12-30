@@ -1,10 +1,10 @@
-const displayUsernameRegex = /^[a-zA-Z0-9_.-]*$/;
-const usernameRegex = /^[a-z0-9]*$/;
+const usernameRegex = /^[a-zA-Z0-9_.-]*$/;
+const usernameStrippedRegex = /^[a-z0-9]*$/;
 
 module.exports = {
   isValidUsername,
-  isValidDisplayUsername,
-  convertToDisplayUsername,
+  isValidStrippedUsername,
+  stripUsername,
 };
 
 /**
@@ -21,17 +21,16 @@ function isValidUsername(username) {
  * @param {string} username
  * @return {boolean}
  */
-function isValidDisplayUsername(username) {
-  return displayUsernameRegex.test(username);
+function isValidStrippedUsername(username) {
+  return usernameStrippedRegex.test(username);
 }
-
 
 /**
  *
  * @param {string} username
  * @return {string}
  */
-function convertToDisplayUsername(username) {
+function stripUsername(username) {
   return username
       .split('.').join('')
       .split('_').join('')
