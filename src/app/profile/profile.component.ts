@@ -14,6 +14,7 @@ export class ProfileComponent implements OnInit {
   formErrorMessage: string;
   originalGiven: any;
   disableButton = true;
+  submitSuccess = false;
   originalFamily: any;
   originalEmail: any;
   user: User;
