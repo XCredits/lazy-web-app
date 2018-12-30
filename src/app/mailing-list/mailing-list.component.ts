@@ -14,7 +14,7 @@ export class MailingListComponent implements OnInit {
   form: FormGroup;
   waiting = false;
   formErrorMessage: string;
-  formSuccess: string;
+  submitSuccess: string;
 
   constructor(
     private http: HttpClient,
@@ -25,15 +25,15 @@ export class MailingListComponent implements OnInit {
 
   ngOnInit() {
     if (this.userService.isLoggedIn()) {
-    this.userService.userObservable
-        .subscribe(user => {
-          this.form = new FormGroup ({
-            givenName: new FormControl(user.givenName),
-            familyName: new FormControl(user.familyName),
-            email: new FormControl(user.email,
-              [Validators.required, Validators.email]),
+      this.userService.userObservable
+          .subscribe(user => {
+            this.form = new FormGroup ({
+              givenName: new FormControl(user.givenName),
+              familyName: new FormControl(user.familyName),
+              email: new FormControl(user.email,
+                [Validators.required, Validators.email]),
+            });
           });
-        });
     } else {
       this.form = new FormGroup ({
         givenName: new FormControl(''),
@@ -49,16 +49,16 @@ export class MailingListComponent implements OnInit {
     }
     // Clear state from previous submissions
     this.formErrorMessage = undefined;
-    this.formSuccess = false;
+    this.submitSuccess = false;
     this.waiting = true;
     this.http.post('/api/join-mailing-list', {
-        'givenName': formData.givenName,
-        'familyName': formData.familyName,
-        'email': formData.email
+          'givenName': formData.givenName,
+          'familyName': formData.familyName,
+          'email': formData.email
         })
         .subscribe(data => {
           this.waiting = false;
-          this.formSuccess = true;
+          this.submitSuccess = true;
           // this.snackBar.open('Successfully subscribed to the mailing list', 'Dismiss', {
           //    duration: 5000,
           //    verticalPosition: 'top',
