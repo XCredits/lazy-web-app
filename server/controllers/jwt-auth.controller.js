@@ -130,7 +130,7 @@ module.exports = {
 
 /**
  * clears cookie tokens
- * @param {*} res reponse object
+ * @param {*} res response object
  */
 function clearTokens(res) {
   res.clearCookie('JWT');
