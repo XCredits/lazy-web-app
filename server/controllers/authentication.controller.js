@@ -228,9 +228,16 @@ function refreshJwt(req, res) {
 function userDetails(req, res) {
   // Validate not necessary at this point (no req.body use,
   // and checked in jwt-auth)
-  return User.findOne({_id: req.userId})
+  const userId = req.userId;
+  if ( typeof userId !== 'string') {
+    return res.status(422).json({message: 'Request failed validation'});
+  }
+  return User.findOne({_id: userId})
       .then((user) => {
         res.send(user.frontendData());
+      })
+      .catch((err) => {
+        return res.status(500).send({message: 'UserId not found'});
       });
 }
 
@@ -242,25 +249,31 @@ function userDetails(req, res) {
  */
 function changePassword(req, res) {
   const password = req.body.password;
+  const userId = req.userId;
   // Validate
   if (typeof password !== 'string' ||
+      typeof userId !== 'string' ||
       !validator.isLength(password, 8)
     ) {
     return res.status(422).json({message: 'Request failed validation'});
   }
 
-  return User.findOne({_id: req.userId})
+  return User.findOne({_id: userId})
       .then((user) => {
-        // Create new password hash
-        user.createPasswordHash(password);
-        return user.save(()=>{
-              return res.send({message: 'Password successfully changed'});
-            })
-            .catch((err)=>{
-              console.log(err);
-              return res.status(500).send({message: 'Password change failed'});
-            });
-  });
+          // Create new password hash
+          user.createPasswordHash(password);
+          return user.save()
+          .then(() =>{
+            return res.send({message: 'Password successfully changed'});
+          })
+          .catch((err)=>{
+            console.log(err);
+            return res.status(500).send({message: 'Password change failed'});
+          });
+      })
+      .catch((err) => {
+        return res.status(500).send({message: 'UserId not found'});
+      });
 }
 
 /**
@@ -329,15 +342,17 @@ function requestResetPassword(req, res) {
  */
 function resetPassword(req, res) {
   let password = req.body.password;
+  const userId = req.userId;
   // Validate
   if (typeof password !== 'string'||
+      typeof userId !== 'string' ||
       !validator.isLength(password, 8)) {
     return res.status(422).json({message: 'Request failed validation'});
   }
 
   // Other ideas: https://www.owasp.org/index.php/Forgot_Password_Cheat_Sheet#Step_4.29_Allow_user_to_change_password_in_the_existing_session
   // look up user
-  return User.findOne({_id: req.userId}) // req.userId is set in auth.temporaryLinkAuth
+  return User.findOne({_id: userId}) // req.userId is set in auth.temporaryLinkAuth
       .then((user) => {
         user.createPasswordHash(password);
         return user.save()

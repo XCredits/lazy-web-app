@@ -1,7 +1,7 @@
 <div class="simple-form-aligner">
   <mat-card class="simple-form-card">
     
-    <div *ngIf='!formSuccess'> 
+    <div *ngIf='!submitSuccess'> 
       <mat-card-title>Join the mailing list </mat-card-title>
       <mat-card-subtitle>
           Be the first to hear new announcements about XCredits
@@ -45,7 +45,7 @@
         </form>
       </mat-card-content>
     </div>
-    <div *ngIf='formSuccess'>
+    <div *ngIf='submitSuccess'>
         <mat-card-title>Success</mat-card-title>
         <mat-card-subtitle>
             You have successfully joined the mailing list.
