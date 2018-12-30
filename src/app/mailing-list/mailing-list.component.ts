@@ -42,10 +42,7 @@ export class MailingListComponent implements OnInit {
       });
     }
   }
-  something() {
-    console.log('Hello');
 
-  }
   submit = function (formData) {
     if (this.form.invalid) {
       return;
@@ -59,15 +56,14 @@ export class MailingListComponent implements OnInit {
         'familyName': formData.familyName,
         'email': formData.email
         })
-        .subscribe(
-        data => {
+        .subscribe(data => {
           this.waiting = false;
           this.formSuccess = true;
-          this.snackBar.open('Successfully subscribed to the mailing list', 'Dismiss', {
-             duration: 5000,
-             verticalPosition: 'top',
-             horizontalPosition: 'right',
-           });
+          // this.snackBar.open('Successfully subscribed to the mailing list', 'Dismiss', {
+          //    duration: 5000,
+          //    verticalPosition: 'top',
+          //    horizontalPosition: 'right',
+          //  });
           this.analytics.mailingList();
         },
         errorResponse => {
