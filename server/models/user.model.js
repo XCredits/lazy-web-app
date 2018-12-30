@@ -56,9 +56,4 @@ UserSchema.methods.frontendData = function() {
   };
 };
 
-
-UserSchema.pre('save', function() {
-  this.displayUsername = normalizeUsername(this.username);
-});
-
 module.exports = mongoose.model('User', UserSchema);
