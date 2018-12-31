@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { UserService } from '../user.service';
+import { UserService, User } from '../user.service';
 
 @Component({
   selector: 'app-profile',
@@ -30,10 +30,11 @@ export class ProfileComponent implements OnInit {
     this.userService.userObservable
         .subscribe(user => {
           this.form = new FormGroup ({
-            givenName: new FormControl(user.givenName),
-            familyName: new FormControl(user.familyName),
-            email: new FormControl(user.email),
-            username: new FormControl(user.username),
+            givenName: new FormControl(user.givenName, [Validators.required]),
+            familyName: new FormControl(user.familyName, [Validators.required]),
+            email: new FormControl(user.email, [Validators.required, Validators.email]),
+            username: new FormControl(user.username, [Validators.required,
+              Validators.pattern(this.userService.displayUsernameRegexString)]),
           });
         });
     this.form.valueChanges.subscribe(changes => this.wasFormChanged(changes));
@@ -78,14 +79,4 @@ export class ProfileComponent implements OnInit {
           this.formErrorMessage = 'There was a problem submitting the form.';
         });
   };
-}
-
-interface User {
-  id: string;
-  username: string;
-  givenName: string;
-  familyName: string;
-  email: string;
-  isLoggedIn: boolean;
-  isAdmin: boolean;
 }

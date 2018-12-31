@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { UserService } from '../user.service';
+import { UserService, passwordLength } from '../user.service';
 
 @Component({
   selector: 'app-change-password',
@@ -20,7 +20,8 @@ export class ChangePasswordComponent implements OnInit {
 
   ngOnInit() {
     this.form = new FormGroup ({
-      password: new FormControl('', [<any>Validators.required]),
+      password: new FormControl('', [Validators.required,
+        Validators.minLength(passwordLength)]),
     });
   }
 

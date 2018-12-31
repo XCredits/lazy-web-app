@@ -39,6 +39,8 @@
 // attach the XSRF Token to the request header that the server has set in the
 // cookie. This means that ALL get requests could potentially be called from any
 
+const passwordLength = 10;
+
 const validator = require('validator');
 const User = require('../models/user.model.js');
 const UserStats = require('../models/user-stats.model.js');
@@ -47,7 +49,8 @@ const emailService = require('../services/email.service.js');
 const Session = require('../models/session.model.js');
 const jwt = require('jsonwebtoken');
 const auth = require('./jwt-auth.controller.js');
-const {isValidDisplayUsername, normalizeUsername} = require('./utils.controller.js');
+const {isValidDisplayUsername, normalizeUsername} =
+    require('./utils.controller.js');
 const passport = require('passport');
 const crypto = require('crypto');
 require('../config/passport.js');
@@ -60,8 +63,9 @@ module.exports = function(app) {
   app.get('/api/user/details', auth.jwt, userDetails);
   app.post('/api/user/change-password', auth.jwtRefreshToken, changePassword);
   app.post('/api/user/request-reset-password', requestResetPassword);
+  // Other ideas: https://www.owasp.org/index.php/Forgot_Password_Cheat_Sheet#Step_4.29_Allow_user_to_change_password_in_the_existing_session
   app.post('/api/user/reset-password',
-      auth.jwtTemporaryLinkToken, resetPassword);
+      auth.jwtTemporaryLinkToken, changePassword);
   app.post('/api/user/forgot-username', forgotUsername);
   app.post('/api/user/logout', auth.jwtRefreshToken, logout);
 };
@@ -88,7 +92,7 @@ function register(req, res) {
       typeof password !== 'string' ||
       !validator.isEmail(email) ||
       !isValidDisplayUsername(displayUsername) ||
-      !validator.isLength(password, 8)
+      !validator.isLength(password, passwordLength)
     ) {
     return res.status(422).json({message: 'Request failed validation'});
   }
@@ -251,8 +255,7 @@ function changePassword(req, res) {
   // Validate
   if (typeof password !== 'string' ||
       typeof userId !== 'string' ||
-      !validator.isLength(password, 8)
-    ) {
+      !validator.isLength(password, passwordLength)) {
     return res.status(422).json({message: 'Request failed validation'});
   }
 
@@ -327,37 +330,6 @@ function requestResetPassword(req, res) {
             });
       })
       .catch((err) => {
-        res.status(500).send({message: 'Error accessing user database.'});
-      });
-}
-
-/**
- * resets the password
- * @param {*} req request object
- * @param {*} res response object
- * @return {*}
- */
-function resetPassword(req, res) {
-  let password = req.body.password;
-  const userId = req.userId;
-  // Validate
-  if (typeof password !== 'string'||
-      typeof userId !== 'string' ||
-      !validator.isLength(password, 8)) {
-    return res.status(422).json({message: 'Request failed validation'});
-  }
-
-  // Other ideas: https://www.owasp.org/index.php/Forgot_Password_Cheat_Sheet#Step_4.29_Allow_user_to_change_password_in_the_existing_session
-  // look up user
-  return User.findOne({_id: userId}) // req.userId is set in auth.temporaryLinkAuth
-      .then((user) => {
-        user.createPasswordHash(password);
-        return user.save()
-            .then(()=>{
-              res.send({message: 'Password reset successful'});
-            });
-      })
-      .catch(() => {
         res.status(500).send({message: 'Error accessing user database.'});
       });
 }

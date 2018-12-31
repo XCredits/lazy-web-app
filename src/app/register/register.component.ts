@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
-import {Router, ActivatedRoute, Params} from '@angular/router';
-import { UserService } from '../user.service';
+import { Router, ActivatedRoute, Params } from '@angular/router';
+import { UserService, passwordLength } from '../user.service';
 import { AnalyticsService } from '../analytics.service';
 
 @Component({
@@ -39,7 +39,8 @@ export class RegisterComponent implements OnInit {
       email: new FormControl('', [Validators.required, Validators.email]),
       username: new FormControl('', [Validators.required,
           Validators.pattern(this.userService.displayUsernameRegexString)]),
-      password: new FormControl('', [Validators.required]),
+      password: new FormControl('', [Validators.required,
+          Validators.minLength(passwordLength)]),
     });
   }
 
