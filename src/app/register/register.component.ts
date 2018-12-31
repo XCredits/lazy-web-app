@@ -4,6 +4,7 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { Router, ActivatedRoute, Params } from '@angular/router';
 import { UserService, passwordLength } from '../user.service';
 import { AnalyticsService } from '../analytics.service';
+import { ValidateZxcvbnDirective } from './../validate-zxcvbn.directive';
 
 @Component({
   selector: 'app-register',
@@ -21,7 +22,8 @@ export class RegisterComponent implements OnInit {
   constructor( private http: HttpClient,
       private userService: UserService,
       private activatedRoute: ActivatedRoute,
-      private analytics: AnalyticsService ) {
+      private analytics: AnalyticsService,
+      private zxcvbnValidator:  ValidateZxcvbnDirective) {
 
         // The following is to ensure that when a user is redirected for the
         // purposes of logging in that they are still redirected to the correct
@@ -40,7 +42,9 @@ export class RegisterComponent implements OnInit {
       username: new FormControl('', [Validators.required,
           Validators.pattern(this.userService.displayUsernameRegexString)]),
       password: new FormControl('', [Validators.required,
-          Validators.minLength(passwordLength)]),
+          Validators.minLength(passwordLength),
+          this.zxcvbnValidator.validate,
+        ]),
     });
   }
 
