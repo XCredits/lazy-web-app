@@ -2,7 +2,7 @@
 // Position:fixed, to the right below the menu bar
 
 import { Component, OnInit } from '@angular/core';
-import { UserService } from '../user.service';
+import { UserService, User } from '../user.service';
 
 @Component({
   selector: 'app-user-dropdown',
@@ -27,14 +27,4 @@ export class UserDropdownComponent implements OnInit {
     this.userService.logOut();
   }
 
-}
-
-interface User {
-  id: string;
-  username: string;
-  givenName: string;
-  familyName: string;
-  email: string;
-  isLoggedIn: boolean;
-  isAdmin: boolean;
 }

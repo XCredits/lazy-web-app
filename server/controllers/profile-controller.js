@@ -1,7 +1,8 @@
 const validator = require('validator');
 const User = require('../models/user.model.js');
 const auth = require('./jwt-auth.controller.js');
-const {isValidDisplayUsername, normalizeUsername} = require('./utils.controller.js');
+const {isValidDisplayUsername, normalizeUsername} =
+    require('./utils.controller.js');
 
 module.exports = function(app) {
   app.post('/api/user/save-details', auth.jwtRefreshToken, saveDetails);
