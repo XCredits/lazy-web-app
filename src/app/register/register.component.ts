@@ -50,6 +50,7 @@ export class RegisterComponent implements OnInit {
   redirectUrl: string;
   currentUsername: string;
   usernameErrorMessage: string;
+  currentPassword: string;
 
   constructor( private http: HttpClient,
       private userService: UserService,
@@ -80,6 +81,7 @@ export class RegisterComponent implements OnInit {
         ]),
     });
     this.form.valueChanges.subscribe(formData => this.checkUsername(formData));
+    // this.form.valueChanges.subscribe(formData => this.checkPassword(formData));
   }
 
   checkUsername = function (formData)  {
@@ -91,28 +93,39 @@ export class RegisterComponent implements OnInit {
     // error if the username has been updated
     const initialUsername = formData.username;
     this.currentUsername = formData.username;
+    if (initialUsername.length === 0) {
+      this.form.controls['username'].setErrors({'incorrect': true});
+      this.usernameErrorMessage = 'Required.';
+      return;
+    }
     if (!displayUsernameRegex.test(initialUsername)) {
       this.form.controls['username'].setErrors({'incorrect': true});
       this.usernameErrorMessage = 'Not a valid username. Use only a-z, 0-9 and "_", "." or "-".';
-    } else {
-      this.http.post('/api/user/username-available', {
-            username: initialUsername,
-          })
-          .subscribe(data => {
-            if (initialUsername === this.currentUsername) {
-              if (!data.available) {
-                this.form.controls['username'].setErrors({'incorrect': true});
-                this.usernameErrorMessage =
-                    'Username is not available. Please choose another.';
-              } else {
-                this.form.controls['username'].setErrors(null);
-              }
-            }
-          },
-          errorResponse => {
-            this.formErrorMessage = 'There may be a connection issue.';
-          });
+      return;
     }
+    setTimeout(() => { // Wait 1 second before checking username
+      if (initialUsername === this.currentUsername) {
+        this.http.post('/api/user/username-available', {
+              username: initialUsername,
+            })
+            .subscribe(data => {
+              if (initialUsername === this.currentUsername) {
+                if (!data.available) {
+                  this.form.controls['username'].setErrors({'incorrect': true});
+                  this.usernameErrorMessage =
+                      'Username is not available. Please choose another.';
+                } else {
+                  this.form.controls['username'].setErrors(null);
+                }
+              }
+            },
+            errorResponse => {
+              this.formErrorMessage = 'There may be a connection issue.';
+            });
+      } else {
+        // console.log('Bailed');
+      }
+    }, 1000);
   };
 
   submit = function (formData) {
