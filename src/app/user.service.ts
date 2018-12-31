@@ -261,9 +261,10 @@ export class UserService {
   }
 }
 
-interface User {
+export interface User {
   id: string;
   username: string;
+  displayUsername: string;
   givenName: string;
   familyName: string;
   email: string;
