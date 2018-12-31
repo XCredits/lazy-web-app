@@ -48,6 +48,8 @@ export class RegisterComponent implements OnInit {
   formErrorMessage: string;
   loginRegisterSwitchQueryParams: Params;
   redirectUrl: string;
+  currentUsername: string;
+  usernameErrorMessage: string;
 
   constructor( private http: HttpClient,
       private userService: UserService,
@@ -77,7 +79,41 @@ export class RegisterComponent implements OnInit {
           zxcvbnValidate,
         ]),
     });
+    this.form.valueChanges.subscribe(formData => this.checkUsername(formData));
   }
+
+  checkUsername = function (formData)  {
+    this.form.controls['username'].setErrors(null);
+    const displayUsernameRegex =
+        new RegExp(this.userService.displayUsernameRegexString);
+
+    // this.currentUsername - designed to prevent the form from reporting an
+    // error if the username has been updated
+    const initialUsername = formData.username;
+    this.currentUsername = formData.username;
+    if (!displayUsernameRegex.test(initialUsername)) {
+      this.form.controls['username'].setErrors({'incorrect': true});
+      this.usernameErrorMessage = 'Not a valid username. Use only a-z, 0-9 and "_", "." or "-".';
+    } else {
+      this.http.post('/api/user/username-available', {
+            username: initialUsername,
+          })
+          .subscribe(data => {
+            if (initialUsername === this.currentUsername) {
+              if (!data.available) {
+                this.form.controls['username'].setErrors({'incorrect': true});
+                this.usernameErrorMessage =
+                    'Username is not available. Please choose another.';
+              } else {
+                this.form.controls['username'].setErrors(null);
+              }
+            }
+          },
+          errorResponse => {
+            this.formErrorMessage = 'There may be a connection issue.';
+          });
+    }
+  };
 
   submit = function (formData) {
     if (this.form.invalid) {
@@ -88,27 +124,26 @@ export class RegisterComponent implements OnInit {
 
     this.waiting = true;
     this.http.post('/api/user/register', {
-        'givenName': formData.givenName,
-        'familyName': formData.familyName,
-        'email': formData.email,
-        'username': formData.username,
-        'password': formData.password,
+          'givenName': formData.givenName,
+          'familyName': formData.familyName,
+          'email': formData.email,
+          'username': formData.username,
+          'password': formData.password,
         })
-        .subscribe(
-            data => {
-              this.waiting = false;
-              this.userService.authenticationResult(data);
-              this.userService.successNavigate(this.redirectUrl);
-              this.analytics.register();
-            },
-            errorResponse => {
-              this.waiting = false;
-              if (errorResponse.status === 409) {
-                this.formErrorMessage = errorResponse.error.message;
-                this.form.controls['username'].setErrors({'incorrect': true});
-              } else {
-                this.formErrorMessage = 'There was a problem submitting the form.';
-              }
-            });
+        .subscribe(data => {
+          this.waiting = false;
+          this.userService.authenticationResult(data);
+          this.userService.successNavigate(this.redirectUrl);
+          this.analytics.register();
+        },
+        errorResponse => {
+          this.waiting = false;
+          if (errorResponse.status === 409) {
+            this.formErrorMessage = errorResponse.error.message;
+            this.form.controls['username'].setErrors({'incorrect': true});
+          } else {
+            this.formErrorMessage = 'There was a problem submitting the form.';
+          }
+        });
   };
 }

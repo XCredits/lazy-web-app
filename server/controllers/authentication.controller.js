@@ -58,6 +58,7 @@ require('../config/passport.js');
 module.exports = function(app) {
   app.use(passport.initialize());
   app.post('/api/user/register', register);
+  app.post('/api/user/username-available', usernameAvailable);
   app.post('/api/user/login', login);
   app.get('/api/user/refresh-jwt', auth.jwtRefreshToken, refreshJwt);
   app.get('/api/user/details', auth.jwt, userDetails);
@@ -92,8 +93,7 @@ function register(req, res) {
       typeof password !== 'string' ||
       !validator.isEmail(email) ||
       !isValidDisplayUsername(displayUsername) ||
-      !validator.isLength(password, passwordLength)
-    ) {
+      !validator.isLength(password, passwordLength)) {
     return res.status(422).json({message: 'Request failed validation'});
   }
   const username = normalizeUsername(displayUsername);
@@ -160,11 +160,54 @@ function register(req, res) {
             });
       })
       .catch((err)=>{
-        res.status(500)
-            .send({
-              message: 'Error accessing database while checking for existing users'});
+        res.status(500).send({
+            message: 'Error accessing database while checking for existing users'});
       });
 }
+
+/**
+ * Determines if username available
+ * @param {*} req
+ * @param {*} res
+ * @return {Promise}
+ */
+function usernameAvailable(req, res) {
+  const displayUsername = req.body.username;
+  // Validate
+  if (typeof displayUsername !== 'string' ||
+      !isValidDisplayUsername(displayUsername)) {
+    return res.status(422).json({message: 'Request failed validation'});
+  }
+  const username = normalizeUsername(displayUsername);
+  let currentUsername;
+  if (req.body.currentUsername) {
+    const currentDisplayUsername = req.body.currentUsername;
+    if (typeof currentDisplayUsername !== 'string' ||
+        !isValidDisplayUsername(currentDisplayUsername)) {
+      return res.status(422).json({message: 'Request failed validation'});
+    }
+    currentUsername = normalizeUsername(currentDisplayUsername);
+  }
+
+  if (currentUsername === username) {
+    return res.send({available: true});
+  }
+
+  return User.findOne({username: username})
+      .then((existingUser) => {
+        if (existingUser) {
+          return res.send({available: false});
+        } else {
+          return res.send({available: true});
+        }
+      })
+      .catch((err)=>{
+        res.status(500).send({
+            message: 'Error accessing database while checking for existing users'});
+      });
+}
+
+
 /**
  * logs a user in
  * @param {*} req request object

@@ -17,7 +17,7 @@
           </mat-form-field>
           <mat-form-field class="simple-form-field-100">
             <input matInput placeholder="Username" name="username" formControlName="username">
-            <mat-error>Not a valid username. Use only a-z, 0-9 and "_", "." or "-".</mat-error>
+            <mat-error>{{usernameErrorMessage}}</mat-error>
           </mat-form-field>
           <mat-form-field class="simple-form-field-100">
             <input matInput placeholder="Email" name="email" formControlName="email">
