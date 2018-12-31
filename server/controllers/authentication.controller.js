@@ -39,6 +39,8 @@
 // attach the XSRF Token to the request header that the server has set in the
 // cookie. This means that ALL get requests could potentially be called from any
 
+const passwordLength = 10;
+
 const validator = require('validator');
 const User = require('../models/user.model.js');
 const UserStats = require('../models/user-stats.model.js');
@@ -47,7 +49,8 @@ const emailService = require('../services/email.service.js');
 const Session = require('../models/session.model.js');
 const jwt = require('jsonwebtoken');
 const auth = require('./jwt-auth.controller.js');
-const {isValidDisplayUsername, normalizeUsername} = require('./utils.controller.js');
+const {isValidDisplayUsername, normalizeUsername} =
+    require('./utils.controller.js');
 const passport = require('passport');
 const crypto = require('crypto');
 require('../config/passport.js');
@@ -88,7 +91,7 @@ function register(req, res) {
       typeof password !== 'string' ||
       !validator.isEmail(email) ||
       !isValidDisplayUsername(displayUsername) ||
-      !validator.isLength(password, 8)
+      !validator.isLength(password, passwordLength)
     ) {
     return res.status(422).json({message: 'Request failed validation'});
   }
@@ -251,7 +254,7 @@ function changePassword(req, res) {
   // Validate
   if (typeof password !== 'string' ||
       typeof userId !== 'string' ||
-      !validator.isLength(password, 8)
+      !validator.isLength(password, passwordLength)
     ) {
     return res.status(422).json({message: 'Request failed validation'});
   }
@@ -343,7 +346,7 @@ function resetPassword(req, res) {
   // Validate
   if (typeof password !== 'string'||
       typeof userId !== 'string' ||
-      !validator.isLength(password, 8)) {
+      !validator.isLength(password, passwordLength)) {
     return res.status(422).json({message: 'Request failed validation'});
   }
 

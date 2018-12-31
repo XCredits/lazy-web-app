@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { ActivatedRoute } from '@angular/router';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { UserService } from '../user.service';
+import { UserService, passwordLength } from '../user.service';
 import * as jwtDecode from 'jwt-decode';
 
 @Component({
@@ -30,14 +30,15 @@ export class ResetPasswordComponent implements OnInit {
               this.jwtDecoded = jwtDecode(this.jwt);
             } catch (err) {
               console.log(err);
-              return this.formErrorMessage = 'Link does not work (authorisation string not valid).';
+              return this.formErrorMessage = 'Link does not work (authorization string not valid).';
             }
           });
   }
 
   ngOnInit() {
     this.form = new FormGroup ({
-      password: new FormControl('', [<any>Validators.required]),
+      password: new FormControl('', [Validators.required,
+        Validators.minLength(passwordLength)]),
     });
   }
 
