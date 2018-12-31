@@ -259,6 +259,7 @@ export class UserService {
     // go to default location
     this.router.navigateByUrl(routeAfterLogout);
   }
+
 }
 
 export interface User {
@@ -271,6 +272,7 @@ export interface User {
   isLoggedIn: boolean;
   isAdmin: boolean;
 }
+
 
 interface NavObj {
   route: string;
