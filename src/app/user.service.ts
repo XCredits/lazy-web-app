@@ -63,7 +63,7 @@ export class UserService {
   }
 
   /**
-  * Extrenal facing method for authentication routes to use
+  * External facing method for authentication routes to use
   */
   authenticationResult({user, jwtExp, jwtRefreshTokenExp}) {
     this.jwtExp = jwtExp;
