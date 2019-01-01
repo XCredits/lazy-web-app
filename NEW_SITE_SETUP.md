@@ -28,9 +28,8 @@ Update `privacy.component.html` and `terms.component.html`
 5) Search for `lazy-web-app`. Replace with the project name in github `sausage-case`
 7) Search for `LazyWebApp`. Replace with the real, human readable name you want to call the application, e.g. `MusicTunes`
 
-## Update themes
-
-
+## Update color themes
+In `styles.scss`.
 
 ## Ensure index.html elements are updated 
 Change loading page color in the line
