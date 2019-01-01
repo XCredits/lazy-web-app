@@ -4,7 +4,7 @@ import { Component, ViewChild, OnChanges, OnInit } from '@angular/core';
 // Imports needed for router import for title
 import { ActivatedRoute, NavigationStart, NavigationEnd, Router } from '@angular/router';
 import { Location, PopStateEvent } from '@angular/common';
-import { UserService } from './user.service';
+import { UserService, User } from './user.service';
 import { AnalyticsService } from './analytics.service';
 
 @Component({
@@ -183,14 +183,4 @@ interface NavLink {
   title: string;
   isAdminRoute?: boolean;
   isLoggedInRoute?: boolean;
-}
-
-interface User {
-  id: string;
-  username: string;
-  givenName: string;
-  familyName: string;
-  email: string;
-  isLoggedIn: boolean;
-  isAdmin: boolean;
 }
