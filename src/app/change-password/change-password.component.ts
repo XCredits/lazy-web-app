@@ -75,7 +75,7 @@ export class ChangePasswordComponent implements OnInit {
                 if (data.guessesLog10 < data.passwordSettings.minGuessesLog10) {
                   this.form.controls['password'].setErrors({'incorrect': true});
                   this.passwordErrorMessage =
-                      'Password not hard enough! Must be at least 10 characters and hard to guess.';
+                      'Password must be at least 10 characters and hard to guess.';
                 } else {
                   this.form.controls['password'].setErrors(null);
                 }
