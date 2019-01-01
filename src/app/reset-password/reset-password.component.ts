@@ -88,7 +88,9 @@ export class ResetPasswordComponent implements OnInit {
                     initialPassword.length < data.passwordSettings.minLength) {
                   this.form.controls['password'].setErrors({'incorrect': true});
                   this.passwordErrorMessage =
-                      'Password must be at least 10 characters and hard to guess.';
+                      'Password must be at least ' +
+                      data.passwordSettings.minLength +
+                      ' characters and hard to guess.';
                 } else {
                   this.form.controls['password'].setErrors(null);
                 }
