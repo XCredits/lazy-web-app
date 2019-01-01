@@ -221,7 +221,6 @@ function usernameAvailable(req, res) {
  * @return {any}
  */
 function checkPassword(req, res) {
-  console.log("Got into check password");
   const password = req.body.password;
   if (typeof password !== 'string') {
     return res.status(422).json({message: 'Request failed validation'});

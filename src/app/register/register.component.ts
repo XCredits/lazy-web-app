@@ -4,36 +4,6 @@ import { FormGroup, FormControl, Validators, ValidatorFn, ValidationErrors, Abst
 import { Router, ActivatedRoute, Params } from '@angular/router';
 import { UserService, passwordLength } from '../user.service';
 import { AnalyticsService } from '../analytics.service';
-// import { ValidateZxcvbnDirective } from './../validate-zxcvbn.directive';
-
-import * as zxcvbn from 'zxcvbn';
-
-const minGuessesLog10 = 9;
-// const zxcvbnValidate: ValidatorFn = function (control: FormGroup): ValidationErrors | null {
-//   console.log('Ay ' + control);
-//   const password = control.get('password');
-//   if (zxcvbn(password.value).guesses_log10 > minGuessesLog10) { // sufficiently hard
-//     return null;
-//   } else {
-//     const a:  ValidationErrors = {
-//       'guesses_log10': {value: zxcvbn(password.value).guesses_log10}
-//     };
-//     return a;
-//   }
-// };
-
-const zxcvbnValidate: ValidatorFn = function (control: AbstractControl): ValidationErrors | null {
-  console.log('Ay ' + control);
-  const password = control.value;
-  if (zxcvbn(password).guesses_log10 > minGuessesLog10) { // sufficiently hard
-    return null;
-  } else {
-    const a:  ValidationErrors = {
-      'guesses_log10': {value: zxcvbn(password).guesses_log10}
-    };
-    return a;
-  }
-};
 
 
 @Component({
@@ -64,7 +34,6 @@ export class RegisterComponent implements OnInit {
       private userService: UserService,
       private activatedRoute: ActivatedRoute,
       private analytics: AnalyticsService,
-      // private zxcvbnValidator:  ValidateZxcvbnDirective
       ) {
 
         // The following is to ensure that when a user is redirected for the
@@ -203,12 +172,6 @@ export class RegisterComponent implements OnInit {
       return 'simple-form-green-progress';
     }
   }
-
-
-
-
-
-
 
 
   submit = function (formData) {
