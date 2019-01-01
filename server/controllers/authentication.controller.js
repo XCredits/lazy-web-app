@@ -39,7 +39,12 @@
 // attach the XSRF Token to the request header that the server has set in the
 // cookie. This means that ALL get requests could potentially be called from any
 
-const passwordLength = 10;
+const passwordSettings = {
+  minLength: 10,
+  minGuess: 9,
+  goodGuess: 10,
+};
+
 
 const validator = require('validator');
 const User = require('../models/user.model.js');
@@ -54,11 +59,13 @@ const {isValidDisplayUsername, normalizeUsername} =
 const passport = require('passport');
 const crypto = require('crypto');
 require('../config/passport.js');
+const zxcvbn = require('zxcvbn');
 
 module.exports = function(app) {
   app.use(passport.initialize());
   app.post('/api/user/register', register);
   app.post('/api/user/username-available', usernameAvailable);
+  app.post('/api/user/check-password', checkPassword);
   app.post('/api/user/login', login);
   app.get('/api/user/refresh-jwt', auth.jwtRefreshToken, refreshJwt);
   app.get('/api/user/details', auth.jwt, userDetails);
@@ -93,7 +100,7 @@ function register(req, res) {
       typeof password !== 'string' ||
       !validator.isEmail(email) ||
       !isValidDisplayUsername(displayUsername) ||
-      !validator.isLength(password, passwordLength)) {
+      !validator.isLength(password, passwordSettings.minLength)) {
     return res.status(422).json({message: 'Request failed validation'});
   }
   const username = normalizeUsername(displayUsername);
@@ -207,6 +214,23 @@ function usernameAvailable(req, res) {
       });
 }
 
+/**
+ *
+ * @param {*} req
+ * @param {*} res
+ * @return {any}
+ */
+function checkPassword(req, res) {
+  const password = req.body.password;
+  if (typeof password !== 'string') {
+    return res.status(422).json({message: 'Request failed validation'});
+  }
+  const response = {};
+  if (password.length < passwordSettings.minLength) {
+    response.tooShort = true;
+  }
+  zxcvbn(password).guesses_log10;
+}
 
 /**
  * logs a user in
@@ -298,7 +322,7 @@ function changePassword(req, res) {
   // Validate
   if (typeof password !== 'string' ||
       typeof userId !== 'string' ||
-      !validator.isLength(password, passwordLength)) {
+      !validator.isLength(password, passwordSettings.minLength)) {
     return res.status(422).json({message: 'Request failed validation'});
   }
 

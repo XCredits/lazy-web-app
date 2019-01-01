@@ -51,6 +51,9 @@ export class RegisterComponent implements OnInit {
   currentUsername: string;
   usernameErrorMessage: string;
   currentPassword: string;
+  passwordErrorMessage: string;
+  passwordProgressBarValue = 90;
+  passwordGuesses = 90;
 
   constructor( private http: HttpClient,
       private userService: UserService,
@@ -74,13 +77,10 @@ export class RegisterComponent implements OnInit {
       familyName: new FormControl('', [Validators.required]),
       email: new FormControl('', [Validators.required, Validators.email]),
       username: new FormControl(''),
-      password: new FormControl('', [Validators.required,
-          Validators.minLength(passwordLength),
-          zxcvbnValidate,
-        ]),
+      password: new FormControl(''),
     });
     this.form.valueChanges.subscribe(formData => this.checkUsername(formData));
-    // this.form.valueChanges.subscribe(formData => this.checkPassword(formData));
+    this.form.valueChanges.subscribe(formData => this.checkPassword(formData));
   }
 
   checkUsername = function (formData)  {
@@ -126,6 +126,75 @@ export class RegisterComponent implements OnInit {
       }
     }, 1000);
   };
+
+
+
+
+
+  checkPassword = function (formData)  {
+    this.form.controls['password'].setErrors(null);
+
+    // this.currentPassword - designed to prevent the form from reporting an
+    // error if the password has been updated
+    const initialPassword = formData.password;
+    this.currentPassword = formData.password;
+    console.log('initialPassword ' + initialPassword);
+    if (initialPassword.length === 0) {
+      console.log('Zero length');
+      this.form.controls['password'].setErrors({'incorrect': true});
+      this.passwordErrorMessage = 'Required.';
+      return;
+    }
+    if (initialPassword.length < passwordLength) {
+      this.form.controls['password'].setErrors({'incorrect': true});
+      this.passwordErrorMessage = 'Password must be at least ' + passwordLength
+          + ' characters.';
+      return;
+    }
+
+    setTimeout(() => { // Wait 1 second before checking password
+      if (initialPassword === this.currentPassword) {
+        this.http.post('/api/user/password-available', {
+              password: initialPassword,
+            })
+            .subscribe(data => {
+              if (initialPassword === this.currentPassword) {
+                if (!data.available) {
+                  this.form.controls['password'].setErrors({'incorrect': true});
+                  this.passwordErrorMessage =
+                      'Password not hard enough! Must be at least 10 characters and hard to guess.';
+                } else {
+                  this.form.controls['password'].setErrors(null);
+                }
+              }
+            },
+            errorResponse => {
+              this.formErrorMessage = 'There may be a connection issue.';
+            });
+      } else {
+        // console.log('Bailed');
+      }
+    }, 1000);
+  };
+
+  updatePasswordProgressColor(progress) {
+    console.log('In progress. ' + progress);
+    console.log(typeof progress);
+    if (progress < 21) {
+       return 'simple-form-green-progress';
+    } else if (progress < 80) {
+       return 'simple-form-green-progress';
+    } else {
+      return 'simple-form-green-progress';
+    }
+  }
+
+
+
+
+
+
+
 
   submit = function (formData) {
     if (this.form.invalid) {

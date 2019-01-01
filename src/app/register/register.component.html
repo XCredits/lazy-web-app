@@ -28,10 +28,15 @@
           <br>
           <mat-form-field class="simple-form-field-100">
             <input matInput type="password" placeholder="Password" name="password" formControlName="password">
-            <mat-error>
-              Password not hard enough! Must be at least 10 characters and hard to guess.
-            </mat-error>
+            <mat-error>{{passwordErrorMessage}}</mat-error>
           </mat-form-field>
+          
+          <!-- [class]="updateColor(passwordGuesses)" -->
+          <mat-progress-bar
+              [ngClass]="updatePasswordProgressColor(passwordGuesses)"
+              mode="determinate"
+              value="{{passwordProgressBarValue.toString()}}" >
+          </mat-progress-bar>
           <br>
           <section>
             <button
