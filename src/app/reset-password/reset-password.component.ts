@@ -84,12 +84,8 @@ export class ResetPasswordComponent implements OnInit {
                 this.passwordProgressBarValue = data.guessesLog10 > 12 ?
                     100 : 100 / 12 * data.guessesLog10;
                 this.passwordGuessesLog10 = data.guessesLog10;
-                if (initialPassword.length < data.passwordSettings.minLength) {
-                  this.form.controls['password'].setErrors({'incorrect': true});
-                  this.passwordErrorMessage = 'Password must be at least '
-                      + data.passwordSettings.minLength + ' characters.';
-                }
-                if (data.guessesLog10 < data.passwordSettings.minGuessesLog10) {
+                if (data.guessesLog10 < data.passwordSettings.minGuessesLog10 ||
+                    initialPassword.length < data.passwordSettings.minLength) {
                   this.form.controls['password'].setErrors({'incorrect': true});
                   this.passwordErrorMessage =
                       'Password must be at least 10 characters and hard to guess.';
