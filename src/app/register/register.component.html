@@ -30,10 +30,8 @@
             <input matInput type="password" placeholder="Password" name="password" formControlName="password">
             <mat-error>{{passwordErrorMessage}}</mat-error>
           </mat-form-field>
-          
-          <!-- [class]="updateColor(passwordGuesses)" -->
           <mat-progress-bar
-              [ngClass]="updatePasswordProgressColor(passwordGuesses)"
+              [ngClass]="updatePasswordProgressColor(passwordGuessesLog10)"
               mode="determinate"
               value="{{passwordProgressBarValue.toString()}}" >
           </mat-progress-bar>

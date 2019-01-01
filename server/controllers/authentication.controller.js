@@ -41,8 +41,8 @@
 
 const passwordSettings = {
   minLength: 10,
-  minGuess: 9,
-  goodGuess: 10,
+  minGuessesLog10: 8,
+  goodGuessesLog10: 10,
 };
 
 
@@ -221,15 +221,16 @@ function usernameAvailable(req, res) {
  * @return {any}
  */
 function checkPassword(req, res) {
+  console.log("Got into check password");
   const password = req.body.password;
   if (typeof password !== 'string') {
     return res.status(422).json({message: 'Request failed validation'});
   }
-  const response = {};
-  if (password.length < passwordSettings.minLength) {
-    response.tooShort = true;
-  }
-  zxcvbn(password).guesses_log10;
+  const response = {passwordSettings};
+  response.guessesLog10 = zxcvbn(password).guesses_log10;
+  // guessesLog10 must be >= passwordSettings.minGuessesLog10
+  // i.e. fail if guessesLog10 < passwordSettings.minGuessesLog10
+  res.send(response);
 }
 
 /**

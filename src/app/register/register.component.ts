@@ -52,8 +52,13 @@ export class RegisterComponent implements OnInit {
   usernameErrorMessage: string;
   currentPassword: string;
   passwordErrorMessage: string;
-  passwordProgressBarValue = 90;
-  passwordGuesses = 90;
+  passwordGuessesLog10 = 0;
+  passwordProgressBarValue = 0;
+  passwordSettings = { // note that these values may be over-riden by the server response
+    minLength: 10,
+    minGuessesLog10: 9,
+    goodGuessesLog10: 10,
+  };
 
   constructor( private http: HttpClient,
       private userService: UserService,
@@ -145,21 +150,30 @@ export class RegisterComponent implements OnInit {
       this.passwordErrorMessage = 'Required.';
       return;
     }
-    if (initialPassword.length < passwordLength) {
-      this.form.controls['password'].setErrors({'incorrect': true});
-      this.passwordErrorMessage = 'Password must be at least ' + passwordLength
-          + ' characters.';
-      return;
-    }
 
-    setTimeout(() => { // Wait 1 second before checking password
+    setTimeout(() => { // Wait half second before checking password
       if (initialPassword === this.currentPassword) {
-        this.http.post('/api/user/password-available', {
+        this.http.post('/api/user/check-password', {
               password: initialPassword,
             })
             .subscribe(data => {
               if (initialPassword === this.currentPassword) {
-                if (!data.available) {
+                // Update the password settings
+                this.passwordSettings.minLength =
+                    data.passwordSettings.minLength;
+                this.passwordSettings.minGuessesLog10 =
+                    data.passwordSettings.minGuessesLog10;
+                this.passwordSettings.goodGuessesLog10 =
+                    data.passwordSettings.goodGuessesLog10;
+                this.passwordProgressBarValue = data.guessesLog10 > 12 ?
+                    100 : 100 / 12 * data.guessesLog10;
+                this.passwordGuessesLog10 = data.guessesLog10;
+                if (initialPassword.length < passwordLength) {
+                  this.form.controls['password'].setErrors({'incorrect': true});
+                  this.passwordErrorMessage = 'Password must be at least '
+                      + passwordLength + ' characters.';
+                }
+                if (data.guessesLog10 < data.passwordSettings.minGuessesLog10) {
                   this.form.controls['password'].setErrors({'incorrect': true});
                   this.passwordErrorMessage =
                       'Password not hard enough! Must be at least 10 characters and hard to guess.';
@@ -174,16 +188,17 @@ export class RegisterComponent implements OnInit {
       } else {
         // console.log('Bailed');
       }
-    }, 1000);
+    }, 500);
   };
 
   updatePasswordProgressColor(progress) {
     console.log('In progress. ' + progress);
     console.log(typeof progress);
-    if (progress < 21) {
-       return 'simple-form-green-progress';
-    } else if (progress < 80) {
-       return 'simple-form-green-progress';
+    if (this.passwordGuessesLog10 < this.passwordSettings.minGuessesLog10) {
+      return 'simple-form-red-progress';
+    } else if (this.passwordGuessesLog10 <
+        this.passwordSettings.goodGuessesLog10) {
+      return 'simple-form-yellow-progress';
     } else {
       return 'simple-form-green-progress';
     }
