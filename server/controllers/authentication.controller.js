@@ -323,7 +323,8 @@ function changePassword(req, res) {
   // Validate
   if (typeof password !== 'string' ||
       typeof userId !== 'string' ||
-      !validator.isLength(password, passwordSettings.minLength)) {
+      !validator.isLength(password, passwordSettings.minLength) ||
+      zxcvbn(password).guesses_log10 < passwordSettings.minGuessesLog10) {
     return res.status(422).json({message: 'Request failed validation'});
   }
 
