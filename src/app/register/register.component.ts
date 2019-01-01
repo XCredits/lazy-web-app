@@ -102,9 +102,6 @@ export class RegisterComponent implements OnInit {
   };
 
 
-
-
-
   checkPassword = function (formData)  {
     this.form.controls['password'].setErrors(null);
 
