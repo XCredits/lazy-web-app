@@ -59,9 +59,7 @@ export class ResetPasswordComponent implements OnInit {
     // error if the password has been updated
     const initialPassword = formData.password;
     this.currentPassword = formData.password;
-    console.log('initialPassword ' + initialPassword);
     if (initialPassword.length === 0) {
-      console.log('Zero length');
       this.form.controls['password'].setErrors({'incorrect': true});
       this.passwordErrorMessage = 'Required.';
       return;
