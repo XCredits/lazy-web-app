@@ -13,6 +13,16 @@ export class ChangePasswordComponent implements OnInit {
   submitSuccess = false;
   waiting = false;
   formErrorMessage: string;
+  // Password related interface features
+  currentPassword: string;
+  passwordErrorMessage: string;
+  passwordGuessesLog10 = 0;
+  passwordProgressBarValue = 0;
+  passwordSettings = { // note that these values may be overridden by the server response
+    minLength: 10,
+    minGuessesLog10: 8,
+    goodGuessesLog10: 10,
+  };
 
   constructor( private http: HttpClient,
     private userService: UserService) {
@@ -20,9 +30,77 @@ export class ChangePasswordComponent implements OnInit {
 
   ngOnInit() {
     this.form = new FormGroup ({
-      password: new FormControl('', [Validators.required,
-        Validators.minLength(passwordLength)]),
+      password: new FormControl(''),
     });
+    this.form.valueChanges.subscribe(formData => this.checkPassword(formData));
+  }
+
+  checkPassword = function (formData)  {
+    this.form.controls['password'].setErrors(null);
+
+    // this.currentPassword - designed to prevent the form from reporting an
+    // error if the password has been updated
+    const initialPassword = formData.password;
+    this.currentPassword = formData.password;
+    console.log('initialPassword ' + initialPassword);
+    if (initialPassword.length === 0) {
+      console.log('Zero length');
+      this.form.controls['password'].setErrors({'incorrect': true});
+      this.passwordErrorMessage = 'Required.';
+      return;
+    }
+
+    setTimeout(() => { // Wait half second before checking password
+      if (initialPassword === this.currentPassword) {
+        this.http.post('/api/user/check-password', {
+              password: initialPassword,
+            })
+            .subscribe(data => {
+              if (initialPassword === this.currentPassword) {
+                // Update the password settings
+                this.passwordSettings.minLength =
+                    data.passwordSettings.minLength;
+                this.passwordSettings.minGuessesLog10 =
+                    data.passwordSettings.minGuessesLog10;
+                this.passwordSettings.goodGuessesLog10 =
+                    data.passwordSettings.goodGuessesLog10;
+                this.passwordProgressBarValue = data.guessesLog10 > 12 ?
+                    100 : 100 / 12 * data.guessesLog10;
+                this.passwordGuessesLog10 = data.guessesLog10;
+                if (initialPassword.length < passwordLength) {
+                  this.form.controls['password'].setErrors({'incorrect': true});
+                  this.passwordErrorMessage = 'Password must be at least '
+                      + passwordLength + ' characters.';
+                }
+                if (data.guessesLog10 < data.passwordSettings.minGuessesLog10) {
+                  this.form.controls['password'].setErrors({'incorrect': true});
+                  this.passwordErrorMessage =
+                      'Password not hard enough! Must be at least 10 characters and hard to guess.';
+                } else {
+                  this.form.controls['password'].setErrors(null);
+                }
+              }
+            },
+            errorResponse => {
+              this.formErrorMessage = 'There may be a connection issue.';
+            });
+      } else {
+        // console.log('Bailed');
+      }
+    }, 500);
+  };
+
+  updatePasswordProgressColor(progress) {
+    console.log('In progress. ' + progress);
+    console.log(typeof progress);
+    if (this.passwordGuessesLog10 < this.passwordSettings.minGuessesLog10) {
+      return 'simple-form-red-progress';
+    } else if (this.passwordGuessesLog10 <
+        this.passwordSettings.goodGuessesLog10) {
+      return 'simple-form-yellow-progress';
+    } else {
+      return 'simple-form-green-progress';
+    }
   }
 
   submit(formData) {

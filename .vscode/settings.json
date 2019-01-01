@@ -8,5 +8,9 @@
     "**/bower_components": true,
     "**/dist": true,
   },
-  "editor.renderWhitespace": "all"
+  "editor.renderWhitespace": "all",
+  "cSpell.words": [
+    "validators",
+    "zxcvbn"
+  ]
 }

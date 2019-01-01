@@ -79,6 +79,7 @@ import { UserRegisterChartComponent } from './user-register-chart/user-register-
 import { TermsComponent } from './terms/terms.component';
 import { PrivacyComponent } from './privacy/privacy.component';
 import { FooterComponent } from './footer/footer.component';
+import { ValidateZxcvbnDirective } from './validate-zxcvbn.directive';
 
 @NgModule({
   declarations: [
@@ -106,6 +107,7 @@ import { FooterComponent } from './footer/footer.component';
     TermsComponent,
     PrivacyComponent,
     FooterComponent,
+    ValidateZxcvbnDirective,
   ],
   imports: [
     BrowserModule,
