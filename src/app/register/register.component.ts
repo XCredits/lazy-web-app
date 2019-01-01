@@ -25,7 +25,7 @@ export class RegisterComponent implements OnInit {
   passwordErrorMessage: string;
   passwordGuessesLog10 = 0;
   passwordProgressBarValue = 0;
-  passwordSettings = { // note that these values may be over-riden by the server response
+  passwordSettings = { // note that these values may be overridden by the server response
     minLength: 10,
     minGuessesLog10: 8,
     goodGuessesLog10: 10,
