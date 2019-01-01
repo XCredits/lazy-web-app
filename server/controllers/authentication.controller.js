@@ -100,7 +100,8 @@ function register(req, res) {
       typeof password !== 'string' ||
       !validator.isEmail(email) ||
       !isValidDisplayUsername(displayUsername) ||
-      !validator.isLength(password, passwordSettings.minLength)) {
+      !validator.isLength(password, passwordSettings.minLength) ||
+      zxcvbn(password).guesses_log10 < passwordSettings.minGuessesLog10) {
     return res.status(422).json({message: 'Request failed validation'});
   }
   const username = normalizeUsername(displayUsername);
