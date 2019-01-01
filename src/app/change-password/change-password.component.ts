@@ -20,7 +20,7 @@ export class ChangePasswordComponent implements OnInit {
   passwordProgressBarValue = 0;
   passwordSettings = { // note that these values may be over-riden by the server response
     minLength: 10,
-    minGuessesLog10: 9,
+    minGuessesLog10: 8,
     goodGuessesLog10: 10,
   };
 
