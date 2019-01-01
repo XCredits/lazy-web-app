@@ -12,8 +12,6 @@ import {LocalStorageService, SessionStorageService} from 'ngx-webstorage';
 
 const routeAfterLogout = '/';
 
-export const passwordLength = 10;
-
 @Injectable()
 export class UserService {
 

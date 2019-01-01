@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { UserService, passwordLength } from '../user.service';
+import { UserService } from '../user.service';
 
 @Component({
   selector: 'app-change-password',
@@ -67,15 +67,13 @@ export class ChangePasswordComponent implements OnInit {
                 this.passwordProgressBarValue = data.guessesLog10 > 12 ?
                     100 : 100 / 12 * data.guessesLog10;
                 this.passwordGuessesLog10 = data.guessesLog10;
-                if (initialPassword.length < passwordLength) {
-                  this.form.controls['password'].setErrors({'incorrect': true});
-                  this.passwordErrorMessage = 'Password must be at least '
-                      + passwordLength + ' characters.';
-                }
-                if (data.guessesLog10 < data.passwordSettings.minGuessesLog10) {
+                if (initialPassword.length < data.passwordSettings.minLength ||
+                    data.guessesLog10 < data.passwordSettings.minGuessesLog10) {
                   this.form.controls['password'].setErrors({'incorrect': true});
                   this.passwordErrorMessage =
-                      'Password not hard enough! Must be at least 10 characters and hard to guess.';
+                      'Password must be at least ' +
+                      data.passwordSettings.minLength +
+                      ' characters and hard to guess.';
                 } else {
                   this.form.controls['password'].setErrors(null);
                 }
@@ -91,8 +89,6 @@ export class ChangePasswordComponent implements OnInit {
   };
 
   updatePasswordProgressColor(progress) {
-    console.log('In progress. ' + progress);
-    console.log(typeof progress);
     if (this.passwordGuessesLog10 < this.passwordSettings.minGuessesLog10) {
       return 'simple-form-red-progress';
     } else if (this.passwordGuessesLog10 <
