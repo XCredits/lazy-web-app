@@ -23,7 +23,8 @@ export class UserService {
   private refreshUserTimeoutId: any;
   private tabId: number;
   private refreshJwtAttempts: number;
-  readonly usernameRegexString = '^[a-zA-Z0-9_.-]*$';
+  readonly usernameRegexString = '^[a-z0-9]*$';
+  readonly displayUsernameRegexString = '^[a-zA-Z0-9_.-]*$';
 
   // Below we only only activate the subscribe after userObservable has
   // next called. The '1' refers to how many states are kept in the buffer to be
@@ -60,7 +61,7 @@ export class UserService {
   }
 
   /**
-  * Extrenal facing method for authentication routes to use
+  * External facing method for authentication routes to use
   */
   authenticationResult({user, jwtExp, jwtRefreshTokenExp}) {
     this.jwtExp = jwtExp;
@@ -258,17 +259,20 @@ export class UserService {
     // go to default location
     this.router.navigateByUrl(routeAfterLogout);
   }
+
 }
 
-interface User {
+export interface User {
   id: string;
   username: string;
+  displayUsername: string;
   givenName: string;
   familyName: string;
   email: string;
   isLoggedIn: boolean;
   isAdmin: boolean;
 }
+
 
 interface NavObj {
   route: string;

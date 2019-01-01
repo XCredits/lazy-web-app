@@ -1,70 +1,72 @@
-<mat-drawer-container>
-  <!-- Side nav -->
-  <mat-drawer #sideNavDrawer [mode]="drawerMode" [opened]="drawerOpened" class="lwa-dark-theme">
-    <mat-toolbar class="logo-toolbar">
-      <!-- Below line was added to prevent the mat-drawer form highlighting the logo with an orange box -->
-      <a routerLink="/" (click)="hideSideNavAfterClick()"></a>
-      <a routerLink="/" (click)="hideSideNavAfterClick()">
-        <img class="logo-long" src="/assets/img/logo-long-white.png" />
-      </a>
-    </mat-toolbar>
-    <mat-nav-list>
-      <a *ngFor="let navLink of primaryNavLinks" mat-list-item
-          [hidden]="(navLink.isAdminRoute && !userIsAdmin) || (navLink.isLoggedInRoute && !isLoggedIn)"
-          routerLink="{{navLink.routerLink}}"
-          (click)="hideSideNavAfterClick()">
-        <mat-icon>{{navLink.icon}}</mat-icon>
-        {{navLink.title}}
-      </a>
-      <a *ngFor="let navLink of secondaryNavLinks" mat-list-item
-          [hidden]="(navLink.isAdminRoute && !userIsAdmin) || (navLink.isLoggedInRoute && !isLoggedIn)"
-          routerLink="{{navLink.routerLink}}"
-          (click)="hideSideNavAfterClick()">
-        <mat-icon>{{navLink.icon}}</mat-icon>
-        {{navLink.title}}
-      </a>
-    </mat-nav-list>
-    <div style="padding: 16px; position: absolute; bottom: 0;" class="white-text">
-      <div>View our 
-        <a routerLink='/privacy' (click)="hideSideNavAfterClick()">Privacy Policy</a> 
-        and our 
-        <a routerLink='/terms' (click)="hideSideNavAfterClick()">Terms and Conditions.</a> 
-      </div>
-    </div>
-  </mat-drawer>
-  <!-- Top nav -->
-  <mat-drawer-content>
-    <mat-toolbar color="primary" class="top-navbar" role="header">
-      <div class="mobile-visible" >
-        <button mat-icon-button (click)="toggleSideNavDrawer()">
-          <mat-icon>
-            menu
-          </mat-icon>
-        </button>
-      </div>
-      <img class="logo-square mobile-visible" 
-          src="/assets/img/logo-square-white.png" />
-      <span>
-        {{title}}
-      </span>
-      <span class="navbar-spacer"></span>
-      
-      <app-user-dropdown></app-user-dropdown>
-    </mat-toolbar>
-    <!-- Route content -->
-    <div class="content" #routerOutletParent>
-      <router-outlet></router-outlet>
-    </div>
-    <!-- Bottom mobile nav -->
-    <div class="mobile-visible">
-      <!-- Below mat-toolbar if for lazy spacing -->
-      <mat-toolbar style="visibility:hidden"></mat-toolbar>
-      <mat-toolbar color="primary" class="bottom-mobile-nav">
-        <button *ngFor="let navLink of primaryNavLinks" mat-icon-button routerLink="{{navLink.routerLink}}" >
-          <mat-icon>{{navLink.icon}}</mat-icon>
-        </button>
+<div class="{{siteTheme}}">
+  <mat-drawer-container>
+    <!-- Side nav -->
+    <mat-drawer #sideNavDrawer [mode]="drawerMode" [opened]="drawerOpened" class="lwa-dark-theme">
+      <mat-toolbar class="logo-toolbar">
+        <!-- Below line was added to prevent the mat-drawer form highlighting the logo with an orange box -->
+        <a routerLink="/" (click)="hideSideNavAfterClick()"></a>
+        <a routerLink="/" (click)="hideSideNavAfterClick()">
+          <img class="logo-long" src="/assets/img/logo-long-white.png" />
+        </a>
       </mat-toolbar>
-    </div>
-  </mat-drawer-content>
-</mat-drawer-container>
+      <mat-nav-list>
+        <a *ngFor="let navLink of primaryNavLinks" mat-list-item
+            [hidden]="(navLink.isAdminRoute && !userIsAdmin) || (navLink.isLoggedInRoute && !isLoggedIn)"
+            routerLink="{{navLink.routerLink}}"
+            (click)="hideSideNavAfterClick()">
+          <mat-icon>{{navLink.icon}}</mat-icon>
+          {{navLink.title}}
+        </a>
+        <a *ngFor="let navLink of secondaryNavLinks" mat-list-item
+            [hidden]="(navLink.isAdminRoute && !userIsAdmin) || (navLink.isLoggedInRoute && !isLoggedIn)"
+            routerLink="{{navLink.routerLink}}"
+            (click)="hideSideNavAfterClick()">
+          <mat-icon>{{navLink.icon}}</mat-icon>
+          {{navLink.title}}
+        </a>
+      </mat-nav-list>
+      <div style="padding: 16px; position: absolute; bottom: 0;" class="white-text">
+        <div>View our 
+          <a routerLink='/privacy' (click)="hideSideNavAfterClick()">Privacy Policy</a> 
+          and our 
+          <a routerLink='/terms' (click)="hideSideNavAfterClick()">Terms and Conditions.</a> 
+        </div>
+      </div>
+    </mat-drawer>
+    <!-- Top nav -->
+    <mat-drawer-content>
+      <mat-toolbar color="primary" class="top-navbar" role="header">
+        <div class="mobile-visible" >
+          <button mat-icon-button (click)="toggleSideNavDrawer()">
+            <mat-icon>
+              menu
+            </mat-icon>
+          </button>
+        </div>
+        <img class="logo-square mobile-visible" 
+            src="/assets/img/logo-square-white.png" />
+        <span>
+          {{title}}
+        </span>
+        <span class="navbar-spacer"></span>
+        
+        <app-user-dropdown></app-user-dropdown>
+      </mat-toolbar>
+      <!-- Route content -->
+      <div class="content" #routerOutletParent>
+        <router-outlet></router-outlet>
+      </div>
+      <!-- Bottom mobile nav -->
+      <div class="mobile-visible">
+        <!-- Below mat-toolbar if for lazy spacing -->
+        <mat-toolbar style="visibility:hidden"></mat-toolbar>
+        <mat-toolbar color="primary" class="bottom-mobile-nav">
+          <button *ngFor="let navLink of primaryNavLinks" mat-icon-button routerLink="{{navLink.routerLink}}" >
+            <mat-icon>{{navLink.icon}}</mat-icon>
+          </button>
+        </mat-toolbar>
+      </div>
+    </mat-drawer-content>
+  </mat-drawer-container>
+</div>
 

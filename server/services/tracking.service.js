@@ -1,7 +1,7 @@
 const crypto = require('crypto');
 
 /**
- * Middleware for gloablly setting browserId
+ * Middleware for globally setting browserId
  * @param {*} req
  * @param {*} res
  * @param {*} next

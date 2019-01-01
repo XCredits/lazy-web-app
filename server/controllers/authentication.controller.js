@@ -39,6 +39,13 @@
 // attach the XSRF Token to the request header that the server has set in the
 // cookie. This means that ALL get requests could potentially be called from any
 
+const passwordSettings = {
+  minLength: 10,
+  minGuessesLog10: 8,
+  goodGuessesLog10: 10,
+};
+
+
 const validator = require('validator');
 const User = require('../models/user.model.js');
 const UserStats = require('../models/user-stats.model.js');
@@ -47,22 +54,26 @@ const emailService = require('../services/email.service.js');
 const Session = require('../models/session.model.js');
 const jwt = require('jsonwebtoken');
 const auth = require('./jwt-auth.controller.js');
+const {isValidDisplayUsername, normalizeUsername} =
+    require('./utils.controller.js');
 const passport = require('passport');
 const crypto = require('crypto');
 require('../config/passport.js');
-
-const usernameRegex = /^[a-zA-Z0-9_.-]*$/;
+const zxcvbn = require('zxcvbn');
 
 module.exports = function(app) {
   app.use(passport.initialize());
   app.post('/api/user/register', register);
+  app.post('/api/user/username-available', usernameAvailable);
+  app.post('/api/user/check-password', checkPassword);
   app.post('/api/user/login', login);
   app.get('/api/user/refresh-jwt', auth.jwtRefreshToken, refreshJwt);
   app.get('/api/user/details', auth.jwt, userDetails);
   app.post('/api/user/change-password', auth.jwtRefreshToken, changePassword);
   app.post('/api/user/request-reset-password', requestResetPassword);
+  // Other ideas: https://www.owasp.org/index.php/Forgot_Password_Cheat_Sheet#Step_4.29_Allow_user_to_change_password_in_the_existing_session
   app.post('/api/user/reset-password',
-      auth.jwtTemporaryLinkToken, resetPassword);
+      auth.jwtTemporaryLinkToken, changePassword);
   app.post('/api/user/forgot-username', forgotUsername);
   app.post('/api/user/logout', auth.jwtRefreshToken, logout);
 };
@@ -79,23 +90,21 @@ function register(req, res) {
   const givenName = req.body.givenName;
   const familyName = req.body.familyName;
   const password = req.body.password;
-  let username = req.body.username;
+  const displayUsername = req.body.username;
 
   // Validate
   if (typeof email !== 'string' ||
       typeof givenName !== 'string' ||
       typeof familyName !== 'string' ||
-      typeof username !== 'string' ||
+      typeof displayUsername !== 'string' ||
       typeof password !== 'string' ||
       !validator.isEmail(email) ||
-      !usernameRegex.test(username) ||
-      !validator.isLength(password, 8)
-    ) {
+      !isValidDisplayUsername(displayUsername) ||
+      !validator.isLength(password, passwordSettings.minLength) ||
+      zxcvbn(password).guesses_log10 < passwordSettings.minGuessesLog10) {
     return res.status(422).json({message: 'Request failed validation'});
   }
-
-  // Sanitize
-  username = username.toLowerCase();
+  const username = normalizeUsername(displayUsername);
 
   // check that there is not an existing user with this username
   return User.findOne({username: username})
@@ -107,6 +116,7 @@ function register(req, res) {
         user.givenName = givenName;
         user.familyName = familyName;
         user.username = username;
+        user.displayUsername = displayUsername;
         user.email = email;
         user.createPasswordHash(password);
         return user.save()
@@ -158,11 +168,71 @@ function register(req, res) {
             });
       })
       .catch((err)=>{
-        res.status(500)
-            .send({
-              message: 'Error accessing database while checking for existing users'});
+        res.status(500).send({
+            message: 'Error accessing database while checking for existing users'});
       });
 }
+
+/**
+ * Determines if username available
+ * @param {*} req
+ * @param {*} res
+ * @return {Promise}
+ */
+function usernameAvailable(req, res) {
+  const displayUsername = req.body.username;
+  // Validate
+  if (typeof displayUsername !== 'string' ||
+      !isValidDisplayUsername(displayUsername)) {
+    return res.status(422).json({message: 'Request failed validation'});
+  }
+  const username = normalizeUsername(displayUsername);
+  let currentUsername;
+  if (req.body.currentUsername) {
+    const currentDisplayUsername = req.body.currentUsername;
+    if (typeof currentDisplayUsername !== 'string' ||
+        !isValidDisplayUsername(currentDisplayUsername)) {
+      return res.status(422).json({message: 'Request failed validation'});
+    }
+    currentUsername = normalizeUsername(currentDisplayUsername);
+  }
+
+  if (currentUsername === username) {
+    return res.send({available: true});
+  }
+
+  return User.findOne({username: username})
+      .then((existingUser) => {
+        if (existingUser) {
+          return res.send({available: false});
+        } else {
+          return res.send({available: true});
+        }
+      })
+      .catch((err)=>{
+        res.status(500).send({
+            message: 'Error accessing database while checking for existing users'});
+      });
+}
+
+/**
+ *
+ * @param {*} req
+ * @param {*} res
+ * @return {any}
+ */
+function checkPassword(req, res) {
+  const password = req.body.password;
+  if (typeof password !== 'string') {
+    return res.status(422).json({message: 'Request failed validation'});
+  }
+  const response = {passwordSettings};
+  response.guessesLog10 = zxcvbn(password).guesses_log10;
+  // guessesLog10 must be >= passwordSettings.minGuessesLog10
+  // i.e. fail if guessesLog10 < passwordSettings.minGuessesLog10
+  res.send(response);
+}
+
 /**
  * logs a user in
  * @param {*} req request object
@@ -170,18 +240,18 @@ function register(req, res) {
  * @return {*}
  */
 function login(req, res) {
-  const username = req.body.username;
+  const displayUsername = req.body.username;
   // note length should not be checked when logging in
   const password = req.body.password;
   // Validate
-  if (typeof username !== 'string' ||
+  if (typeof displayUsername !== 'string' ||
       typeof password !== 'string' ||
-      !usernameRegex.test(username)
+      !isValidDisplayUsername(displayUsername)
     ) {
     return res.status(422).json({message: 'Request failed validation'});
   }
   // Sanitize (update username)
-  req.body.username = username.toLowerCase();
+  req.body.username = normalizeUsername(displayUsername);
 
   passport.authenticate('local', function(err, user, info) {
     if (err) {
@@ -228,9 +298,16 @@ function refreshJwt(req, res) {
 function userDetails(req, res) {
   // Validate not necessary at this point (no req.body use,
   // and checked in jwt-auth)
-  return User.findOne({_id: req.userId})
+  const userId = req.userId;
+  if ( typeof userId !== 'string') {
+    return res.status(422).json({message: 'Request failed validation'});
+  }
+  return User.findOne({_id: userId})
       .then((user) => {
         res.send(user.frontendData());
+      })
+      .catch((err) => {
+        return res.status(500).send({message: 'UserId not found'});
       });
 }
 
@@ -242,25 +319,31 @@ function userDetails(req, res) {
  */
 function changePassword(req, res) {
   const password = req.body.password;
+  const userId = req.userId;
   // Validate
   if (typeof password !== 'string' ||
-      !validator.isLength(password, 8)
-    ) {
+      typeof userId !== 'string' ||
+      !validator.isLength(password, passwordSettings.minLength) ||
+      zxcvbn(password).guesses_log10 < passwordSettings.minGuessesLog10) {
     return res.status(422).json({message: 'Request failed validation'});
   }
 
-  return User.findOne({_id: req.userId})
+  return User.findOne({_id: userId})
       .then((user) => {
-        // Create new password hash
-        user.createPasswordHash(password);
-        return user.save(()=>{
-              return res.send({message: 'Password successfully changed'});
-            })
-            .catch((err)=>{
-              console.log(err);
-              return res.status(500).send({message: 'Password change failed'});
-            });
-  });
+          // Create new password hash
+          user.createPasswordHash(password);
+          return user.save()
+          .then(() =>{
+            return res.send({message: 'Password successfully changed'});
+          })
+          .catch((err)=>{
+            console.log(err);
+            return res.status(500).send({message: 'Password change failed'});
+          });
+      })
+      .catch((err) => {
+        return res.status(500).send({message: 'UserId not found'});
+      });
 }
 
 /**
@@ -270,15 +353,14 @@ function changePassword(req, res) {
  * @return {*}
  */
 function requestResetPassword(req, res) {
-  let username = req.body.username;
+  const displayUsername = req.body.username;
   // Validate
   if (typeof username !== 'string' ||
-      !usernameRegex.test(username)
+      !isValidDisplayUsername(displayUsername)
     ) {
     return res.status(422).json({message: 'Request failed validation'});
   }
-  // Sanitize
-  username = username.toLowerCase();
+  const username = normalizeUsername(displayUsername);
 
   return User.findOne({username: username})
       .then((user)=>{
@@ -317,35 +399,6 @@ function requestResetPassword(req, res) {
             });
       })
       .catch((err) => {
-        res.status(500).send({message: 'Error accessing user database.'});
-      });
-}
-
-/**
- * resets the password
- * @param {*} req request object
- * @param {*} res response object
- * @return {*}
- */
-function resetPassword(req, res) {
-  let password = req.body.password;
-  // Validate
-  if (typeof password !== 'string'||
-      !validator.isLength(password, 8)) {
-    return res.status(422).json({message: 'Request failed validation'});
-  }
-
-  // Other ideas: https://www.owasp.org/index.php/Forgot_Password_Cheat_Sheet#Step_4.29_Allow_user_to_change_password_in_the_existing_session
-  // look up user
-  return User.findOne({_id: req.userId}) // req.userId is set in auth.temporaryLinkAuth
-      .then((user) => {
-        user.createPasswordHash(password);
-        return user.save()
-            .then(()=>{
-              res.send({message: 'Password reset successful'});
-            });
-      })
-      .catch(() => {
         res.status(500).send({message: 'Error accessing user database.'});
       });
 }
