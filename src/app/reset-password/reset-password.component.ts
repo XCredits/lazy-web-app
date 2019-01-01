@@ -108,8 +108,6 @@ export class ResetPasswordComponent implements OnInit {
   };
 
   updatePasswordProgressColor(progress) {
-    console.log('In progress. ' + progress);
-    console.log(typeof progress);
     if (this.passwordGuessesLog10 < this.passwordSettings.minGuessesLog10) {
       return 'simple-form-red-progress';
     } else if (this.passwordGuessesLog10 <
