@@ -20,6 +20,7 @@ export class RegisterComponent implements OnInit {
   redirectUrl: string;
   currentUsername: string;
   usernameErrorMessage: string;
+  // Password related interface features
   currentPassword: string;
   passwordErrorMessage: string;
   passwordGuessesLog10 = 0;
