@@ -17,7 +17,6 @@ const tracking = require('./server/services/tracking.service');
 const routes = require('./server/routes');
 
 const imageUploadRoutes = require('./server/routes/image-upload');
-app.use('/api', imageUploadRoutes);
 
 const helmet = require('helmet');
 app.use(helmet());
@@ -38,6 +37,8 @@ app.use(tracking.browserIdCookie);
 app.use(express.static(path.join(__dirname, 'dist')));
 
 routes(app);
+
+app.use('/api', imageUploadRoutes);
 
 app.get('*', function(req, res) {
   res.sendFile(path.join(__dirname, 'dist/index.html'));
