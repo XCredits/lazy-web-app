@@ -16,6 +16,9 @@ const socialController = require('./server/controllers/social.controller');
 const tracking = require('./server/services/tracking.service');
 const routes = require('./server/routes');
 
+const imageUploadRoutes = require('./server/routes/image-upload');
+app.use('/api', imageUploadRoutes);
+
 const helmet = require('helmet');
 app.use(helmet());
 
