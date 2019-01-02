@@ -1,7 +1,7 @@
 'use strict';
 require('dotenv').config();
-require('./server/config');
-require('./server/mongoose-start');
+require('./config');
+require('./mongoose-start');
 const express = require('express');
 const app = express();
 const path = require('path');
@@ -9,12 +9,12 @@ const http = require('http');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const secureCookieController =
-    require('./server/controllers/secure-cookie.controller');
+    require('./controllers/secure-cookie.controller');
 const hostHttpsRedirectController =
-    require('./server/controllers/host-https-redirect.controller');
-const socialController = require('./server/controllers/social.controller');
-const tracking = require('./server/services/tracking.service');
-const routes = require('./server/routes');
+    require('./controllers/host-https-redirect.controller');
+const socialController = require('./controllers/social.controller');
+const tracking = require('./services/tracking.service');
+const routes = require('./routes');
 
 const helmet = require('helmet');
 app.use(helmet());
