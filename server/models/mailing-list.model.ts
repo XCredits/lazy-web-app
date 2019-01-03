@@ -1,8 +1,8 @@
-const mongoose = require('mongoose');
-mongoose.Promise = require('bluebird');
+import * as mongoose from 'mongoose';
+(<any>mongoose).Promise = Promise;
 const Schema = mongoose.Schema;
 
-let MailingListSchema = new Schema({
+const MailingListSchema = new Schema({
     givenName: {type: String},
     familyName: {type: String},
     email: {type: String, required: true},

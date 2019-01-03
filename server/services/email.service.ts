@@ -39,7 +39,7 @@ module.exports = {
         'id': userId, // optional, if not a registered user
       },
     ];
-    let request = {
+    const request = {
       body: data,
       method: 'POST',
       url: '/v3/contactdb/recipients',
@@ -67,7 +67,7 @@ module.exports = {
    * @return {*}
    */
   removeUserFromMailingList: function({userId}) {
-    let request = {
+    const request = {
       body: [userId],
       method: 'DELETE',
       url: '/v3/contactdb/recipients',
@@ -102,7 +102,7 @@ module.exports = {
     const msg = {
       to: email,
       from: config.organization.email,
-      subject: 'Welcome to ' + config.organization.name + (givenName? ', ' + givenName : ''),
+      subject: 'Welcome to ' + config.organization.name + (givenName ? ', ' + givenName : ''),
       templateId: config.template.registerWelcome,
       substitutions: {
         first_name: givenName,
@@ -116,7 +116,7 @@ module.exports = {
     const msg = {
       to: email,
       from: config.organization.email,
-      subject: 'Welcome to ' + config.organization.name + (givenName? ', ' + givenName : ''),
+      subject: 'Welcome to ' + config.organization.name + (givenName ? ', ' + givenName : ''),
       templateId: config.template.mailingListWelcome,
       substitutions: {
         first_name: givenName,
@@ -131,7 +131,7 @@ module.exports = {
     const msg = {
       to: email,
       from: config.organization.noReplyEmail,
-      subject: 'Password reset for ' + config.organization.name + (givenName? ', ' + givenName : ''),
+      subject: 'Password reset for ' + config.organization.name + (givenName ? ', ' + givenName : ''),
       templateId: config.template.passwordReset,
       substitutions: {
         first_name: givenName,
