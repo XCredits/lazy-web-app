@@ -1,8 +1,8 @@
-const mongoose = require('mongoose');
-mongoose.Promise = require('bluebird');
+import * as mongoose from 'mongoose';
+(<any>mongoose).Promise = Promise;
 const Schema = mongoose.Schema;
 
-let UserStatsSchema = new Schema({
+const UserStatsSchema = new Schema({
     time: {type: Date, required: true},
     count: {type: Number, default: 1},
   }
