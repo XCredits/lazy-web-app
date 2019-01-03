@@ -1,7 +1,5 @@
-import mongoose = require('mongoose');
-const Promise = require('bluebird');
-
-mongoose.Promise = Promise;
+import * as mongoose from 'mongoose';
+(<any>mongoose).Promise = Promise;
 
 module.exports = mongoose.connect(process.env.MONGODB_URI)
     .then(()=>{
