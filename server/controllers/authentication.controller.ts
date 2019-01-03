@@ -46,7 +46,7 @@ const passwordSettings = {
 };
 
 
-import validator = require('validator');
+import * as validator from 'validator';
 const User = require('../models/user.model.js');
 const UserStats = require('../models/user-stats.model.js');
 const statsService = require('../services/stats.service.js');
