@@ -1,6 +1,5 @@
 
 // const statsService = require('../services/stats.service.js');
-// const Promise = require('bluebird');
 const auth = require('./jwt-auth.controller.js');
 
 const MailingList = require('../models/mailing-list.model.js');
