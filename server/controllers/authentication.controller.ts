@@ -355,7 +355,7 @@ function changePassword(req, res) {
 function requestResetPassword(req, res) {
   const displayUsername = req.body.username;
   // Validate
-  if (typeof username !== 'string' ||
+  if (typeof displayUsername !== 'string' ||
       !isValidDisplayUsername(displayUsername)
     ) {
     return res.status(422).json({message: 'Request failed validation'});
