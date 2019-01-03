@@ -1,5 +1,10 @@
-import mongoose = require('mongoose');
-mongoose.Promise = require('bluebird');
+import * as mongoose from 'mongoose';
+(<any>mongoose).Promise = Promise;
+// require('mongoose').Promise = Promise
+// import mongoose = require('mongoose'); ... mongoose.Promise = Promise
+
+// import mongoose = require('mongoose');
+// mongoose.Promise = require('bluebird');
 const Schema = mongoose.Schema;
 
 let MailingListStatsSchema = new Schema({
