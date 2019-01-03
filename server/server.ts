@@ -32,12 +32,15 @@ app.use(socialController);
 
 app.use(tracking.browserIdCookie);
 
-app.use(express.static(path.join(__dirname, 'dist')));
+console.log("__dirname");
+console.log(__dirname);
+
+app.use(express.static(path.join(__dirname, '/../dist')));
 
 routes(app);
 
 app.get('*', function(req, res) {
-  res.sendFile(path.join(__dirname, 'dist/index.html'));
+  res.sendFile(path.join(__dirname, '/../dist/index.html'));
 });
 
 app.post('*', function(req, res) {
