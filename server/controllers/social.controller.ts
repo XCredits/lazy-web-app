@@ -34,7 +34,7 @@ module.exports = function(req, res, next) {
  * @return {*}
  */
 function html(v) {
-  let origin = process.env.URL_ORIGIN;
+  const origin = process.env.URL_ORIGIN;
   let twitterProperty = '';
   let facebookProperty = '';
   if (process.env.TWITTER_HANDLE) {
@@ -73,7 +73,7 @@ function html(v) {
         <p>${v.description}</p>
         <img src="${origin}${v.image}">
       </body>
-      
+
     </html>
   `;
-};
+}

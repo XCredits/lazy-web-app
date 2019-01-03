@@ -126,29 +126,29 @@ function register(req, res) {
               // The below promises are structured to report failure but not
               // block on failure
               return createAndSendRefreshAndSessionJwt(user, req, res)
-                  .then(()=>{
+                  .then(() => {
                     return statsService.increment(UserStats)
-                        .catch((err)=>{
+                        .catch((err) => {
                           console.log('Error in the stats service');
                         });
                   })
-                  .then(()=>{
+                  .then(() => {
                     return emailService.addUserToMailingList({
                           givenName, familyName, email, userId: user._id,
                         })
-                        .catch((err)=>{
+                        .catch((err) => {
                           console.log('Error in the mailing list service');
                         });
                   })
-                  .then(()=>{
+                  .then(() => {
                     return emailService.sendRegisterWelcome({
                           givenName, familyName, email,
                         })
-                        .catch((err)=>{
+                        .catch((err) => {
                           console.log('Error in the send email service');
                         });
                   })
-                  .catch((err) =>{
+                  .catch((err) => {
                     console.log('Error in createAndSendRefreshAndSessionJwt');
                   });
             })
@@ -169,7 +169,7 @@ function register(req, res) {
                       + err});
             });
       })
-      .catch((err)=>{
+      .catch((err) => {
         res.status(500).send({
             message: 'Error accessing database while checking for existing users'});
       });
@@ -211,7 +211,7 @@ function usernameAvailable(req, res) {
           return res.send({available: true});
         }
       })
-      .catch((err)=>{
+      .catch((err) => {
         res.status(500).send({
             message: 'Error accessing database while checking for existing users'});
       });
@@ -337,10 +337,10 @@ function changePassword(req, res) {
           // Create new password hash
           user.createPasswordHash(password);
           return user.save()
-          .then(() =>{
+          .then(() => {
             return res.send({message: 'Password successfully changed'});
           })
-          .catch((err)=>{
+          .catch((err) => {
             console.log(err);
             return res.status(500).send({message: 'Password change failed'});
           });
@@ -367,7 +367,7 @@ function requestResetPassword(req, res) {
   const username = normalizeUsername(displayUsername);
 
   return User.findOne({username: username})
-      .then((user)=>{
+      .then((user) => {
         // Success object must be identical, to avoid people discovering
         // emails in the system
         const successObject = {message: 'Email sent if users found in database.'};
@@ -382,7 +382,7 @@ function requestResetPassword(req, res) {
           username: user.username,
           isAdmin: user.isAdmin,
           exp: Math.floor(
-              (Date.now() + Number(process.env.JWT_TEMPORARY_LINK_TOKEN_EXPIRY))/1000), // 1 hour
+              (Date.now() + Number(process.env.JWT_TEMPORARY_LINK_TOKEN_EXPIRY)) / 1000), // 1 hour
         };
         const jwtString = jwt.sign(jwtObj, process.env.JWT_KEY);
         const resetUrl = process.env.URL_ORIGIN +
@@ -398,7 +398,7 @@ function requestResetPassword(req, res) {
               userId: user._id,
               resetUrl,
             })
-            .catch((err)=>{
+            .catch((err) => {
               res.status(500).send({message: 'Could not send email.'});
             });
       })
@@ -414,7 +414,7 @@ function requestResetPassword(req, res) {
  * @return {*}
  */
 function forgotUsername(req, res) {
-  let email = req.body.email;
+  const email = req.body.email;
   // Validate
   if (typeof email !== 'string' ||
       !validator.isEmail(email)) {
@@ -441,7 +441,7 @@ function forgotUsername(req, res) {
               .then(() => {
                 res.send(successObject); // Note that if errors in send in emails occur, the front end will not see them
               })
-              .catch((err)=>{
+              .catch((err) => {
                 res.status(500).send({message: 'Could not send email.'});
               });
       })
@@ -460,7 +460,7 @@ function logout(req, res) {
   // Validation not necessary
   // delete it from the DB
   return Session.remove({_id: req.jwtRefreshToken.jti})
-      .then(()=>{
+      .then(() => {
         // needs a .then to act like a promise for Mongoose Promise
         return null;
       })
@@ -479,25 +479,25 @@ function logout(req, res) {
  * @return {*}
  */
 function createAndSendRefreshAndSessionJwt(user, req, res) {
-  let userAgentString = req.header('User-Agent').substring(0, 512);
+  const userAgentString = req.header('User-Agent').substring(0, 512);
   // Validate
   if (typeof userAgentString !== 'string') {
     return res.status(422).json({message: 'Request failed validation'});
   }
 
   // Create cross-site request forgery token
-  let xsrf = crypto.randomBytes(8).toString('hex');
+  const xsrf = crypto.randomBytes(8).toString('hex');
 
   const refreshTokenExpiry = Math.floor(
-      (Date.now() + Number(process.env.JWT_REFRESH_TOKEN_EXPIRY))/1000);
+      (Date.now() + Number(process.env.JWT_REFRESH_TOKEN_EXPIRY)) / 1000);
 
-  let session = new Session();
+  const session = new Session();
   session.userId = user._id;
-  session.exp = new Date(refreshTokenExpiry*1000);
+  session.exp = new Date(refreshTokenExpiry * 1000);
   session.userAgent = userAgentString;
   session.lastObserved = new Date(Date.now());
   return session.save()
-      .then((session)=>{
+      .then((sessionReturned) => {
         // Setting XSRF-TOKEN cookie means that Angular will
         // automatically attach the
         // XSRF token to the X-XSRF-TOKEN header.
@@ -511,14 +511,14 @@ function createAndSendRefreshAndSessionJwt(user, req, res) {
             username: user.username,
             isAdmin: user.isAdmin,
             xsrf,
-            sessionId: session._id});
+            sessionId: sessionReturned._id});
         const refreshToken = setJwtRefreshTokenCookie({
             res,
             userId: user._id,
             username: user.username,
             isAdmin: user.isAdmin,
             xsrf,
-            sessionId: session._id,
+            sessionId: sessionReturned._id,
             exp: refreshTokenExpiry});
         return res.json({
             user: user.frontendData(),
@@ -526,7 +526,7 @@ function createAndSendRefreshAndSessionJwt(user, req, res) {
             jwtRefreshTokenExp: refreshToken.jwtObj.exp,
         });
       })
-      .catch((err)=>{
+      .catch((err) => {
         auth.clearTokens(res);
         return res.status(500).json({message: 'Error saving session. ' + err});
       });
@@ -538,7 +538,7 @@ function createAndSendRefreshAndSessionJwt(user, req, res) {
  * @return {*}
  */
 function setJwtCookie({res, userId, username, isAdmin, xsrf, sessionId}) {
-  let jwtObj = {
+  const jwtObj = {
     sub: userId,
     // Note this id is set using the refresh token session id so that we can
     // easily determine which session is responisble for an action
@@ -546,9 +546,9 @@ function setJwtCookie({res, userId, username, isAdmin, xsrf, sessionId}) {
     username: username,
     isAdmin: isAdmin,
     xsrf: xsrf,
-    exp: Math.floor((Date.now() + Number(process.env.JWT_EXPIRY))/1000),
+    exp: Math.floor((Date.now() + Number(process.env.JWT_EXPIRY)) / 1000),
   };
-  let jwtString = jwt.sign(jwtObj, process.env.JWT_KEY);
+  const jwtString = jwt.sign(jwtObj, process.env.JWT_KEY);
   // Set the cookie
   res.cookie('JWT', jwtString, {
       httpOnly: true,
@@ -564,7 +564,7 @@ function setJwtCookie({res, userId, username, isAdmin, xsrf, sessionId}) {
  */
 function setJwtRefreshTokenCookie(
     {res, userId, username, isAdmin, xsrf, sessionId, exp}) {
-  let jwtObj = {
+  const jwtObj = {
     sub: userId,
     jti: sessionId,
     username: username,
@@ -572,7 +572,7 @@ function setJwtRefreshTokenCookie(
     xsrf: xsrf,
     exp: exp,
   };
-  let jwtString = jwt.sign(jwtObj, process.env.JWT_REFRESH_TOKEN_KEY);
+  const jwtString = jwt.sign(jwtObj, process.env.JWT_REFRESH_TOKEN_KEY);
   // Set the cookie
   res.cookie('JWT_REFRESH_TOKEN', jwtString, {
       httpOnly: true,

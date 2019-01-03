@@ -15,7 +15,7 @@ module.exports = function(app) {
  * @return {*}
  */
 function joinMailingList(req, res) {
-  let email = req.body.email;
+  const email = req.body.email;
   const givenName = req.body.givenName;
   const familyName = req.body.familyName;
   // Validation
@@ -27,7 +27,7 @@ function joinMailingList(req, res) {
     return res.status(422).json({message: 'Request failed validation'});
   }
 
-  let mailingListUser = new MailingList();
+  const mailingListUser = new MailingList();
   mailingListUser.email = email;
   mailingListUser.givenName = givenName;
   mailingListUser.familyName = familyName;
@@ -35,23 +35,23 @@ function joinMailingList(req, res) {
       .then((result) => {
         res.status(200).send({message: 'Success'});
         return statsService.increment(MailingListStats)
-            .catch((err)=>{
+            .catch((err) => {
               console.log('Error in the stats service');
             });
       })
-      .then(()=>{
+      .then(() => {
         return emailService.addUserToMailingList({
               givenName, familyName, email,
             })
-            .catch((err)=>{
+            .catch((err) => {
               console.log('Error in the mailing list service');
             });
       })
-      .then(()=>{
+      .then(() => {
         return emailService.sendMailingListWelcome({
               givenName, familyName, email,
             })
-            .catch((err)=>{
+            .catch((err) => {
               console.log('Error in the send email service');
             });
       })

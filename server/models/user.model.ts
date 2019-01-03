@@ -4,7 +4,7 @@ const Schema = mongoose.Schema;
 const bcrypt = require('bcrypt');
 const {normalizeUsername} = require('../controllers/utils.controller.js');
 
-let UserSchema = new Schema({
+const UserSchema = new Schema({
     givenName: {type: String},
     familyName: {type: String},
     username: {type: String, unique: true, required: true},

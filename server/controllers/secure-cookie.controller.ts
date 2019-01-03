@@ -3,7 +3,7 @@ const _ = require('lodash');
 
 module.exports = function(req, res, next) {
   if (req.hostname !== 'localhost') {
-    let cookieFunction = res.cookie;
+    const cookieFunction = res.cookie;
     res.cookie = function(name, value, options) {
       let newOptions: any = {};
       if (typeof options !== 'undefined') {

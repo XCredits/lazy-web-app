@@ -32,9 +32,6 @@ app.use(socialController);
 
 app.use(tracking.browserIdCookie);
 
-console.log("__dirname");
-console.log(__dirname);
-
 app.use(express.static(path.join(__dirname, '/../dist')));
 
 routes(app);
