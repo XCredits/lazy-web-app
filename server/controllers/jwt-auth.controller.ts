@@ -96,7 +96,7 @@ module.exports = {
           req.userId = payload.sub;
           req.username = payload.username;
           next();
-          return null;// should return null as may contain promises and there is a promise above
+          return null; // should return null as may contain promises and there is a promise above
         })
         .catch((err) => {
           return res.status(401)

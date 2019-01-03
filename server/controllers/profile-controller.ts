@@ -1,4 +1,4 @@
-const validator = require('validator');
+import * as validator from 'validator';
 const User = require('../models/user.model.js');
 const auth = require('./jwt-auth.controller.js');
 const {isValidDisplayUsername, normalizeUsername} =

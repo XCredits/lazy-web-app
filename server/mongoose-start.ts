@@ -1,13 +1,11 @@
-const mongoose = require('mongoose');
-const Promise = require('bluebird');
-
-mongoose.Promise = Promise;
+import * as mongoose from 'mongoose';
+(<any>mongoose).Promise = Promise;
 
 module.exports = mongoose.connect(process.env.MONGODB_URI)
-    .then(()=>{
+    .then(() => {
       console.log('Mongoose connected');
     })
-    .catch((err)=>{
+    .catch((err) => {
       console.log('Error in establishing MongoDB');
       console.log(err);
     });

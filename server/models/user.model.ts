@@ -1,10 +1,10 @@
-const mongoose = require('mongoose');
-mongoose.Promise = require('bluebird');
+import * as mongoose from 'mongoose';
+(<any>mongoose).Promise = Promise;
 const Schema = mongoose.Schema;
 const bcrypt = require('bcrypt');
 const {normalizeUsername} = require('../controllers/utils.controller.js');
 
-let UserSchema = new Schema({
+const UserSchema = new Schema({
     givenName: {type: String},
     familyName: {type: String},
     username: {type: String, unique: true, required: true},

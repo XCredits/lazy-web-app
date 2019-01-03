@@ -1,8 +1,8 @@
-const mongoose = require('mongoose');
-mongoose.Promise = require('bluebird');
+import * as mongoose from 'mongoose';
+(<any>mongoose).Promise = Promise;
 const Schema = mongoose.Schema;
 
-let SessionSchema = new Schema({
+const SessionSchema = new Schema({
     userId: {type: String, required: true},
     exp: {type: Date, required: true},
     userAgent: {type: String, maxlength: 512},
