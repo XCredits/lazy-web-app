@@ -23,7 +23,7 @@ module.exports = function(app) {
 /**
  * /api/admin/mailing-list-count
  * @param {*} req request object
- * @param {*} res reponse object
+ * @param {*} res response object
  * @return {*}
  */
 function mailingListCount(req, res) {
@@ -40,7 +40,7 @@ function mailingListCount(req, res) {
 /**
  * /api/admin/user-register-stats
  * @param {*} req request object
- * @param {*} res reponse object
+ * @param {*} res response object
  */
 function mailingListStatsReport(req, res) {
   // Validation
@@ -63,7 +63,7 @@ function mailingListStatsReport(req, res) {
 /**
  * /api/admin/user-register-count
  * @param {*} req request object
- * @param {*} res reponse object
+ * @param {*} res response object
  * @return {*}
  */
 function userRegisterCount(req, res) {
@@ -80,7 +80,7 @@ function userRegisterCount(req, res) {
 /**
  * /api/admin/user-register-stats-report
  * @param {*} req request object
- * @param {*} res reponse object
+ * @param {*} res response object
  */
 function userRegisterStatsReport(req, res) {
   // Validation
