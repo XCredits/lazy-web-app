@@ -73,7 +73,7 @@
     "@types/google.analytics": "0.0.39",
     "@types/jasmine": "~2.8.3",
     "@types/jasminewd2": "~2.0.2",
-    "@types/node": "~6.0.60",
+    "@types/node": "^6.0.118",
     "codelyzer": "^4.0.1",
     "eslint": "^4.19.1",
     "eslint-config-google": "^0.9.1",
