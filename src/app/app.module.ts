@@ -80,6 +80,7 @@ import { TermsComponent } from './terms/terms.component';
 import { PrivacyComponent } from './privacy/privacy.component';
 import { FooterComponent } from './footer/footer.component';
 import { ValidateZxcvbnDirective } from './validate-zxcvbn.directive';
+import { ImageUploadModule } from './image-upload/image-upload.module';
 
 @NgModule({
   declarations: [
@@ -112,6 +113,7 @@ import { ValidateZxcvbnDirective } from './validate-zxcvbn.directive';
   imports: [
     BrowserModule,
     FormsModule,
+    ImageUploadModule,
     ReactiveFormsModule,
     HttpClientModule,
     NgxWebstorageModule.forRoot({

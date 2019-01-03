@@ -19,6 +19,7 @@ const fileFilter = (req, file, cb) => {
   }
 };
 
+const maxSize = 1 * 1000 * 1000;
 const upload = multer({
   fileFilter,
   storage: multerS3({
@@ -32,6 +33,7 @@ const upload = multer({
       cb(null, Date.now().toString());
     },
   }),
+  limits: {fileSize: maxSize},
 });
 
 module.exports = upload;

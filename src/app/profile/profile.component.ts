@@ -16,7 +16,7 @@ export class ProfileComponent implements OnInit {
   submitSuccess = false;
   formErrorMessage: string;
   user: User;
-
+  profileImage: string;
   constructor(
     private http: HttpClient,
     private userService: UserService,
@@ -29,6 +29,7 @@ export class ProfileComponent implements OnInit {
         });
     this.userService.userObservable
         .subscribe(user => {
+          this.profileImage = user.profileImage;
           this.form = new FormGroup ({
             givenName: new FormControl(user.givenName, [Validators.required]),
             familyName: new FormControl(user.familyName, [Validators.required]),
@@ -38,6 +39,14 @@ export class ProfileComponent implements OnInit {
           });
         });
     this.form.valueChanges.subscribe(changes => this.wasFormChanged(changes));
+  }
+
+  handleImageUpload(imageUrl: string) {
+    this.userService.updateUserDetails();
+  }
+
+  handleImageError() {
+    this.user.profileImage = '';
   }
 
   private wasFormChanged(currentValue) {

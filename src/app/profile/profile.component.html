@@ -3,6 +3,14 @@
     <form [formGroup]="form" (ngSubmit)="submit(form.value)">
       <mat-card-title style="text-align:center;"> Profile </mat-card-title>
       <mat-card-content>
+        <div>
+            <app-image-upload (imageUploaded)="handleImageUpload($event)"
+                              (imageError)="handleImageError()">
+            </app-image-upload>  
+            <div class="img-class">
+              <img [src]="profileImage" alt=''>
+            </div>
+        </div>
         <div class="form-group">
           <mat-form-field class="simple-form-field-50">
             <input matInput placeholder="Given name" name="givenName" formControlName="givenName">

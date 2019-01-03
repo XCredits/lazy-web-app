@@ -1,0 +1,33 @@
+input {
+  display: none;
+}
+
+.img-preview-conatiner {
+  background-color: #f7f7f7;
+  position: relative;
+
+  .img-preview {
+    background: center center no-repeat;
+    background-size: contain;
+    height: 116px;
+    width: 116px;
+  }
+}
+
+.image-loading-overlay {
+  background-color: black;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  top: 0;
+  opacity: .2;
+  position: absolute;
+}
+
+.btn-bwm {
+  background-color: red;
+  border-color: red;
+  color: white;
+  padding: 15px 30px;
+  font-size: 20px;
+}
