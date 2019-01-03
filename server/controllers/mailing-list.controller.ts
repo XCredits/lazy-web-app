@@ -1,4 +1,4 @@
-const validator = require('validator');
+import validator = require('validator');
 const MailingList = require('../models/mailing-list.model.js');
 const emailService = require('../services/email.service.js');
 const MailingListStats = require('../models/mailing-list-stats.model.js');

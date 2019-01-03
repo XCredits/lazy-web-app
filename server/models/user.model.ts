@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose = require('mongoose');
 mongoose.Promise = require('bluebird');
 const Schema = mongoose.Schema;
 const bcrypt = require('bcrypt');

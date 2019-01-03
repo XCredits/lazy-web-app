@@ -5,7 +5,7 @@ module.exports = function(req, res, next) {
   if (req.hostname !== 'localhost') {
     let cookieFunction = res.cookie;
     res.cookie = function(name, value, options) {
-      let newOptions = {};
+      let newOptions: any = {};
       if (typeof options !== 'undefined') {
         newOptions = _.cloneDeep(options);
       }

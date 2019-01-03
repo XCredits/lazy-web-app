@@ -24,14 +24,16 @@
 
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
-const User = require('../models/user.model.js');
+const User1 = require('../models/user.model.js');
+// Note: the above variable is set to "User1" instead of "User" because it
+// appears that passport has a User type declared in block scope.
 
 passport.use(new LocalStrategy({
   usernameField: 'username',
   passwordField: 'password',
 },
 function(username, password, done) {
-  User.findOne({username: username}, function(err, user) {
+  User1.findOne({username: username}, function(err, user) {
     if (err) {
       return done(err);
     }

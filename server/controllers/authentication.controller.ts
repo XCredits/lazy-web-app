@@ -46,7 +46,7 @@ const passwordSettings = {
 };
 
 
-const validator = require('validator');
+import validator = require('validator');
 const User = require('../models/user.model.js');
 const UserStats = require('../models/user-stats.model.js');
 const statsService = require('../services/stats.service.js');
@@ -57,7 +57,8 @@ const auth = require('./jwt-auth.controller.js');
 const {isValidDisplayUsername, normalizeUsername} =
     require('./utils.controller.js');
 const passport = require('passport');
-const crypto = require('crypto');
+// const crypto = require('crypto');
+import * as crypto from 'crypto';
 require('../config/passport.js');
 const zxcvbn = require('zxcvbn');
 
@@ -71,7 +72,8 @@ module.exports = function(app) {
   app.get('/api/user/details', auth.jwt, userDetails);
   app.post('/api/user/change-password', auth.jwtRefreshToken, changePassword);
   app.post('/api/user/request-reset-password', requestResetPassword);
-  // Other ideas: https://www.owasp.org/index.php/Forgot_Password_Cheat_Sheet#Step_4.29_Allow_user_to_change_password_in_the_existing_session
+  // Other ideas:
+  // https://www.owasp.org/index.php/Forgot_Password_Cheat_Sheet#Step_4.29_Allow_user_to_change_password_in_the_existing_session
   app.post('/api/user/reset-password',
       auth.jwtTemporaryLinkToken, changePassword);
   app.post('/api/user/forgot-username', forgotUsername);
@@ -226,8 +228,10 @@ function checkPassword(req, res) {
   if (typeof password !== 'string') {
     return res.status(422).json({message: 'Request failed validation'});
   }
-  const response = {passwordSettings};
-  response.guessesLog10 = zxcvbn(password).guesses_log10;
+  const response = {
+    passwordSettings: passwordSettings,
+    guessesLog10: zxcvbn(password).guesses_log10,
+  };
   // guessesLog10 must be >= passwordSettings.minGuessesLog10
   // i.e. fail if guessesLog10 < passwordSettings.minGuessesLog10
   res.send(response);

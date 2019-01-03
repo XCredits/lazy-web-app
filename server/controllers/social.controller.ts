@@ -4,7 +4,7 @@
 // intercepting.
 
 const socialLinks = require('./social-links.controller');
-const path = require('path');
+import * as path from 'path';
 const fs = require('fs');
 
 module.exports = function(req, res, next) {

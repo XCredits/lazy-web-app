@@ -35,7 +35,7 @@ function mailingListCount(req, res) {
         .then((count) => {
           res.send({count: count});
         });
-};
+}
 
 
 /**
