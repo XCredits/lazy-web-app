@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { MatSnackBar } from '@angular/material';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { UserService, User } from '../user.service';
 
@@ -18,6 +19,7 @@ export class ProfileComponent implements OnInit {
   user: User;
   profileImage: string;
   constructor(
+    private snackBar: MatSnackBar,
     private http: HttpClient,
     private userService: UserService,
   ) { }
@@ -43,10 +45,20 @@ export class ProfileComponent implements OnInit {
 
   handleImageUpload(imageUrl: string) {
     this.userService.updateUserDetails();
+    this.snackBar.open('Image Uploaded Successfully', 'Dismiss', {
+             duration: 5000,
+             verticalPosition: 'top',
+             horizontalPosition: 'right',
+           });
   }
 
   handleImageError() {
     this.user.profileImage = '';
+    this.snackBar.open('Image Upload Failed: Only JPEG and PNG filetype is allowed', 'Dismiss', {
+      duration: 5000,
+      verticalPosition: 'top',
+      horizontalPosition: 'right',
+    });
   }
 
   private wasFormChanged(currentValue) {
