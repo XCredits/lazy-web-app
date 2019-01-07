@@ -6,6 +6,7 @@ import { RouterModule } from '@angular/router';
 import { NgxWebstorageModule } from 'ngx-webstorage';
 import { AppComponent } from './app.component';
 import { UserService } from './user.service';
+import { SettingsService } from './settings.service';
 import { StatsService } from './stats.service';
 import { AnalyticsService } from './analytics.service';
 import { AuthGuard } from './auth.guard';
@@ -81,6 +82,7 @@ import { PrivacyComponent } from './privacy/privacy.component';
 import { FooterComponent } from './footer/footer.component';
 import { ValidateZxcvbnDirective } from './validate-zxcvbn.directive';
 import { ImageUploadModule } from './image-upload/image-upload.module';
+import { ChangeThemeComponent } from './change-theme/change-theme.component';
 
 @NgModule({
   declarations: [
@@ -108,7 +110,7 @@ import { ImageUploadModule } from './image-upload/image-upload.module';
     TermsComponent,
     PrivacyComponent,
     FooterComponent,
-    ValidateZxcvbnDirective,
+    ChangeThemeComponent,
   ],
   imports: [
     BrowserModule,
@@ -267,7 +269,7 @@ import { ImageUploadModule } from './image-upload/image-upload.module';
     ServiceWorkerModule.register('/ngsw-worker.js',
         {enabled: environment.production})
   ],
-  providers: [UserService, StatsService, AnalyticsService],
+  providers: [UserService, SettingsService, StatsService, AnalyticsService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

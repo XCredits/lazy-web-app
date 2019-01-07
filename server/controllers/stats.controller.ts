@@ -1,6 +1,5 @@
 
 // const statsService = require('../services/stats.service.js');
-// const Promise = require('bluebird');
 const auth = require('./jwt-auth.controller.js');
 
 const MailingList = require('../models/mailing-list.model.js');
@@ -24,7 +23,7 @@ module.exports = function(app) {
 /**
  * /api/admin/mailing-list-count
  * @param {*} req request object
- * @param {*} res reponse object
+ * @param {*} res response object
  * @return {*}
  */
 function mailingListCount(req, res) {
@@ -35,13 +34,13 @@ function mailingListCount(req, res) {
         .then((count) => {
           res.send({count: count});
         });
-};
+}
 
 
 /**
  * /api/admin/user-register-stats
  * @param {*} req request object
- * @param {*} res reponse object
+ * @param {*} res response object
  */
 function mailingListStatsReport(req, res) {
   // Validation
@@ -64,7 +63,7 @@ function mailingListStatsReport(req, res) {
 /**
  * /api/admin/user-register-count
  * @param {*} req request object
- * @param {*} res reponse object
+ * @param {*} res response object
  * @return {*}
  */
 function userRegisterCount(req, res) {
@@ -81,7 +80,7 @@ function userRegisterCount(req, res) {
 /**
  * /api/admin/user-register-stats-report
  * @param {*} req request object
- * @param {*} res reponse object
+ * @param {*} res response object
  */
 function userRegisterStatsReport(req, res) {
   // Validation

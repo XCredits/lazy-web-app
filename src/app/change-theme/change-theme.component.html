@@ -1,0 +1,10 @@
+<div class="simple-form-aligner">
+  <mat-card class="simple-form-card">
+    <mat-card-title>Change visual settings</mat-card-title>
+    <mat-card-content>
+      <mat-slide-toggle 
+        [checked]="initialChecked"
+        (change)="toggleTheme($event)">Dark theme</mat-slide-toggle>
+    </mat-card-content>
+  </mat-card>
+</div>

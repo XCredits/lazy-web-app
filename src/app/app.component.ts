@@ -5,6 +5,7 @@ import { Component, ViewChild, OnChanges, OnInit } from '@angular/core';
 import { ActivatedRoute, NavigationStart, NavigationEnd, Router } from '@angular/router';
 import { Location, PopStateEvent } from '@angular/common';
 import { UserService, User } from './user.service';
+import { SettingsService } from './settings.service';
 import { AnalyticsService } from './analytics.service';
 
 @Component({
@@ -23,11 +24,15 @@ export class AppComponent implements OnInit {
   userIsAdmin: boolean;
   drawerMode: string;
   drawerOpened: boolean;
+
+  siteTheme: string;
+
   // Scroll position maintainer
   private lastPoppedScrollTop: number;
   private currentRouteId: number;
   private yScrollStack: number[] = [];
 
+  theme: string;
 
   // Edit the area below to create main nav links
 
@@ -114,6 +119,7 @@ export class AppComponent implements OnInit {
       private router: Router,
       private route: ActivatedRoute,
       private userService: UserService,
+      private settingsService: SettingsService,
       private analytics: AnalyticsService,
     ) {
     // Set side bar mode
@@ -124,26 +130,33 @@ export class AppComponent implements OnInit {
     };
 
 
-    router.events.pipe(
-      filter(e => e instanceof NavigationEnd))
-      .forEach((e: NavigationEnd) => {
-        this.title = route.root.firstChild.snapshot.data['title'];
+    router.events.pipe(filter(e => e instanceof NavigationEnd))
+        .forEach((e: NavigationEnd) => {
+          this.title = route.root.firstChild.snapshot.data['title'];
 
-        // Analytics
-        // Test if the page has Changed
+          // Analytics
+          // Test if the page has Changed
 
-        // The below line removes the query parameters so that information is
-        // not passed to the Analytics provider
-        analytics.pageView(e.url.split('?')[0], this.title);
-      });
+          // The below line removes the query parameters so that information is
+          // not passed to the Analytics provider
+          analytics.pageView(e.url.split('?')[0], this.title);
+        });
 
     userService.userObservable
-      .subscribe(user => {
-        this.user = user;
-        this.isLoggedIn = !!user;
-        this.userIsAdmin = user ? this.user.isAdmin : false;
-      });
+        .subscribe(user => {
+          this.user = user;
+          this.isLoggedIn = !!user;
+          this.userIsAdmin = user ? this.user.isAdmin : false;
+        });
 
+    settingsService.themeObservable
+        .subscribe(theme => {
+          if (theme === 'dark') {
+            this.siteTheme = 'lwa-dark-theme';
+          } else {
+            this.siteTheme = 'lwa-light-theme';
+          }
+        });
     this.setSideBar(); // set the sidebar values
   }
 
