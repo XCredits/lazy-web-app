@@ -80,7 +80,6 @@ import { UserRegisterChartComponent } from './user-register-chart/user-register-
 import { TermsComponent } from './terms/terms.component';
 import { PrivacyComponent } from './privacy/privacy.component';
 import { FooterComponent } from './footer/footer.component';
-import { ValidateZxcvbnDirective } from './validate-zxcvbn.directive';
 import { ImageUploadModule } from './image-upload/image-upload.module';
 import { ChangeThemeComponent } from './change-theme/change-theme.component';
 

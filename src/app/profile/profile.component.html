@@ -19,12 +19,13 @@
             <input matInput placeholder="Family name" name="familyName" formControlName="familyName">
           </mat-form-field>
           <br>
-          <mat-form-field>
+          <mat-form-field class ="simple-form-field-100">
             <input matInput placeholder="Email" name="email" formControlName="email">
           </mat-form-field>
           <br>
-          <mat-form-field>
+          <mat-form-field class="simple-form-field-100">
               <input matInput placeholder="Username" name="username" formControlName="username">
+              <mat-error>{{usernameErrorMessage}}</mat-error>
           </mat-form-field>
           <br>
           <button

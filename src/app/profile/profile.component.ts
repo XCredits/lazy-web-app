@@ -18,6 +18,7 @@ export class ProfileComponent implements OnInit {
   formErrorMessage: string;
   user: User;
   profileImage: string;
+  usernameErrorMessage: string;
   constructor(
     private snackBar: MatSnackBar,
     private http: HttpClient,
@@ -36,11 +37,65 @@ export class ProfileComponent implements OnInit {
             givenName: new FormControl(user.givenName, [Validators.required]),
             familyName: new FormControl(user.familyName, [Validators.required]),
             email: new FormControl(user.email, [Validators.required, Validators.email]),
-            username: new FormControl(user.username, [Validators.required,
+            username: new FormControl(user.displayUsername, [Validators.required,
               Validators.pattern(this.userService.displayUsernameRegexString)]),
           });
         });
     this.form.valueChanges.subscribe(changes => this.wasFormChanged(changes));
+    this.form.valueChanges.subscribe(changes => this.checkUsername(changes));
+  }
+
+  checkUsername = function (formData)  {
+    this.form.controls['username'].setErrors(null);
+    const displayUsernameRegex =
+        new RegExp(this.userService.displayUsernameRegexString);
+
+    // this.currentUsername - designed to prevent the form from reporting an
+    // error if the username has been updated
+    const initialUsername = this.user.username;
+    const displayUsername = this.user.displayUsername;
+    this.currentUsername = this.normalizeUsername(formData.username);
+    this.currentDisplayName = formData.username;
+    if (initialUsername.length === 0) {
+      this.form.controls['username'].setErrors({'incorrect': true});
+      this.usernameErrorMessage = 'Required.';
+      return;
+    }
+    if (!displayUsernameRegex.test(initialUsername)) {
+      this.form.controls['username'].setErrors({'incorrect': true});
+      this.usernameErrorMessage = 'Not a valid username. Use only a-z, 0-9 and "_", "." or "-".';
+      return;
+    }
+    setTimeout(() => { // Wait 1 second before checking username
+      if (initialUsername !== this.currentUsername) {
+        this.http.post('/api/user/username-available', {
+              username: this.currentUsername,
+            })
+            .subscribe(data => {
+              if (initialUsername !== this.currentUsername || this.currentDisplayName !== displayUsername) {
+                if (!data.available) {
+                  this.disableButton = true;
+                  this.form.controls['username'].setErrors({'incorrect': true});
+                  this.usernameErrorMessage =
+                      'Username is not available. Please choose another.';
+                } else {
+                  this.form.controls['username'].setErrors(null);
+                }
+              }
+            },
+            errorResponse => {
+              this.formErrorMessage = 'There may be a connection issue.';
+            });
+      }
+    }, 1000);
+  };
+
+  normalizeUsername(username) {
+    return username
+        .split('.').join('')
+        .split('_').join('')
+        .split('-').join('')
+        .toLowerCase();
   }
 
   handleImageUpload(imageUrl: string) {
@@ -62,12 +117,16 @@ export class ProfileComponent implements OnInit {
   }
 
   private wasFormChanged(currentValue) {
-    const fields = ['givenName', 'familyName', 'email', 'username'];
+    const fields = ['givenName', 'familyName', 'email'] ;
     this.disableButton = true;
     this.submitSuccess = false;
     this.formErrorMessage = undefined;
+    const tempUsername = this.normalizeUsername(currentValue.username);
+    const tempDisplayName = this.user.displayUsername;
     fields.forEach(element => {
-      if (this.user[element] !== currentValue[element]) {
+      if (this.user[element] !== currentValue[element]
+          || tempUsername !== this.user.username
+          || tempDisplayName !== currentValue.username) {
         this.disableButton = false;
         return;
       }
