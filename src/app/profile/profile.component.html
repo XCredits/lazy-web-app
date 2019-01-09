@@ -4,10 +4,11 @@
       <mat-card-title> Profile </mat-card-title>
       <mat-card-content>
         <div>
-            <div >
+            <div class="image-upload">
               <img mat-card-lg-image class="img-class" [src]="profileImage" alt=''>
             </div>
-            <app-image-upload (imageUploaded)="handleImageUpload($event)"
+            <app-image-upload
+                              (imageUploaded)="handleImageUpload($event)"
                               (imageError)="handleImageError()">
             </app-image-upload>  
         </div>
