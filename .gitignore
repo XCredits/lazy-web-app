@@ -2,6 +2,7 @@
 
 # Secrets
 *.env
+google_cloud_credentials.json
 
 # compiled output
 /dist

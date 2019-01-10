@@ -1,6 +1,7 @@
 import { Component, OnInit, EventEmitter, Output } from '@angular/core';
 import { ImageUploadService } from './image-upload.service';
 import {UserService} from './../user.service';
+import { MatSnackBar } from '@angular/material';
 
 
 class FileSnippet {
@@ -25,7 +26,7 @@ export class ImageUploadComponent {
   selectedFile: FileSnippet;
   imageChangedEvent: any;
 
-  constructor(private imageService: ImageUploadService) { }
+  constructor(private imageService: ImageUploadService, private snackBar: MatSnackBar) { }
 
   private onSuccess(imageUrl: string) {
     this.selectedFile.pending = false;
@@ -43,6 +44,7 @@ export class ImageUploadComponent {
 
   imageCropped(file: File): FileSnippet | File {
     if (this.selectedFile) {
+      console.log(this.selectedFile.file);
       return this.selectedFile.file = file;
     }
     return this.selectedFile = new FileSnippet('', file);
@@ -59,7 +61,7 @@ export class ImageUploadComponent {
     const URL = window.URL;
     let file, img;
 
-    if ((file = event.target.files[0]) && (file.type === 'image/png' || file.type === 'image/jpeg')) {
+    if ((file = event.target.files[0]) && (file.type === 'image/png' || file.type === 'image/jpeg' || file.type === 'image/jpg')) {
       img = new Image();
       const self = this;
       img.onload = function() {
@@ -67,7 +69,11 @@ export class ImageUploadComponent {
       };
       img.src = URL.createObjectURL(file);
     }  else {
-      // Error
+      this.snackBar.open('Image Upload Failed: Only JPEG and PNG filetype is allowed', 'Dismiss', {
+        duration: 5000,
+        verticalPosition: 'top',
+        horizontalPosition: 'right',
+      });
     }
   }
 

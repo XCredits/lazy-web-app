@@ -109,11 +109,6 @@ export class ProfileComponent implements OnInit {
 
   handleImageError() {
     this.user.profileImage = '';
-    this.snackBar.open('Image Upload Failed: Only JPEG and PNG filetype is allowed', 'Dismiss', {
-      duration: 5000,
-      verticalPosition: 'top',
-      horizontalPosition: 'right',
-    });
   }
 
   private wasFormChanged(currentValue) {
