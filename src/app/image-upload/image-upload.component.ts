@@ -2,7 +2,7 @@ import { Component, OnInit, EventEmitter, Output } from '@angular/core';
 import { ImageUploadService } from './image-upload.service';
 import {UserService} from './../user.service';
 import { MatSnackBar } from '@angular/material';
-
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 class FileSnippet {
   pending = false;
@@ -25,10 +25,15 @@ export class ImageUploadComponent {
 
   selectedFile: FileSnippet;
   imageChangedEvent: any;
+  modalReference = null;
+  options: any = {
+    size: 'dialog-centered'
+  };
 
-  constructor(private imageService: ImageUploadService, private snackBar: MatSnackBar) { }
+  constructor(private imageService: ImageUploadService, private snackBar: MatSnackBar, public modalService: NgbModal) { }
 
   private onSuccess(imageUrl: string) {
+    this.modalReference.close();
     this.selectedFile.pending = false;
     this.selectedFile.status = 'OK';
     this.imageChangedEvent = null;
@@ -40,11 +45,11 @@ export class ImageUploadComponent {
     this.selectedFile.status = 'FAIL';
     this.selectedFile.src = '';
     this.imageError.emit('');
+    this.modalReference.close();
   }
 
   imageCropped(file: File): FileSnippet | File {
     if (this.selectedFile) {
-      console.log(this.selectedFile.file);
       return this.selectedFile.file = file;
     }
     return this.selectedFile = new FileSnippet('', file);
@@ -53,11 +58,12 @@ export class ImageUploadComponent {
   cancelCropping() {
     this.imageChangedEvent = null;
     this.croppingCanceled.emit();
+    this.modalReference.close();
   }
 
-  processFile(event: any) {
+  processFile(event: any, modal) {
     this.selectedFile = undefined;
-
+    this.modalReference = this.modalService.open(modal, this.options);
     const URL = window.URL;
     let file, img;
 
@@ -69,6 +75,7 @@ export class ImageUploadComponent {
       };
       img.src = URL.createObjectURL(file);
     }  else {
+      this.modalReference.close();
       this.snackBar.open('Image Upload Failed: Only JPEG and PNG filetype is allowed', 'Dismiss', {
         duration: 5000,
         verticalPosition: 'top',

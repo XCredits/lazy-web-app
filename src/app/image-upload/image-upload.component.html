@@ -1,37 +1,42 @@
 <label *ngIf="!imageChangedEvent">
   <span>
-    <mat-icon class="icon" matSuffix>add_a_photo</mat-icon>
+    <mat-icon class='icon'>add_a_photo</mat-icon>
   </span>
-  <input  type='file'
-          accept='image/*'
-          (change)='processFile($event)'>
-</label>
+  <input type='file'
+         accept='image/*'
+         (change)='processFile($event, imageCropper)'>
+ </label>
 
-<image-cropper
-    [imageChangedEvent]="imageChangedEvent"
-    [maintainAspectRatio]="true"
-    [aspectRatio]="1 / 1"
-    format="jpeg"
-    (imageCroppedFile)="imageCropped($event)">
-</image-cropper>
+<ng-template #imageCropper let-c="close" let-d="dismiss">
+  <div class="modal-body">
+    <image-cropper
+        [imageChangedEvent]="imageChangedEvent"
+        [maintainAspectRatio]="true"
+        [aspectRatio]="1 / 1"
+        format="jpeg"
+        (imageCroppedFile)="imageCropped($event)">
+    </image-cropper>
 
-<div *ngIf="selectedFile && imageChangedEvent">
-  <div class='img-preview'
-       [ngStyle] = "{'background-image': 'url(' + selectedFile.src + ')'}">
+    <div *ngIf="selectedFile && imageChangedEvent">
+      <div class='img-preview'
+          [ngStyle] = "{'background-image': 'url(' + selectedFile.src + ')'}">
+      </div>
+    </div>
   </div>
-</div> 
+    <div class='modal-footer'>
+      <label *ngIf="imageChangedEvent"
+      (click)='cancelCropping()'
+      class="btn btn-primary btn-md"
+      style="background-color:transparent; border-color: transparent; color: red; float: right;">Cancel
+      </label>
 
-<label *ngIf="imageChangedEvent"  
-(click)= "uploadImage()" 
-style="background-color:royalblue; float: right;" 
-class= "btn btn-primary btn-sm">
-  <span>
-  <mat-icon matSuffix>done</mat-icon>
-  </span>
-</label>
-
-<label *ngIf="imageChangedEvent"
- (click)='cancelCropping()'
- class="btn btn-primary btn-md"
- style="background-color:transparent; border-color: transparent; color: red; float: right;">Cancel
-</label>
+      <label *ngIf="imageChangedEvent"
+      (click)= "uploadImage()"
+      style="background-color:royalblue; float: right;"
+      class= "btn btn-primary btn-sm">
+        <span>
+        <mat-icon matSuffix>done</mat-icon>
+        </span>
+      </label>
+    </div>
+</ng-template>
