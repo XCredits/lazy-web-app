@@ -6,11 +6,10 @@ import { UserService } from '../user.service';
 import { AnalyticsService } from '../analytics.service';
 
 @Component({
-  selector: 'app-mailing-list',
+  selector: 'app-add-contact',
   templateUrl: './add-contact.component.html',
   styleUrls: ['./add-contact.component.scss']
-  // templateUrl: './mailing-list.component.html',
-  })
+})
 export class MailingListComponent implements OnInit {
   form: FormGroup;
   waiting = false;
