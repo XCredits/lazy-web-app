@@ -1,6 +1,6 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { MailingListComponent } from './add-contact';
+import { MailingListComponent } from './add-contact.components';
 
 describe('MailingListComponent', () => {
   let component: MailingListComponent;
