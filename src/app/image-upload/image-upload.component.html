@@ -8,6 +8,9 @@
  </label>
 
 <ng-template #imageCropper let-c="close" let-d="dismiss">
+  <div class='modal-header'>
+    <h5>Set Thumbnail</h5>
+  </div>
   <div class="modal-body">
     <image-cropper
         [imageChangedEvent]="imageChangedEvent"

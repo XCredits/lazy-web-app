@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { MatSnackBar } from '@angular/material';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { UserService, User } from '../user.service';
+require('default-passive-events');
 
 @Component({
   selector: 'app-profile',
@@ -13,7 +14,6 @@ export class ProfileComponent implements OnInit {
   form: FormGroup;
 
   disableButton = true;
-  waiting = false;
   submitSuccess = false;
   formErrorMessage: string;
   user: User;
@@ -26,24 +26,23 @@ export class ProfileComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.http.get<User>('/api/user/details', {})
-        .subscribe((user) =>  {
-          this.user = user;
-        });
     this.userService.userObservable
-        .subscribe(user => {
-          this.profileImage = user.profileImage;
-          this.form = new FormGroup ({
-            givenName: new FormControl(user.givenName, [Validators.required]),
-            familyName: new FormControl(user.familyName, [Validators.required]),
-            email: new FormControl(user.email, [Validators.required, Validators.email]),
-            username: new FormControl(user.displayUsername, [Validators.required,
-              Validators.pattern(this.userService.displayUsernameRegexString)]),
-          });
+      .subscribe(user => {
+        this.profileImage = user.profileImage;
+        this.form = new FormGroup ({
+          givenName: new FormControl(user.givenName, [Validators.required]),
+          familyName: new FormControl(user.familyName, [Validators.required]),
+          email: new FormControl(user.email, [Validators.required, Validators.email]),
+          username: new FormControl(user.displayUsername, [Validators.required,
+            Validators.pattern(this.userService.displayUsernameRegexString)]),
         });
-    this.form.valueChanges.subscribe(changes => this.wasFormChanged(changes));
-    this.form.valueChanges.subscribe(changes => this.checkUsername(changes));
-  }
+        this.user = user;
+      });
+     setInterval(() => {
+        this.form.valueChanges.subscribe(changes => this.wasFormChanged(changes));
+     }, 2000) ;
+     this.form.valueChanges.subscribe(changes => this.checkUsername(changes));
+    }
 
   checkUsername = function (formData)  {
     this.form.controls['username'].setErrors(null);
@@ -112,7 +111,7 @@ export class ProfileComponent implements OnInit {
   }
 
   private wasFormChanged(currentValue) {
-    const fields = ['givenName', 'familyName', 'email'] ;
+    const fields = ['givenName', 'familyName', 'email'];
     this.disableButton = true;
     this.submitSuccess = false;
     this.formErrorMessage = undefined;
@@ -133,7 +132,7 @@ export class ProfileComponent implements OnInit {
       return;
     }
     // Clear state from previous submissions
-    this.waiting = true;
+    this.disableButton = false;
     this.submitSuccess = false;
     this.formErrorMessage = undefined;
     this.http.post('/api/user/save-details', {
@@ -143,13 +142,11 @@ export class ProfileComponent implements OnInit {
           'username': formData.username,
         })
         .subscribe(data => {
-          this.waiting = false;
           this.submitSuccess = true;
           this.disableButton = true;
           this.userService.updateUserDetails();
         },
         errorResponse => {
-          this.waiting = false;
           this.disableButton = true;
           this.formErrorMessage = 'There was a problem submitting the form.';
         });
