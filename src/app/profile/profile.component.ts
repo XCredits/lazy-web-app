@@ -40,8 +40,8 @@ export class ProfileComponent implements OnInit {
       });
      setInterval(() => {
         this.form.valueChanges.subscribe(changes => this.wasFormChanged(changes));
+        this.form.valueChanges.subscribe(changes => this.checkUsername(changes));
      }, 2000) ;
-     this.form.valueChanges.subscribe(changes => this.checkUsername(changes));
     }
 
   checkUsername = function (formData)  {
@@ -65,28 +65,26 @@ export class ProfileComponent implements OnInit {
       this.usernameErrorMessage = 'Not a valid username. Use only a-z, 0-9 and "_", "." or "-".';
       return;
     }
-    setTimeout(() => { // Wait 1 second before checking username
-      if (initialUsername !== this.currentUsername) {
-        this.http.post('/api/user/username-available', {
-              username: this.currentUsername,
-            })
-            .subscribe(data => {
-              if (initialUsername !== this.currentUsername || this.currentDisplayName !== displayUsername) {
-                if (!data.available) {
-                  this.disableButton = true;
-                  this.form.controls['username'].setErrors({'incorrect': true});
-                  this.usernameErrorMessage =
-                      'Username is not available. Please choose another.';
-                } else {
-                  this.form.controls['username'].setErrors(null);
-                }
+    if (initialUsername !== this.currentUsername) {
+      this.http.post('/api/user/username-available', {
+            username: this.currentUsername,
+          })
+          .subscribe(data => {
+            if (initialUsername !== this.currentUsername || this.currentDisplayName !== displayUsername) {
+              if (!data.available) {
+                this.disableButton = true;
+                this.form.controls['username'].setErrors({'incorrect': true});
+                this.usernameErrorMessage =
+                    'Username is not available. Please choose another.';
+              } else {
+                this.form.controls['username'].setErrors(null);
               }
-            },
-            errorResponse => {
-              this.formErrorMessage = 'There may be a connection issue.';
-            });
-      }
-    }, 1000);
+            }
+          },
+          errorResponse => {
+            this.formErrorMessage = 'There may be a connection issue.';
+          });
+    }
   };
 
   normalizeUsername(username) {
