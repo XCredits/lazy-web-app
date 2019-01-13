@@ -80,6 +80,7 @@ import { UserRegisterChartComponent } from './user-register-chart/user-register-
 import { TermsComponent } from './terms/terms.component';
 import { PrivacyComponent } from './privacy/privacy.component';
 import { FooterComponent } from './footer/footer.component';
+import { ImageUploadModule } from './image-upload/image-upload.module';
 import { ChangeThemeComponent } from './change-theme/change-theme.component';
 
 @NgModule({
@@ -113,6 +114,7 @@ import { ChangeThemeComponent } from './change-theme/change-theme.component';
   imports: [
     BrowserModule,
     FormsModule,
+    ImageUploadModule,
     ReactiveFormsModule,
     HttpClientModule,
     NgxWebstorageModule.forRoot({
