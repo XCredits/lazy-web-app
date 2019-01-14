@@ -11,7 +11,6 @@ import { StatsService } from './stats.service';
 import { AnalyticsService } from './analytics.service';
 import { AuthGuard } from './auth.guard';
 import { AdminGuard } from './admin.guard';
-
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 // import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import { AngularFontAwesomeModule } from 'angular-font-awesome';
@@ -81,6 +80,7 @@ import { TermsComponent } from './terms/terms.component';
 import { PrivacyComponent } from './privacy/privacy.component';
 import { FooterComponent } from './footer/footer.component';
 import { ChangeThemeComponent } from './change-theme/change-theme.component';
+import { Page1Component } from './page1/page1.component';
 
 @NgModule({
   declarations: [
@@ -109,6 +109,7 @@ import { ChangeThemeComponent } from './change-theme/change-theme.component';
     PrivacyComponent,
     FooterComponent,
     ChangeThemeComponent,
+    Page1Component,
   ],
   imports: [
     BrowserModule,
@@ -221,6 +222,12 @@ import { ChangeThemeComponent } from './change-theme/change-theme.component';
         path: '**',
         component: PageNotFoundComponent,
         data: { title: 'Page Not Found' },
+      },
+      {
+        path: 'page1',
+        component: Page1Component,
+        data: { title: 'page1' },
+
       },
     ]),
 
