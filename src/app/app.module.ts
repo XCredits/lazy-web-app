@@ -80,8 +80,7 @@ import { TermsComponent } from './terms/terms.component';
 import { PrivacyComponent } from './privacy/privacy.component';
 import { FooterComponent } from './footer/footer.component';
 import { ChangeThemeComponent } from './change-theme/change-theme.component';
-import { Page1Component } from './page1/page1.component';
-
+import { AddContactsComponent } from './addcontact/add-contact.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -109,7 +108,7 @@ import { Page1Component } from './page1/page1.component';
     PrivacyComponent,
     FooterComponent,
     ChangeThemeComponent,
-    Page1Component,
+    AddContactsComponent,
   ],
   imports: [
     BrowserModule,
@@ -207,6 +206,12 @@ import { Page1Component } from './page1/page1.component';
         data: { title: 'Privacy' },
       },
       {
+        path: 'addcontact',
+        component: AddContactsComponent,
+        data: { title: 'AddContact' },
+
+      },
+      {
         path: 'unauthorized',
         component: UnauthorizedComponent,
         data: { title: 'Unauthorized' },
@@ -222,12 +227,6 @@ import { Page1Component } from './page1/page1.component';
         path: '**',
         component: PageNotFoundComponent,
         data: { title: 'Page Not Found' },
-      },
-      {
-        path: 'page1',
-        component: Page1Component,
-        data: { title: 'Page1' },
-
       },
     ]),
 
