@@ -2,6 +2,8 @@
 
 1) Install [NodeJS](https://nodejs.org/)
 
+On the 'Tools for Native Modules' screen check 'Automatically install the necessary tools....'
+
 2) Install AngularCLI
 
 ~~~bash
@@ -14,15 +16,9 @@ npm install @angular/cli@latest -g
 npm install -g nodemon
 ~~~
 
-4) Install python
+4) Download or clone this repository
 
-You may need to install Python to compile some of the packages (e.g. bcrypt on
-Windows). Download the Python Installer and install. 
-**Make sure to tick 'Add python to Path' option during installation.**
-
-5) Download or clone this repository
-
-6) Open the NodeJS Terminal. Run 
+5) Open the NodeJS Terminal. Run 
 
 ~~~bash
 npm install
@@ -30,7 +26,7 @@ npm install
 
  to add the needed files into the node_modules folder
 
-7) Start the MongoDB server
+6) Start the MongoDB server
 
 [Install MongoDB](https://www.mongodb.com/download-center?jmp=nav#community).
 Create the folder structure
@@ -58,15 +54,15 @@ use lazywebapp
 db.createUser ({user:'lazywebapp',pwd:'password', roles:[{role:'dbAdmin', db:'lazywebapp'}]})
 ~~~
 
-8) In the project, create a new file called '.env' in root and copy into this new file, the contents of '.env.example' which can be found in the lazy web app project.
+7) In the project, create a new file called '.env' in root and copy into this new file, the contents of '.env.example' which can be found in the lazy web app project.
 
-9) Run the following command to have the Angular built and server restarted when code changes
+8) Run the following command to have the Angular built and server restarted when code changes
 
 ~~~bash
 npm run dev
 ~~~
 
-10) Open [localhost:4200](http://localhost:4200/) or [localhost:3000](http://localhost:3000/) in your browser. You should see a basic Angular app displayed. You are now running a local server.
+9) Open [localhost:4200](http://localhost:4200/) or [localhost:3000](http://localhost:3000/) in your browser. You should see a basic Angular app displayed. You are now running a local server.
 
 ## Using step-by-step running
 
