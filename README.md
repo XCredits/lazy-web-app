@@ -1,24 +1,26 @@
 # Instructions for running this server locally
 
-1) Install [NodeJS](https://nodejs.org/)
+### 1) Install [NodeJS](https://nodejs.org/)
 
 On the 'Tools for Native Modules' screen check 'Automatically install the necessary tools....'
 
-2) Install AngularCLI
+Make sure that all VSCode and Visual Studio windows are closed, and all node processes are closed. When the NodeJS installer is finished, a terminal will popup. Press enter on the terminal to start the build tools installation process.
+
+### 2) Install AngularCLI
 
 ~~~bash
 npm install @angular/cli@latest -g
 ~~~
 
-3) Install nodemon
+### 3) Install nodemon
 
 ~~~bash
 npm install -g nodemon
 ~~~
 
-4) Download or clone this repository
+### 4) Download or clone this repository
 
-5) Open the NodeJS Terminal. Run 
+### 5) Open the NodeJS Terminal. Run 
 
 ~~~bash
 npm install
@@ -26,7 +28,7 @@ npm install
 
  to add the needed files into the node_modules folder
 
-6) Start the MongoDB server
+### 6) Start the MongoDB server
 
 [Install MongoDB](https://www.mongodb.com/download-center?jmp=nav#community).
 Create the folder structure
@@ -54,21 +56,21 @@ use lazywebapp
 db.createUser ({user:'lazywebapp',pwd:'password', roles:[{role:'dbAdmin', db:'lazywebapp'}]})
 ~~~
 
-7) In the project, create a new file called '.env' in root and copy into this new file, the contents of '.env.example' which can be found in the lazy web app project.
+### 7) In the project, create a new file called '.env' in root and copy into this new file, the contents of '.env.example' which can be found in the lazy web app project.
 
-8) Run the following command to have the Angular built and server restarted when code changes
+### 8) Run the following command to have the Angular built and server restarted when code changes
 
 ~~~bash
 npm run dev
 ~~~
 
-9) Open [localhost:4200](http://localhost:4200/) or [localhost:3000](http://localhost:3000/) in your browser. You should see a basic Angular app displayed. You are now running a local server.
+### 9) Open [localhost:4200](http://localhost:4200/) or [localhost:3000](http://localhost:3000/) in your browser. You should see a basic Angular app displayed. You are now running a local server.
 
-## Using step-by-step running
+# Using step-by-step running
 
 Alternatively, instead of using 'npm run dev' you can run your project this way
 
-1) In your project (lazywebapp) terminal, run
+In your project (lazywebapp) terminal, run
 
 ~~~bash
 ng build
@@ -76,7 +78,7 @@ ng build
 
 to compile the Angular front-end components into the `dist` folder
 
-8) Then run
+Then run
 
 ~~~bash
 node server.js
@@ -86,41 +88,41 @@ node server.js
 
 After doing the above:
 
-1) [Set up Google Cloud Platform](https://cloud.google.com/)
+### 1) [Set up Google Cloud Platform](https://cloud.google.com/)
 
-2) Create a new project
+### 2) Create a new project
 
 ![Create a project](/readme/img/gcp12.png)
 
-3) Name the project
+### 3) Name the project
 
 ![Name the project](/readme/img/gcp3.png)
 
-4) Make sure the project is selected
+### 4) Make sure the project is selected
 
 ![Select the project](/readme/img/gcp4.png)
 
-5) Install the [Google Cloud SDK](https://cloud.google.com/sdk/)
+### 5) Install the [Google Cloud SDK](https://cloud.google.com/sdk/)
 
-6) Run the following command and create a new configuration. It can have any name.
+### 6) Run the following command and create a new configuration. It can have any name.
 
 ~~~bash
 gcloud init
 ~~~
 
-7) Log in to your Google account
+### 7) Log in to your Google account
 
-8) Select the project that you created above
+### 8) Select the project that you created above
 
-9) Select the region
+### 9) Select the region
 
-10) Choose a region that the server will be hosted in
+### 10) Choose a region that the server will be hosted in
 
 ~~~bash
 gcloud config set compute/region us-central1
 ~~~
 
-11) Set up a MongoDB cluster
+### 11) Set up a MongoDB cluster
 Set the whitelist, IP to:
 ~~~
 0.0.0.0/0
@@ -132,16 +134,16 @@ Create a user and a hard password.
 Update the .env file
 
 
-12) Run the following commands
+### 12) Run the following commands
 
 ~~~bash
 ng build --prod
 gcloud app deploy
 ~~~
 
-13) Wait for the app to deploy.
+### 13) Wait for the app to deploy.
 
-14) Visit the address that is displayed when the deploy command finishes.
+### 14) Visit the address that is displayed when the deploy command finishes.
 
 ~~~bash
 Deployed service [default] to [https://test-project-197703.appspot.com]
@@ -149,21 +151,25 @@ Deployed service [default] to [https://test-project-197703.appspot.com]
 
 # Instructions for setting up SendGrid emails
 
-1) Go to
+### 1) Go to
   [this page](https://app.sendgrid.com/guide/integrate/langs/nodejs),
   do NOT follow the instructions.
 
-2) Add the SendGrid API key to the .env file
+### 2) Add the SendGrid API key to the .env file
 
-3) Click "I've integrated the code above." and Click "Verify integration".
+### 3) Click "I've integrated the code above." and Click "Verify integration".
 
-4) Un-comment the `#SENDGRID_VERIFICATION` section of the at the top of the
+### 4) Un-comment the `#SENDGRID_VERIFICATION` section of the at the top of the
   `email.service.js` file.
 
-5) Start the server in development mode in order to send an email and verify 
+### 5) Start the server in development mode in order to send an email and verify 
   that the installation works.
 
-6) Comment `#SENDGRID_VERIFICATION` again!
+### 6) Comment `#SENDGRID_VERIFICATION` again!
+
+
+
+
 
 # Disused notes about using ng-pwa-tools
 
