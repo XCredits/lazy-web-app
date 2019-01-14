@@ -4,12 +4,12 @@ const auth = require('./jwt-auth.controller.js');
 const {isValidDisplayUsername, normalizeUsername} =
     require('./utils.controller.js');
 
-const upload = require('../services/image-upload');
-const singleUpload = upload.single('image');
+const imageUpload = require('../services/image-upload');
+const singleUpload = imageUpload.single('image');
 
 module.exports = function(app) {
   app.post('/api/user/save-details', auth.jwtRefreshToken, saveDetails);
-  app.post('/api/image-upload', auth.jwtRefreshToken, imageUpload);
+  app.post('/api/image-upload', auth.jwtRefreshToken, imageUploadRoute);
 };
 
 /**
@@ -61,7 +61,7 @@ function saveDetails(req, res) {
  * @return {*}
  */
 
-function imageUpload(req, res) {
+function imageUploadRoute(req, res) {
   const userId = req.userId;
   if (typeof userId !== 'string') {
     return res.status(422).json({message: 'Error in UserId'});
@@ -74,12 +74,12 @@ function imageUpload(req, res) {
         .then((user) => {
           user.profileImage = req.file.path;
           return user.save()
-          .then(() => {
-            return res.status(200).send({message: 'Image Uploaded Successfully'});
-          })
-          .catch(() => {
-            return res.status(500).send({message: 'Error in uploading image'});
-          });
+              .then(() => {
+                return res.status(200).send({message: 'Image Uploaded Successfully'});
+              })
+              .catch(() => {
+                return res.status(500).send({message: 'Error in uploading image'});
+              });
         })
         .catch(() => {
           return res.status(500).send({message: 'UserId not found'});

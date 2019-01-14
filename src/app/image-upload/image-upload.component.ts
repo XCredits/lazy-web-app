@@ -1,6 +1,6 @@
 import { Component, OnInit, EventEmitter, Output } from '@angular/core';
 import { ImageUploadService } from './image-upload.service';
-import {UserService} from './../user.service';
+import { UserService } from './../user.service';
 import { MatSnackBar } from '@angular/material';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
@@ -89,7 +89,6 @@ export class ImageUploadComponent {
       const reader = new FileReader();
 
       reader.addEventListener('load', (event: any) => {
-
         this.selectedFile.pending = true;
         this.imageService.uploadImage(this.selectedFile.file).subscribe(
           (imageUrl: string) => {

@@ -2,18 +2,6 @@ input {
   display: none;
 }
 
-.img-preview-conatiner {
-  background-color: #f7f7f7;
-  position: relative;
-
-  .img-preview {
-    background: center center no-repeat;
-    background-size: contain;
-    height: 116px;
-    width: 116px;
-  }
-}
-
 .icon{
   cursor:pointer;
   margin-left: 100px;
