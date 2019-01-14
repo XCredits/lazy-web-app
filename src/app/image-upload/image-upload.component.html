@@ -5,7 +5,7 @@
   <input type='file'
          accept='image/*'
          (change)='processFile($event, imageCropper)'>
- </label>
+</label>
 
 <ng-template #imageCropper let-c="close" let-d="dismiss">
   <div class='modal-header'>
@@ -21,8 +21,7 @@
     </image-cropper>
 
     <div *ngIf="selectedFile && imageChangedEvent">
-      <div class='img-preview'
-          [ngStyle] = "{'background-image': 'url(' + selectedFile.src + ')'}">
+      <div [ngStyle] = "{'background-image': 'url(' + selectedFile.src + ')'}">
       </div>
     </div>
   </div>
