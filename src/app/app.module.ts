@@ -226,7 +226,7 @@ import { Page1Component } from './page1/page1.component';
       {
         path: 'page1',
         component: Page1Component,
-        data: { title: 'page1' },
+        data: { title: 'Page1' },
 
       },
     ]),
