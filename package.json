@@ -2,6 +2,9 @@
   "name": "lazy-web-app",
   "version": "0.1.0",
   "license": "",
+  "engines": {
+    "node": ">=11.6"
+  },
   "scripts": {
     "ng": "ng",
     "start": "node server.js",
