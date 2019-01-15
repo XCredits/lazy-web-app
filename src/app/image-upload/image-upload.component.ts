@@ -98,7 +98,6 @@ export class ImageUploadComponent {
             this.onFailure();
           });
       });
-
       reader.readAsDataURL(this.selectedFile.file);
     }
 

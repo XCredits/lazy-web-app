@@ -72,7 +72,7 @@ function imageUploadRoute(req, res) {
     }
     User.findOne({_id: userId})
         .then((user) => {
-          user.profileImage = req.file.path;
+          user.profileImage = req.file.path; // For AWS use req.file.location
           return user.save()
               .then(() => {
                 return res.status(200).send({message: 'Image Uploaded Successfully'});

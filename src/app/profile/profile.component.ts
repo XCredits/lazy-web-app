@@ -3,7 +3,6 @@ import { HttpClient } from '@angular/common/http';
 import { MatSnackBar } from '@angular/material';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { UserService, User } from '../user.service';
-require('default-passive-events');
 
 @Component({
   selector: 'app-profile',

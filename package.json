@@ -53,7 +53,6 @@
     "cookie-parser": "^1.4.3",
     "core-js": "^2.4.1",
     "cors": "^2.8.5",
-    "default-passive-events": "^1.0.10",
     "dotenv": "^5.0.1",
     "express": "^4.16.3",
     "font-awesome": "^4.7.0",
