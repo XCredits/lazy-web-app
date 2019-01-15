@@ -51,7 +51,8 @@ export class AddContactsComponent implements OnInit {
     this.formErrorMessage = undefined;
     this.submitSuccess = false;
     this.waiting = true;
-    this.http.post('/api/join-mailing-list', {
+    console.log('before function');
+    this.http.post('/api/testAPI', {
           'givenName': formData.givenName,
           'familyName': formData.familyName,
           'email': formData.email
@@ -59,16 +60,19 @@ export class AddContactsComponent implements OnInit {
         .subscribe(data => {
           this.waiting = false;
           this.submitSuccess = true;
+          console.log('subscribe...');
           // this.snackBar.open('Successfully subscribed to the mailing list', 'Dismiss', {
           //    duration: 5000,
           //    verticalPosition: 'top',
           //    horizontalPosition: 'right',
           //  });
-          this.analytics.mailingList();
+          // this.analytics.mailingList();
         },
         errorResponse => {
           this.waiting = false;
-          this.formErrorMessage = 'There was a problem submitting the form.';
+          console.log('error1');
+          console.dir(errorResponse);
+          this.formErrorMessage = 'There was a problem submitting the form . ';
         });
   };
 }

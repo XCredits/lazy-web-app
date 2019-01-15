@@ -2,7 +2,7 @@
   <mat-card class="simple-form-card">
     
     <div *ngIf='!submitSuccess'> 
-      <mat-card-title>Join the mailing list </mat-card-title>
+      <mat-card-title>Please Add a contact </mat-card-title>
       <mat-card-subtitle>
           Be the first to hear new announcements about XCredits
       </mat-card-subtitle>
@@ -27,7 +27,7 @@
                 mat-raised-button 
                 type="submit" 
                 value="submit">
-              Join mailing list
+              Add Contact
             </button>
             <mat-progress-spinner
                 *ngIf="waiting"
@@ -48,7 +48,7 @@
     <div *ngIf='submitSuccess'>
         <mat-card-title>Success</mat-card-title>
         <mat-card-subtitle>
-            You have successfully joined the mailing list.
+            You have successfully added a new contact.
         </mat-card-subtitle>
         <button routerLink='/'
             class="simple-form-button" 

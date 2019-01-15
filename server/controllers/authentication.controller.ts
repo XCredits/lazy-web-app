@@ -65,6 +65,7 @@ const zxcvbn = require('zxcvbn');
 module.exports = function(app) {
   app.use(passport.initialize());
   app.post('/api/user/register', register);
+  app.post('/api/testAPI', testFun);
   app.post('/api/user/username-available', usernameAvailable);
   app.post('/api/user/check-password', checkPassword);
   app.post('/api/user/login', login);
@@ -86,6 +87,8 @@ module.exports = function(app) {
  * @param {*} res response object
  * @return {*}
  */
+
+
 function register(req, res) {
   // Extract req.body
   const email = req.body.email;
@@ -175,6 +178,13 @@ function register(req, res) {
       });
 }
 
+function testFun(req, res) {
+  console.log('testing the API...');
+  // Extract req.body
+  const givenName = req.body.givenName;
+  const familyName = req.body.familyName;
+  const email = req.body.email;
+}
 /**
  * Determines if username available
  * @param {*} req
