@@ -2,6 +2,9 @@
   "name": "lazy-web-app",
   "version": "0.1.0",
   "license": "",
+  "engines": {
+    "node": ">=11.6"
+  },
   "scripts": {
     "ng": "ng",
     "start": "node server.js",
@@ -41,7 +44,7 @@
     "@types/validator": "^10.9.0",
     "@types/zxcvbn": "^4.4.0",
     "angular-font-awesome": "^3.1.2",
-    "bcrypt": "^3.0.2",
+    "bcrypt": "^3.0.3",
     "bluebird": "^3.5.1",
     "body-parser": "^1.18.2",
     "chart.js": "^2.7.2",
@@ -71,7 +74,7 @@
     "zxcvbn": "^4.4.2"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "^0.11.4",
+    "@angular-devkit/build-angular": "^0.12.1",
     "@angular/cli": "^7.0.5",
     "@angular/compiler-cli": "7.0.3",
     "@angular/language-service": "7.0.3",
