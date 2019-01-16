@@ -93,7 +93,12 @@ export class AppComponent implements OnInit {
     {
       routerLink: '/addcontact',
       icon: 'person',
-      title: 'add contact1',
+      title: 'add contact',
+    },
+    {
+      routerLink: '/view-contacts',
+      icon: 'view_carousel',
+      title: 'view contacts',
     },
   ];
 

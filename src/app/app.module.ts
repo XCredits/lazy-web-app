@@ -81,6 +81,8 @@ import { PrivacyComponent } from './privacy/privacy.component';
 import { FooterComponent } from './footer/footer.component';
 import { ChangeThemeComponent } from './change-theme/change-theme.component';
 import { AddContactsComponent } from './addcontact/add-contact.component';
+import { ViewContactsComponent } from './view-contacts/view-contacts.component';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -109,6 +111,7 @@ import { AddContactsComponent } from './addcontact/add-contact.component';
     FooterComponent,
     ChangeThemeComponent,
     AddContactsComponent,
+    ViewContactsComponent,
   ],
   imports: [
     BrowserModule,
@@ -209,6 +212,12 @@ import { AddContactsComponent } from './addcontact/add-contact.component';
         path: 'addcontact',
         component: AddContactsComponent,
         data: { title: 'AddContact' },
+
+      },
+      {
+        path: 'viewcontacts',
+        component: ViewContactsComponent,
+        data: { title: 'ViewContacts' },
 
       },
       {
