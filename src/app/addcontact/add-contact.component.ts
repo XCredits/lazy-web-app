@@ -40,7 +40,7 @@ export class AddContactsComponent implements OnInit {
     this.submitSuccess = false;
     this.waiting = true;
     console.log('before function');
-    this.http.post('/api/testAPI', {
+    this.http.post('/api/join-contact-list', {
           'givenName': formData.givenName,
           'familyName': formData.familyName,
           'email': formData.email
@@ -54,7 +54,7 @@ export class AddContactsComponent implements OnInit {
           this.waiting = false;
           console.log('error ... ');
           console.dir(errorResponse);
-          this.formErrorMessage = 'There was a problem submitting the form.. ';
+          this.formErrorMessage = 'There was a problem submitting the form.';
         });
   };
 }
