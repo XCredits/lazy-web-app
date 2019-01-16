@@ -24,7 +24,7 @@
 
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
-const User1 = require('../models/user.model.js');
+const User1 = require('../models/user.model');
 // Note: the above variable is set to "User1" instead of "User" because it
 // appears that passport has a User type declared in block scope.
 
