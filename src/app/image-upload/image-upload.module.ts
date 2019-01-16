@@ -6,6 +6,7 @@ import { ImageUploadService } from './image-upload.service';
 import { MatIconModule } from '@angular/material';
 import { ImageCropperModule } from 'ngx-image-cropper';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { MatButtonModule } from '@angular/material';
 
 @NgModule({
   imports: [
@@ -13,6 +14,7 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
     HttpModule,
     MatIconModule,
     ImageCropperModule,
+    MatButtonModule,
     NgbModule.forRoot(),
   ],
   entryComponents: [

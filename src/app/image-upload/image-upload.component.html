@@ -26,19 +26,19 @@
     </div>
   </div>
     <div class='modal-footer'>
-      <label *ngIf="imageChangedEvent"
+      <button *ngIf="imageChangedEvent"
       (click)='cancelCropping()'
-      class="btn btn-primary btn-md"
-      style="background-color:transparent; border-color: transparent; color: red; float: right;">Cancel
-      </label>
+      mat-raised-button
+      color='warn'>Cancel
+    </button>
 
-      <label *ngIf="imageChangedEvent"
+      <button *ngIf="imageChangedEvent"
       (click)= "uploadImage()"
-      style="background-color:royalblue; float: right;"
-      class= "btn btn-primary btn-sm">
-        <span>
+      mat-raised-button
+      color='primary'>
+        <span class='okButton'>
         <mat-icon matSuffix>done</mat-icon>
         </span>
-      </label>
+      </button>
     </div>
 </ng-template>
