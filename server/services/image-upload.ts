@@ -1,19 +1,19 @@
 const multer  = require('multer');
-
+const path_image = require('path');
 // Local Disk Storage
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, 'uploads/');
+    cb(null, path_image.join(__dirname, '..', '..', 'src/assets/images/'));
   },
-  filename: function (req, file, cb) {
+  filename: function(req, file, cb) {
     const ext = file.mimetype.split('/')[1];
-    cb(null, file.originalname + '.' + ext);
+    cb(null, 'IMAGE-' + Date.now() +  '.' + ext);
   }
 });
 
-const uploadLocal = multer({ storage: storage });
+const upload = multer({ storage });
 
-module.exports = uploadLocal;
+module.exports = upload;
 
 // GCS
 const multerGoogleStorage = require('multer-google-storage');
