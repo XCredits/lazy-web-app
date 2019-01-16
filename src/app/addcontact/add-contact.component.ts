@@ -24,23 +24,11 @@ export class AddContactsComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    if (this.userService.isLoggedIn()) {
-      this.userService.userObservable
-          .subscribe(user => {
-            this.form = new FormGroup ({
-              givenName: new FormControl(user.givenName),
-              familyName: new FormControl(user.familyName),
-              email: new FormControl(user.email,
-                [Validators.required, Validators.email]),
-            });
-          });
-    } else {
-      this.form = new FormGroup ({
-        givenName: new FormControl(''),
-        familyName: new FormControl(''),
-        email: new FormControl('', [Validators.required, Validators.email]),
-      });
-    }
+    this.form = new FormGroup ({
+      givenName: new FormControl(''),
+      familyName: new FormControl(''),
+      email: new FormControl('', [Validators.required, Validators.email]),
+    });
   }
 
   submit = function (formData) {
@@ -61,18 +49,12 @@ export class AddContactsComponent implements OnInit {
           this.waiting = false;
           this.submitSuccess = true;
           console.log('subscribe...');
-          // this.snackBar.open('Successfully subscribed to the mailing list', 'Dismiss', {
-          //    duration: 5000,
-          //    verticalPosition: 'top',
-          //    horizontalPosition: 'right',
-          //  });
-          // this.analytics.mailingList();
         },
         errorResponse => {
           this.waiting = false;
-          console.log('error1');
+          console.log('error ... ');
           console.dir(errorResponse);
-          this.formErrorMessage = 'There was a problem submitting the form . ';
+          this.formErrorMessage = 'There was a problem submitting the form.. ';
         });
   };
 }
