@@ -92,6 +92,14 @@ body {
   background-color: green !important;
 }
 
+// Global modal style
+.custom-modalbox {
+  mat-dialog-container {
+      padding: 0;
+      max-width: 95vw;
+  }
+}
+
 
 // Admin chart styles
 .admin-chart{

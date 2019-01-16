@@ -11,8 +11,8 @@
   <div class='modal-header'>
     <h5>Set Thumbnail</h5>
   </div>
-  <div class="modal-body">
-    <image-cropper
+  <div class="modal-body" style="padding: 0px;">
+    <image-cropper style="width: 600px; max-width: calc(90vw - 80px);" 
         [imageChangedEvent]="imageChangedEvent"
         [maintainAspectRatio]="true"
         [aspectRatio]="1 / 1"

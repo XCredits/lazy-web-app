@@ -3,6 +3,7 @@ import { ImageUploadService } from './image-upload.service';
 import { UserService } from './../user.service';
 import { MatSnackBar } from '@angular/material';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { MatDialog } from '@angular/material';
 
 class FileSnippet {
   pending = false;
@@ -27,10 +28,11 @@ export class ImageUploadComponent {
   imageChangedEvent: any;
   modalReference = null;
   options: any = {
-    size: 'dialog-centered'
+    size: 'dialog-centered',
+    panelClass: 'custom-modalbox'
   };
 
-  constructor(private imageService: ImageUploadService, private snackBar: MatSnackBar, public modalService: NgbModal) { }
+  constructor(private imageService: ImageUploadService, private snackBar: MatSnackBar, public modalService: MatDialog) { }
 
   private onSuccess(imageUrl: string) {
     this.modalReference.close();
