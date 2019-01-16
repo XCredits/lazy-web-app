@@ -1,8 +1,8 @@
 import * as validator from 'validator';
-const MailingList = require('../models/mailing-list.model.js');
-const emailService = require('../services/email.service.js');
-const MailingListStats = require('../models/mailing-list-stats.model.js');
-const statsService = require('../services/stats.service.js');
+const MailingList = require('../models/mailing-list.model');
+const emailService = require('../services/email.service');
+const MailingListStats = require('../models/mailing-list-stats.model');
+const statsService = require('../services/stats.service');
 
 module.exports = function(app) {
   app.post('/api/join-mailing-list', joinMailingList);

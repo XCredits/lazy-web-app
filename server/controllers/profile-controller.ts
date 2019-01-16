@@ -1,8 +1,8 @@
 import * as validator from 'validator';
-const User = require('../models/user.model.js');
-const auth = require('./jwt-auth.controller.js');
+const User = require('../models/user.model');
+const auth = require('./jwt-auth.controller');
 const {isValidDisplayUsername, normalizeUsername} =
-    require('./utils.controller.js');
+    require('./utils.controller');
 
 const imageUpload = require('../services/image-upload');
 const singleUpload = imageUpload.single('image');

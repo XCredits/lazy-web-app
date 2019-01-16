@@ -2,6 +2,9 @@
   "name": "lazy-web-app",
   "version": "0.1.0",
   "license": "",
+  "engines": {
+    "node": ">=11.6"
+  },
   "scripts": {
     "ng": "ng",
     "start": "node server.js",
@@ -43,7 +46,7 @@
     "@types/zxcvbn": "^4.4.0",
     "angular-font-awesome": "^3.1.2",
     "aws-sdk": "^2.382.0",
-    "bcrypt": "^3.0.2",
+    "bcrypt": "^3.0.3",
     "bluebird": "^3.5.1",
     "body-parser": "^1.18.2",
     "bootstrap": "^4.2.1",
@@ -68,7 +71,7 @@
     "multer-s3": "^2.9.0",
     "ngx-image-cropper": "^1.3.4",
     "ngx-webstorage": "^3.0.0-beta.13",
-    "node-sass": "^4.10.0",
+    "node-sass": "^4.11.0",
     "nodemon": "^1.17.4",
     "passport": "^0.4.0",
     "passport-local": "^1.0.0",
@@ -79,7 +82,7 @@
     "zxcvbn": "^4.4.2"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "^0.11.4",
+    "@angular-devkit/build-angular": "^0.12.1",
     "@angular/cli": "^7.0.5",
     "@angular/compiler-cli": "7.0.3",
     "@angular/language-service": "7.0.3",
