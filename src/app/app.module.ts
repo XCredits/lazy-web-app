@@ -209,13 +209,13 @@ import { ViewContactsComponent } from './view-contacts/view-contacts.component';
         data: { title: 'Privacy' },
       },
       {
-        path: 'addcontact',
+        path: 'add-contact',
         component: AddContactsComponent,
         data: { title: 'AddContact' },
 
       },
       {
-        path: 'viewcontacts',
+        path: 'view-contacts',
         component: ViewContactsComponent,
         data: { title: 'ViewContacts' },
 
