@@ -2,6 +2,7 @@
 
 # Secrets
 *.env
+Google_Credentials
 
 # compiled output
 /dist

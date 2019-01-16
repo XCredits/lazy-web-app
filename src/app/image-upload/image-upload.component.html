@@ -1,0 +1,44 @@
+<label *ngIf="!imageChangedEvent">
+  <span>
+    <mat-icon class='icon'>add_a_photo</mat-icon>
+  </span>
+  <input type='file'
+         accept='image/*'
+         (change)='processFile($event, imageCropper)'>
+</label>
+
+<ng-template #imageCropper let-c="close" let-d="dismiss">
+  <div class='modal-header'>
+    <h5>Set Thumbnail</h5>
+  </div>
+  <div class="modal-body">
+    <image-cropper
+        [imageChangedEvent]="imageChangedEvent"
+        [maintainAspectRatio]="true"
+        [aspectRatio]="1 / 1"
+        format="jpeg"
+        (imageCroppedFile)="imageCropped($event)">
+    </image-cropper>
+
+    <div *ngIf="selectedFile && imageChangedEvent">
+      <div [ngStyle] = "{'background-image': 'url(' + selectedFile.src + ')'}">
+      </div>
+    </div>
+  </div>
+    <div class='modal-footer'>
+      <button *ngIf="imageChangedEvent"
+      (click)='cancelCropping()'
+      mat-raised-button
+      color='warn'>Cancel
+    </button>
+
+      <button *ngIf="imageChangedEvent"
+      (click)= "uploadImage()"
+      mat-raised-button
+      color='primary'>
+        <span class='okButton'>
+        <mat-icon matSuffix>done</mat-icon>
+        </span>
+      </button>
+    </div>
+</ng-template>

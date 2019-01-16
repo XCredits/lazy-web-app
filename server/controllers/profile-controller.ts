@@ -4,12 +4,16 @@ const auth = require('./jwt-auth.controller');
 const {isValidDisplayUsername, normalizeUsername} =
     require('./utils.controller');
 
+const imageUpload = require('../services/image-upload');
+const singleUpload = imageUpload.single('image');
+
 module.exports = function(app) {
   app.post('/api/user/save-details', auth.jwtRefreshToken, saveDetails);
+  app.post('/api/image-upload', auth.jwtRefreshToken, imageUploadRoute);
 };
 
 /**
- * Change Email, Given Name
+ * Change Profile details
  * @param {*} req request object
  * @param {*} res response object
  * @return {*}
@@ -48,4 +52,39 @@ function saveDetails(req, res) {
       .catch((err) => {
         return res.status(500).send({message: 'UserId not found'});
       });
+}
+
+/**
+ * Upload Profile Image
+ * @param {*} req request object
+ * @param {*} res response object
+ * @return {*}
+ */
+
+function imageUploadRoute(req, res) {
+  const userId = req.userId;
+  if (typeof userId !== 'string') {
+    return res.status(422).json({message: 'Error in UserId'});
+  }
+  singleUpload(req, res, function(err) {
+    if (err) {
+      return res.status(422).send({errors: [{title: 'Image Upload error', detail: err.message}]});
+    }
+    User.findOne({_id: userId})
+        .then((user) => {
+          // For AWS use req.file.location
+          // For GCS use req.file.path
+          user.profileImage = `assets/images/${req.file.filename}`;
+          return user.save()
+              .then(() => {
+                return res.status(200).send({message: 'Image Uploaded Successfully'});
+              })
+              .catch(() => {
+                return res.status(500).send({message: 'Error in uploading image'});
+              });
+        })
+        .catch(() => {
+          return res.status(500).send({message: 'UserId not found'});
+        });
+  });
 }

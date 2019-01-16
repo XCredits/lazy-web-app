@@ -15,9 +15,12 @@ const hostHttpsRedirectController =
 const socialController = require('./controllers/social.controller');
 const tracking = require('./services/tracking.service');
 const routes = require('./routes');
+const cors = require('cors');
 
 const helmet = require('helmet');
 app.use(helmet());
+
+app.use(cors());
 
 app.use(bodyParser.urlencoded({extended: true})); // extended gives full JSON
 app.use(bodyParser.json());
