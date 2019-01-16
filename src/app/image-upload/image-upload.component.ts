@@ -69,9 +69,8 @@ export class ImageUploadComponent {
 
     if ((file = event.target.files[0]) && (file.type === 'image/png' || file.type === 'image/jpeg' || file.type === 'image/jpg')) {
       img = new Image();
-      const self = this;
-      img.onload = function() {
-        self.imageChangedEvent = event;
+      img.onload = () => {
+        this.imageChangedEvent = event;
       };
       img.src = URL.createObjectURL(file);
     }  else {
@@ -87,7 +86,6 @@ export class ImageUploadComponent {
   uploadImage() {
     if (this.selectedFile) {
       const reader = new FileReader();
-
       reader.addEventListener('load', (event: any) => {
         this.selectedFile.pending = true;
         this.imageService.uploadImage(this.selectedFile.file).subscribe(
@@ -100,7 +98,5 @@ export class ImageUploadComponent {
       });
       reader.readAsDataURL(this.selectedFile.file);
     }
-
-    }
-
+  }
 }
