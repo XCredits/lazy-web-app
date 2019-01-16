@@ -48,11 +48,11 @@ export class AppComponent implements OnInit {
       icon: 'chat',
       title: 'Feed',
     },
-    {
-      routerLink: '/contacts',
-      icon: 'person',
-      title: 'Contacts',
-    },
+    // {
+    //   routerLink: '/contacts',
+    //   icon: 'person',
+    //   title: 'Contacts',
+    // },
     {
       routerLink: '/about',
       icon: 'view_carousel',
@@ -73,11 +73,11 @@ export class AppComponent implements OnInit {
       icon: 'email',
       title: 'Mailing list',
     },
-    {
-      routerLink: '/help',
-      icon: 'help',
-      title: 'Help',
-    },
+    // {
+    //   routerLink: '/help',
+    //   icon: 'help',
+    //   title: 'Help',
+    // },
     {
       routerLink: '/settings',
       icon: 'settings',
