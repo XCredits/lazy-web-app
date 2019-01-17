@@ -39,7 +39,7 @@ export class MailingListComponent implements OnInit {
     this.formErrorMessage = undefined;
     this.submitSuccess = false;
     this.waiting = true;
-    this.http.post('/api/join-mailing-list2', {
+    this.http.post('/api/join-mailing-listA', {
           'givenName': formData.givenName,
           'familyName': formData.familyName,
           'email': formData.email

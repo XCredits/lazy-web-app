@@ -5,7 +5,8 @@ const MailingListStats = require('../models/mailing-list-stats.model');
 const statsService = require('../services/stats.service');
 
 module.exports = function(app) {
-  app.post('/api/join-mailing-list2', joinMailingList);
+  console.log('Hi');
+  app.post('/api/join-mailing-listA', joinMailingList);
 };
 
 /**
