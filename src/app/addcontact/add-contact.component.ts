@@ -40,7 +40,7 @@ export class AddContactsComponent implements OnInit {
     this.submitSuccess = false;
     this.waiting = true;
     console.log('before function');
-    this.http.post('/api/join-contact-list', {
+    this.http.post('/api/join-contact-list1', {
           'givenName': formData.givenName,
           'familyName': formData.familyName,
           'email': formData.email
