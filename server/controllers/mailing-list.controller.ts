@@ -6,7 +6,7 @@ const statsService = require('../services/stats.service');
 
 module.exports = function(app) {
   console.log('Hi');
-  app.post('/api/join-mailing-listA', joinMailingList);
+  app.post('/api/join-mailing-list', joinMailingList);
 };
 
 /**
