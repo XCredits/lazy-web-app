@@ -27,7 +27,6 @@ export class ProfileComponent implements OnInit {
   ngOnInit() {
     this.userService.userObservable
         .subscribe(user => {
-          console.log('Updated user', user.givenName);
           this.profileImage = user.profileImage;
           this.form = new FormGroup ({
             givenName: new FormControl(user.givenName, [Validators.required]),
@@ -37,7 +36,6 @@ export class ProfileComponent implements OnInit {
               Validators.pattern(this.userService.displayUsernameRegexString)]),
           });
           this.user = user;
-          console.log('Original', this.user.givenName);
         });
     this.form.valueChanges.subscribe(changes => this.wasFormChanged(changes));
     this.form.valueChanges.subscribe(changes => this.checkUsername(changes));
@@ -116,7 +114,6 @@ export class ProfileComponent implements OnInit {
 
   private wasFormChanged(currentValue) {
     const fields = ['givenName', 'familyName', 'email'];
-    console.log('Inside');
     this.disableButton = true;
     this.submitSuccess = false;
     this.formErrorMessage = undefined;
