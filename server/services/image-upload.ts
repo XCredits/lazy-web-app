@@ -1,14 +1,14 @@
-const multer  = require('multer');
-const pathi = require('path');
-const aws = require('aws-sdk');
-const multerS3 = require('multer-s3');
+import multer  = require('multer');
+import path = require('path');
+import aws = require('aws-sdk');
+import multerS3 = require('multer-s3');
+const crypt = require('crypto');
 
 
  // The selection between GCS and AWS is made using the .env file and the
  // config.ts file.
 const fileFilter = (req, file, cb) => {
-  if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png') {
-    console.log(process.env.IMAGE_SERVICE);
+  if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png' || file.mimetype === 'image/jpg') {
     cb(null, true);
   } else {
     cb(new Error('Invalid file type, only JPEG and PNG is allowed!'), false);
@@ -19,7 +19,7 @@ const fileFilter = (req, file, cb) => {
 if (process.env.IMAGE_SERVICE === 'localDisk') {
   const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-      cb(null, pathi.join(__dirname, '..', '..', 'src/assets/images/'));
+      cb(null, path.join(__dirname, '..', '..', 'src/assets/images/'));
     },
     filename: function(req, file, cb) {
       const ext = file.mimetype.split('/')[1];
