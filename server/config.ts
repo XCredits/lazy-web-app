@@ -44,6 +44,10 @@ if (isLocal) {
   process.env.MONGODB_URI = process.env.MONGODB_URI_DEV;
 }
 
-if (process.env.GCS === 'true') {
-  process.env.BUCKET_ID = process.env.GCS_BUCKET;
+if (process.env.AWS_BUCKET !== 'null') {
+  process.env.IMAGE_SERVICE = 'aws';
+} else if (process.env.GCS_BUCKET !== 'null') {
+  process.env.IMAGE_SERVICE = 'gcs';
+} else {
+  process.env.IMAGE_SERVICE = 'localDisk';
 }
