@@ -74,7 +74,7 @@ function imageUploadRoute(req, res) {
         .then((user) => {
           // For AWS use req.file.location
           // For GCS use req.file.path
-          user.profileImage = `assets/images/${req.file.filename}`;
+          user.profileImage = req.file.path;
           return user.save()
               .then(() => {
                 return res.status(200).send({message: 'Image Uploaded Successfully'});

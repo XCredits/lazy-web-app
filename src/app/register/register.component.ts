@@ -58,7 +58,8 @@ export class RegisterComponent implements OnInit {
     this.form.valueChanges.subscribe(formData => this.checkPassword(formData));
   }
 
-  // If any changes done below, please do the same in "wasUsernameChanged" function in profile.component.ts
+  // If any changes done below, please do the same in "checkUsername"
+  // function in profile.component.ts
   checkUsername = function (formData)  {
     this.form.controls['username'].setErrors(null);
     const displayUsernameRegex =

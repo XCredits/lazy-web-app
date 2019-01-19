@@ -44,3 +44,6 @@ if (isLocal) {
   process.env.MONGODB_URI = process.env.MONGODB_URI_DEV;
 }
 
+if (process.env.GCS === 'true') {
+  process.env.BUCKET_ID = process.env.GCS_BUCKET;
+}

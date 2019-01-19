@@ -5,8 +5,8 @@ import { ImageUploadComponent } from './image-upload.component';
 import { ImageUploadService } from './image-upload.service';
 import { MatIconModule } from '@angular/material';
 import { ImageCropperModule } from 'ngx-image-cropper';
-import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { MatButtonModule } from '@angular/material';
+import { MatDialogModule } from '@angular/material';
 
 @NgModule({
   imports: [
@@ -15,7 +15,7 @@ import { MatButtonModule } from '@angular/material';
     MatIconModule,
     ImageCropperModule,
     MatButtonModule,
-    NgbModule.forRoot(),
+    MatDialogModule
   ],
   entryComponents: [
     ImageUploadComponent,

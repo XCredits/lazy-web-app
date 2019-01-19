@@ -1,5 +1,5 @@
-import multer  = require('multer');
-import path = require('path');
+const multer  = require('multer');
+const pathi = require('path');
 
 const fileFilter = (req, file, cb) => {
   if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png') {
@@ -10,10 +10,10 @@ const fileFilter = (req, file, cb) => {
 };
 
 // Local Disk Storage
-if (imageUploadService === '????????') {
+// if (imageUploadService === '????????') {
   const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-      cb(null, path.join(__dirname, '..', '..', 'src/assets/images/'));
+      cb(null, pathi.join(__dirname, '..', '..', 'src/assets/images/'));
     },
     filename: function(req, file, cb) {
       const ext = file.mimetype.split('/')[1];
@@ -24,7 +24,7 @@ if (imageUploadService === '????????') {
   });
   const upload = multer({ storage });
   module.exports = upload;
-} else if () {
+// } else if () {
 
   // GCS
   const multerGoogleStorage = require('multer-google-storage');
@@ -39,14 +39,12 @@ if (imageUploadService === '????????') {
   });
 
   module.exports = uploadGCS;
-} else {
+// } else {
   // AWS
   const aws = require('aws-sdk');
   const multerS3 = require('multer-s3');
 
   const s3 = new aws.S3();
-
-  
 
   const uploadAWS = multer({
     fileFilter,
@@ -64,4 +62,3 @@ if (imageUploadService === '????????') {
   });
 
   module.exports = uploadAWS;
-}

@@ -10,3 +10,8 @@ input {
 .okButton {
   display: inline-flex;
 }
+
+.dialogStyle {
+  width: 600px;
+  max-width: calc(90vw - 80px);
+}

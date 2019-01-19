@@ -26,23 +26,25 @@ export class ProfileComponent implements OnInit {
 
   ngOnInit() {
     this.userService.userObservable
-      .subscribe(user => {
-        this.profileImage = user.profileImage;
-        this.form = new FormGroup ({
-          givenName: new FormControl(user.givenName, [Validators.required]),
-          familyName: new FormControl(user.familyName, [Validators.required]),
-          email: new FormControl(user.email, [Validators.required, Validators.email]),
-          username: new FormControl(user.displayUsername, [Validators.required,
-            Validators.pattern(this.userService.displayUsernameRegexString)]),
+        .subscribe(user => {
+          console.log('Updated user', user.givenName);
+          this.profileImage = user.profileImage;
+          this.form = new FormGroup ({
+            givenName: new FormControl(user.givenName, [Validators.required]),
+            familyName: new FormControl(user.familyName, [Validators.required]),
+            email: new FormControl(user.email, [Validators.required, Validators.email]),
+            username: new FormControl(user.displayUsername, [Validators.required,
+              Validators.pattern(this.userService.displayUsernameRegexString)]),
+          });
+          this.user = user;
+          console.log('Original', this.user.givenName);
         });
-        this.user = user;
-      });
-     setInterval(() => {
-        this.form.valueChanges.subscribe(changes => this.wasFormChanged(changes));
-        this.form.valueChanges.subscribe(changes => this.checkUsername(changes));
-     }, 2000) ;
-    }
+    this.form.valueChanges.subscribe(changes => this.wasFormChanged(changes));
+    this.form.valueChanges.subscribe(changes => this.checkUsername(changes));
+  }
 
+  // If any changes done below, please do the same in "checkUsername"
+  // function in register.component.ts
   checkUsername = function (formData)  {
     this.form.controls['username'].setErrors(null);
     const displayUsernameRegex =
@@ -97,10 +99,15 @@ export class ProfileComponent implements OnInit {
   handleImageUpload(imageUrl: string) {
     this.userService.updateUserDetails();
     this.snackBar.open('Image Uploaded Successfully', 'Dismiss', {
-             duration: 5000,
-             verticalPosition: 'top',
-             horizontalPosition: 'right',
-           });
+      duration: 5000,
+      verticalPosition: 'top',
+      horizontalPosition: 'right',
+    });
+    // Resubscribe to form changes after success
+    setTimeout(() => {
+      this.form.valueChanges.subscribe(changes => this.wasFormChanged(changes));
+      this.form.valueChanges.subscribe(changes => this.checkUsername(changes));
+    }, 100);
   }
 
   handleImageError() {
@@ -109,6 +116,7 @@ export class ProfileComponent implements OnInit {
 
   private wasFormChanged(currentValue) {
     const fields = ['givenName', 'familyName', 'email'];
+    console.log('Inside');
     this.disableButton = true;
     this.submitSuccess = false;
     this.formErrorMessage = undefined;
@@ -142,6 +150,11 @@ export class ProfileComponent implements OnInit {
           this.submitSuccess = true;
           this.disableButton = true;
           this.userService.updateUserDetails();
+          // Resubscribe to form changes after success
+          setTimeout(() => {
+            this.form.valueChanges.subscribe(changes => this.wasFormChanged(changes));
+            this.form.valueChanges.subscribe(changes => this.checkUsername(changes));
+          }, 100);
         },
         errorResponse => {
           this.disableButton = true;

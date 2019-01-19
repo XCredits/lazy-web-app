@@ -13,7 +13,6 @@ import { AuthGuard } from './auth.guard';
 import { AdminGuard } from './admin.guard';
 
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-// import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import { AngularFontAwesomeModule } from 'angular-font-awesome';
 
 // Material modules
