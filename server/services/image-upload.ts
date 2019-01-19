@@ -2,12 +2,12 @@ const multer  = require('multer');
 const pathi = require('path');
 const aws = require('aws-sdk');
 const multerS3 = require('multer-s3');
-const crypt = require('crypto');
+
 
  // The selection between GCS and AWS is made using the .env file and the
  // config.ts file.
 const fileFilter = (req, file, cb) => {
-  if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png' || file.mimetype === 'image/jpg') {
+  if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png') {
     console.log(process.env.IMAGE_SERVICE);
     cb(null, true);
   } else {
@@ -24,23 +24,20 @@ if (process.env.IMAGE_SERVICE === 'localDisk') {
     filename: function(req, file, cb) {
       const ext = file.mimetype.split('/')[1];
       const array = new Uint32Array(1);
-      crypt.randomFillSync(array);
+      window.crypto.getRandomValues(array);
       cb(null, 'img-' + Date.now() + '-' +  array[0] + '.' + ext);
     }
   });
-  const upload = multer({
-    fileFilter,
-    storage });
+  const upload = multer({ storage });
   module.exports = upload;
 } else if (process.env.IMAGE_SERVICE === 'gcs') {
     const multerGoogleStorage = require('multer-google-storage');
 
     const uploadGCS = multer({
-      fileFilter,
-      storage: multerGoogleStorage.storageEngine({
-        acl: 'publicread',
-        bucket: process.env.GCS_BUCKET,
-      }),
+        storage: multerGoogleStorage.storageEngine({
+          acl: 'publicread',
+          bucket: process.env.GCS_BUCKET,
+        }),
     });
     module.exports = uploadGCS;
 } else {
