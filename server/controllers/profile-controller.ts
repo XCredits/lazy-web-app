@@ -72,14 +72,12 @@ function imageUploadRoute(req, res) {
     }
     User.findOne({_id: userId})
         .then((user) => {
-          // For AWS use req.file.location
-          // For GCS use req.file.path
           if (process.env.IMAGE_SERVICE === 'aws') {
-            user.profileImage = req.file.location;
+              user.profileImage = req.file.location;
           } else if (process.env.IMAGE_SERVICE === 'gcs') {
-            user.profileImage = req.file.path;
+              user.profileImage = req.file.path;
           } else {
-            user.profileImage = `assets/images/${req.file.filename}`;
+              user.profileImage = `assets/images/${req.file.filename}`;
           }
           return user.save()
               .then(() => {
