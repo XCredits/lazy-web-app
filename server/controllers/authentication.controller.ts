@@ -328,7 +328,7 @@ function userDetails(req, res) {
 }
 
 /**
- * returns an x users
+ * returns all users for now
  * @param {*} req request object
  * @param {*} res response object
  * @returns {*}
@@ -336,8 +336,9 @@ function userDetails(req, res) {
 function userInfo(req, res) {
   return Contact.find()
       .then((user) => {
-        // console.log(user, 'user found');
-        return res.send(user);
+        console.log('user is - -> ' + user);
+        console.log('from API -> ' + user.email.toString);
+        return user; // res.send(user);
       })
       .catch((err) => {
         console.log('user not found');

@@ -1,4 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { UserService, User } from '../user.service';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-view-contacts',
@@ -7,9 +10,29 @@ import { Component, OnInit } from '@angular/core';
 })
 export class ViewContactsComponent implements OnInit {
 
-  constructor() { }
+form: FormGroup;
 
-  ngOnInit() {
-  }
+disableButton = true;
+waiting = false;
+submitSuccess = false;
+formErrorMessage: string;
+user: User;
 
+constructor(
+  private http: HttpClient,
+  private userService: UserService,
+) { }
+
+ngOnInit() {
+  this.form = new FormGroup ({
+    givenName: new FormControl(''),
+    familyName: new FormControl(''),
+    email: new FormControl('', [Validators.required, Validators.email]),
+  });
+  this.http.get<any>('/api/get-user-details')
+      .subscribe((user) =>  {
+        this.user = user;
+        console.log('user is ' + this.user);
+      });
+ }
 }

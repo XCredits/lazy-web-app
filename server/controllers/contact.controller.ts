@@ -6,7 +6,7 @@ const statsService = require('../services/stats.service.js');
 const Contact = require('../models/contact.model.js');
 
 module.exports = function(app) {
-  console.log('Before API===-');
+  console.log('Before API===-1');
   app.post('/api/join-contact-list', joinContactList);
 };
 
