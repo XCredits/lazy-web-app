@@ -49,6 +49,7 @@
     "body-parser": "^1.18.2",
     "chart.js": "^2.7.2",
     "classlist.js": "^1.1.20150312",
+    "concurrently": "^3.5.1",
     "cookie-parser": "^1.4.3",
     "core-js": "^2.4.1",
     "dotenv": "^5.0.1",
@@ -68,7 +69,6 @@
     "passport-local": "^1.0.0",
     "rxjs": "^6.3.3",
     "rxjs-compat": "^6.1.0",
-    "tsc": "^1.20150623.0",
     "validator": "^10.2.0",
     "zone.js": "^0.8.26",
     "zxcvbn": "^4.4.2"
@@ -83,7 +83,6 @@
     "@types/jasminewd2": "~2.0.2",
     "@types/node": "^6.0.118",
     "codelyzer": "^4.0.1",
-    "concurrently": "^3.6.1",
     "eslint": "^4.19.1",
     "eslint-config-google": "^0.9.1",
     "jasmine-core": "~2.8.0",
