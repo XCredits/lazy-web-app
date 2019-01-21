@@ -47,6 +47,7 @@ const passwordSettings = {
 
 
 import * as validator from 'validator';
+const Contact = require('../models/contact.model');
 const User = require('../models/user.model');
 const UserStats = require('../models/user-stats.model');
 const statsService = require('../services/stats.service');
@@ -79,6 +80,7 @@ module.exports = function(app) {
       auth.jwtTemporaryLinkToken, changePassword);
   app.post('/api/user/forgot-username', forgotUsername);
   app.post('/api/user/logout', auth.jwtRefreshToken, logout);
+  app.get('/api/get-user-details', userInfo);
 };
 
 /**
@@ -321,6 +323,24 @@ function userDetails(req, res) {
         res.send(user.frontendData());
       })
       .catch((err) => {
+        return res.status(500).send({message: 'UserId not found'});
+      });
+}
+
+/**
+ * returns an x users
+ * @param {*} req request object
+ * @param {*} res response object
+ * @returns {*}
+ */
+function userInfo(req, res) {
+  return Contact.find()
+      .then((user) => {
+        // console.log(user, 'user found');
+        return res.send(user);
+      })
+      .catch((err) => {
+        console.log('user not found');
         return res.status(500).send({message: 'UserId not found'});
       });
 }
