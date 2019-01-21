@@ -16,10 +16,10 @@ const fileFilter = (req, file, cb) => {
 };
 
 // Local Disk Storage
-if (process.env.IMAGE_SERVICE === 'localDisk') {
+if (process.env.IMAGE_SERVICE === 'local') {
     const storage = multer.diskStorage({
       destination: function (req, file, cb) {
-        cb(null, path_image.join(__dirname, process.env.IMAGE_SAVE_LOCATION));
+        cb(null, process.env.LOCAL_IMAGE_SAVE_LOCATION_ABSOLUTE);
       },
       filename: function(req, file, cb) {
         const ext = file.mimetype.split('/')[1];
