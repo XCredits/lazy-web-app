@@ -5,15 +5,11 @@ const authenticationController =
 const statsController =
     require('./controllers/stats.controller');
 const profileController =
-<<<<<<< HEAD
-    require('./controllers/profile-controller.js');
-const contactController =
-    require('./controllers/contact.controller.ts');
-const testapiController =
-    require('./controllers/authentication.controller.js');
-=======
     require('./controllers/profile-controller');
->>>>>>> pre-release
+const contactController =
+    require('./controllers/contact.controller');
+const testapiController =
+    require('./controllers/authentication.controller');
 
 module.exports = function(app) {
   mailingListController(app);
