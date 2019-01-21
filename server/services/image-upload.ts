@@ -1,8 +1,8 @@
-import multer  = require('multer');
-import path = require('path');
-import aws = require('aws-sdk');
-import multerS3 = require('multer-s3');
-import multerGoogleStorage = require('multer-google-storage');
+const multer  = require('multer');
+const path_image = require('path');
+const aws = require('aws-sdk');
+const multerS3 = require('multer-s3');
+const multerGoogleStorage = require('multer-google-storage');
 const crypt = require('crypto');
 
  // The selection between GCS and AWS is made using the .env file and the
@@ -19,7 +19,7 @@ const fileFilter = (req, file, cb) => {
 if (process.env.IMAGE_SERVICE === 'localDisk') {
     const storage = multer.diskStorage({
       destination: function (req, file, cb) {
-        cb(null, path.join(__dirname, process.env.IMAGE_SAVE_LOCATION));
+        cb(null, path_image.join(__dirname, process.env.IMAGE_SAVE_LOCATION));
       },
       filename: function(req, file, cb) {
         const ext = file.mimetype.split('/')[1];

@@ -5,7 +5,8 @@
 <button *ngIf="isLoggedIn" mat-button [matMenuTriggerFor]="userDropdownMenu"
     style="min-width:50px">
   <span>
-    <img mat-card-sm-image class='thumbNail' [src]="user.profileImage" alt='Profile photo'>
+    <img mat-card-sm-image *ngIf='user.profileImage' class='thumbNail' [src]="user.profileImage" alt='Profile photo'>
+    <img mat-card-sm-image *ngIf='!user.profileImage' class='thumbNail' src='assets/img/default-profile-photo.png'>
   </span>
   {{user?.givenName}} {{user?.familyName[0]}} 
 </button>
