@@ -1,4 +1,5 @@
 'use strict';
+import * as path from 'path';
 
 process.env.JWT_EXPIRY = (10 * 60 * 1000).toString(); // Expiry in ms (10 mins), stored as string
 process.env.JWT_REFRESH_TOKEN_EXPIRY = (365 * 24 * 60 * 60 * 1000).toString(); // Expiry in ms (1 year), stored as string
@@ -44,10 +45,18 @@ if (isLocal) {
   process.env.MONGODB_URI = process.env.MONGODB_URI_DEV;
 }
 
-if (process.env.AWS_BUCKET !== 'null') {
+if (typeof process.env.AWS_BUCKET !== 'undefined') {
   process.env.IMAGE_SERVICE = 'aws';
-} else if (process.env.GCS_BUCKET !== 'null') {
+} else if (typeof process.env.GCS_BUCKET !== 'undefined') {
   process.env.IMAGE_SERVICE = 'gcs';
 } else {
-  process.env.IMAGE_SERVICE = 'localDisk';
+  process.env.IMAGE_SERVICE = 'local';
+  if (typeof process.env.LOCAL_IMAGE_SAVE_LOCATION === 'undefined') {
+    process.env.LOCAL_IMAGE_SAVE_LOCATION = '../local-image-store';
+  }
+  process.env.LOCAL_IMAGE_SAVE_LOCATION_ABSOLUTE = path.join(__dirname, process.env.LOCAL_IMAGE_SAVE_LOCATION);
+  console.log('\n\n\n\n__dirname');
+  console.log(__dirname);
+  console.log(path.join(__dirname, process.env.LOCAL_IMAGE_SAVE_LOCATION));
+  console.log(path.join(__dirname, process.env.LOCAL_IMAGE_SAVE_LOCATION_ABSOLUTE));
 }

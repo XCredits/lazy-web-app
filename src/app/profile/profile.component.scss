@@ -6,7 +6,19 @@
   border-radius: 50%;
 }
 
-.image-upload{
-  width: 200px;
+.profile-image{
+  width: 152px;
+  height: 152px;
   margin:auto;
+  position: relative;
+  margin-bottom: 10px;
+
+  .app-image-upload-positioner {
+    position: absolute;
+    bottom: 0;
+    width: 152px;
+    padding-left: 64px;
+    padding-right: 64px;
+  }
 }
+

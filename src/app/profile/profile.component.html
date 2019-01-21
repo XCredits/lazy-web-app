@@ -3,12 +3,14 @@
     <form [formGroup]="form" (ngSubmit)="submit(form.value)">
       <mat-card-title> Profile </mat-card-title>
       <mat-card-content>
-        <div class='image-upload'>
+        <div class="profile-image">
           <img mat-card-lg-image class="img-class" [src]="profileImage" alt='Profile Photo'>
-          <app-image-upload
-                            (imageUploaded)="handleImageUpload($event)"
-                            (imageError)="handleImageError()">
-          </app-image-upload>  
+          <div class="app-image-upload-positioner">
+            <app-image-upload
+                (imageUploaded)="handleImageUpload($event)"
+                (imageError)="handleImageError()">
+            </app-image-upload>  
+          </div>
         </div>
         <div class="form-group">
           <mat-form-field class="simple-form-field-50">
