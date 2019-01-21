@@ -55,8 +55,4 @@ if (typeof process.env.AWS_BUCKET !== 'undefined') {
     process.env.LOCAL_IMAGE_SAVE_LOCATION = '../local-image-store';
   }
   process.env.LOCAL_IMAGE_SAVE_LOCATION_ABSOLUTE = path.join(__dirname, process.env.LOCAL_IMAGE_SAVE_LOCATION);
-  console.log('\n\n\n\n__dirname');
-  console.log(__dirname);
-  console.log(path.join(__dirname, process.env.LOCAL_IMAGE_SAVE_LOCATION));
-  console.log(path.join(__dirname, process.env.LOCAL_IMAGE_SAVE_LOCATION_ABSOLUTE));
 }

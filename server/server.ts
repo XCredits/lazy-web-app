@@ -34,12 +34,9 @@ app.use(tracking.browserIdCookie);
 
 if (process.env.IMAGE_SERVICE === 'local') {
   app.use(express.static(process.env.LOCAL_IMAGE_SAVE_LOCATION_ABSOLUTE));
-  console.log('\n\n\n\n\n IMAGE STORE!!!!!!!!!!!!!!!!!!!!');
-  console.log(process.env.LOCAL_IMAGE_SAVE_LOCATION_ABSOLUTE);
 }
 
 app.use(express.static(path.join(__dirname, '/../dist')));
-console.log(path.join(__dirname, '/../dist'));
 
 
 
