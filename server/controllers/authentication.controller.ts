@@ -334,17 +334,19 @@ function userDetails(req, res) {
  * @returns {*}
  */
 function userInfo(req, res) {
-  return Contact.find()
-      .then((user) => {
-        console.log('user is - -> ' + user);
-        console.log('from API -> ' + user.email.toString);
-        return user; // res.send(user);
-      })
-      .catch((err) => {
-        console.log('user not found');
-        return res.status(500).send({message: 'UserId not found'});
-      });
+  Contact.find({})
+  .then((result) => {
+    const resultsFiltered = result.map((x) => {
+      return {givenName: x.givenName, familyName: x.familyName, email: x.email};
+    });
+    res.send(resultsFiltered);
+  })
+  .catch((err) => {
+    res.status(500)
+        .send({message: 'Error retrieving users from contacts database'});
+  });
 }
+
 
 /**
  * change password
