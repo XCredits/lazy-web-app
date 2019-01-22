@@ -8,7 +8,7 @@ import {uploadSingleImage} from '../services/image-upload';
 
 module.exports = function(app) {
   app.post('/api/user/save-details', auth.jwtRefreshToken, saveDetails);
-  app.post('/api/image-upload', auth.jwtRefreshToken, imageUploadRoute);
+  app.post('/api/user/profile-image-upload', auth.jwtRefreshToken, profileImageUpload);
 };
 
 /**
@@ -60,7 +60,7 @@ function saveDetails(req, res) {
  * @return {*}
  */
 
-function imageUploadRoute(req, res) {
+function profileImageUpload(req, res) {
   const userId = req.userId;
   if (typeof userId !== 'string') {
     return res.status(422).json({message: 'Error in UserId'});
