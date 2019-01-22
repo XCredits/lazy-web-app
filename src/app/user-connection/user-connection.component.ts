@@ -12,6 +12,7 @@ import { UserService, User } from '../user.service';
 export class UserConnectionComponent implements OnInit {
   user: User;
   isLoggedIn: boolean;
+  confirmedConnections = [];
 
   constructor(private userService: UserService) { }
 
@@ -20,13 +21,25 @@ export class UserConnectionComponent implements OnInit {
         .subscribe(user => {
           this.user = user;
           this.isLoggedIn = !!this.user;
+          this.getPendingRequests();
+          this.confirmedConnections.push('sample1');
+          this.confirmedConnections.push('sample2');
+          this.confirmedConnections.push('sample3');
 
-          console.log('user logged in is --> ' + user.username);
+          console.log('user logged in is --> ' + user.id);
         });
   }
 
   logout() {
-    this.userService.logOut();
+   // this.userService.logOut();
   }
+
+  onSelect(friends) {
+    console.log('you clicked on ' + friends);
+  }
+
+  getPendingRequests = function () {
+    console.log('get pending req... API');
+  };
 
 }

@@ -4,8 +4,18 @@
 </button>
 <button *ngIf="isLoggedIn" mat-button [matMenuTriggerFor]="userDropdownMenu"
     style="min-width:50px">
-  <mat-icon>person</mat-icon>Welcome {{user?.givenName}}  
+  <mat-icon>person</mat-icon> Welcome {{user?.givenName}}  
 </button>
+<button (click)="logout()">
+  <mat-icon>person</mat-icon> 99
+</button>
+<br>
+<p> your connections are </p>
+<ul>
+  <li *ngFor="let friends of confirmedConnections" (click)="onSelect(friends)">
+    {{ friends }}
+  </li>
+</ul>
 
 <mat-menu #userDropdownMenu="matMenu" overlapTrigger=false>
    
