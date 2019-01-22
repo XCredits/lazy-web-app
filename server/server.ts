@@ -34,6 +34,10 @@ app.use(tracking.browserIdCookie);
 
 app.use(express.static(path.join(__dirname, '/../dist')));
 
+if (process.env.IMAGE_SERVICE === 'local') {
+  app.use(express.static(process.env.LOCAL_IMAGE_SAVE_LOCATION_ABSOLUTE));
+}
+
 routes(app);
 
 app.get('*', function(req, res) {

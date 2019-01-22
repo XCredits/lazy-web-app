@@ -1,8 +1,18 @@
 <div class="simple-form-aligner">
   <mat-card class="simple-form-card">
     <form [formGroup]="form" (ngSubmit)="submit(form.value)">
-      <mat-card-title style="text-align:center;"> Profile </mat-card-title>
+      <mat-card-title> Profile </mat-card-title>
       <mat-card-content>
+        <div class="profile-image">
+          <img mat-card-lg-image *ngIf='user.profileImage' class="img-class" [src]="profileImage" alt='Profile Photo'>
+          <img mat-card-lg-image *ngIf='!user.profileImage' class="img-class" src='assets/img/default-profile-photo.png'>
+          <div class="app-image-upload-positioner">
+            <app-image-upload
+                (imageUploaded)="handleImageUpload($event)"
+                (imageError)="handleImageError()">
+            </app-image-upload>  
+          </div>
+        </div>
         <div class="form-group">
           <mat-form-field class="simple-form-field-50">
             <input matInput placeholder="Given name" name="givenName" formControlName="givenName">
@@ -11,12 +21,13 @@
             <input matInput placeholder="Family name" name="familyName" formControlName="familyName">
           </mat-form-field>
           <br>
-          <mat-form-field>
+          <mat-form-field class ="simple-form-field-100">
             <input matInput placeholder="Email" name="email" formControlName="email">
           </mat-form-field>
           <br>
-          <mat-form-field>
+          <mat-form-field class="simple-form-field-100">
               <input matInput placeholder="Username" name="username" formControlName="username">
+              <mat-error>{{usernameErrorMessage}}</mat-error>
           </mat-form-field>
           <br>
           <button
