@@ -1,4 +1,3 @@
-'use strict';
 import {cloneDeep} from 'lodash';
 
 module.exports = function(req, res, next) {

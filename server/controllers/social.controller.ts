@@ -1,4 +1,3 @@
-'use strict';
 // The social controller intercepts scrapers and serves new URLs
 // The social controller should explicitly state the routes that it is
 // intercepting.
