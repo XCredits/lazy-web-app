@@ -1,7 +1,6 @@
-const multer  = require('multer');
-const path_image = require('path');
-const aws = require('aws-sdk');
-const multerS3 = require('multer-s3');
+import * as multer from 'multer';
+import * as aws from 'aws-sdk';
+import * as multerS3 from 'multer-s3';
 const multerGoogleStorage = require('multer-google-storage');
 const crypt = require('crypto');
 
@@ -14,6 +13,21 @@ const fileFilter = (req, file, cb) => {
     cb(new Error('Invalid file type, only JPEG and PNG is allowed!'), false);
   }
 };
+
+let multerStore: any;
+
+export function uploadSingleImage(req, res, callBack) {
+  multerStore.single('image')(req, res, function(err) {
+    if (process.env.IMAGE_SERVICE === 'aws') {
+      req.file.fileLocation = req.file.location;
+    } else if (process.env.IMAGE_SERVICE === 'gcs') {
+      req.file.fileLocation = req.file.path;
+    } else { // LOCAL_IMAGE_SAVE_LOCATION_ABSOLUTE
+      req.file.fileLocation = req.file.filename;
+    }
+    callBack(err);
+  });
+}
 
 // Local Disk Storage
 if (process.env.IMAGE_SERVICE === 'local') {
@@ -28,22 +42,18 @@ if (process.env.IMAGE_SERVICE === 'local') {
         cb(null, 'img-' + Date.now() + '-' +  array[0] + '.' + ext);
       }
     });
-    const upload = multer({
-      fileFilter,
-      storage });
-    module.exports = upload;
+    multerStore = multer({fileFilter, storage});
 } else if (process.env.IMAGE_SERVICE === 'gcs') {
-    const uploadGCS = multer({
+    multerStore = multer({
       fileFilter,
       storage: multerGoogleStorage.storageEngine({
         acl: 'publicread',
         bucket: process.env.GCS_BUCKET,
       }),
     });
-    module.exports = uploadGCS;
 } else {
     const s3 = new aws.S3();
-    const uploadAWS = multer({
+    multerStore = multer({
       fileFilter,
       storage: multerS3({
         acl: 'public-read',
@@ -57,5 +67,4 @@ if (process.env.IMAGE_SERVICE === 'local') {
         },
       }),
     });
-    module.exports = uploadAWS;
 }

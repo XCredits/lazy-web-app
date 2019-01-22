@@ -5,7 +5,7 @@ const authenticationController =
 const statsController =
     require('./controllers/stats.controller');
 const profileController =
-    require('./controllers/profile-controller');
+    require('./controllers/profile.controller');
 
 module.exports = function(app) {
   mailingListController(app);

@@ -22,8 +22,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-const passport = require('passport');
-const LocalStrategy = require('passport-local').Strategy;
+import * as passport from 'passport';
+import * as passportLocal from 'passport-local';
+const LocalStrategy = passportLocal.Strategy;
 const User1 = require('../models/user.model');
 // Note: the above variable is set to "User1" instead of "User" because it
 // appears that passport has a User type declared in block scope.

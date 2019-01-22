@@ -4,12 +4,11 @@ const auth = require('./jwt-auth.controller');
 const {isValidDisplayUsername, normalizeUsername} =
     require('./utils.controller');
 
-const imageUpload = require('../services/image-upload');
-const singleUpload = imageUpload.single('image');
+import {uploadSingleImage} from '../services/image-upload';
 
 module.exports = function(app) {
   app.post('/api/user/save-details', auth.jwtRefreshToken, saveDetails);
-  app.post('/api/image-upload', auth.jwtRefreshToken, imageUploadRoute);
+  app.post('/api/user/profile-image-upload', auth.jwtRefreshToken, profileImageUpload);
 };
 
 /**
@@ -61,24 +60,18 @@ function saveDetails(req, res) {
  * @return {*}
  */
 
-function imageUploadRoute(req, res) {
+function profileImageUpload(req, res) {
   const userId = req.userId;
   if (typeof userId !== 'string') {
     return res.status(422).json({message: 'Error in UserId'});
   }
-  singleUpload(req, res, function(err) {
+  uploadSingleImage(req, res, function(err) {
     if (err) {
       return res.status(422).send({errors: [{title: 'Image Upload error', detail: err.message}]});
     }
     User.findOne({_id: userId})
         .then((user) => {
-          if (process.env.IMAGE_SERVICE === 'aws') {
-            user.profileImage = req.file.location;
-          } else if (process.env.IMAGE_SERVICE === 'gcs') {
-            user.profileImage = req.file.path;
-          } else { // LOCAL_IMAGE_SAVE_LOCATION_ABSOLUTE
-            user.profileImage = req.file.filename;
-          }
+          user.profileImage = req.file.fileLocation;
           return user.save()
               .then(() => {
                 return res.status(200).send({message: 'Image Uploaded Successfully'});

@@ -13,7 +13,7 @@ export class ImageUploadService {
 
     formData.append('image', image);
 
-    return this.http.post('/api/image-upload', formData)
+    return this.http.post('/api/user/profile-image-upload', formData)
         .pipe(map(((json: any) => json.imageUrl)));
   }
 
