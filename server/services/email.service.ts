@@ -3,8 +3,8 @@
 // using SendGrid's v3 Node.js Library
 // https://github.com/sendgrid/sendgrid-nodejs
 // https://github.com/sendgrid/sendgrid-nodejs/blob/master/packages/client/USAGE.md
-const sendgridMail = require('@sendgrid/mail');
-const sendgridClient = require('@sendgrid/client');
+import * as sendgridMail from '@sendgrid/mail';
+import * as sendgridClient from '@sendgrid/client';
 const config = require('../config/sendgrid');
 sendgridMail.setApiKey(process.env.SENDGRID_API_KEY);
 sendgridClient.setApiKey(process.env.SENDGRID_API_KEY);

@@ -1,5 +1,5 @@
 'use strict';
-const _ = require('lodash');
+import {cloneDeep} from 'lodash';
 
 module.exports = function(req, res, next) {
   if (req.hostname !== 'localhost') {
@@ -7,7 +7,7 @@ module.exports = function(req, res, next) {
     res.cookie = function(name, value, options) {
       let newOptions: any = {};
       if (typeof options !== 'undefined') {
-        newOptions = _.cloneDeep(options);
+        newOptions = cloneDeep(options);
       }
       if (typeof newOptions.secure === 'undefined') {
         newOptions.secure = true;
