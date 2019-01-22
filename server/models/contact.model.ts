@@ -6,8 +6,8 @@ const {normalizeUsername} = require('../controllers/utils.controller.js');
 
 const ContactSchema = new Schema({
     givenName: {type: String},
-    familyName: {type: String},    email: {type: String},
-    emailConfirmed: {type: Boolean, default: false},
+    familyName: {type: String},
+    email: {type: String},
   }
 );
 
