@@ -13,7 +13,6 @@ import { AuthGuard } from './auth.guard';
 import { AdminGuard } from './admin.guard';
 
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-// import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import { AngularFontAwesomeModule } from 'angular-font-awesome';
 
 // Material modules
@@ -80,6 +79,7 @@ import { UserRegisterChartComponent } from './user-register-chart/user-register-
 import { TermsComponent } from './terms/terms.component';
 import { PrivacyComponent } from './privacy/privacy.component';
 import { FooterComponent } from './footer/footer.component';
+import { ImageUploadModule } from './image-upload/image-upload.module';
 import { ChangeThemeComponent } from './change-theme/change-theme.component';
 
 @NgModule({
@@ -113,6 +113,7 @@ import { ChangeThemeComponent } from './change-theme/change-theme.component';
   imports: [
     BrowserModule,
     FormsModule,
+    ImageUploadModule,
     ReactiveFormsModule,
     HttpClientModule,
     NgxWebstorageModule.forRoot({

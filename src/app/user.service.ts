@@ -271,6 +271,7 @@ export interface User {
   email: string;
   isLoggedIn: boolean;
   isAdmin: boolean;
+  profileImage: string;
 }
 
 
