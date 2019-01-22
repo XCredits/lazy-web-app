@@ -17,6 +17,8 @@ waiting = false;
 submitSuccess = false;
 formErrorMessage: string;
 user: User;
+private contactIndex: Number = 0;
+private allData;
 
 constructor(
   private http: HttpClient,
@@ -37,6 +39,7 @@ ngOnInit() {
       email: new FormControl(data[0].email),
     });
     console.log(data);
+    this.allData = data;
       });
  }
 
@@ -44,10 +47,24 @@ ngOnInit() {
 
  previousContact = function (formData) {
    console.log('Previous Contact');
+   this.contactIndex -= 2;
+  console.log(this.contactIndex);
+  this.form = new FormGroup({
+    givenName: new FormControl(this.allData[this.contactIndex].givenName),
+    familyName: new FormControl(this.allData[this.contactIndex].familyName),
+    email: new FormControl(this.allData[this.contactIndex].email),
+  });
  };
 
  nextContact = function (formData) {
   console.log('Next Contact');
+  this.contactIndex += 2;
+  console.log(this.contactIndex);
+  this.form = new FormGroup({
+    givenName: new FormControl(this.allData[this.contactIndex].givenName),
+    familyName: new FormControl(this.allData[this.contactIndex].familyName),
+    email: new FormControl(this.allData[this.contactIndex].email),
+  });
 };
 
 }
