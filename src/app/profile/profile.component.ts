@@ -12,6 +12,7 @@ import { UserService, User } from '../user.service';
 export class ProfileComponent implements OnInit {
   form: FormGroup;
 
+  waiting = false;
   disableButton = true;
   submitSuccess = false;
   formErrorMessage: string;
@@ -137,13 +138,15 @@ export class ProfileComponent implements OnInit {
     this.disableButton = false;
     this.submitSuccess = false;
     this.formErrorMessage = undefined;
+    this.waiting = true;
     this.http.post('/api/user/save-details', {
           'email': formData.email,
           'givenName': formData.givenName,
           'familyName': formData.familyName,
           'username': formData.username,
         })
-        .subscribe(data => {
+        .subscribe(() => { // data
+          this.waiting = false;
           this.submitSuccess = true;
           this.disableButton = true;
           this.userService.updateUserDetails();
@@ -153,7 +156,8 @@ export class ProfileComponent implements OnInit {
             this.form.valueChanges.subscribe(changes => this.checkUsername(changes));
           }, 100);
         },
-        errorResponse => {
+        () => { // err
+          this.waiting = false;
           this.disableButton = true;
           this.formErrorMessage = 'There was a problem submitting the form.';
         });
