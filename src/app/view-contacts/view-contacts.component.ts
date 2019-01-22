@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { UserService, User } from '../user.service';
 import { HttpClient } from '@angular/common/http';
@@ -17,7 +17,7 @@ waiting = false;
 submitSuccess = false;
 formErrorMessage: string;
 user: User;
-private contactIndex: Number = 0;
+contactIndex: Number = 0;
 private allData;
 
 constructor(
@@ -45,7 +45,7 @@ ngOnInit() {
 
  submit = function (formData) {};
 
- previousContact = function (formData) {
+ previousContact = function () {
    console.log('Previous Contact');
    this.contactIndex -= 2;
   console.log(this.contactIndex);
@@ -54,9 +54,9 @@ ngOnInit() {
     familyName: new FormControl(this.allData[this.contactIndex].familyName),
     email: new FormControl(this.allData[this.contactIndex].email),
   });
- };
+};
 
- nextContact = function (formData) {
+ nextContact = function () {
   console.log('Next Contact');
   this.contactIndex += 2;
   console.log(this.contactIndex);
