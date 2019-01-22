@@ -1,7 +1,6 @@
-const multer  = require('multer');
-const path_image = require('path');
-const aws = require('aws-sdk');
-const multerS3 = require('multer-s3');
+import * as multer from 'multer';
+import * as aws from 'aws-sdk';
+import * as multerS3 from 'multer-s3';
 const multerGoogleStorage = require('multer-google-storage');
 const crypt = require('crypto');
 

@@ -1,4 +1,3 @@
-'use strict';
 import * as path from 'path';
 
 process.env.JWT_EXPIRY = (10 * 60 * 1000).toString(); // Expiry in ms (10 mins), stored as string
