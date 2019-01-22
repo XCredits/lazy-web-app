@@ -30,9 +30,24 @@ ngOnInit() {
     email: new FormControl('', [Validators.required, Validators.email]),
   });
   this.http.get<any>('/api/get-user-details')
-      .subscribe((user) =>  {
-        this.user = user;
-        console.log('user is ' + this.user);
+  .subscribe((data) =>  {
+    this.form = new FormGroup({
+      givenName: new FormControl(data[0].givenName),
+      familyName: new FormControl(data[0].familyName),
+      email: new FormControl(data[0].email),
+    });
+    console.log(data);
       });
  }
+
+ submit = function (formData) {};
+
+ previousContact = function (formData) {
+   console.log('Previous Contact');
+ };
+
+ nextContact = function (formData) {
+  console.log('Next Contact');
+};
+
 }

@@ -15,6 +15,29 @@
             <input matInput placeholder="Email" name="email" formControlName="email">
           </mat-form-field>
           <br>
+          <br>
+          <button
+              [disabled]="waiting"
+              (click)="previousContact()"
+              class="simple-form-button" 
+              style="margin-right:50px" 
+              color="primary" 
+              mat-raised-button 
+              type="submit" 
+               >
+            Previous Contact
+          </button>
+          <button
+            [disabled]="waiting"
+            (click)="nextContact()" 
+            class="simple-form-button" 
+            style="margin-left:50px" 
+            color="primary" 
+            mat-raised-button 
+            type="submit" 
+             >
+            Next Contact
+           </button>
           </div>
       </mat-card-content>
     </form>
