@@ -82,6 +82,7 @@ import { FooterComponent } from './footer/footer.component';
 import { ChangeThemeComponent } from './change-theme/change-theme.component';
 import { AddContactsComponent } from './addcontact/add-contact.component';
 import { ViewContactsComponent } from './view-contacts/view-contacts.component';
+import { UserConnectionComponent } from './user-connection/user-connection.component';
 
 @NgModule({
   declarations: [
@@ -112,6 +113,7 @@ import { ViewContactsComponent } from './view-contacts/view-contacts.component';
     ChangeThemeComponent,
     AddContactsComponent,
     ViewContactsComponent,
+    UserConnectionComponent,
   ],
   imports: [
     BrowserModule,
@@ -218,6 +220,12 @@ import { ViewContactsComponent } from './view-contacts/view-contacts.component';
         path: 'view-contacts',
         component: ViewContactsComponent,
         data: { title: 'ViewContacts' },
+
+      },
+      {
+        path: 'user-connection',
+        component: UserConnectionComponent,
+        data: { title: 'UserConnection' },
 
       },
       {

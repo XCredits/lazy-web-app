@@ -100,6 +100,11 @@ export class AppComponent implements OnInit {
       icon: 'view_carousel',
       title: 'View contacts',
     },
+    {
+      routerLink: '/user-connection',
+      icon: 'Setting',
+      title: 'User Connection',
+    }
   ];
 
 
