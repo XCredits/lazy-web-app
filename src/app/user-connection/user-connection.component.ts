@@ -49,13 +49,11 @@ export class UserConnectionComponent implements OnInit {
     location.reload();
   };
 
-  getPendingRequests = function () {
+  loadPendingRequests = function () {
     console.log('get pending req... API');
     this.confirmedConnections.push('sample1');
     this.confirmedConnections.push('sample2');
     this.confirmedConnections.push('sample3');
-
-
 
     this.http.get<any>('/api/user/get-pending-requests')
     .subscribe((data) =>  {
@@ -64,7 +62,7 @@ export class UserConnectionComponent implements OnInit {
     });
   };
 
-  getConfirmedRequests = function () {
+  loadConfirmedRequests = function () {
     console.log('getConfirmedRequests func');
     this.http.get<any>('/api/user/get-pending-requests')
     .subscribe((data) =>  {
@@ -73,8 +71,17 @@ export class UserConnectionComponent implements OnInit {
     });
   };
 
-  searchForUser = function (formData) {
+  RequestUserConnection = function (formData) {
     console.log('Search about user...' + formData.username);
+
+    this.http.get<any>('/api/get-user-details')
+    .subscribe((data) =>  {
+      this.form = new FormGroup({
+        username: new FormControl(data[0].givenName),
+      });
+      console.log(data);
+      this.allData = data;
+        });
   };
  
 }

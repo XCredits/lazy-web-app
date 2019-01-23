@@ -6,10 +6,10 @@
     style="min-width:50px" (click)="reloadPage()">
   <mat-icon>person</mat-icon> Welcome {{user?.givenName}}  
 </button>
-<button (click)="getPendingRequests()">
+<button (click)="loadPendingRequests()">
   <mat-icon>person</mat-icon> {{pendingConnectionsCounter}}
 </button>
-<button (click)="getConfirmedRequests()">
+<button (click)="loadConfirmedRequests()">
   <mat-icon>person</mat-icon> {{confirmedConnectionsCounter}}
 </button> 
 <div *ngIf="IsViewPending">
@@ -47,7 +47,7 @@
         class="simple-form-button"
         color="primary"
         mat-raised-button
-        (click)="searchForUser(form.value)"
+        (click)="RequestUserConnection(form.value)"
         >
       Request Connection
     </button>
