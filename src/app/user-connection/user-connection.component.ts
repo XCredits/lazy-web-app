@@ -22,6 +22,7 @@ export class UserConnectionComponent implements OnInit {
   IsViewPending = false;
   IsViewConfirmed = true;
   IsAddUserRequest = true;
+  receiverID: string;
 
   constructor(
     private http: HttpClient,
@@ -81,23 +82,30 @@ export class UserConnectionComponent implements OnInit {
     })
     .subscribe((data) =>  {
       this.confirmedConnections.push('sample3');
-      console.log('returned username is ' + data[0]._id);
+      if (data[0] != null) {
+        console.log('returned username is ' + data[0]._id);
+        this.receiverID = data[0]._id;
+
+        // insert into connection table
+        this.http.post('/api/user/add-connection-request', {
+          'senderID': this.user.id,
+          'receiverID': this.receiverID,
+          })
+        .subscribe(returnedData => {
+          this.waiting = false;
+          this.submitSuccess = true;
+          console.log('connection request sent...' );
+        },
+        errorResponse => {
+          this.waiting = false;
+          console.log('error ... ');
+          console.dir(errorResponse);
+          this.formErrorMessage = 'There was a problem into sending connection request .';
+        });
+      } else {
+        console.log('no user found!');
+      }
     });
 
-    /*this.http.post('/api/user/add-connection-request', {
-      'senderID': this.user.id,
-      'receiverID': formData.username,
-      })
-    .subscribe(data => {
-      this.waiting = false;
-      this.submitSuccess = true;
-      console.log('subscribe...' );
-    },
-    errorResponse => {
-      this.waiting = false;
-      console.log('error ... ');
-      console.dir(errorResponse);
-      this.formErrorMessage = 'There was a problem submitting the form.';
-    });*/
   };
 }

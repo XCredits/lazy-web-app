@@ -82,7 +82,7 @@ module.exports = function(app) {
   app.post('/api/user/logout', auth.jwtRefreshToken, logout);
   app.get('/api/get-user-details', userInfo);
   app.post('/api/user/get-user-request', requestUserID);
-  app.post('/api/user/add-connection-request', registerUserRequest);
+
 };
 
 /**
@@ -370,36 +370,6 @@ function requestUserID(req, res) {
       })
       .catch((err) => {
         return res.status(500).send({message: 'UserId not found...'});
-      });
-}
-
-
-/**
- * add user request to connection
- * @param {*} req request object
- * @param {*} res response object
- * @returns {*}
- */
-function registerUserRequest(req, res) {
-
-  const senderID = req.body.senderID;
-  const receiverID = req.body.receiverID;
-
-
-  return User.findOne({_id: senderID})
-      .then((user) => {
-          // Create new password hash
-          return user.save()
-          .then(() => {
-            return res.send({message: 'Request sent'});
-          })
-          .catch((err) => {
-            console.log(err);
-            return res.status(500).send({message: 'Error in sending request'});
-          });
-      })
-      .catch((err) => {
-        return res.status(500).send({message: 'UserId not found'});
       });
 }
 
