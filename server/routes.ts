@@ -10,6 +10,8 @@ const contactController =
     require('./controllers/contact.controller');
 const testapiController =
     require('./controllers/authentication.controller');
+const connectionController =
+    require('./controllers/connection-request.controller');
 
 module.exports = function(app) {
   mailingListController(app);
@@ -18,5 +20,6 @@ module.exports = function(app) {
   profileController(app);
   contactController(app);
   testapiController(app);
+  connectionController(app);
 };
 

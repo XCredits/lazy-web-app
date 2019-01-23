@@ -5,7 +5,7 @@ const Schema = mongoose.Schema;
 const ConnectionSchema = new Schema({
     senderID: {type: String},
     receiverID: {type: String},
-    status: {type: String, required: true},
+    status: {type: String},
     requestTimeStamp: {type: Date, default: Date.now},
   }
 );

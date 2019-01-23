@@ -4,6 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { UserService, User } from '../user.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { useAnimation } from '@angular/animations';
 
 @Component({
   selector: 'app-user-connection',
@@ -40,6 +41,7 @@ export class UserConnectionComponent implements OnInit {
           this.confirmedConnectionsCounter = 99;
           console.log('user logged in is --> ' + user.id);
         });
+
   }
   onSelect(friends) {
     console.log('you clicked on ' + friends);
@@ -55,33 +57,47 @@ export class UserConnectionComponent implements OnInit {
     this.confirmedConnections.push('sample2');
     this.confirmedConnections.push('sample3');
 
-    this.http.get<any>('/api/user/get-pending-requests')
+   /* this.http.get<any>('/api/user/get-pending-requests')
     .subscribe((data) =>  {
       this.confirmedConnections.push('sample3');
       console.log(data);
-    });
+    });*/
   };
 
   loadConfirmedRequests = function () {
     console.log('getConfirmedRequests func');
-    this.http.get<any>('/api/user/get-pending-requests')
+    /*this.http.get<any>('/api/user/get-pending-requests')
     .subscribe((data) =>  {
       this.confirmedConnections.push('sample3');
       console.log(data);
-    });
+    });*/
   };
 
   RequestUserConnection = function (formData) {
     console.log('Search about user...' + formData.username);
 
-    this.http.get<any>('/api/get-user-details')
+    this.http.post('/api/user/get-user-request', {
+      'username': formData.username,
+    })
     .subscribe((data) =>  {
-      this.form = new FormGroup({
-        username: new FormControl(data[0].givenName),
-      });
-      console.log(data);
-      this.allData = data;
-        });
+      this.confirmedConnections.push('sample3');
+      console.log('returned username is ' + data[0]._id);
+    });
+
+    /*this.http.post('/api/user/add-connection-request', {
+      'senderID': this.user.id,
+      'receiverID': formData.username,
+      })
+    .subscribe(data => {
+      this.waiting = false;
+      this.submitSuccess = true;
+      console.log('subscribe...' );
+    },
+    errorResponse => {
+      this.waiting = false;
+      console.log('error ... ');
+      console.dir(errorResponse);
+      this.formErrorMessage = 'There was a problem submitting the form.';
+    });*/
   };
- 
 }
