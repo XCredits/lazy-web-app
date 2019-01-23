@@ -361,8 +361,6 @@ function requestUserID(req, res) {
   if ( typeof _username !== 'string') {
     return res.status(422).json({message: 'Request failed validation'});
   }
-  console.log('áfter normal ' + _username);
-
   User.find({username: _username})
       .then((result) => {
         const resultsFiltered = result.map((x) => {
