@@ -2,21 +2,60 @@
     style="min-width:50px">
   <mat-icon>person</mat-icon>Login
 </button>
-<button *ngIf="isLoggedIn" mat-button [matMenuTriggerFor]="userDropdownMenu"
-    style="min-width:50px">
+<button *ngIf="isLoggedIn"  
+    style="min-width:50px" (click)="reloadPage()">
   <mat-icon>person</mat-icon> Welcome {{user?.givenName}}  
 </button>
-<button (click)="logout()">
-  <mat-icon>person</mat-icon> 99
+<button (click)="getPendingRequests()">
+  <mat-icon>person</mat-icon> {{pendingConnectionsCounter}}
 </button>
+<button (click)="getConfirmedRequests()">
+  <mat-icon>person</mat-icon> {{confirmedConnectionsCounter}}
+</button> 
+<div *ngIf="IsViewPending">
 <br>
-<p> your connections are </p>
+<p> your pending connections are </p>
 <ul>
-  <li *ngFor="let friends of confirmedConnections" (click)="onSelect(friends)">
+  <li *ngFor="let friends of pendedConnections" (click)="onSelect(friends)">
     {{ friends }}
   </li>
 </ul>
+</div>
+<div *ngIf="IsViewConfirmed">
+  <br>
+  <p> your confirmed connections are </p>
+  <ul>
+    <li *ngFor="let friends of confirmedConnections" (click)="onSelect(friends)">
+      {{ friends }}
+    </li>
+  </ul>
+  </div>
+<div *ngIf="IsAddUserRequest">
+    <div class="simple-form-aligner">
+        <mat-card class="simple-form-card">
 
-<mat-menu #userDropdownMenu="matMenu" overlapTrigger=false>
-   
-</mat-menu>
+  <br>
+  <p> Please add a user connections request </p>
+  <mat-card-content>
+    <form [formGroup]="form" >
+      <div class="form-group">
+        <mat-form-field class="simple-form-field-10">
+          <input matInput placeholder="Username" name="username" formControlName="username">
+        </mat-form-field>
+        <br>
+        <button
+        class="simple-form-button"
+        color="primary"
+        mat-raised-button
+        (click)="searchForUser(form.value)"
+        >
+      Request Connection
+    </button>
+        
+      
+      </div>
+    </form>
+  </mat-card-content>
+</mat-card>
+  </div>
+ 
