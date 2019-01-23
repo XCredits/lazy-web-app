@@ -23,3 +23,5 @@ OrganisationSchema.methods.frontendData = function() {
     orgUsername: this.orgUsername,
   };
 };
+
+module.exports = mongoose.model('Organisation', OrganisationSchema);

@@ -48,6 +48,7 @@ const passwordSettings = {
 
 import * as validator from 'validator';
 const User = require('../models/user.model');
+const Organisation = require('../models/organisation.model');
 const UserStats = require('../models/user-stats.model');
 const statsService = require('../services/stats.service');
 const emailService = require('../services/email.service');
@@ -78,6 +79,7 @@ module.exports = function(app) {
       auth.jwtTemporaryLinkToken, changePassword);
   app.post('/api/user/forgot-username', forgotUsername);
   app.post('/api/user/logout', auth.jwtRefreshToken, logout);
+  app.post('/api/organisation/register', orgRegister);
 };
 
 /**
@@ -579,4 +581,24 @@ function setJwtRefreshTokenCookie(
       maxAge: process.env.JWT_REFRESH_TOKEN_EXPIRY,
     });
   return {jwtString, jwtObj};
+}
+
+function orgRegister(req, res) {
+  const organisationName = req.body.organisationName;
+  const website = req.body.website;
+  const phoneNumber = req.body.phoneNumber;
+  const username = req.body.orgUsername;
+
+  const organisation = new Organisation();
+  organisation.organisationName = organisationName;
+  organisation.website = website;
+  organisation.phoneNumber = phoneNumber;
+  organisation.orgUsername = username;
+  return organisation.save()
+      .then(() => {
+        return res.send({message: 'Registered Successfully'});
+      })
+      .catch(() => {
+        return res.status(500).send({message: 'Error in registering'});
+    });
 }
