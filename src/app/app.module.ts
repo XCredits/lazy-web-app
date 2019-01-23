@@ -81,6 +81,7 @@ import { PrivacyComponent } from './privacy/privacy.component';
 import { FooterComponent } from './footer/footer.component';
 import { ImageUploadModule } from './image-upload/image-upload.module';
 import { ChangeThemeComponent } from './change-theme/change-theme.component';
+import { OrganizationComponent } from './organization/organization.component';
 
 @NgModule({
   declarations: [
@@ -109,6 +110,7 @@ import { ChangeThemeComponent } from './change-theme/change-theme.component';
     PrivacyComponent,
     FooterComponent,
     ChangeThemeComponent,
+    OrganizationComponent,
   ],
   imports: [
     BrowserModule,
@@ -153,6 +155,12 @@ import { ChangeThemeComponent } from './change-theme/change-theme.component';
         path: 'mailing-list',
         component: MailingListComponent,
         data: { title: 'Mailing list' },
+      },
+      {
+        path: 'organization',
+        component: OrganizationComponent,
+        data: { title: 'Organization' },
+        canActivate: [AuthGuard],
       },
       {
         path: 'settings',

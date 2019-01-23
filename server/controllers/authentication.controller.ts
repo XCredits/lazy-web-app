@@ -583,22 +583,31 @@ function setJwtRefreshTokenCookie(
   return {jwtString, jwtObj};
 }
 
-function orgRegister(req, res) {
+function orgRegister(req,res) {
   const organisationName = req.body.organisationName;
   const website = req.body.website;
   const phoneNumber = req.body.phoneNumber;
   const username = req.body.orgUsername;
 
-  const organisation = new Organisation();
-  organisation.organisationName = organisationName;
-  organisation.website = website;
-  organisation.phoneNumber = phoneNumber;
-  organisation.orgUsername = username;
-  return organisation.save()
-      .then(() => {
-        return res.send({message: 'Registered Successfully'});
+  return Organisation.findOne({organisationName: organisationName})
+      .then((existingOrg) => {
+        if (existingOrg) {
+          return res.status(409).send({message: 'Organisation already exist.'});
+        }
+        const organisation = new Organisation();
+        organisation.organisationName = organisationName;
+        organisation.website = website;
+        organisation.phoneNumber = phoneNumber;
+        organisation.orgUsername = username;
+        return organisation.save()
+            .then(() => {
+              return res.send({message: 'Registered Successfully'});
+            })
+            .catch(() => {
+              return res.status(500).send({message: 'Error in registering'});
+            });
       })
-      .catch(() => {
-        return res.status(500).send({message: 'Error in registering'});
-    });
+      .catch((err) => {
+        return res.status(500).send(err);
+      });
 }

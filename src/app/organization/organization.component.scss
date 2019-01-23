@@ -1,0 +1,14 @@
+.addAndView{
+  display: flex;
+  justify-content: space-evenly;
+  margin: 120px;
+}
+
+.organization-card {
+  width: 400px;
+}
+
+.organization-card:hover {
+  transform: scale(1.1);
+  box-shadow: 0px 2px 10px black;
+}
