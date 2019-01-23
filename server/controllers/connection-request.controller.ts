@@ -2,10 +2,15 @@ import * as validator from 'validator';
 const MailingList = require('../models/mailing-list.model.js');
 const emailService = require('../services/email.service.js');
 const statsService = require('../services/stats.service.js');
+const {isValidDisplayUsername, normalizeUsername} =
+    require('./utils.controller');
 const Connection = require('../models/connections.model');
+const User = require('../models/user.model');
 
 module.exports = function(app) {
   app.post('/api/user/add-connection-request', addConnectionRequest);
+  app.post('/api/user/get-user-request', requestUserID);
+
 };
 
 /**
@@ -38,3 +43,27 @@ function addConnectionRequest(req, res) {
       });
 }
 
+
+
+/**
+ * find userID by username
+ * @param {*} req request object
+ * @param {*} res response object
+ * @returns {*}
+ */
+function requestUserID(req, res) {
+  const _username =  normalizeUsername(req.body.username);
+  if ( typeof _username !== 'string') {
+    return res.status(422).json({message: 'Request failed validation'});
+  }
+  User.find({username: _username})
+      .then((result) => {
+        const resultsFiltered = result.map((x) => {
+          return {_id: x._id};
+        });
+        res.send(resultsFiltered);
+      })
+      .catch((err) => {
+        return res.status(500).send({message: 'UserId not found...'});
+      });
+}

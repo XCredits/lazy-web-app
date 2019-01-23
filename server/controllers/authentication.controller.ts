@@ -81,7 +81,6 @@ module.exports = function(app) {
   app.post('/api/user/forgot-username', forgotUsername);
   app.post('/api/user/logout', auth.jwtRefreshToken, logout);
   app.get('/api/get-user-details', userInfo);
-  app.post('/api/user/get-user-request', requestUserID);
 
 };
 
@@ -347,30 +346,6 @@ function userInfo(req, res) {
     res.status(500)
         .send({message: 'Error retrieving users from contacts database'});
   });
-}
-
-
-/**
- * find userID by username
- * @param {*} req request object
- * @param {*} res response object
- * @returns {*}
- */
-function requestUserID(req, res) {
-  const _username =  normalizeUsername(req.body.username);
-  if ( typeof _username !== 'string') {
-    return res.status(422).json({message: 'Request failed validation'});
-  }
-  User.find({username: _username})
-      .then((result) => {
-        const resultsFiltered = result.map((x) => {
-          return {_id: x._id};
-        });
-        res.send(resultsFiltered);
-      })
-      .catch((err) => {
-        return res.status(500).send({message: 'UserId not found...'});
-      });
 }
 
 
