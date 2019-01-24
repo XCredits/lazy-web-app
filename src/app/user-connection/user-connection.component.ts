@@ -62,6 +62,7 @@ export class UserConnectionComponent implements OnInit {
 
     this.IsViewPending = true;
     this.IsViewConfirmed = false;
+    this.IsAddUserRequest = false;
     this.pendedConnections = [];
     console.log('the id for the sender is ' + this.user.id);
     this.http.post('/api/connection/get-pending-request', {
@@ -94,7 +95,7 @@ export class UserConnectionComponent implements OnInit {
 
     this.IsViewPending = false;
     this.IsViewConfirmed = true;
-
+    this.IsAddUserRequest = false;
 
     this.confirmedConnections = [];
     console.log('the id for the sender is ' + this.user.id);
@@ -178,5 +179,12 @@ export class UserConnectionComponent implements OnInit {
 
   };
 
+
+  viewSearchForm = function () {
+
+    this.IsViewPending = false;
+    this.IsViewConfirmed = false;
+    this.IsAddUserRequest = true;
+  };
 
 }

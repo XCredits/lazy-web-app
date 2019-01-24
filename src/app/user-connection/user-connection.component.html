@@ -7,17 +7,38 @@
   <mat-icon>person</mat-icon> Welcome {{user?.username}}  
 </button>
 <button (click)="loadPendingRequests()">
-  <mat-icon>person</mat-icon> {{pendingConnectionsCounter}}
+  <mat-icon>email</mat-icon> {{pendingConnectionsCounter}}
 </button>
 <button (click)="loadConfirmedRequests()">
   <mat-icon>person</mat-icon> {{confirmedConnectionsCounter}}
+</button> 
+<button (click)="viewSearchForm()">
+  <mat-icon>view_carousel</mat-icon> Search
 </button> 
 <div *ngIf="IsViewPending">
 <br>
 <p> your pending connections are </p>
 <ul>
   <li *ngFor="let friends of pendedConnections" (click)="onSelect(friends)">
+      <button
+      class="simple-form-button"
+      color="primary"
+      mat-raised-button
+      (click)="RequestUserConnection(form.value)"
+      >Confirm
+      </button>
+      &nbsp;
+      <button
+      class="simple-form-button"
+      mat-raised-button
+      (click)="RequestUserConnection(form.value)"
+      >Ignore
+      </button>
+      &nbsp;
     {{ friends }}
+    <br>
+    <br>
+
   </li>
 </ul>
 </div>

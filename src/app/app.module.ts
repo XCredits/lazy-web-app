@@ -225,7 +225,7 @@ import { UserConnectionComponent } from './user-connection/user-connection.compo
       {
         path: 'user-connection',
         component: UserConnectionComponent,
-        data: { title: 'UserConnection' },
+        data: { title: 'Manage connections' },
 
       },
       {
