@@ -79,7 +79,8 @@ module.exports = function(app) {
       auth.jwtTemporaryLinkToken, changePassword);
   app.post('/api/user/forgot-username', forgotUsername);
   app.post('/api/user/logout', auth.jwtRefreshToken, logout);
-  app.post('/api/organisation/register', orgRegister);
+  app.post('/api/organisation/register', auth.jwtRefreshToken, orgRegister);
+  app.get('/api/organisation/details', orgDetails);
 };
 
 /**
@@ -583,31 +584,37 @@ function setJwtRefreshTokenCookie(
   return {jwtString, jwtObj};
 }
 
-function orgRegister(req,res) {
-  const organisationName = req.body.organisationName;
-  const website = req.body.website;
-  const phoneNumber = req.body.phoneNumber;
-  const username = req.body.orgUsername;
+function orgRegister(req, res) {
+  const { organisationName, website, phoneNumber, orgUsername } = req.body;
+  const userId = req.userId;
 
-  return Organisation.findOne({organisationName: organisationName})
-      .then((existingOrg) => {
-        if (existingOrg) {
-          return res.status(409).send({message: 'Organisation already exist.'});
-        }
-        const organisation = new Organisation();
-        organisation.organisationName = organisationName;
-        organisation.website = website;
-        organisation.phoneNumber = phoneNumber;
-        organisation.orgUsername = username;
-        return organisation.save()
-            .then(() => {
-              return res.send({message: 'Registered Successfully'});
-            })
-            .catch(() => {
-              return res.status(500).send({message: 'Error in registering'});
-            });
-      })
-      .catch((err) => {
-        return res.status(500).send(err);
-      });
+  const organisation = new Organisation({ organisationName, website, phoneNumber, orgUsername });
+
+  User.findById(userId)
+      .populate('organisations')
+      .exec(async function(err, foundUser) {
+    if (err) {
+      return res.status(422).send({errors: err.errors});
+    }
+
+    if (String(foundUser._id) !== userId ) {
+      return res.status(422).send({errors: [{title: 'Invalid User!', detail: 'Cannot create Organization'}]});
+    }
+    organisation.user = foundUser;
+    foundUser.organisations.push(organisation);
+    organisation.save(function(error) {
+      if (error) {
+        return res.status(422).send({errors: error});
+      }
+      return foundUser.save()
+        .then(() => {
+          return res.status(200).send({message: 'Created and Saved Successfully'});
+        });
+    });
+  });
+}
+
+
+function orgDetails(req, res) {
+  // const orgId = organisation._id;
 }

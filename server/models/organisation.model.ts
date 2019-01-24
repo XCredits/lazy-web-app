@@ -8,6 +8,7 @@ const OrganisationSchema = new Schema({
   logo: {type: String},
   phoneNumber: {type: Number},
   orgUsername: {type: String, unique: true, required: true},
+  user: { type: Schema.Types.ObjectId , ref: 'User'},
 });
 
 OrganisationSchema.index({organisationName: 'text'});

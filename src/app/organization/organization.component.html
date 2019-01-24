@@ -1,7 +1,7 @@
-<div *ngIf='!addOrg' class="addAndView">
+<div class="addAndView">
   <mat-card class="organization-card">
     <mat-card-title>Add New Organization</mat-card-title>
-    <label (click)='addNewOrg()'>
+    <label routerLink='/create-organization'>
       <span>
           <mat-icon style="cursor:pointer">add_circle_outline</mat-icon>
       </span>
@@ -15,54 +15,4 @@
       </span>
     </label>
   </mat-card>
-</div>
-<div>
-  <div *ngIf='addOrg' class="simple-form-aligner">
-    <mat-card class="simple-form-card">
-      <form [formGroup]="form" (ngSubmit)="submit(form.value)">
-        <mat-card-title>	Create Organisation </mat-card-title>
-        <mat-card-content>
-          <div class="form-group">
-            <mat-form-field class="simple-form-field-50">
-              <input matInput placeholder="Organisation Name" name="organisationName" formControlName="organisationName">
-              <mat-error>Required</mat-error>
-            </mat-form-field>
-            <mat-form-field class="simple-form-field-50">
-              <input matInput placeholder="Website" name="website" formControlName="website">
-              <mat-error>Required</mat-error>
-            </mat-form-field>
-            <mat-form-field class="simple-form-field-100">
-              <input matInput placeholder="Phone Number" name="phoneNumber" formControlName="phoneNumber">
-              <mat-error>{{usernameErrorMessage}}</mat-error>
-            </mat-form-field>
-            <mat-form-field class="simple-form-field-100">
-              <input matInput placeholder="Organisation Username" name="orgUsername" formControlName="orgUsername">
-            </mat-form-field>
-            <section>
-              <button
-                  [disabled]="waiting"
-                  class="simple-form-button"
-                  color="primary"
-                  mat-raised-button
-                  type="submit"
-                  value="submit">
-                Create
-              </button>
-              <mat-progress-spinner
-                  *ngIf="waiting"
-                  color="primary"
-                  mode="indeterminate"
-                  class="simple-form-spinner"
-                  [diameter]=22>
-              </mat-progress-spinner>
-              <span 
-                  *ngIf='success'>
-                Created Successfully
-              </span>
-            </section>
-          </div>
-        </mat-card-content>
-      </form>
-    </mat-card>
-  </div>
 </div>

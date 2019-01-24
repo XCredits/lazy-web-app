@@ -82,6 +82,7 @@ import { FooterComponent } from './footer/footer.component';
 import { ImageUploadModule } from './image-upload/image-upload.module';
 import { ChangeThemeComponent } from './change-theme/change-theme.component';
 import { OrganizationComponent } from './organization/organization.component';
+import { CreateOrganizationComponent } from './create-organization/create-organization.component';
 
 @NgModule({
   declarations: [
@@ -111,6 +112,7 @@ import { OrganizationComponent } from './organization/organization.component';
     FooterComponent,
     ChangeThemeComponent,
     OrganizationComponent,
+    CreateOrganizationComponent,
   ],
   imports: [
     BrowserModule,
@@ -160,6 +162,12 @@ import { OrganizationComponent } from './organization/organization.component';
         path: 'organization',
         component: OrganizationComponent,
         data: { title: 'Organization' },
+        canActivate: [AuthGuard],
+      },
+      {
+        path: 'create-organization',
+        component: CreateOrganizationComponent,
+        data: { title: 'Create Organization' },
         canActivate: [AuthGuard],
       },
       {
