@@ -1,11 +1,11 @@
 
-// const statsService = require('../services/stats.service.js');
-const auth = require('./jwt-auth.controller.js');
+// const statsService = require('../services/stats.service');
+const auth = require('./jwt-auth.controller');
 
-const MailingList = require('../models/mailing-list.model.js');
-const MailingListStats = require('../models/mailing-list-stats.model.js');
-const User = require('../models/user.model.js');
-const UserStats = require('../models/user-stats.model.js');
+const MailingList = require('../models/mailing-list.model');
+const MailingListStats = require('../models/mailing-list-stats.model');
+const User = require('../models/user.model');
+const UserStats = require('../models/user-stats.model');
 
 
 module.exports = function(app) {

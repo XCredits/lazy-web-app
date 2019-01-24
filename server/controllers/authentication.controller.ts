@@ -47,20 +47,20 @@ const passwordSettings = {
 
 
 import * as validator from 'validator';
-const User = require('../models/user.model.js');
-const UserStats = require('../models/user-stats.model.js');
-const statsService = require('../services/stats.service.js');
-const emailService = require('../services/email.service.js');
-const Session = require('../models/session.model.js');
-const jwt = require('jsonwebtoken');
-const auth = require('./jwt-auth.controller.js');
+const User = require('../models/user.model');
+const UserStats = require('../models/user-stats.model');
+const statsService = require('../services/stats.service');
+const emailService = require('../services/email.service');
+const Session = require('../models/session.model');
+import * as jwt from 'jsonwebtoken';
+const auth = require('./jwt-auth.controller');
 const {isValidDisplayUsername, normalizeUsername} =
-    require('./utils.controller.js');
-const passport = require('passport');
+    require('./utils.controller');
+import * as passport from 'passport';
 // const crypto = require('crypto');
 import * as crypto from 'crypto';
-require('../config/passport.js');
-const zxcvbn = require('zxcvbn');
+require('../config/passport');
+import * as zxcvbn from 'zxcvbn';
 
 module.exports = function(app) {
   app.use(passport.initialize());

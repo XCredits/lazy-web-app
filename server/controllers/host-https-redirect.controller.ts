@@ -1,5 +1,3 @@
-'use strict';
-
 module.exports = function(req, res, next) {
   let redirect = false;
   // Redirect non-https

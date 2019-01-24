@@ -1,5 +1,5 @@
-const jwt = require('jsonwebtoken');
-const Session = require('../models/session.model.js');
+import * as jwt from 'jsonwebtoken';
+const Session = require('../models/session.model');
 
 // Try to catch default secret key
 if (process.env.JWT_KEY === 'defaultsecretkey') {

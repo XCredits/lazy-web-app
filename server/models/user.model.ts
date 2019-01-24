@@ -1,8 +1,7 @@
 import * as mongoose from 'mongoose';
 (<any>mongoose).Promise = Promise;
 const Schema = mongoose.Schema;
-const bcrypt = require('bcrypt');
-const {normalizeUsername} = require('../controllers/utils.controller.js');
+import * as bcrypt from 'bcrypt';
 
 const UserSchema = new Schema({
     givenName: {type: String},
