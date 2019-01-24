@@ -6,6 +6,10 @@ import { UserService, User } from '../user.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { useAnimation } from '@angular/animations';
 import { retry } from 'rxjs/operators';
+import { stringify } from '@angular/core/src/render3/util';
+import { resolve } from 'q';
+import { async } from '@angular/core/testing';
+import { promise } from 'selenium-webdriver';
 
 @Component({
   selector: 'app-user-connection',
@@ -17,7 +21,7 @@ export class UserConnectionComponent implements OnInit {
   user: User;
   isLoggedIn: boolean;
   confirmedConnections = [];
-  pendingConnections = [];
+  pendedConnections = [];
   pendingConnectionsCounter: number;
   confirmedConnectionsCounter: number;
   IsViewPending = false;
@@ -39,8 +43,8 @@ export class UserConnectionComponent implements OnInit {
         .subscribe(user => {
           this.user = user;
           this.isLoggedIn = !!this.user;
-          this.pendingConnectionsCounter = 99;
-          this.confirmedConnectionsCounter = 99;
+          this.pendingConnectionsCounter = 0;
+          this.confirmedConnectionsCounter = 0;
           console.log('user logged in is --> ' + user.id);
         });
 
@@ -55,30 +59,73 @@ export class UserConnectionComponent implements OnInit {
 
   loadPendingRequests = function () {
     console.log('get pending req... API');
-    this.confirmedConnections.push('sample1');
-    this.confirmedConnections.push('sample2');
-    this.confirmedConnections.push('sample3');
 
-   /* this.http.get<any>('/api/user/get-pending-requests')
+    this.IsViewPending = true;
+    this.IsViewConfirmed = false;
+    this.pendedConnections = [];
+    console.log('the id for the sender is ' + this.user.id);
+    this.http.post('/api/connection/get-pending-request', {
+      'userID': this.user.id,
+    })
     .subscribe((data) =>  {
-      this.confirmedConnections.push('sample3');
-      console.log(data);
-    });*/
+      this.pendingConnectionsCounter = data.length;
+      let num = 0;
+      for (num = 0; num < data.length ; num++) {
+        console.log('senderID ' + data[num].senderID);
+
+        this.http.post('/api/user/get-username', {
+          'userID': data[num].senderID,
+        })
+        .subscribe((returnObj) =>  {
+         this.pendedConnections.push(returnObj[0].familyName + ' ' + returnObj[0].givenName);
+        });
+
+      }
+      console.log('returned username is ' + data.length);
+    });
+
+
+
   };
 
   loadConfirmedRequests = function () {
     console.log('getConfirmedRequests func');
+
+
+    this.IsViewPending = false;
+    this.IsViewConfirmed = true;
+
+
+    this.confirmedConnections = [];
+    console.log('the id for the sender is ' + this.user.id);
+    this.http.post('/api/connection/get-confirmed-request', {
+      'userID': this.user.id,
+    })
+    .subscribe((data) =>  {
+      this.confirmedConnectionsCounter = data.length;
+      let num = 0;
+      for (num = 0; num < data.length ; num++) {
+        console.log('receiverID ' + data[num].senderID);
+        this.confirmedConnections.push(data[num].senderID);
+      }
+      console.log('returned username is ' + data.length);
+    });
+
+
     /*this.http.get<any>('/api/user/get-pending-requests')
     .subscribe((data) =>  {
       this.confirmedConnections.push('sample3');
       console.log(data);
     });*/
+
   };
 
+  // Send user connection request
   RequestUserConnection = function (formData) {
     console.log('Search about user...' + formData.username);
 
-    this.http.post('/api/user/get-user-request', {
+    // return the user ID on the search one
+    this.http.post('/api/connection/get-user-request', {
       'username': formData.username,
     })
     .subscribe((data) =>  {
@@ -87,19 +134,20 @@ export class UserConnectionComponent implements OnInit {
         console.log('returned username is ' + data[0]._id);
         this.receiverID = data[0]._id;
 
-        // check the status of relation first !
-        this.http.post('/api/user/check-user-status', {
+        // check if already relation before
+        this.http.post('/api/connection/check-user-status', {
           senderID : this.user.id,
           receiverID : this.receiverID,
         })
         .subscribe((dataOutput) =>  {
-          console.log('result---> ' + dataOutput[0].status);
-          });
 
+          // nul if no connections before
+          console.log(dataOutput.length);
 
-          return;
+          if (dataOutput.length === 0) {
+
         // insert into connection table
-        this.http.post('/api/user/add-connection-request', {
+        this.http.post('/api/connection/add-connection-request', {
           'senderID': this.user.id,
           'receiverID': this.receiverID,
           })
@@ -114,10 +162,21 @@ export class UserConnectionComponent implements OnInit {
           console.dir(errorResponse);
           this.formErrorMessage = 'There was a problem into sending connection request .';
         });
+
+          } else
+          if ( dataOutput[0].status === 'Pending') {
+            console.log('Request sent on ' + dataOutput[0].requestTimeStamp + ' and awaiting for confirmation ');
+          }
+
+        });
+
+
       } else {
         console.log('no user found!');
       }
     });
 
   };
+
+
 }

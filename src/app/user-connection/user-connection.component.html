@@ -4,7 +4,7 @@
 </button>
 <button *ngIf="isLoggedIn"  
     style="min-width:50px" (click)="reloadPage()">
-  <mat-icon>person</mat-icon> Welcome {{user?.givenName}}  
+  <mat-icon>person</mat-icon> Welcome {{user?.username}}  
 </button>
 <button (click)="loadPendingRequests()">
   <mat-icon>person</mat-icon> {{pendingConnectionsCounter}}

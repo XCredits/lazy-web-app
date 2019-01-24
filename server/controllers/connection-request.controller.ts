@@ -8,9 +8,12 @@ const Connections = require('../models/connections.model');
 const User = require('../models/user.model');
 
 module.exports = function(app) {
-  app.post('/api/user/add-connection-request', addConnectionRequest);
-  app.post('/api/user/get-user-request', requestUserID);
-  app.post('/api/user/check-user-status', requestUserStatus);
+  app.post('/api/connection/add-connection-request', addConnectionRequest);
+  app.post('/api/connection/get-user-request', requestUserID);
+  app.post('/api/connection/check-user-status', requestUserStatus);
+  app.post('/api/connection/get-pending-request', requestUserPendingConnections);
+  app.post('/api/connection/get-confirmed-request', requestUserConfirmedConnections);
+  app.post('/api/user/get-username', requestUsername);
 
 };
 
@@ -44,6 +47,30 @@ function addConnectionRequest(req, res) {
       });
 }
 
+
+/**
+ * returns the user details
+ * @param {*} req request object
+ * @param {*} res response object
+ * @return {*}
+ */
+function requestUsername(req, res) {
+  const _userID = req.body.userID;
+  if ( typeof _userID !== 'string') {
+    return res.status(422).json({message: 'Request failed validation'});
+  }
+  User.find({_id: _userID})
+      .then((result) => {
+        const resultsFiltered = result.map((x) => {
+          console.log('the user name is ' + x.familyName);
+          return {givenName : x.givenName, familyName: x.familyName};
+        });
+        res.send(resultsFiltered);
+      })
+      .catch((err) => {
+        return res.status(500).send({message: 'UserId not found...'});
+      });
+}
 
 
 /**
@@ -79,14 +106,11 @@ function requestUserID(req, res) {
  */
 function requestUserStatus(req, res) {
 
-  console.log('req sender ' + req.body.senderID);
-  console.log('req receiver ' + req.body.receiverID);
-
   Connections.find({senderID: req.body.senderID, receiverID: req.body.receiverID})
   .then((result) => {
     console.log('==============' + result);
     const resultsFiltered = result.map((x) => {
-    return {senderID: x.senderID, receiverID: x.receiverID, status : x.status};
+    return {senderID: x.senderID, receiverID: x.receiverID, status : x.status, requestTimeStamp : x.requestTimeStamp};
   });
   res.send(resultsFiltered);
 })
@@ -95,3 +119,52 @@ function requestUserStatus(req, res) {
         .send({message: 'Error retrieving users from contacts database'});
   });
 }
+
+
+
+/**
+ * join a contact list
+ * @param {*} req request object
+ * @param {*} res response object
+ * @return {*}
+ */
+function requestUserConfirmedConnections (req, res) {
+  Connections.find({receiverID: req.body.userID , status: 'Confirmed'})
+  .then((result) => {
+    console.log('==============' + result);
+    const resultsFiltered = result.map((x) => {
+    return {senderID: x.senderID, receiverID: x.receiverID, requestTimeStamp : x.requestTimeStamp};
+  });
+  res.send(resultsFiltered);
+})
+  .catch((err) => {
+    res.status(500)
+        .send({message: 'Error retrieving users from contacts database'});
+  });
+}
+
+
+/**
+ * join a contact list
+ * @param {*} req request object
+ * @param {*} res response object
+ * @return {*}
+ */
+function requestUserPendingConnections (req, res) {
+  Connections.find({receiverID: req.body.userID , status: 'Pending'})
+  .then((result) => {
+    console.log('==============' + result);
+    const resultsFiltered = result.map((x) => {
+    return {senderID: x.senderID, receiverID: x.receiverID, requestTimeStamp : x.requestTimeStamp};
+  });
+  res.send(resultsFiltered);
+})
+  .catch((err) => {
+    res.status(500)
+        .send({message: 'Error retrieving users from contacts database'});
+  });
+}
+
+
+
+
