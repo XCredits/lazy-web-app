@@ -5,6 +5,7 @@ import { Component, OnInit } from '@angular/core';
 import { UserService, User } from '../user.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { useAnimation } from '@angular/animations';
+import { retry } from 'rxjs/operators';
 
 @Component({
   selector: 'app-user-connection',
@@ -86,6 +87,17 @@ export class UserConnectionComponent implements OnInit {
         console.log('returned username is ' + data[0]._id);
         this.receiverID = data[0]._id;
 
+        // check the status of relation first !
+        this.http.post('/api/user/check-user-status', {
+          senderID : this.user.id,
+          receiverID : this.receiverID,
+        })
+        .subscribe((dataOutput) =>  {
+          console.log('result---> ' + dataOutput[0].status);
+          });
+
+
+          return;
         // insert into connection table
         this.http.post('/api/user/add-connection-request', {
           'senderID': this.user.id,

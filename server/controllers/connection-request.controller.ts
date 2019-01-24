@@ -4,12 +4,13 @@ const emailService = require('../services/email.service.js');
 const statsService = require('../services/stats.service.js');
 const {isValidDisplayUsername, normalizeUsername} =
     require('./utils.controller');
-const Connection = require('../models/connections.model');
+const Connections = require('../models/connections.model');
 const User = require('../models/user.model');
 
 module.exports = function(app) {
   app.post('/api/user/add-connection-request', addConnectionRequest);
   app.post('/api/user/get-user-request', requestUserID);
+  app.post('/api/user/check-user-status', requestUserStatus);
 
 };
 
@@ -24,7 +25,7 @@ function addConnectionRequest(req, res) {
   const senderID = req.body.senderID;
   const receiverID = req.body.receiverID;
 
-  const _connection = new Connection();
+  const _connection = new Connections();
   _connection.senderID = senderID;
   _connection.receiverID = receiverID;
   _connection.status = 'Pending';
@@ -66,4 +67,31 @@ function requestUserID(req, res) {
       .catch((err) => {
         return res.status(500).send({message: 'UserId not found...'});
       });
+}
+
+
+
+/**
+ * returns user status
+ * @param {*} req request object
+ * @param {*} res response object
+ * @returns {*}
+ */
+function requestUserStatus(req, res) {
+
+  console.log('req sender ' + req.body.senderID);
+  console.log('req receiver ' + req.body.receiverID);
+
+  Connections.find({senderID: req.body.senderID, receiverID: req.body.receiverID})
+  .then((result) => {
+    console.log('==============' + result);
+    const resultsFiltered = result.map((x) => {
+    return {senderID: x.senderID, receiverID: x.receiverID, status : x.status};
+  });
+  res.send(resultsFiltered);
+})
+  .catch((err) => {
+    res.status(500)
+        .send({message: 'Error retrieving users from contacts database'});
+  });
 }
