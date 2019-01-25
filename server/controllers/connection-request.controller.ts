@@ -133,6 +133,13 @@ function requestUserStatus(req, res) {
 function requestUserConfirmedConnections (req, res) {
   Connections.find({receiverUserId: req.userId , status: 'Confirmed'})
   .then((result) => {
+    const senderIdArr = result.map(ele => ele.senderUserId)
+    // User.find({ "_id": { "$in": senderIdArr}})
+    // .then(() => {
+      // ONLY SEND USERNAME, USERID, FIRST NAME AND LAST NAME
+      // res.send
+    // })
+
     console.log('==============' + result);
     const resultsFiltered = result.map((x) => {
     return {senderUserId: x.senderUserId, receiverUserId: x.receiverUserId, requestTimeStamp : x.requestTimeStamp};
