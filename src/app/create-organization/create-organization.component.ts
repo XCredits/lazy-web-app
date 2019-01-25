@@ -41,7 +41,7 @@ export class CreateOrganizationComponent implements OnInit {
       return;
     }
     this.disableButton = false;
-    this.http.post('/api/organisation/register', {
+    this.http.post('/api/organisation/create', {
           'organisationName': formData.organisationName,
           'website': formData.website,
           'phoneNumber': formData.phoneNumber,

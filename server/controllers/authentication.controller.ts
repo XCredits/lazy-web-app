@@ -79,8 +79,8 @@ module.exports = function(app) {
       auth.jwtTemporaryLinkToken, changePassword);
   app.post('/api/user/forgot-username', forgotUsername);
   app.post('/api/user/logout', auth.jwtRefreshToken, logout);
-  app.post('/api/organisation/register', auth.jwtRefreshToken, orgRegister);
-  app.get('/api/organisation/details', orgDetails);
+  app.post('/api/organisation/create', auth.jwtRefreshToken, orgRegister);
+  app.get('/api/organisation/details', auth.jwt, orgDetails);
 };
 
 /**
@@ -587,6 +587,14 @@ function setJwtRefreshTokenCookie(
 function orgRegister(req, res) {
   const { organisationName, website, phoneNumber, orgUsername } = req.body;
   const userId = req.userId;
+  if (typeof userId !== 'string' ||
+      typeof organisationName !== 'string' ||
+      typeof website !== 'string' ||
+      typeof phoneNumber !== 'string' ||
+      typeof orgUsername !== 'string') {
+
+      return res.status(500).send({message: 'Request validation failed'});
+  }
 
   const organisation = new Organisation({ organisationName, website, phoneNumber, orgUsername });
 
@@ -614,7 +622,30 @@ function orgRegister(req, res) {
   });
 }
 
-
 function orgDetails(req, res) {
-  // const orgId = organisation._id;
+  const userId = req.userId;
+  return Organisation.find({user: userId})
+    .then((org) => {
+      res.json(org);
+    })
+    .catch((err) => {
+      console.log(err);
+      return res.status(500).send({message: 'UserId not found'});
+  });
 }
+
+// function userDetails(req, res) {
+//   // Validate not necessary at this point (no req.body use,
+//   // and checked in jwt-auth)
+//   const userId = req.userId;
+//   if ( typeof userId !== 'string') {
+//     return res.status(422).json({message: 'Request failed validation'});
+//   }
+//   return User.findOne({_id: userId})
+//       .then((user) => {
+//         res.send(user.frontendData());
+//       })
+//       .catch((err) => {
+//         return res.status(500).send({message: 'UserId not found'});
+//       });
+// }

@@ -1,4 +1,4 @@
-<div class="addAndView">
+<!-- <div *ngIf='!view' class="addAndView">
   <mat-card class="organization-card">
     <mat-card-title>Add New Organization</mat-card-title>
     <label routerLink='/create-organization'>
@@ -15,4 +15,13 @@
       </span>
     </label>
   </mat-card>
+</div> -->
+<div *ngFor="let organisations of organisation" class="addAndView">
+    <mat-card class="organization-card">
+      <mat-card-title>{{organisations.organisationName}}</mat-card-title>
+      <mat-card-content> 
+            {{organisations.website}} <br>
+            {{organisations.orgUsername}}
+      </mat-card-content>
+    </mat-card>
 </div>
