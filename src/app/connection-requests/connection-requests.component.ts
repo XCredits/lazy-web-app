@@ -14,11 +14,11 @@ import { ConcatSource } from 'webpack-sources';
 import { throwToolbarMixedModesError } from '@angular/material';
 
 @Component({
-  selector: 'app-user-connection',
-  templateUrl: './user-connection.component.html',
-  styleUrls: ['./user-connection.component.scss']
+  selector: 'app-connection-requests',
+  templateUrl: './connection-requests.component.html',
+  styleUrls: ['./connection-requests.component.scss']
 })
-export class UserConnectionComponent implements OnInit {
+export class ConnectionRequestsComponent implements OnInit {
   form: FormGroup;
   user: User;
   isLoggedIn: boolean;
@@ -31,8 +31,8 @@ export class UserConnectionComponent implements OnInit {
   IsAddUserRequest = true;
   isUserAfterFound = false;
   isRequestSent = false;
-  receiverID: string;
-
+  receiverUserId: string;
+  link: string;
 
   constructor(
     private http: HttpClient,
@@ -57,6 +57,9 @@ export class UserConnectionComponent implements OnInit {
           console.log('user logged in is --> ' + user.id);
         });
 
+        this.link = 'https://xcredits.com/';
+
+        this.loadPendingRequests();
   }
   onSelect(friends) {
     console.log('you clicked on ' + friends);
@@ -68,6 +71,13 @@ export class UserConnectionComponent implements OnInit {
 
   loadPendingRequests = function () {
     console.log('get pending req... API');
+
+    this.http.post('/api/connection/get-pending-request', {
+      'userID': this.user.id,
+    })
+    .subscribe((data) =>  {
+      this.pendingConnectionsCounter = data.length;
+    });
 
     this.IsViewPending = true;
     this.IsViewConfirmed = false;
@@ -81,10 +91,10 @@ export class UserConnectionComponent implements OnInit {
       this.pendingConnectionsCounter = data.length;
       let num = 0;
       for (num = 0; num < data.length ; num++) {
-        console.log('senderID ' + data[num].senderID);
+        console.log('senderUserId ' + data[num].senderUserId);
 
         this.http.post('/api/user/get-username', {
-          'userID': data[num].senderID,
+          'userID': data[num].senderUserId,
         })
         .subscribe((returnObj) =>  {
          this.pendedConnections.push(returnObj[0].familyName + ' ' + returnObj[0].givenName);
@@ -115,8 +125,14 @@ export class UserConnectionComponent implements OnInit {
       this.confirmedConnectionsCounter = data.length;
       let num = 0;
       for (num = 0; num < data.length ; num++) {
-        console.log('receiverID ' + data[num].senderID);
-        this.confirmedConnections.push(data[num].senderID);
+        console.log('receiverUserId ' + data[num].senderUserId);
+        this.http.post('/api/user/get-username', {
+          'userID': data[num].senderUserId,
+        })
+        .subscribe((returnObj) =>  {
+         this.confirmedConnections.push(returnObj[0].familyName + ' ' + returnObj[0].givenName);
+        });
+
       }
       console.log('returned username is ' + data.length);
     });
@@ -142,40 +158,45 @@ export class UserConnectionComponent implements OnInit {
     .subscribe((data) =>  {
       if (data[0] != null ) {
         console.log('returned username is ' + data[0]._id);
-        this.receiverID = data[0]._id;
+        this.receiverUserId = data[0]._id;
 
         // can't add the same as logged user
-        if (this.receiverID === this.user.id) {
+        if (this.receiverUserId === this.user.id) {
           console.log('you cannot add your self!');
           return;
         }
 
 
        // check if already relation before
-        this.http.post('/api/connection/check-user-status', {
-          senderID : this.user.id,
-          receiverID : this.receiverID,
-        })
-        .subscribe((dataOutput) =>  {
+       this.http.post('/api/connection/check-user-status', {
+        senderUserId : this.user.id,
+        receiverUserId : this.receiverUserId,
+      })
+      .subscribe((dataOutput) =>  {
 
           // nul if no connections before
           console.log(dataOutput.length);
 
           if (dataOutput.length === 0) {
             // new connection should be inserted .....
-            this.IsAddUserRequest = false;
-            this.isUserAfterFound = true;
+            console.log('just open a form box');
 
-            this.form = new FormGroup({
-              givenName: new FormControl(data[0].givenName),
-              familyName: new FormControl(data[0].familyName),
-              username: new FormControl(data[0].username),
-            });
-          } else
+          } else {
           if ( dataOutput[0].status === 'Pending') {
-            console.log('Request sent on ' + dataOutput[0].requestTimeStamp + ' and awaiting for confirmation ');
+            console.log('Request sent on ' + dataOutput[0].requestTimeStamp + ' and awaiting for confirmation2 ');
             this.isRequestSent = true;
+
           }
+        }
+
+        this.IsAddUserRequest = false;
+        this.isUserAfterFound = true;
+
+        this.form = new FormGroup({
+          givenName: new FormControl(data[0].givenName),
+          familyName: new FormControl(data[0].familyName),
+          username: new FormControl(data[0].username),
+        });
 
         });
       } else {
@@ -197,10 +218,10 @@ export class UserConnectionComponent implements OnInit {
     .subscribe((data) =>  {
       if (data[0] != null ) {
         console.log('returned username is ' + data[0]._id);
-        this.receiverID = data[0]._id;
+        this.receiverUserId = data[0]._id;
 
         // can't add the same as logged user
-        if (this.receiverID === this.user.id) {
+        if (this.receiverUserId === this.user.id) {
           console.log('you cannot add your self!');
           return;
         }
@@ -208,8 +229,8 @@ export class UserConnectionComponent implements OnInit {
 
        // check if already relation before
         this.http.post('/api/connection/check-user-status', {
-          senderID : this.user.id,
-          receiverID : this.receiverID,
+          senderUserId : this.user.id,
+          receiverUserId : this.receiverUserId,
         })
         .subscribe((dataOutput) =>  {
 
@@ -227,8 +248,8 @@ export class UserConnectionComponent implements OnInit {
             });
              // insert into connection table
         this.http.post('/api/connection/add-connection-request', {
-          'senderID': this.user.id,
-          'receiverID': this.receiverID,
+          'senderUserId': this.user.id,
+          'receiverUserId': this.receiverUserId,
           })
         .subscribe(returnedData => {
           this.waiting = false;
@@ -264,6 +285,16 @@ export class UserConnectionComponent implements OnInit {
     this.IsViewConfirmed = false;
     this.IsAddUserRequest = true;
     this.isUserAfterFound = false;
+  };
+
+
+  ApproveUserConnection = function() {
+
+    
+  };
+
+  IgnoreUserConnection = function() {
+
   };
 
 }

@@ -82,7 +82,9 @@ import { FooterComponent } from './footer/footer.component';
 import { ChangeThemeComponent } from './change-theme/change-theme.component';
 import { AddContactsComponent } from './addcontact/add-contact.component';
 import { ViewContactsComponent } from './view-contacts/view-contacts.component';
-import { UserConnectionComponent } from './user-connection/user-connection.component';
+import { ConnectionComponent } from './connections/connections.component';
+import { AddConnectionComponent } from './add-connection/add-connections.component';
+import { ConnectionRequestsComponent } from './connection-requests/connection-requests.component';
 
 @NgModule({
   declarations: [
@@ -113,7 +115,9 @@ import { UserConnectionComponent } from './user-connection/user-connection.compo
     ChangeThemeComponent,
     AddContactsComponent,
     ViewContactsComponent,
-    UserConnectionComponent,
+    ConnectionComponent,
+    AddConnectionComponent,
+    ConnectionRequestsComponent,
   ],
   imports: [
     BrowserModule,
@@ -223,9 +227,21 @@ import { UserConnectionComponent } from './user-connection/user-connection.compo
 
       },
       {
-        path: 'user-connection',
-        component: UserConnectionComponent,
+        path: 'connections',
+        component: ConnectionComponent,
         data: { title: 'Manage connections' },
+
+      },
+      {
+        path: 'add-connections',
+        component: AddConnectionComponent,
+        data: { title: 'Add connection' },
+
+      },
+      {
+        path: 'connection-requests',
+        component: ConnectionRequestsComponent,
+        data: { title: 'Request connection' },
 
       },
       {

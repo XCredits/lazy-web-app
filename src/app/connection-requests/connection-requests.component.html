@@ -1,20 +1,16 @@
-<button *ngIf="!isLoggedIn" mat-button routerLink="/login"
-    style="min-width:50px">
-  <mat-icon>person</mat-icon>Login
-</button>
-<button *ngIf="isLoggedIn"  
-    style="min-width:50px" (click)="reloadPage()">
-  <mat-icon>person</mat-icon> Welcome {{user?.username}}  
-</button>
-<button (click)="loadPendingRequests()">
-  <mat-icon>email</mat-icon> {{pendingConnectionsCounter}}
-</button>
-<button (click)="loadConfirmedRequests()">
-  <mat-icon>person</mat-icon> {{confirmedConnectionsCounter}}
-</button> 
-<button (click)="viewSearchForm()">
-  <mat-icon>view_carousel</mat-icon> Search
-</button> 
+<div class="container">
+  <mat-card>
+    <div class="col-md-8 offset-md-2">
+      <p>
+        Welcome {{user?.username}}  
+       
+       <button  mat-button routerLink="/connection-requests"> 
+         <mat-icon>person</mat-icon> {{pendingConnectionsCounter}}
+       </button>
+       <button  mat-button routerLink="/add-connections"> 
+         <mat-icon>view_carousel</mat-icon> Add +
+       </button> 
+       </p>
 <div *ngIf="IsViewPending">
 <br>
 <p> your pending connections are </p>
@@ -24,18 +20,21 @@
       class="simple-form-button"
       color="primary"
       mat-raised-button
-      (click)="RequestUserConnection(form.value)"
+      (click)="ApproveUserConnection(form.value)"
       >Confirm
       </button>
       &nbsp;
       <button
       class="simple-form-button"
       mat-raised-button
-      (click)="RequestUserConnection(form.value)"
+      (click)="IgnoreUserConnection(form.value)"
       >Ignore
       </button>
       &nbsp;
-    {{ friends }}
+    {{ friends }}  
+    &nbsp; &nbsp;
+     <a href="{{link}}"  target="_blank">view profile</a>
+
     <br>
     <br>
 
@@ -47,7 +46,7 @@
   <p> your confirmed connections are </p>
   <ul>
     <li *ngFor="let friends of confirmedConnections" (click)="onSelect(friends)">
-      {{ friends }}
+      <a href="{{link}}"  target="_blank"> {{ friends }} </a>
     </li>
   </ul>
   </div>
@@ -120,4 +119,8 @@
   </mat-card-content>
 </mat-card>
   </div>
+</div>
+
+</div>
+</mat-card>
 </div>

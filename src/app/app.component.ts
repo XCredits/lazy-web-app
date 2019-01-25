@@ -101,9 +101,9 @@ export class AppComponent implements OnInit {
       title: 'View contacts',
     },
     {
-      routerLink: '/user-connection',
+      routerLink: '/connections',
       icon: 'Setting',
-      title: 'User Connection',
+      title: 'Connections',
     }
   ];
 

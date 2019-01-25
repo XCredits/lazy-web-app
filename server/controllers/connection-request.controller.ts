@@ -14,6 +14,8 @@ module.exports = function(app) {
   app.post('/api/connection/get-pending-request', requestUserPendingConnections);
   app.post('/api/connection/get-confirmed-request', requestUserConfirmedConnections);
   app.post('/api/user/get-username', requestUsername);
+  app.post('/api/connection/ignore-connection-request', ignoreConnectionRequest);
+  app.post('/api/connection/approve-connection-request', approveConnectionRequest);
 
 };
 
@@ -25,12 +27,12 @@ module.exports = function(app) {
  */
 function addConnectionRequest(req, res) {
   console.log('joining connection request ');
-  const senderID = req.body.senderID;
-  const receiverID = req.body.receiverID;
+  const senderUserId = req.body.senderUserId;
+  const receiverUserId = req.body.receiverUserId;
 
   const _connection = new Connections();
-  _connection.senderID = senderID;
-  _connection.receiverID = receiverID;
+  _connection.senderUserId = senderUserId;
+  _connection.receiverUserId = receiverUserId;
   _connection.status = 'Pending';
   return _connection.save()
       .then((result) => {
@@ -106,11 +108,11 @@ function requestUserID(req, res) {
  */
 function requestUserStatus(req, res) {
 
-  Connections.find({senderID: req.body.senderID, receiverID: req.body.receiverID})
+  Connections.find({senderUserId: req.body.senderUserId, receiverUserId: req.body.receiverUserId})
   .then((result) => {
     console.log('==============' + result);
     const resultsFiltered = result.map((x) => {
-    return {senderID: x.senderID, receiverID: x.receiverID, status : x.status, requestTimeStamp : x.requestTimeStamp};
+    return {senderUserId: x.senderUserId, receiverUserId: x.receiverUserId, status : x.status, requestTimeStamp : x.requestTimeStamp};
   });
   res.send(resultsFiltered);
 })
@@ -129,11 +131,11 @@ function requestUserStatus(req, res) {
  * @return {*}
  */
 function requestUserConfirmedConnections (req, res) {
-  Connections.find({receiverID: req.body.userID , status: 'Confirmed'})
+  Connections.find({receiverUserId: req.body.userID , status: 'Confirmed'})
   .then((result) => {
     console.log('==============' + result);
     const resultsFiltered = result.map((x) => {
-    return {senderID: x.senderID, receiverID: x.receiverID, requestTimeStamp : x.requestTimeStamp};
+    return {senderUserId: x.senderUserId, receiverUserId: x.receiverUserId, requestTimeStamp : x.requestTimeStamp};
   });
   res.send(resultsFiltered);
 })
@@ -151,11 +153,11 @@ function requestUserConfirmedConnections (req, res) {
  * @return {*}
  */
 function requestUserPendingConnections (req, res) {
-  Connections.find({receiverID: req.body.userID , status: 'Pending'})
+  Connections.find({receiverUserId: req.body.userID , status: 'Pending'})
   .then((result) => {
     console.log('==============' + result);
     const resultsFiltered = result.map((x) => {
-    return {senderID: x.senderID, receiverID: x.receiverID, requestTimeStamp : x.requestTimeStamp};
+    return {senderUserId: x.senderUserId, receiverUserId: x.receiverUserId, requestTimeStamp : x.requestTimeStamp};
   });
   res.send(resultsFiltered);
 })
@@ -166,5 +168,47 @@ function requestUserPendingConnections (req, res) {
 }
 
 
+
+/**
+ * join a contact list
+ * @param {*} req request object
+ * @param {*} res response object
+ * @return {*}
+ */
+function ignoreConnectionRequest (req, res) {
+  Connections.find({receiverUserId: req.body.userID , status: 'Pending'})
+  .then((result) => {
+    console.log('==============' + result);
+    const resultsFiltered = result.map((x) => {
+    return {senderUserId: x.senderUserId, receiverUserId: x.receiverUserId, requestTimeStamp : x.requestTimeStamp};
+  });
+  res.send(resultsFiltered);
+})
+  .catch((err) => {
+    res.status(500)
+        .send({message: 'Error retrieving users from contacts database'});
+  });
+}
+
+/**
+ * join a contact list
+ * @param {*} req request object
+ * @param {*} res response object
+ * @return {*}
+ */
+function approveConnectionRequest (req, res) {
+  Connections.find({receiverUserId: req.body.userID , status: 'Pending'})
+  .then((result) => {
+    console.log('==============' + result);
+    const resultsFiltered = result.map((x) => {
+    return {senderUserId: x.senderUserId, receiverUserId: x.receiverUserId, requestTimeStamp : x.requestTimeStamp};
+  });
+  res.send(resultsFiltered);
+})
+  .catch((err) => {
+    res.status(500)
+        .send({message: 'Error retrieving users from contacts database'});
+  });
+}
 
 
