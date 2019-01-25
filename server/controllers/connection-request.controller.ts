@@ -131,7 +131,7 @@ function requestUserStatus(req, res) {
  * @return {*}
  */
 function requestUserConfirmedConnections (req, res) {
-  Connections.find({receiverUserId: req.body.userID , status: 'Confirmed'})
+  Connections.find({receiverUserId: req.userId , status: 'Confirmed'})
   .then((result) => {
     console.log('==============' + result);
     const resultsFiltered = result.map((x) => {
