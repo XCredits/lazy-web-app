@@ -87,7 +87,7 @@ function requestUserID(req, res) {
   User.find({username: _username})
       .then((result) => {
         const resultsFiltered = result.map((x) => {
-          return {_id: x._id};
+          return {_id: x._id, username: x.username, givenName: x.givenName, familyName: x.familyName};
         });
         res.send(resultsFiltered);
       })

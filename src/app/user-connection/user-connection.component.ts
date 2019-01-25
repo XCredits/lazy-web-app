@@ -10,6 +10,8 @@ import { stringify } from '@angular/core/src/render3/util';
 import { resolve } from 'q';
 import { async } from '@angular/core/testing';
 import { promise } from 'selenium-webdriver';
+import { ConcatSource } from 'webpack-sources';
+import { throwToolbarMixedModesError } from '@angular/material';
 
 @Component({
   selector: 'app-user-connection',
@@ -27,7 +29,10 @@ export class UserConnectionComponent implements OnInit {
   IsViewPending = false;
   IsViewConfirmed = true;
   IsAddUserRequest = true;
+  isUserAfterFound = false;
+  isRequestSent = false;
   receiverID: string;
+
 
   constructor(
     private http: HttpClient,
@@ -38,7 +43,11 @@ export class UserConnectionComponent implements OnInit {
     console.log('***************');
     this.form = new FormGroup ({
       username: new FormControl(''),
+      givenName: new FormControl(''),
+      familyName: new FormControl(''),
+      email: new FormControl(''),
     });
+
     this.userService.userObservable
         .subscribe(user => {
           this.user = user;
@@ -121,21 +130,28 @@ export class UserConnectionComponent implements OnInit {
 
   };
 
-  // Send user connection request
-  RequestUserConnection = function (formData) {
-    console.log('Search about user...' + formData.username);
+
+  // Search on user
+  SearchUserConnection = function (formData) {
+    console.log('===========search on user ...' + formData.username);
 
     // return the user ID on the search one
     this.http.post('/api/connection/get-user-request', {
       'username': formData.username,
     })
     .subscribe((data) =>  {
-      this.confirmedConnections.push('sample3');
-      if (data[0] != null) {
+      if (data[0] != null ) {
         console.log('returned username is ' + data[0]._id);
         this.receiverID = data[0]._id;
 
-        // check if already relation before
+        // can't add the same as logged user
+        if (this.receiverID === this.user.id) {
+          console.log('you cannot add your self!');
+          return;
+        }
+
+
+       // check if already relation before
         this.http.post('/api/connection/check-user-status', {
           senderID : this.user.id,
           receiverID : this.receiverID,
@@ -146,8 +162,70 @@ export class UserConnectionComponent implements OnInit {
           console.log(dataOutput.length);
 
           if (dataOutput.length === 0) {
+            // new connection should be inserted .....
+            this.IsAddUserRequest = false;
+            this.isUserAfterFound = true;
 
-        // insert into connection table
+            this.form = new FormGroup({
+              givenName: new FormControl(data[0].givenName),
+              familyName: new FormControl(data[0].familyName),
+              username: new FormControl(data[0].username),
+            });
+          } else
+          if ( dataOutput[0].status === 'Pending') {
+            console.log('Request sent on ' + dataOutput[0].requestTimeStamp + ' and awaiting for confirmation ');
+            this.isRequestSent = true;
+          }
+
+        });
+      } else {
+        console.log('no user found!');
+      }
+    });
+
+  };
+
+
+  // Adda new connection
+  RequestUserConnection = function (formData) {
+    console.log('===========search on user ...' + formData.username);
+
+    // return the user ID on the search one
+    this.http.post('/api/connection/get-user-request', {
+      'username': formData.username,
+    })
+    .subscribe((data) =>  {
+      if (data[0] != null ) {
+        console.log('returned username is ' + data[0]._id);
+        this.receiverID = data[0]._id;
+
+        // can't add the same as logged user
+        if (this.receiverID === this.user.id) {
+          console.log('you cannot add your self!');
+          return;
+        }
+
+
+       // check if already relation before
+        this.http.post('/api/connection/check-user-status', {
+          senderID : this.user.id,
+          receiverID : this.receiverID,
+        })
+        .subscribe((dataOutput) =>  {
+
+          // nul if no connections before
+          console.log(dataOutput.length);
+
+          if (dataOutput.length === 0) {
+            this.IsAddUserRequest = false;
+            this.isUserAfterFound = true;
+
+            this.form = new FormGroup({
+              givenName: new FormControl(data[0].givenName),
+              familyName: new FormControl(data[0].familyName),
+              username: new FormControl(data[0].username),
+            });
+             // insert into connection table
         this.http.post('/api/connection/add-connection-request', {
           'senderID': this.user.id,
           'receiverID': this.receiverID,
@@ -156,6 +234,7 @@ export class UserConnectionComponent implements OnInit {
           this.waiting = false;
           this.submitSuccess = true;
           console.log('connection request sent...' );
+          this.isRequestSent = true;
         },
         errorResponse => {
           this.waiting = false;
@@ -163,15 +242,13 @@ export class UserConnectionComponent implements OnInit {
           console.dir(errorResponse);
           this.formErrorMessage = 'There was a problem into sending connection request .';
         });
-
           } else
           if ( dataOutput[0].status === 'Pending') {
             console.log('Request sent on ' + dataOutput[0].requestTimeStamp + ' and awaiting for confirmation ');
+            this.isRequestSent = true;
           }
 
         });
-
-
       } else {
         console.log('no user found!');
       }
@@ -182,9 +259,11 @@ export class UserConnectionComponent implements OnInit {
 
   viewSearchForm = function () {
 
+    console.log('eeeeeeeeeeeee');
     this.IsViewPending = false;
     this.IsViewConfirmed = false;
     this.IsAddUserRequest = true;
+    this.isUserAfterFound = false;
   };
 
 }
