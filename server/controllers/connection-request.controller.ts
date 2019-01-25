@@ -8,7 +8,7 @@ const Connections = require('../models/connections.model');
 const User = require('../models/user.model');
 
 module.exports = function(app) {
-  app.post('/api/connection/add-connection-request', addConnectionRequest);
+  app.post('/api/connection/add-connection-request', auth.jwt, addConnectionRequest);
   app.post('/api/connection/get-user-request', requestUserID);
   app.post('/api/connection/check-user-status', requestUserStatus);
   app.post('/api/connection/get-pending-request', requestUserPendingConnections);
