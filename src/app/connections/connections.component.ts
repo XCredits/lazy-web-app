@@ -106,6 +106,7 @@ export class ConnectionComponent implements OnInit {
       'userID': this.user.id,
     })
     .subscribe((data) =>  {
+      // this.pendingConnectionsCounter = data.count;
       this.pendingConnectionsCounter = data.length;
     });
     this.IsViewPending = false;

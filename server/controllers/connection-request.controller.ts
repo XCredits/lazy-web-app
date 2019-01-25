@@ -153,6 +153,7 @@ function requestUserConfirmedConnections (req, res) {
  * @return {*}
  */
 function requestUserPendingConnections (req, res) {
+  // Connections.count
   Connections.find({receiverUserId: req.body.userID , status: 'Pending'})
   .then((result) => {
     console.log('==============' + result);
