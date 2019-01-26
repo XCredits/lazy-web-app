@@ -16,7 +16,8 @@ ProductSchema.index({category: 1});
 ProductSchema.methods.frontendData = function() {
   return {
     id: this._id,
-    productName: this.productImage,
+    productId: this.productId,
+    productName: this.productName,
     category: this.category,
     description: this.description,
     productImage: this.productImage,
