@@ -14,8 +14,7 @@ const UserSchema = new Schema({
     passwordHash: {type: String, required: true},
     saltRounds: Number, // stored in case we increase the salt rounds in the future
     isAdmin: {type: Boolean, default: false},
-    profileImage: {type: String},
-    organisations: [{ type: Schema.Types.ObjectId , ref: 'Organisation'}],
+    profileImage: {type: String}
   }
 );
 

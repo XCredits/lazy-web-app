@@ -1,27 +1,19 @@
-<!-- <div *ngIf='!view' class="addAndView">
-  <mat-card class="organization-card">
-    <mat-card-title>Add New Organization</mat-card-title>
-    <label routerLink='/create-organization'>
-      <span>
-          <mat-icon style="cursor:pointer">add_circle_outline</mat-icon>
-      </span>
-    </label>
-  </mat-card>
-  <mat-card class="organization-card">
-    <mat-card-title>View Organization</mat-card-title>
-    <label (click)='addNewOrg()'>
-      <span>
-          <mat-icon style="cursor:pointer">view_module</mat-icon>
-      </span>
-    </label>
-  </mat-card>
-</div> -->
-<div *ngFor="let organisations of organisation" class="addAndView">
-    <mat-card class="organization-card">
-      <mat-card-title>{{organisations.organisationName}}</mat-card-title>
-      <mat-card-content> 
-            {{organisations.website}} <br>
-            {{organisations.orgUsername}}
-      </mat-card-content>
-    </mat-card>
+<div class="container">
+    <button routerLink='/create-organization'
+            mat-raised-button
+            color="primary"
+            style="height: 50px; margin: 10px;">
+            <span style="display:inline-flex;"><mat-icon>add</mat-icon></span>
+            New Organization
+    </button><br>
+    <div *ngFor="let organizations of organization" class="addAndView">
+      <mat-card class="organization-card">
+          <mat-card-title>{{organizations.name}}</mat-card-title>
+          <mat-card-content>
+            <h5>Website:</h5> {{organizations.website}}<br>
+            <h5>Contact:</h5> {{organizations.phoneNumber}}<br>
+            <h5>Username:</h5> {{organizations.orgUsername}}
+          </mat-card-content>
+        </mat-card>
+    </div>
 </div>

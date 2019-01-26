@@ -8,21 +8,9 @@ const OrganisationSchema = new Schema({
   logo: {type: String},
   phoneNumber: {type: Number},
   orgUsername: {type: String, unique: true, required: true},
-  user: { type: Schema.Types.ObjectId , ref: 'User'},
 });
 
 OrganisationSchema.index({organisationName: 'text'});
 OrganisationSchema.index({orgUsername: 1});
-
-OrganisationSchema.methods.frontendData = function() {
-  return {
-    id: this._id,
-    organisationName: this.organisationName,
-    website: this.website,
-    logo: this.logo,
-    phoneNumber: this.phoneNumber,
-    orgUsername: this.orgUsername,
-  };
-};
 
 module.exports = mongoose.model('Organisation', OrganisationSchema);

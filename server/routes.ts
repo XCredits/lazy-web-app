@@ -6,11 +6,13 @@ const statsController =
     require('./controllers/stats.controller');
 const profileController =
     require('./controllers/profile.controller');
-
+const organizationController =
+    require('./controllers/organization.controller');
 module.exports = function(app) {
   mailingListController(app);
   authenticationController(app);
   statsController(app);
   profileController(app);
+  organizationController(app);
 };
 

@@ -9,7 +9,8 @@
           <div class="app-image-upload-positioner">
             <app-image-upload
                 (imageUploaded)="handleImageUpload($event)"
-                (imageError)="handleImageError()">
+                (imageError)="handleImageError()"
+                [imageUploadRoute]= "imageUploadRoute">
             </app-image-upload>  
           </div>
         </div>

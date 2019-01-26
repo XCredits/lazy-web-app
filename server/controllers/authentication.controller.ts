@@ -48,7 +48,6 @@ const passwordSettings = {
 
 import * as validator from 'validator';
 const User = require('../models/user.model');
-const Organisation = require('../models/organisation.model');
 const UserStats = require('../models/user-stats.model');
 const statsService = require('../services/stats.service');
 const emailService = require('../services/email.service');
@@ -79,8 +78,6 @@ module.exports = function(app) {
       auth.jwtTemporaryLinkToken, changePassword);
   app.post('/api/user/forgot-username', forgotUsername);
   app.post('/api/user/logout', auth.jwtRefreshToken, logout);
-  app.post('/api/organisation/create', auth.jwtRefreshToken, orgRegister);
-  app.get('/api/organisation/details', auth.jwt, orgDetails);
 };
 
 /**
@@ -583,69 +580,3 @@ function setJwtRefreshTokenCookie(
     });
   return {jwtString, jwtObj};
 }
-
-function orgRegister(req, res) {
-  const { organisationName, website, phoneNumber, orgUsername } = req.body;
-  const userId = req.userId;
-  if (typeof userId !== 'string' ||
-      typeof organisationName !== 'string' ||
-      typeof website !== 'string' ||
-      typeof phoneNumber !== 'string' ||
-      typeof orgUsername !== 'string') {
-
-      return res.status(500).send({message: 'Request validation failed'});
-  }
-
-  const organisation = new Organisation({ organisationName, website, phoneNumber, orgUsername });
-
-  User.findById(userId)
-      .populate('organisations')
-      .exec(async function(err, foundUser) {
-    if (err) {
-      return res.status(422).send({errors: err.errors});
-    }
-
-    if (String(foundUser._id) !== userId ) {
-      return res.status(422).send({errors: [{title: 'Invalid User!', detail: 'Cannot create Organization'}]});
-    }
-    organisation.user = foundUser;
-    foundUser.organisations.push(organisation);
-    organisation.save(function(error) {
-      if (error) {
-        return res.status(422).send({errors: error});
-      }
-      return foundUser.save()
-        .then(() => {
-          return res.status(200).send({message: 'Created and Saved Successfully'});
-        });
-    });
-  });
-}
-
-function orgDetails(req, res) {
-  const userId = req.userId;
-  return Organisation.find({user: userId})
-    .then((org) => {
-      res.json(org);
-    })
-    .catch((err) => {
-      console.log(err);
-      return res.status(500).send({message: 'UserId not found'});
-  });
-}
-
-// function userDetails(req, res) {
-//   // Validate not necessary at this point (no req.body use,
-//   // and checked in jwt-auth)
-//   const userId = req.userId;
-//   if ( typeof userId !== 'string') {
-//     return res.status(422).json({message: 'Request failed validation'});
-//   }
-//   return User.findOne({_id: userId})
-//       .then((user) => {
-//         res.send(user.frontendData());
-//       })
-//       .catch((err) => {
-//         return res.status(500).send({message: 'UserId not found'});
-//       });
-// }
