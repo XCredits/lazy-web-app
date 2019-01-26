@@ -1,4 +1,4 @@
-import { Component, OnInit, EventEmitter, Output } from '@angular/core';
+import { Component, OnInit, EventEmitter, Output, Input} from '@angular/core';
 import { ImageUploadService } from './image-upload.service';
 import { UserService } from './../user.service';
 import { MatSnackBar } from '@angular/material';
@@ -21,10 +21,13 @@ export class ImageUploadComponent {
 
   @Output() imageUploaded = new EventEmitter();
   @Output() imageError = new EventEmitter();
+  @Output() imageUploadUrl = new EventEmitter();
   @Output() croppingCanceled = new EventEmitter();
+  @Input('imageUploadRoute') imageUploadRoute: string;
 
   selectedFile: FileSnippet;
   imageChangedEvent: any;
+  imageUrl: string;
   modalReference = null;
   options: any = {
     size: 'dialog-centered',
@@ -62,8 +65,10 @@ export class ImageUploadComponent {
     this.modalReference.close();
   }
 
-  processFile(event: any, modal) {
+  processFile(event: any, modal, imageUrl) {
     this.selectedFile = undefined;
+    this.imageUrl = imageUrl;
+    console.log(imageUrl);
     this.modalReference = this.modalService.open(modal, this.options);
     const URL = window.URL;
     let file, img;
@@ -89,7 +94,7 @@ export class ImageUploadComponent {
       const reader = new FileReader();
       reader.addEventListener('load', (event: any) => {
         this.selectedFile.pending = true;
-        this.imageService.uploadImage(this.selectedFile.file).subscribe(
+        this.imageService.uploadImage(this.imageUploadRoute, this.selectedFile.file).subscribe(
           (imageUrl: string) => {
             this.onSuccess(imageUrl);
           },

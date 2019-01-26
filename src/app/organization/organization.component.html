@@ -1,0 +1,19 @@
+<div class="container">
+    <button routerLink='/create-organization'
+            mat-raised-button
+            color="primary"
+            style="height: 50px; margin: 10px;">
+            <span style="display:inline-flex;"><mat-icon>add</mat-icon></span>
+            New Organization
+    </button><br>
+    <div *ngFor="let organizations of organization" class="addAndView">
+      <mat-card class="organization-card">
+          <mat-card-title>{{organizations.name}}</mat-card-title>
+          <mat-card-content>
+            <h5>Website:</h5> {{organizations.website}}<br>
+            <h5>Contact:</h5> {{organizations.phoneNumber}}<br>
+            <h5>Username:</h5> {{organizations.orgUsername}}
+          </mat-card-content>
+        </mat-card>
+    </div>
+</div>

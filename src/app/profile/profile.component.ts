@@ -12,6 +12,8 @@ import { UserService, User } from '../user.service';
 export class ProfileComponent implements OnInit {
   form: FormGroup;
 
+  imageUploadRoute = '/api/user/profile-image-upload';
+
   waiting = false;
   disableButton = true;
   submitSuccess = false;
