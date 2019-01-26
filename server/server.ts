@@ -18,6 +18,14 @@ const routes = require('./routes');
 import * as helmet from 'helmet';
 app.use(helmet());
 
+// Interpret command line args
+const commander = require('commander');
+commander
+  .version('0.1.0')
+  // .option('-p, --some-option', 'This has a true or false value')
+  .option('-c, --port [number]', 'The number of the port used to run the server')
+  .parse(process.argv);
+
 app.use(bodyParser.urlencoded({extended: true})); // extended gives full JSON
 app.use(bodyParser.json());
 app.use(cookieParser());
@@ -47,11 +55,12 @@ app.post('*', function(req, res) {
   res.status(404).json({message: 'Route not found.'});
 });
 
-const port = process.env.PORT || '3000';
+const port = commander.port || process.env.PORT || '3000';
 app.set('port', port);
 
 const server = http.createServer(app);
 
 server.listen(port, function() {
   console.log(`Running on localhost:${port}`);
+  console.log(commander);
 });
