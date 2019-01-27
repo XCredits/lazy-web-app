@@ -18,7 +18,7 @@ if (process.env.CLOUD_HOST === 'gcloud') {
   throw new Error('Unknown CLOUD_HOST setting');
 }
 
-process.env.isLocal = isLocal ? 'true' : 'false';
+process.env.IS_LOCAL = isLocal ? 'true' : 'false';
 
 // Default to development
 process.env.NODE_ENV = 'development';
