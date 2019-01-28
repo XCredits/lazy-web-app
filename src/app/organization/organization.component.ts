@@ -16,7 +16,6 @@ export class OrganizationComponent implements OnInit {
   form: FormGroup;
   organization: Organization;
   view = false;
-  imageUploadRoute = 'api/organization/image-upload';
   examination = 'Hello';
 
   constructor(private userService: UserService, private http: HttpClient,

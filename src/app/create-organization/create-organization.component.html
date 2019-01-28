@@ -1,11 +1,11 @@
 <div class="simple-form-aligner">
   <mat-card class="simple-form-card">
     <form [formGroup]="form" (ngSubmit)="submit(form.value)">
-      <mat-card-title>	Create Organisation </mat-card-title>
+      <mat-card-title>	Create Organization </mat-card-title>
       <mat-card-content>
         <div class="form-group">
           <mat-form-field class="simple-form-field-100">
-            <input matInput placeholder="Organization Name" name="organisationName" formControlName="organisationName">
+            <input matInput placeholder="Organization Name" name="name" formControlName="name">
             <mat-error>Required</mat-error>
           </mat-form-field>
           <mat-form-field class="simple-form-field-100">
@@ -15,7 +15,7 @@
             <input matInput placeholder="Phone Number" name="phoneNumber" formControlName="phoneNumber">
           </mat-form-field>
           <mat-form-field class="simple-form-field-100">
-            <input matInput placeholder="Organization Username" name="orgUsername" formControlName="orgUsername">
+            <input matInput placeholder="Organization Username" name="username" formControlName="username">
             <mat-error>Required</mat-error>
           </mat-form-field>
           <section>

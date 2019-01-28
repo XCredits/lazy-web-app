@@ -10,7 +10,8 @@
             <app-image-upload
                 (imageUploaded)="handleImageUpload($event)"
                 (imageError)="handleImageError()"
-                [imageUploadRoute]= "imageUploadRoute">
+                [imageUploadRoute]= "imageUploadRoute"
+                [id]="user.id">
             </app-image-upload>  
           </div>
         </div>

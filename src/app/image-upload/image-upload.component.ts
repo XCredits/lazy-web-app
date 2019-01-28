@@ -24,6 +24,7 @@ export class ImageUploadComponent {
   @Output() imageUploadUrl = new EventEmitter();
   @Output() croppingCanceled = new EventEmitter();
   @Input('imageUploadRoute') imageUploadRoute: string;
+  @Input('id') id: string;
 
   selectedFile: FileSnippet;
   imageChangedEvent: any;
@@ -68,7 +69,6 @@ export class ImageUploadComponent {
   processFile(event: any, modal, imageUrl) {
     this.selectedFile = undefined;
     this.imageUrl = imageUrl;
-    console.log(imageUrl);
     this.modalReference = this.modalService.open(modal, this.options);
     const URL = window.URL;
     let file, img;
@@ -94,7 +94,7 @@ export class ImageUploadComponent {
       const reader = new FileReader();
       reader.addEventListener('load', (event: any) => {
         this.selectedFile.pending = true;
-        this.imageService.uploadImage(this.imageUploadRoute, this.selectedFile.file).subscribe(
+        this.imageService.uploadImage(this.imageUploadRoute, this.selectedFile.file, this.id).subscribe(
           (imageUrl: string) => {
             this.onSuccess(imageUrl);
           },

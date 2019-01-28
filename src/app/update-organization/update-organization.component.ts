@@ -14,6 +14,8 @@ export class UpdateOrganizationComponent implements OnInit {
   organization: Organization;
   successMessage: string;
   submitSuccess = false;
+  imageUploadRoute = '/api/organization/image-upload';
+  logo: string;
 
   constructor(private organizationService: OrganizationService, private http: HttpClient,
               private router: Router) { }
@@ -21,14 +23,14 @@ export class UpdateOrganizationComponent implements OnInit {
   ngOnInit() {
     this.organizationService.getData()
       .subscribe(organization => {
+        this.logo = organization.logo;
         this.form = new FormGroup ({
-          organisationName: new FormControl(organization.organisationName),
+          name: new FormControl(organization.name),
           website: new FormControl(organization.website),
           phoneNumber: new FormControl(organization.phoneNumber),
-          orgUsername: new FormControl(organization.organisationName)
+          username: new FormControl(organization.username)
       });
       this.organization = organization;
-      console.log(this.organization._id);
     });
   }
 
@@ -38,10 +40,10 @@ export class UpdateOrganizationComponent implements OnInit {
     }
     this.http.post('/api/organization/update-details', {
         'id': this.organization._id,
-        'organisationName': formData.organisationName,
+        'name': formData.name,
         'website': formData.website,
         'phoneNumber': formData.phoneNumber,
-        'orgUsername': formData.orgUsername,
+        'username': formData.username,
     })
     .subscribe(() => {
       this.submitSuccess = true;

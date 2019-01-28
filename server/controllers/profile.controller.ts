@@ -61,7 +61,8 @@ function saveDetails(req, res) {
  */
 
 function profileImageUpload(req, res) {
-  const userId = req.userId;
+  const userId = req.query.id;
+
   if (typeof userId !== 'string') {
     return res.status(422).json({message: 'Error in UserId'});
   }

@@ -2,15 +2,15 @@ import * as mongoose from 'mongoose';
 (<any>mongoose).Promise = Promise;
 const Schema = mongoose.Schema;
 
-const OrganisationSchema = new Schema({
-  organisationName: {type: String, required: true},
+const OrganizationSchema = new Schema({
+  name: {type: String, required: true},
   website: {type: String},
   logo: {type: String},
   phoneNumber: {type: Number},
-  orgUsername: {type: String, unique: true, required: true},
+  username: {type: String, unique: true, required: true},
 });
 
-OrganisationSchema.index({organisationName: 'text'});
-OrganisationSchema.index({orgUsername: 1});
+OrganizationSchema.index({name: 'text'});
+OrganizationSchema.index({username: 1});
 
-module.exports = mongoose.model('Organisation', OrganisationSchema);
+module.exports = mongoose.model('Organization', OrganizationSchema);

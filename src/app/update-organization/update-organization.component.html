@@ -3,20 +3,20 @@
       <form [formGroup]="form" (ngSubmit)="submit(form.value)">
         <mat-card-title> Update Organization </mat-card-title>
         <mat-card-content>
-          <!-- <div class="profile-image">
-            <img mat-card-lg-image *ngIf='user.profileImage' class="img-class" [src]="profileImage" alt='Profile Photo'>
-            <img mat-card-lg-image *ngIf='!user.profileImage' class="img-class" src='assets/img/default-profile-photo.png'>
+          <div class="profile-image">
+            <img mat-card-lg-image class="img-class" [src]="organization.logo" alt='Profile Photo'>
             <div class="app-image-upload-positioner">
               <app-image-upload
                   (imageUploaded)="handleImageUpload($event)"
                   (imageError)="handleImageError()"
-                  [imageUploadRoute]= "imageUploadRoute">
+                  [imageUploadRoute]= "imageUploadRoute"
+                  [id]="organization._id">
               </app-image-upload>  
             </div>
-          </div> -->
+          </div>
           <div class="form-group">
             <mat-form-field class="simple-form-field-100">
-              <input matInput placeholder="Organization Name" name="organisationName" formControlName="organisationName">
+              <input matInput placeholder="Organization Name" name="name" formControlName="name">
             </mat-form-field>
             <mat-form-field class="simple-form-field-100">
               <input matInput placeholder="Website" name="website" formControlName="website">
@@ -27,7 +27,7 @@
             </mat-form-field>
             <br>
             <mat-form-field class="simple-form-field-100">
-                <input matInput placeholder="Username" name="orgUsername" formControlName="orgUsername">
+                <input matInput placeholder="Username" name="username" formControlName="username">
             </mat-form-field>
             <br>
             <button
@@ -52,7 +52,7 @@
                 {{formErrorMessage}}
             </span>
             <span *ngIf="submitSuccess"  class="successMessage">
-                Profile has been updated successfully.
+                {{successMessage}}
             </span>
           </div>
         </mat-card-content>

@@ -17,9 +17,9 @@ export class OrganizationService {
 
 export interface Organization {
   _id: string;
-  organisationName: string;
+  name: string;
   website: string;
   logo: string;
   phoneNumber: number;
-  orgUsername: string;
+  username: string;
 }

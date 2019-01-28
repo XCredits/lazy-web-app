@@ -18,10 +18,10 @@ export class CreateOrganizationComponent implements OnInit {
 
   ngOnInit() {
     this.form = new FormGroup ({
-      organisationName: new FormControl('', [Validators.required]),
+      name: new FormControl('', [Validators.required]),
       website: new FormControl(''),
       phoneNumber: new FormControl(''),
-      orgUsername: new FormControl('', [Validators.required])
+      username: new FormControl('', [Validators.required])
     });
   }
 
@@ -31,10 +31,10 @@ export class CreateOrganizationComponent implements OnInit {
     }
     this.disableButton = false;
     this.http.post('/api/organization/create', {
-          'organisationName': formData.organisationName,
+          'name': formData.name,
           'website': formData.website,
           'phoneNumber': formData.phoneNumber,
-          'orgUsername': formData.orgUsername,
+          'username': formData.username,
     })
     .subscribe(data => {
       this.disableButton = false;
