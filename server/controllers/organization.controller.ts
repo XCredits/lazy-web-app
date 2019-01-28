@@ -7,6 +7,7 @@ import {uploadSingleImage} from '../services/image-upload';
 module.exports = function(app) {
   app.post('/api/organization/create', authenticate.jwt, createOrg);
   app.get('/api/organization/details', authenticate.jwt, orgDetails);
+  app.post('/api/organization/update-details', authenticate.jwt, updateOrg);
 };
 
 function createOrg(req, res) {
@@ -44,7 +45,7 @@ function createOrg(req, res) {
 
 function orgDetails(req, res) {
   const userId = req.userId;
-  UserOrganization.find({userId: userId})
+  UserOrganization.find({'userId': userId})
       .then((userOrgArr) => {
         const orgIds = userOrgArr.map(orgEle => orgEle.orgId);
         return Organization.find({ '_id': { '$in': orgIds}});
@@ -57,4 +58,33 @@ function orgDetails(req, res) {
       });
 }
 
+function updateOrg(req, res) {
+  const userId = req.userId;
+  const id = req.body.id;
+  const name = req.body.organisationName;
+  const website = req.body.website;
+  const phoneNumber = req.body.phoneNumber;
+  const username = req.body.orgUsername;
 
+  if (typeof id !== 'string') {
+    return res.status(500).send({message: 'Request validation failed'});
+  }
+  return Organization.findOne({'_id': id})
+    .then((org) => {
+      org.organisationName = name;
+      org.website = website;
+      org.phoneNumber = phoneNumber;
+      org.orgUsername = username;
+      return org.save()
+        .then(() => {
+          return res.status(200).send({message: 'Organization details updated successfully'});
+        })
+        .catch(() => {
+          return res.status(500).send({message: 'Error in Updating'});
+        });
+    })
+    .catch((err) => {
+      console.log(err);
+      return res.status(500).send({message: 'Orgainzation not found'});
+    });
+}

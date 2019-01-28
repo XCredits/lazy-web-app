@@ -1,0 +1,63 @@
+<div class="simple-form-aligner">
+    <mat-card class="simple-form-card">
+      <form [formGroup]="form" (ngSubmit)="submit(form.value)">
+        <mat-card-title> Update Organization </mat-card-title>
+        <mat-card-content>
+          <!-- <div class="profile-image">
+            <img mat-card-lg-image *ngIf='user.profileImage' class="img-class" [src]="profileImage" alt='Profile Photo'>
+            <img mat-card-lg-image *ngIf='!user.profileImage' class="img-class" src='assets/img/default-profile-photo.png'>
+            <div class="app-image-upload-positioner">
+              <app-image-upload
+                  (imageUploaded)="handleImageUpload($event)"
+                  (imageError)="handleImageError()"
+                  [imageUploadRoute]= "imageUploadRoute">
+              </app-image-upload>  
+            </div>
+          </div> -->
+          <div class="form-group">
+            <mat-form-field class="simple-form-field-100">
+              <input matInput placeholder="Organization Name" name="organisationName" formControlName="organisationName">
+            </mat-form-field>
+            <mat-form-field class="simple-form-field-100">
+              <input matInput placeholder="Website" name="website" formControlName="website">
+            </mat-form-field>
+            <br>
+            <mat-form-field class ="simple-form-field-100">
+              <input matInput placeholder="Phone Number" name="phoneNumber" formControlName="phoneNumber">
+            </mat-form-field>
+            <br>
+            <mat-form-field class="simple-form-field-100">
+                <input matInput placeholder="Username" name="orgUsername" formControlName="orgUsername">
+            </mat-form-field>
+            <br>
+            <button
+                [disabled]="disableButton"
+                class="simple-form-button" 
+                color="primary" 
+                mat-raised-button 
+                type="submit" 
+                value="submit">
+              Save
+            </button>
+            <mat-progress-spinner
+                *ngIf="waiting"
+                color="primary"
+                mode="indeterminate"
+                class="simple-form-spinner"
+                [diameter]=22>
+            </mat-progress-spinner>
+            <span 
+                *ngIf='formErrorMessage' 
+                class="text-error-color">
+                {{formErrorMessage}}
+            </span>
+            <span *ngIf="submitSuccess"  class="successMessage">
+                Profile has been updated successfully.
+            </span>
+          </div>
+        </mat-card-content>
+      </form>
+    </mat-card>
+  </div>
+  
+  
