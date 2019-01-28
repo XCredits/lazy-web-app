@@ -8,12 +8,12 @@
     </button><br>
     <div *ngFor="let organizations of organization" class="addAndView">
       <mat-card class="organization-card">
-          <mat-card-title>{{organizations.name}}</mat-card-title>
-          <img width="150px" [src]="organizations.logo" alt='Profile Photo'>
+          <mat-card-title>{{organizations.name}}</mat-card-title><hr>
+          <img width="250px" [src]="organizations.logo" alt='Profile Photo'>
           <mat-card-content>
-            <h5>Website:</h5> {{organizations.website}}<br>
-            <h5>Contact:</h5> {{organizations.phoneNumber}}<br>
-            <h5>Username:</h5> {{organizations.username}}<br><br>
+            <br><span style="display:flex; margin-bottom: 7px;"><mat-icon style="font-size:22px;" matSuffix>language</mat-icon>{{organizations.website}}</span>
+            <span style="display:flex; margin-bottom: 7px;"><mat-icon style="font-size:22px;" matSuffix>call</mat-icon> {{organizations.phoneNumber}}</span>
+            <span style="display:flex;"><mat-icon style="font-size:22px;" matSuffix>contacts</mat-icon> {{organizations.username}}</span> <br>
             <button mat-raised-button (click)="test(organizations)" color="primary">Update</button>
           </mat-card-content>
         </mat-card>
