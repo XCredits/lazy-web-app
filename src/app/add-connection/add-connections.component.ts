@@ -61,7 +61,7 @@ export class AddConnectionComponent implements OnInit {
 
 
         this.http.post('/api/connection/get-pending-request', {
-          'userID': this.user.id,
+          'userId': this.user.id,
         })
         .subscribe((data) =>  {
           this.pendingConnectionsCounter = data.length;
@@ -85,7 +85,7 @@ export class AddConnectionComponent implements OnInit {
     this.pendedConnections = [];
     console.log('the id for the sender is ' + this.user.id);
     this.http.post('/api/connection/get-pending-request', {
-      'userID': this.user.id,
+      'userId': this.user.id,
     })
     .subscribe((data) =>  {
       this.pendingConnectionsCounter = data.length;
@@ -94,7 +94,7 @@ export class AddConnectionComponent implements OnInit {
         console.log('senderUserId ' + data[num].senderUserId);
 
         this.http.post('/api/user/get-username', {
-          'userID': data[num].senderUserId,
+          'userId': data[num].senderUserId,
         })
         .subscribe((returnObj) =>  {
          this.pendedConnections.push(returnObj[0].familyName + ' ' + returnObj[0].givenName);
@@ -119,7 +119,7 @@ export class AddConnectionComponent implements OnInit {
     this.confirmedConnections = [];
     console.log('the id for the sender is ' + this.user.id);
     this.http.post('/api/connection/get-confirmed-request', {
-      'userID': this.user.id,
+      'userId': this.user.id,
     })
     .subscribe((data) =>  {
       this.confirmedConnectionsCounter = data.length;
@@ -127,7 +127,7 @@ export class AddConnectionComponent implements OnInit {
       for (num = 0; num < data.length ; num++) {
         console.log('receiverUserId ' + data[num].senderUserId);
         this.http.post('/api/user/get-username', {
-          'userID': data[num].senderUserId,
+          'userId': data[num].senderUserId,
         })
         .subscribe((returnObj) =>  {
          this.confirmedConnections.push(returnObj[0].familyName + ' ' + returnObj[0].givenName);

@@ -6,6 +6,7 @@ const {isValidDisplayUsername, normalizeUsername} =
     require('./utils.controller');
 const Connections = require('../models/connections.model');
 const User = require('../models/user.model');
+const auth = require('./jwt-auth.controller');
 
 module.exports = function(app) {
   app.post('/api/connection/add-connection-request', auth.jwt, addConnectionRequest);
@@ -16,17 +17,15 @@ module.exports = function(app) {
   app.post('/api/user/get-username', requestUsername);
   app.post('/api/connection/ignore-connection-request', ignoreConnectionRequest);
   app.post('/api/connection/approve-connection-request', approveConnectionRequest);
-
 };
 
 /**
- * join a contact list
+ * join a connection list
  * @param {*} req request object
  * @param {*} res response object
  * @return {*}
  */
 function addConnectionRequest(req, res) {
-  console.log('joining connection request ');
   const senderUserId = req.body.senderUserId;
   const receiverUserId = req.body.receiverUserId;
 
