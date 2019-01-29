@@ -6,11 +6,11 @@ import { UserService, User } from '../user.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 
 @Component({
-  selector: 'app-add-connections',
-  templateUrl: './add-connections.component.html',
-  styleUrls: ['./add-connections.component.scss']
+  selector: 'app-connection-requests',
+  templateUrl: './connection-requests.component.html',
+  styleUrls: ['./connection-requests.component.scss']
 })
-export class AddConnectionComponent implements OnInit {
+export class ConnectionRequestsComponent implements OnInit {
   form: FormGroup;
   user: User;
   receiverUserId: string;
