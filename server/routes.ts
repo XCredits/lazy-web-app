@@ -11,7 +11,7 @@ const contactController =
 const testapiController =
     require('./controllers/authentication.controller');
 const connectionController =
-    require('./controllers/connection-request.controller');
+    require('./controllers/connection.controller');
 
 module.exports = function(app) {
   mailingListController(app);

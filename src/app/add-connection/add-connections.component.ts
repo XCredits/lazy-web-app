@@ -41,21 +41,13 @@ export class AddConnectionComponent implements OnInit {
     });
 
     this.userService.userObservable
-      .subscribe(user => {
-        this.user = user;
-        this.isLoggedIn = !!this.user;
-        this.pendingConnectionsCounter = 0;
-        this.confirmedConnectionsCounter = 0;
-        console.log('user logged in is --> ' + user.id);
-      });
-    this.link = 'https://xcredits.com/';
-    this.http.post('/api/connection/get-pending-request', {
-      'userId': this.user.id,
-    })
-      .subscribe((data) => {
-        this.pendingConnectionsCounter = Object.keys(data).length;
-      });
-
+    .subscribe(user => {
+      this.user = user;
+      this.isLoggedIn = !!this.user;
+      this.pendingConnectionsCounter = 0;
+      this.confirmedConnectionsCounter = 0;
+      console.log('user logged in is --> ' + user.id);
+    });
   }
   onSelect(friends) {
     console.log('you clicked on ' + friends);
@@ -101,13 +93,13 @@ export class AddConnectionComponent implements OnInit {
 
 
   // Search on user
-  SearchUserConnection = function (formData) {
+  searchUserConnection = function (formData) {
     // return the user ID on the search one
     this.http.post('/api/connection/get-user-request', {
       'username': formData.username,
     })
       .subscribe((data) => {
-        if (data[0] != null) {
+        if (data[0] != null) { // remove
           this.receiverUserId = data[0]._id;
           if (this.receiverUserId === this.user.id) {
             this.formErrorMessage = 'You cannot add yourself.';
@@ -149,6 +141,19 @@ export class AddConnectionComponent implements OnInit {
 
   // Adda new connection
   RequestUserConnection = function (formData) {
+      // insert into connection table
+       console.log(this.user.id);
+      console.log (formData.username);
+      this.http.post('/api/connection/add-connection-request', {
+        'userId': this.user.id,
+        'username': formData.username,
+      })
+        .subscribe(returnedData => {
+          this.waiting = false;
+          this.submitSuccess = true;
+          console.log('result is ... ' + returnedData);
+        });
+          return;
 
     // return the user ID on the search one
     this.http.post('/api/connection/get-user-request', {

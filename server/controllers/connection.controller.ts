@@ -9,8 +9,8 @@ const User = require('../models/user.model');
 const auth = require('./jwt-auth.controller');
 
 module.exports = function (app) {
-  app.post('/api/connection/get-user-request', auth.jwt, requestUserID);
-  app.post('/api/connection/check-user-status', auth.jwt, requestUserStatus);
+  app.post('/api/connection/find-userId', auth.jwt, requestUserId); // findUserId
+  app.post('/api/connection/check-user-status', auth.jwt, requestUserStatus); // SAME NAME
   app.post('/api/connection/add-connection-request', auth.jwt, addConnectionRequest);
   app.post('/api/connection/get-connection-confirmed', auth.jwt, requestConfirmedUserConnections);
   app.post('/api/connection/get-connection-request', auth.jwt, requestPendingUserConnections);
@@ -25,50 +25,76 @@ module.exports = function (app) {
  * @return {*}
  */
 function addConnectionRequest(req, res) {
-  const senderUserId = req.body.senderUserId;
-  const receiverUserId = req.body.receiverUserId;
+  console.log('received id is ' + req.body.userId + '   ' + req.body.username);
+  // Save the login userId
+  const userId = req.userId;
+  let searchableUsername = req.body.username;
+  // Validate
+  if (typeof searchableUsername !== 'string' ||
+      !isValidDisplayUsername(searchableUsername)) {
+    return res.status(422).json({message: 'Request failed validation'});
+  }
+  searchableUsername = normalizeUsername(searchableUsername);
+  console.log('searchableUsername' + searchableUsername);
 
-  const _connection = new Connections();
-  _connection.senderUserId = senderUserId;
-  _connection.receiverUserId = receiverUserId;
-  _connection.status = 'Pending';
-  return _connection.save()
-    .then((result) => {
-      res.status(200).send({ message: 'Success' });
-      return statsService.increment(_connection)
-        .catch((err) => {
-          console.log('Error in the connection request service');
-        });
+  // Check if the user exist
+  return User.findOne({ username: searchableUsername })
+    .then((resultUserId) => {
+      console.log(' find one id ****' + resultUserId._id);
+      // Check if they have connection
+      return Connections.findOne({ senderUserId: userId, receiverUserId: resultUserId._id })
+      .then((resultConnection) => {
+        if (resultConnection === null) {
+          console.log(' find one id ' + resultUserId);
+
+          console.log('resultConnection is null' );
+
+          // Making new connection
+          const _connection = new Connections();
+          _connection.senderUserId = userId;
+          _connection.receiverUserId = resultUserId._id;
+          _connection.status = 'Pending';
+          return _connection.save()
+            .then(() => {
+              res.status(200).send({ message: 'Success..' });
+              return statsService.increment(_connection)
+                .catch((err) => {
+                  console.log(err.message);
+                  console.log('Error in the connection service');
+                });
+            })
+            .catch((error) => {
+              console.log(error.message);
+              return res.status(500).json({ message: error.message });
+            });
+        } else {
+          return res.status(200).json({message: resultConnection.status});
+        }
+      });
     })
-    .catch((error) => {
-      console.log('Error');
-      console.log(error.message);
-      return res.status(500).json({ message: error.message });
+    .catch ((err) => {
+      return res.status(500).send({ message: 'User not found'});
     });
 }
 
 
 /**
- * find userID by username
+ * find userId by username
  * @param {*} req request object
  * @param {*} res response object
  * @returns {*}
  */
-function requestUserID(req, res) {
+function requestUserId(req, res) {
   const _username = normalizeUsername(req.body.username);
   if (typeof _username !== 'string') {
     return res.status(422).json({ message: 'Request failed validation' });
   }
-  return User.find({ username: _username })
+  return User.findOne({ username: _username })
     .then((result) => {
-      const resultsFiltered = result.map((x) => {
-        return {
-          _id: x._id,
-          username: x.username,
-          givenName: x.givenName,
-          familyName: x.familyName
+      const resultsFiltered =  {
+          _id: result._id,
+          username: result.username,
         };
-      });
       res.send(resultsFiltered);
     })
     .catch((err) => {
@@ -85,7 +111,8 @@ function requestUserID(req, res) {
  * @returns {*}
  */
 function requestUserStatus(req, res) {
-  Connections.find({ senderUserId: req.body.senderUserId, receiverUserId: req.body.receiverUserId })
+  // req.userId
+  Connections.find({ senderUserId: req.$$$$$$$body.senderUserId, receiverUserId: req.body.receiverUserId })
     .then((result) => {
       const resultsFiltered = result.map((x) => {
         return {
@@ -111,27 +138,30 @@ function requestUserStatus(req, res) {
  * @return {*}
  */
 function requestPendingUserConnections(req, res) {
-  status = req.body.status;
-  Connections.find({ receiverUserId: req.userId, status: req.body.status })
-    .then((result) => {
-      const senderIdArr = result.map((e => e.receiverUserId));
-      return User.find({ '_id': { '$in': senderIdArr } })
-        .then((filteredResults) => {
-          const resultsFiltered = filteredResults.map((x) => {
-            return {
-              username: x.username,
-              senderUserId: x.senderUserId,
-              firstName: x.firstName,
-              lastName: x.lastName,
-            };
-          });
-          res.send(resultsFiltered);
-        });
-    })
-    .catch((err) => {
-      res.status(500)
-        .send({ message: 'Error retrieving users from contacts database' });
-    });
+  status = req.body.status; // PROBLEM
+
+  // VALIDATION !!!!
+
+  Connections.find({ receiverUserId: req.userId, status: req.body.status }) // PROBLEM
+      .then((result) => {
+        const senderIdArr = result.map((e => e.receiverUserId));
+        return User.find({ '_id': { '$in': senderIdArr } })
+            .then((filteredResults) => {
+              const resultsFiltered = filteredResults.map((x) => {
+                return {
+                  username: x.username,
+                  senderUserId: result.senderUserId,
+                  firstName: x.firstName,
+                  lastName: x.lastName,
+                };
+              });
+              res.send(resultsFiltered);
+            });
+      })
+      .catch((err) => {
+        res.status(500)
+          .send({ message: 'Error retrieving users from contacts database' });
+      });
 }
 
 
@@ -174,8 +204,7 @@ function requestConfirmedUserConnections(req, res) {
 function actionConnectionRequested(req, res) {
   status = req.body.actionNeeded;
   return Connections.updateOne(
-    { '_id': req.body.userId }
-    ,
+    { '_id': req.body.userId },
     {
       $set:
       {
