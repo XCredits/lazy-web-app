@@ -91,134 +91,27 @@ export class AddConnectionComponent implements OnInit {
       });
   };
 
-
-  // Search on user
-  searchUserConnection = function (formData) {
-    // return the user ID on the search one
-    this.http.post('/api/connection/get-user-request', {
-      'username': formData.username,
-    })
-      .subscribe((data) => {
-        if (data[0] != null) { // remove
-          this.receiverUserId = data[0]._id;
-          if (this.receiverUserId === this.user.id) {
-            this.formErrorMessage = 'You cannot add yourself.';
-            return;
-          }
-
-          // check if already relation before
-          this.http.post('/api/connection/check-user-status', {
-            senderUserId: this.user.id,
-            receiverUserId: this.receiverUserId,
-          })
-            .subscribe((dataOutput) => {
-              // nul if no connections before
-              console.log(dataOutput.length);
-              if (dataOutput.length === 0) {
-                // new connection should be inserted .....
-                console.log('just open a form box');
-              } else {
-                if (dataOutput[0].status === 'Pending') {
-                  console.log('Request sent on ' + dataOutput[0].requestTimeStamp + ' and awaiting for confirmation');
-                  this.formErrorMessage = 'Request already sent.';
-                  this.isRequestSent = true;
-                }
-              }
-              this.IsAddUserRequest = false;
-              this.isUserAfterFound = true;
-              this.form = new FormGroup({
-                givenName: new FormControl(data[0].givenName),
-                familyName: new FormControl(data[0].familyName),
-                username: new FormControl(data[0].username),
-              });
-            });
-        } else {
-          console.log('no user found!');
-          this.formErrorMessage = 'User not found.';
-        }
-      });
-  };
-
-  // Adda new connection
+  // Add new connection
   RequestUserConnection = function (formData) {
-      // insert into connection table
-       console.log(this.user.id);
-      console.log (formData.username);
-      this.http.post('/api/connection/add-connection-request', {
-        'userId': this.user.id,
-        'username': formData.username,
-      })
-        .subscribe(returnedData => {
-          this.waiting = false;
-          this.submitSuccess = true;
-          console.log('result is ... ' + returnedData);
-        });
-          return;
-
-    // return the user ID on the search one
-    this.http.post('/api/connection/get-user-request', {
+    this.IsAddUserRequest = true;
+     this.http.post('/api/connection/add-connection-request', {
+      'userId': this.user.id,
       'username': formData.username,
     })
-      .subscribe((data) => {
-        if (data[0] != null) {
-          console.log('returned username is ' + data[0]._id);
-          this.receiverUserId = data[0]._id;
+      .subscribe(returnedResult => {
+        switch (returnedResult.message) {
+          case 'Success':
+            this.formErrorMessage = 'Added successfully';
+            break;
+          case 'Pending':
+            this.formErrorMessage = 'You already sent a request';
+            break;
+          case 'User not found':
+            this.formErrorMessage = 'Sorry, this user not found';
+            break;
+         }
 
-          // can't add the same as logged user
-          if (this.receiverUserId === this.user.id) {
-            console.log('you cannot add your self!');
-            this.formErrorMessage = 'You cannot add yourself.';
-            return;
-          }
-
-          // check if already relation before
-          this.http.post('/api/connection/check-user-status', {
-            senderUserId: this.user.id,
-            receiverUserId: this.receiverUserId,
-          })
-            .subscribe((dataOutput) => {
-
-              // nul if no connections before
-              console.log(dataOutput.length);
-              if (dataOutput.length === 0) {
-                this.IsAddUserRequest = false;
-                this.isUserAfterFound = true;
-
-                this.form = new FormGroup({
-                  givenName: new FormControl(data[0].givenName),
-                  familyName: new FormControl(data[0].familyName),
-                  username: new FormControl(data[0].username),
-                });
-                // insert into connection table
-                this.http.post('/api/connection/add-connection-request', {
-                  'senderUserId': this.user.id,
-                  'receiverUserId': this.receiverUserId,
-                })
-                  .subscribe(returnedData => {
-                    this.waiting = false;
-                    this.submitSuccess = true;
-                    console.log('connection request sent...');
-                    this.isRequestSent = true;
-                  },
-                    errorResponse => {
-                      this.waiting = false;
-                      console.log('error ... ');
-                      console.dir(errorResponse);
-                      this.formErrorMessage = 'There was a problem into sending connection request .';
-                    });
-              } else
-                if (dataOutput[0].status === 'Pending') {
-                  console.log('Request sent on22 ' + dataOutput[0].requestTimeStamp + ' and awaiting for confirmation ');
-                  this.isRequestSent = true;
-                  this.formErrorMessage = 'Request already sent.';
-                }
-
-            });
-        } else {
-          console.log('no user found!');
-        }
-      });
-
+        });
   };
 
 

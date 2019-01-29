@@ -1,6 +1,4 @@
 import * as validator from 'validator';
-const MailingList = require('../models/mailing-list.model.js');
-const emailService = require('../services/email.service.js');
 const statsService = require('../services/stats.service.js');
 const { isValidDisplayUsername, normalizeUsername } =
   require('./utils.controller');
@@ -9,12 +7,12 @@ const User = require('../models/user.model');
 const auth = require('./jwt-auth.controller');
 
 module.exports = function (app) {
-  app.post('/api/connection/find-userId', auth.jwt, requestUserId); // findUserId
   app.post('/api/connection/check-user-status', auth.jwt, requestUserStatus); // SAME NAME
-  app.post('/api/connection/add-connection-request', auth.jwt, addConnectionRequest);
   app.post('/api/connection/get-connection-confirmed', auth.jwt, requestConfirmedUserConnections);
   app.post('/api/connection/get-connection-request', auth.jwt, requestPendingUserConnections);
   app.post('/api/connection/action-connection-request', auth.jwt, actionConnectionRequested);
+
+  app.post('/api/connection/add-connection-request', auth.jwt, addConnectionRequest);
 
 };
 
@@ -35,20 +33,13 @@ function addConnectionRequest(req, res) {
     return res.status(422).json({message: 'Request failed validation'});
   }
   searchableUsername = normalizeUsername(searchableUsername);
-  console.log('searchableUsername' + searchableUsername);
-
   // Check if the user exist
   return User.findOne({ username: searchableUsername })
     .then((resultUserId) => {
-      console.log(' find one id ****' + resultUserId._id);
       // Check if they have connection
       return Connections.findOne({ senderUserId: userId, receiverUserId: resultUserId._id })
       .then((resultConnection) => {
         if (resultConnection === null) {
-          console.log(' find one id ' + resultUserId);
-
-          console.log('resultConnection is null' );
-
           // Making new connection
           const _connection = new Connections();
           _connection.senderUserId = userId;
@@ -56,16 +47,15 @@ function addConnectionRequest(req, res) {
           _connection.status = 'Pending';
           return _connection.save()
             .then(() => {
-              res.status(200).send({ message: 'Success..' });
+              res.status(200).send({ message: 'Success' });
               return statsService.increment(_connection)
                 .catch((err) => {
-                  console.log(err.message);
-                  console.log('Error in the connection service');
+                  return res.status(200).json({ message: err.message });
                 });
             })
             .catch((error) => {
               console.log(error.message);
-              return res.status(500).json({ message: error.message });
+              return res.status(200).json({ message: error.message });
             });
         } else {
           return res.status(200).json({message: resultConnection.status});
@@ -73,32 +63,7 @@ function addConnectionRequest(req, res) {
       });
     })
     .catch ((err) => {
-      return res.status(500).send({ message: 'User not found'});
-    });
-}
-
-
-/**
- * find userId by username
- * @param {*} req request object
- * @param {*} res response object
- * @returns {*}
- */
-function requestUserId(req, res) {
-  const _username = normalizeUsername(req.body.username);
-  if (typeof _username !== 'string') {
-    return res.status(422).json({ message: 'Request failed validation' });
-  }
-  return User.findOne({ username: _username })
-    .then((result) => {
-      const resultsFiltered =  {
-          _id: result._id,
-          username: result.username,
-        };
-      res.send(resultsFiltered);
-    })
-    .catch((err) => {
-      return res.status(500).send({ message: 'UserId not found...' });
+      return res.status(200).send({ message: 'User not found'});
     });
 }
 
