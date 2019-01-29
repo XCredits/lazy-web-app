@@ -4,14 +4,6 @@ import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { UserService, User } from '../user.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { useAnimation } from '@angular/animations';
-import { retry } from 'rxjs/operators';
-import { stringify } from '@angular/core/src/render3/util';
-import { resolve } from 'q';
-import { async } from '@angular/core/testing';
-import { promise } from 'selenium-webdriver';
-import { ConcatSource } from 'webpack-sources';
-import { throwToolbarMixedModesError } from '@angular/material';
 
 @Component({
   selector: 'app-connections',

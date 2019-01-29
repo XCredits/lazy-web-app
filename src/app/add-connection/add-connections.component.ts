@@ -70,7 +70,6 @@ export class AddConnectionComponent implements OnInit {
     this.IsViewConfirmed = false;
     this.IsAddUserRequest = false;
     this.pendedConnections = [];
-    console.log('the id for the sender is ' + this.user.id);
     this.http.post('/api/connection/get-connection-request', {
       'userId': this.user.id,
     })
@@ -127,41 +126,31 @@ export class AddConnectionComponent implements OnInit {
         receiverUserId : this.receiverUserId,
       })
       .subscribe((dataOutput) =>  {
-
           // nul if no connections before
           console.log(dataOutput.length);
-
           if (dataOutput.length === 0) {
             // new connection should be inserted .....
             console.log('just open a form box');
-
           } else {
           if ( dataOutput[0].status === 'Pending') {
-            console.log('Request sent onss ' + dataOutput[0].requestTimeStamp + ' and awaiting for confirmation2 ');
+            console.log('Request sent on ' + dataOutput[0].requestTimeStamp + ' and awaiting for confirmation');
             this.formErrorMessage = 'Request already sent.';
-
             this.isRequestSent = true;
-
           }
         }
-
         this.IsAddUserRequest = false;
         this.isUserAfterFound = true;
-
         this.form = new FormGroup({
           givenName: new FormControl(data[0].givenName),
           familyName: new FormControl(data[0].familyName),
           username: new FormControl(data[0].username),
         });
-
         });
       } else {
         console.log('no user found!');
         this.formErrorMessage = 'User not found.';
-
       }
     });
-
   };
 
   // Adda new connection
@@ -192,7 +181,6 @@ export class AddConnectionComponent implements OnInit {
 
           // nul if no connections before
           console.log(dataOutput.length);
-
           if (dataOutput.length === 0) {
             this.IsAddUserRequest = false;
             this.isUserAfterFound = true;
