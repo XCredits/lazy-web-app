@@ -33,7 +33,7 @@ export class AddConnectionComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.form = new FormGroup ({
+    this.form = new FormGroup({
       username: new FormControl(''),
       givenName: new FormControl(''),
       familyName: new FormControl(''),
@@ -41,20 +41,20 @@ export class AddConnectionComponent implements OnInit {
     });
 
     this.userService.userObservable
-        .subscribe(user => {
-          this.user = user;
-          this.isLoggedIn = !!this.user;
-          this.pendingConnectionsCounter = 0;
-          this.confirmedConnectionsCounter = 0;
-          console.log('user logged in is --> ' + user.id);
-        });
-        this.link = 'https://xcredits.com/';
-        this.http.post('/api/connection/get-pending-request', {
-          'userId': this.user.id,
-        })
-        .subscribe((data) =>  {
-          this.pendingConnectionsCounter = Object.keys(data).length;
-        });
+      .subscribe(user => {
+        this.user = user;
+        this.isLoggedIn = !!this.user;
+        this.pendingConnectionsCounter = 0;
+        this.confirmedConnectionsCounter = 0;
+        console.log('user logged in is --> ' + user.id);
+      });
+    this.link = 'https://xcredits.com/';
+    this.http.post('/api/connection/get-pending-request', {
+      'userId': this.user.id,
+    })
+      .subscribe((data) => {
+        this.pendingConnectionsCounter = Object.keys(data).length;
+      });
 
   }
   onSelect(friends) {
@@ -73,9 +73,9 @@ export class AddConnectionComponent implements OnInit {
     this.http.post('/api/connection/get-connection-request', {
       'userId': this.user.id,
     })
-    .subscribe((data) => {
-      this.pendingConnectionsCounter = Object.keys(data).length;
-    });
+      .subscribe((data) => {
+        this.pendingConnectionsCounter = Object.keys(data).length;
+      });
   };
 
   loadConfirmedRequests = function () {
@@ -87,14 +87,14 @@ export class AddConnectionComponent implements OnInit {
     this.http.post('/api/connection/get-connection-confirmed', {
       'userId': this.user.id,
     })
-    .subscribe((data) =>  {
-      this.confirmedConnectionsCounter = Object.keys(data).length;
-      let num = 0;
-      for (num = 0; num < data.length ; num++) {
-         this.confirmedConnections.push(Object[0].familyName + ' ' + Object[0].givenName);
-      }
-      console.log('returned username is ' + data.length);
-    });
+      .subscribe((data) => {
+        this.confirmedConnectionsCounter = Object.keys(data).length;
+        let num = 0;
+        for (num = 0; num < data.length; num++) {
+          this.confirmedConnections.push(Object[0].familyName + ' ' + Object[0].givenName);
+        }
+        console.log('returned username is ' + data.length);
+      });
   };
 
   viewSearchForm = function () {
@@ -105,8 +105,8 @@ export class AddConnectionComponent implements OnInit {
   };
 
 
-  ApproveUserConnection = function() {};
+  ApproveUserConnection = function () { };
 
-  IgnoreUserConnection = function() {};
+  IgnoreUserConnection = function () { };
 
 }
