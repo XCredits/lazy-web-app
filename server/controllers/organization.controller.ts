@@ -1,14 +1,18 @@
 const Organization = require('../models/organization.model');
 const UserOrganization = require('../models/user-organization.model');
 const authenticate = require('./jwt-auth.controller');
+const User = require('../models/user.model');
 
 import {uploadSingleImage} from '../services/image-upload';
 
 module.exports = function(app) {
   app.post('/api/organization/create', authenticate.jwt, createOrg);
   app.get('/api/organization/details', authenticate.jwt, orgDetails);
+  app.get('/api/organization/get-details', authenticate.jwt, orgGet);
   app.post('/api/organization/update-details', authenticate.jwt, updateOrg);
   app.post('/api/organization/image-upload', authenticate.jwt, orgImageUpload);
+  app.post('/api/organization/add-user', orgAddUser);
+  app.get('/api/organization/get-roles', authenticate.jwt, orgGetRole);
 };
 
 function createOrg(req, res) {
@@ -108,11 +112,74 @@ function orgImageUpload(req, res) {
               return res.status(200).send({message: 'Image uploaded successfully'});
             })
             .catch(() => {
-              return res.status(500).send({message: 'Image uploaad'});
+              return res.status(500).send({message: 'Image upload failed'});
             });
       })
       .catch(() => {
         return res.status(500).send({message: 'Organization not found'});
       });
   });
+}
+
+function orgGet(req, res) {
+  const userId = req.userId;
+  const username = req.query.username;
+  if (typeof userId !== 'string' ||
+      typeof username !== 'string') {
+        return res.status(500).send({message: 'Request validation failed'});
+  }
+  return Organization.findOne({'username': username})
+    .then((org) => {
+      return res.send(org);
+    })
+    .catch(() => {
+      return res.status(500).send({message: 'Username not found'});
+    });
+}
+
+function orgAddUser(req, res) {
+  const orgId = req.body.orgId;
+  const username = req.body.username;
+  if (typeof orgId !== 'string' ||
+      typeof username !== 'string') {
+        return res.status(500).send({message: 'Request validation failed'});
+      }
+  return User.findOne({'username': username})
+      .then((user) => {
+        console.log(user._id);
+        return Organization.findOne({'_id' : orgId})
+          .then(() => {
+            const userOrg = new UserOrganization();
+            userOrg.userId = user._id;
+            userOrg.orgId = orgId;
+            userOrg.roles = ['POS'];
+            return userOrg.save()
+              .then(() => {
+                return res.status(200).send({message: 'User added successfully'});
+              })
+              .catch(() => {
+                return res.status(500).send({message: 'Unsuccessful in adding user'});
+              });
+          })
+          .catch(() => {
+            return res.status(500).send({message: 'Cannot find organisation'});
+          });
+      })
+      .catch(() => {
+        return res.status(500).send({message: 'Cannot find user'});
+      });
+}
+
+function orgGetRole(req, res) {
+  const userId = req.userId;
+  return UserOrganization.find({'userId': userId})
+    .then((userOrg) => {
+      console.log('Inside');
+      const roles = userOrg.map(orgEle => orgEle.roles);
+      console.log(roles);
+      return res.send(roles);
+    })
+    .catch(() => {
+      return res.status(500).send({message: 'Invalid userId'});
+    });
 }

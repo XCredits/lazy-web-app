@@ -1,9 +1,9 @@
 .img-class{
-  border-radius: 50%;
+  width: 250px;
 }
 
 .profile-image{
-  width: 152px;
+  width: 252px;
   height: 152px;
   margin:auto;
   position: relative;
@@ -11,7 +11,8 @@
 
   .app-image-upload-positioner {
     position: absolute;
-    bottom: 0;
+    right: 66px;
+    top: 98px;
     width: 152px;
     padding-left: 64px;
     padding-right: 64px;

@@ -1,5 +1,5 @@
 <div class="simple-form-aligner">
-    <mat-card class="simple-form-card">
+    <mat-card *ngIf="ready" class="simple-form-card">
       <form [formGroup]="form" (ngSubmit)="submit(form.value)">
         <mat-card-title> Update Organization </mat-card-title>
         <mat-card-content>

@@ -14,7 +14,8 @@
             <br><span style="display:flex; margin-bottom: 7px;"><mat-icon style="font-size:22px;" matSuffix>language</mat-icon>{{organizations.website}}</span>
             <span style="display:flex; margin-bottom: 7px;"><mat-icon style="font-size:22px;" matSuffix>call</mat-icon> {{organizations.phoneNumber}}</span>
             <span style="display:flex;"><mat-icon style="font-size:22px;" matSuffix>contacts</mat-icon> {{organizations.username}}</span> <br>
-            <button mat-raised-button (click)="test(organizations)" color="primary">Update</button>
+            <button *ngIf="isAdmin" mat-raised-button (click)="sendOrg(organizations)" color="primary">Update</button>
+            <label *ngIf="isAdmin" style="float:right;"><span (click)="test(organizations._id)"><mat-icon style="cursor:pointer; font-size: 32px;">person_add</mat-icon></span></label>
           </mat-card-content>
         </mat-card>
     </div>

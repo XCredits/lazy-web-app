@@ -1,8 +1,8 @@
-import { Injectable } from '@angular/core';
+import { Injectable, OnDestroy } from '@angular/core';
 import { Subject, BehaviorSubject, ReplaySubject, Observable} from 'rxjs';
 
 @Injectable()
-export class OrganizationService {
+export class OrganizationService implements OnDestroy {
     private _data: BehaviorSubject<Organization> = new BehaviorSubject<Organization>(null);
     orgObservable: Subject<Organization> = new ReplaySubject<Organization>(1);
 
@@ -10,9 +10,14 @@ export class OrganizationService {
         this._data.next(data);
     }
 
-    public getData(): Observable<Organization> {
+    public getData(): Observable<any> {
         return this._data.asObservable();
     }
+
+    ngOnDestroy() {
+        console.log('Destroyed');
+    }
+
 }
 
 export interface Organization {

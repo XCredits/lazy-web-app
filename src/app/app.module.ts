@@ -85,6 +85,7 @@ import { ChangeThemeComponent } from './change-theme/change-theme.component';
 import { OrganizationComponent } from './organization/organization.component';
 import { CreateOrganizationComponent } from './create-organization/create-organization.component';
 import { UpdateOrganizationComponent } from './update-organization/update-organization.component';
+import { AddUserComponent } from './add-user/add-user.component';
 
 @NgModule({
   declarations: [
@@ -116,6 +117,7 @@ import { UpdateOrganizationComponent } from './update-organization/update-organi
     OrganizationComponent,
     CreateOrganizationComponent,
     UpdateOrganizationComponent,
+    AddUserComponent,
   ],
   imports: [
     BrowserModule,
@@ -174,9 +176,15 @@ import { UpdateOrganizationComponent } from './update-organization/update-organi
         canActivate: [AuthGuard],
       },
       {
-        path: 'update-organization',
+        path: 'organization/:orgUsername/update',
         component: UpdateOrganizationComponent,
         data: { title: 'Update Organization' },
+        canActivate: [AuthGuard],
+      },
+      {
+        path: 'organization/add-user',
+        component: AddUserComponent,
+        data: { title: 'Add User' },
         canActivate: [AuthGuard],
       },
       {

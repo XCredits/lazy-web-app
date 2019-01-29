@@ -73,7 +73,8 @@ export class ImageUploadComponent {
     const URL = window.URL;
     let file, img;
 
-    if ((file = event.target.files[0]) && (file.type === 'image/png' || file.type === 'image/jpeg' || file.type === 'image/jpg')) {
+    if ((file = event.target.files[0]) && (file.type === 'image/png' || file.type === 'image/jpeg' ||
+          file.type === 'image/jpg' || file.type === 'image/gif')) {
       img = new Image();
       img.onload = () => {
         this.imageChangedEvent = event;

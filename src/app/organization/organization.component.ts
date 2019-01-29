@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormGroup, FormControl, Validators, ValidatorFn, ValidationErrors, AbstractControl } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { UserService} from '../user.service';
@@ -11,13 +11,14 @@ import { OrganizationService } from '../organization.service';
   templateUrl: './organization.component.html',
   styleUrls: ['./organization.component.scss']
 })
-export class OrganizationComponent implements OnInit {
+export class OrganizationComponent implements OnInit, OnDestroy {
 
   form: FormGroup;
   organization: Organization;
   view = false;
   examination = 'Hello';
-
+  isAdmin: boolean;
+  roles = [];
   constructor(private userService: UserService, private http: HttpClient,
       private router: Router, private organizationService: OrganizationService) {
 
@@ -25,14 +26,33 @@ export class OrganizationComponent implements OnInit {
 
   ngOnInit() {
     this.http.get<Organization>('/api/organization/details', {})
-        .subscribe((org) =>  {
+        .subscribe(org =>  {
           this.organization = org;
+        });
+    this.http.get('/api/organization/get-roles', {})
+        .subscribe(org => {
+          const length = Object.keys(org).length;
+          for ( let i = 0; i < length; i++) {
+            if ( org[i][0] === 'POS') {
+              this.isAdmin = false;
+            } else if (org[i][0] === 'admin') {
+              this.isAdmin = true;
+            }
+          }
         });
   }
 
-  test(testing) {
-    this.organizationService.setData(testing);
-    this.router.navigateByUrl('/update-organization');
+  sendOrg(organization) {
+    this.router.navigate(['/organization/' + organization.username + '/update']);
+  }
+
+  test(test) {
+    this.organizationService.setData(test);
+    this.router.navigate(['/organization/add-user']);
+  }
+
+  ngOnDestroy() {
+    console.log('Destroyed');
   }
 }
 
