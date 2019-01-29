@@ -75,11 +75,6 @@ export class AddConnectionComponent implements OnInit {
     })
     .subscribe((data) => {
       this.pendingConnectionsCounter = Object.keys(data).length;
-      let num = 0;
-      for (num = 0; num < data.length ; num++) {
-        this.pendedConnections.push(data[0].familyName + ' ' + data[0].givenName);
-      }
-      console.log('returned username is ' + data.length);
     });
 
 
@@ -95,13 +90,12 @@ export class AddConnectionComponent implements OnInit {
     this.http.post('/api/connection/get-connection-confirmed', {
       'userId': this.user.id,
     })
-    .subscribe((data) =>  {
+    .subscribe((data) => {
       this.confirmedConnectionsCounter = Object.keys(data).length;
       let num = 0;
       for (num = 0; num < data.length ; num++) {
          this.confirmedConnections.push(Object[0].familyName + ' ' + Object[0].givenName);
       }
-      console.log('returned username is ' + data.length);
     });
   };
 
