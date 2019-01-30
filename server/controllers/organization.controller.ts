@@ -51,6 +51,9 @@ function createOrg(req, res) {
 
 function orgDetails(req, res) {
   const userId = req.userId;
+  if (typeof userId !== 'string') {
+    return res.status(500).send({message: 'Request validation failed'});
+  }
   UserOrganization.find({'userId': userId})
       .then((userOrgArr) => {
         const orgIds = userOrgArr.map(orgEle => orgEle.orgId);

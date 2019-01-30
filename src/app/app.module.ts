@@ -182,7 +182,7 @@ import { AddUserComponent } from './add-user/add-user.component';
         canActivate: [AuthGuard],
       },
       {
-        path: 'organization/add-user',
+        path: 'organization/:orgUsername/add-user',
         component: AddUserComponent,
         data: { title: 'Add User' },
         canActivate: [AuthGuard],

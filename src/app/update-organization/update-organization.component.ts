@@ -35,10 +35,10 @@ export class UpdateOrganizationComponent implements OnInit, OnDestroy {
           this.organization = organization;
           this.logo = organization.logo;
           this.form = new FormGroup ({
-            name: new FormControl(organization.name),
-            website: new FormControl(organization.website),
+            name: new FormControl(organization.name, Validators.required),
+            website: new FormControl(organization.website, Validators.required),
             phoneNumber: new FormControl(organization.phoneNumber),
-            username: new FormControl(organization.username)
+            username: new FormControl(organization.username, Validators.required)
         });
         this.ready = true;
       });

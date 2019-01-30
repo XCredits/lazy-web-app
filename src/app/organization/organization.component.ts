@@ -35,8 +35,8 @@ export class OrganizationComponent implements OnInit, OnDestroy {
   }
 
   addUser(organization) {
-    this.organizationService.setData(organization);
-    this.router.navigate(['/organization/add-user']);
+    this.organizationService.setData(organization._id);
+    this.router.navigate(['/organization/' + organization.username + '/add-user']);
   }
 
   ngOnDestroy() {
