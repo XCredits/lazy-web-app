@@ -11,7 +11,7 @@ module.exports = function(app) {
   app.get('/api/organization/get-details', authenticate.jwt, orgGet);
   app.post('/api/organization/update-details', authenticate.jwt, updateOrg);
   app.post('/api/organization/image-upload', authenticate.jwt, orgImageUpload);
-  app.post('/api/organization/add-user', orgAddUser);
+  app.post('/api/organization/add-user', authenticate.jwt, orgAddUser);
   app.get('/api/organization/get-roles', authenticate.jwt, orgGetRole);
 };
 
@@ -54,13 +54,14 @@ function orgDetails(req, res) {
   UserOrganization.find({'userId': userId})
       .then((userOrgArr) => {
         const orgIds = userOrgArr.map(orgEle => orgEle.orgId);
-        return Organization.find({ '_id': { '$in': orgIds}});
-      })
-      .then((orgInfo) => {
-        res.send(orgInfo);
-      })
-      .catch((err) => {
-        return res.status(500).send({message: 'Error in finding organization'});
+        const userOrg = userOrgArr.map(orgEle => orgEle);
+        return Organization.find({ '_id': { '$in': orgIds}})
+        .then((orgInfo) => {
+         return res.json({Org: orgInfo, userOrg: userOrg});
+        })
+        .catch((err) => {
+          return res.status(500).send({message: 'Error in finding organization'});
+        });
       });
 }
 
@@ -130,7 +131,17 @@ function orgGet(req, res) {
   }
   return Organization.findOne({'username': username})
     .then((org) => {
-      return res.send(org);
+      return UserOrganization.findOne({'userId': userId, 'orgId': org._id})
+        .then((userOrg) => {
+          if (userOrg && userOrg.roles[0] === 'admin') { // indexof
+            return res.send(org);
+          } else {
+            return res.status(404).send({message: 'Unauthorised User'});
+          }
+        })
+        .catch(() => {
+          return res.status(500).send({message: 'User not valid'});
+        });
     })
     .catch(() => {
       return res.status(500).send({message: 'Username not found'});
@@ -138,27 +149,36 @@ function orgGet(req, res) {
 }
 
 function orgAddUser(req, res) {
+  const userId = req.userId;
   const orgId = req.body.orgId;
   const username = req.body.username;
-  if (typeof orgId !== 'string' ||
+  if (typeof userId !== 'string' ||
+      typeof orgId !== 'string' ||
       typeof username !== 'string') {
         return res.status(500).send({message: 'Request validation failed'});
       }
   return User.findOne({'username': username})
       .then((user) => {
-        console.log(user._id);
         return Organization.findOne({'_id' : orgId})
           .then(() => {
-            const userOrg = new UserOrganization();
-            userOrg.userId = user._id;
-            userOrg.orgId = orgId;
-            userOrg.roles = ['POS'];
-            return userOrg.save()
-              .then(() => {
-                return res.status(200).send({message: 'User added successfully'});
+            return UserOrganization.findOne({'userId': userId, 'orgId': orgId})
+              .then((userOrgArr) => {
+                if (userOrgArr.roles[0] === 'admin') {
+                  const userOrg = new UserOrganization();
+                  userOrg.userId = user._id;
+                  userOrg.orgId = orgId;
+                  userOrg.roles = ['POS'];
+                  return userOrg.save()
+                    .then(() => {
+                      return res.status(200).send({message: 'User added successfully'});
+                    })
+                    .catch(() => {
+                      return res.status(500).send({message: 'Unsuccessful in adding user'});
+                    });
+                  }
               })
               .catch(() => {
-                return res.status(500).send({message: 'Unsuccessful in adding user'});
+                return res.status(500).send({message: 'Cannot find user'});
               });
           })
           .catch(() => {
@@ -174,10 +194,8 @@ function orgGetRole(req, res) {
   const userId = req.userId;
   return UserOrganization.find({'userId': userId})
     .then((userOrg) => {
-      console.log('Inside');
-      const roles = userOrg.map(orgEle => orgEle.roles);
-      console.log(roles);
-      return res.send(roles);
+      const array = userOrg.map(orgEle => orgEle);
+      return res.send(array);
     })
     .catch(() => {
       return res.status(500).send({message: 'Invalid userId'});

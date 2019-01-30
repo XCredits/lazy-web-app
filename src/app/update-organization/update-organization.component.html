@@ -1,4 +1,10 @@
-<div class="simple-form-aligner">
+<div *ngIf="!organization" class="container">
+  <mat-card>
+    You are not authorized to view this page.
+  </mat-card>
+</div>
+
+<div *ngIf="organization" class="simple-form-aligner">
     <mat-card *ngIf="ready" class="simple-form-card">
       <form [formGroup]="form" (ngSubmit)="submit(form.value)">
         <mat-card-title> Update Organization </mat-card-title>

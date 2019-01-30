@@ -1,7 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormGroup, FormControl, Validators, ValidatorFn, ValidationErrors, AbstractControl } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
-import { UserService} from '../user.service';
 import { Organization } from '../organization.service';
 import { Router } from '@angular/router';
 import { OrganizationService } from '../organization.service';
@@ -13,32 +12,21 @@ import { OrganizationService } from '../organization.service';
 })
 export class OrganizationComponent implements OnInit, OnDestroy {
 
-  form: FormGroup;
   organization: Organization;
-  view = false;
-  examination = 'Hello';
-  isAdmin: boolean;
   roles = [];
-  constructor(private userService: UserService, private http: HttpClient,
+
+  constructor(private http: HttpClient,
       private router: Router, private organizationService: OrganizationService) {
 
   }
 
   ngOnInit() {
-    this.http.get<Organization>('/api/organization/details', {})
-        .subscribe(org =>  {
-          this.organization = org;
-        });
-    this.http.get('/api/organization/get-roles', {})
-        .subscribe(org => {
-          const length = Object.keys(org).length;
-          for ( let i = 0; i < length; i++) {
-            if ( org[i][0] === 'POS') {
-              this.isAdmin = false;
-            } else if (org[i][0] === 'admin') {
-              this.isAdmin = true;
-            }
-          }
+    this.http.get<Organization>('/api/organization/details', {}) // orgUsername: 'subway-sydney'
+        .subscribe(org =>  {  // join roles on the backend
+          this.organization = org['Org'];
+          Object.keys(org['Org']).forEach(i => {
+            this.roles[i] = org['userOrg'][i].roles[0];
+          });
         });
   }
 
@@ -46,8 +34,8 @@ export class OrganizationComponent implements OnInit, OnDestroy {
     this.router.navigate(['/organization/' + organization.username + '/update']);
   }
 
-  test(test) {
-    this.organizationService.setData(test);
+  addUser(organization) {
+    this.organizationService.setData(organization);
     this.router.navigate(['/organization/add-user']);
   }
 

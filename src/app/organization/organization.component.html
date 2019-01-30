@@ -6,16 +6,17 @@
             <span style="display:inline-flex;"><mat-icon>add</mat-icon></span>
             New Organization
     </button><br>
-    <div *ngFor="let organizations of organization" class="addAndView">
+    <div *ngFor="let organizations of organization; let i =index" class="addAndView">
       <mat-card class="organization-card">
           <mat-card-title>{{organizations.name}}</mat-card-title><hr>
-          <img width="250px" [src]="organizations.logo" alt='Profile Photo'>
+          <img *ngIf="organizations.logo" width="250px" [src]="organizations.logo" alt='Company Logo'>
+          <img *ngIf="!organizations.logo" width="250px" height="185px" src="assets/img/no-logo-available.gif" alt='Profile Photo'>
           <mat-card-content>
             <br><span style="display:flex; margin-bottom: 7px;"><mat-icon style="font-size:22px;" matSuffix>language</mat-icon>{{organizations.website}}</span>
             <span style="display:flex; margin-bottom: 7px;"><mat-icon style="font-size:22px;" matSuffix>call</mat-icon> {{organizations.phoneNumber}}</span>
             <span style="display:flex;"><mat-icon style="font-size:22px;" matSuffix>contacts</mat-icon> {{organizations.username}}</span> <br>
-            <button *ngIf="isAdmin" mat-raised-button (click)="sendOrg(organizations)" color="primary">Update</button>
-            <label *ngIf="isAdmin" style="float:right;"><span (click)="test(organizations._id)"><mat-icon style="cursor:pointer; font-size: 32px;">person_add</mat-icon></span></label>
+            <button *ngIf="roles[i]==='admin'" mat-raised-button (click)="sendOrg(organizations)" color="primary">Update</button>
+            <label *ngIf="roles[i]==='admin'" style="float:right;"><span (click)="addUser(organizations._id)"><mat-icon style="cursor:pointer; font-size: 32px;">person_add</mat-icon></span></label>
           </mat-card-content>
         </mat-card>
     </div>
