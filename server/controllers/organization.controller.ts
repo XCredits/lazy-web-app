@@ -12,7 +12,6 @@ module.exports = function(app) {
   app.post('/api/organization/update-details', authenticate.jwt, updateOrg);
   app.post('/api/organization/image-upload', authenticate.jwt, orgImageUpload);
   app.post('/api/organization/add-user', authenticate.jwt, orgAddUser);
-  app.get('/api/organization/get-roles', authenticate.jwt, orgGetRole);
 };
 
 function createOrg(req, res) {
@@ -191,16 +190,4 @@ function orgAddUser(req, res) {
       .catch(() => {
         return res.status(500).send({message: 'Cannot find user'});
       });
-}
-
-function orgGetRole(req, res) {
-  const userId = req.userId;
-  return UserOrganization.find({'userId': userId})
-    .then((userOrg) => {
-      const array = userOrg.map(orgEle => orgEle);
-      return res.send(array);
-    })
-    .catch(() => {
-      return res.status(500).send({message: 'Invalid userId'});
-    });
 }

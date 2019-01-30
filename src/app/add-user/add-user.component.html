@@ -1,5 +1,5 @@
-<div class="simple-form-aligner">
-    <mat-card class="simple-form-card">
+ <div *ngIf="authorized" class="simple-form-aligner">
+    <mat-card  class="simple-form-card">
       <form [formGroup]="form" (ngSubmit)= "submit(form.value)">
         <mat-card-title>Add User</mat-card-title>
         <mat-card-content>
@@ -12,5 +12,10 @@
           </div>
         </mat-card-content>
       </form>
+    </mat-card>
+</div>
+<div *ngIf="!authorized" class="container">
+    <mat-card>
+      You are not authorized to view this page.
     </mat-card>
 </div>

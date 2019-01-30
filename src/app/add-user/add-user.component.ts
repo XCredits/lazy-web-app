@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { OrganizationService } from '../organization.service';
-import { FormGroup, FormControl, Validators, ValidatorFn, ValidationErrors, AbstractControl } from '@angular/forms';
+import { Organization } from '../organization.service';
+import { FormGroup, FormControl, Validators} from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-add-user',
@@ -14,14 +15,27 @@ export class AddUserComponent implements OnInit {
   form: FormGroup;
   orgId: string;
   success: string;
-  constructor(private router: Router, private organizationService: OrganizationService,
-              private http: HttpClient, private snackBar: MatSnackBar) { }
+  sub: any;
+  authorized = false;
+
+  constructor(private router: Router,
+              private http: HttpClient, private route: ActivatedRoute, private snackBar: MatSnackBar) { }
 
   ngOnInit() {
-    this.organizationService.getData()
-      .subscribe(data => {
-        this.orgId = data;
+    this.sub = this.route.params.subscribe(params => {
+      this.http.get<Organization>('/api/organization/get-details', {
+        params: {
+          username: params.orgUsername
+        }
+      })
+      .subscribe(organization => {
+        this.authorized = true;
+        this.orgId = organization['_id'];
+      },
+      (errorespone) => {
+        this.authorized = false;
       });
+    });
     this.form = new FormGroup({
       username: new FormControl('', Validators.required),
     });
