@@ -1,31 +1,21 @@
-// Use card
-// Position:fixed, to the right below the menu bar
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { UserService, User } from '../user.service';
-import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
-
+import { FormGroup, FormControl } from '@angular/forms';
 @Component({
-  selector: 'app-connection-requests',
-  templateUrl: './connection-requests.component.html',
-  styleUrls: ['./connection-requests.component.scss']
+  selector: 'app-view-connections',
+  templateUrl: './view-connections.component.html',
+  styleUrls: ['./view-connections.component.scss']
 })
-export class ConnectionRequestsComponent implements OnInit {
+export class ViewConnectionsComponent implements OnInit {
   form: FormGroup;
   user: User;
   receiverUserId: string;
   link: string;
-  pendedConnections = [];
-
-  constructor(
-    private http: HttpClient,
-    private userService: UserService,
-    private route: Router
-  ) { }
+  confirmedConnections = [];
+  constructor(private http: HttpClient, private userService: UserService) { }
 
   ngOnInit() {
-
     this.form = new FormGroup({
       username: new FormControl(''),
       givenName: new FormControl(''),
@@ -36,28 +26,27 @@ export class ConnectionRequestsComponent implements OnInit {
     this.userService.userObservable
       .subscribe(user => {
         this.user = user;
+        console.log('user logged in is --> ' + user.id);
       });
     this.link = 'https://xcredits.com/';
-    this.loadPendingRequests();
+    this.loadConfirmedRequests();
   }
   onSelect(friends) {
     console.log('you clicked on ' + friends);
   }
 
-  loadPendingRequests = function () {
-    this.IsViewPending = true;
-    this.IsViewConfirmed = false;
-    this.IsAddUserRequest = false;
-    this.pendedConnections = [];
-    this.http.post('/api/connection/get-connection-request', {
+  loadConfirmedRequests = function () {
+    this.confirmedConnections = [];
+    this.http.post('/api/connection/get-connection-confirmed', {
       'userId': this.user.id,
     })
       .subscribe((data) => {
         let num = 0;
         for (num = 0; num < data.length; num++) {
-          this.pendedConnections.push(data[0].familyName + ' ' + data[0].givenName);
+          this.confirmedConnections.push(Object[0].familyName + ' ' + Object[0].givenName);
         }
         console.log('returned username is ' + data.length);
       });
   };
 }
+

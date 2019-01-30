@@ -85,6 +85,7 @@ import { ViewContactsComponent } from './view-contacts/view-contacts.component';
 import { ConnectionComponent } from './connections/connections.component';
 import { AddConnectionComponent } from './add-connection/add-connections.component';
 import { ConnectionRequestsComponent } from './connection-requests/connection-requests.component';
+import { ViewConnectionsComponent } from './view-connections/view-connections.component';
 
 @NgModule({
   declarations: [
@@ -118,6 +119,7 @@ import { ConnectionRequestsComponent } from './connection-requests/connection-re
     ConnectionComponent,
     AddConnectionComponent,
     ConnectionRequestsComponent,
+    ViewConnectionsComponent,
   ],
   imports: [
     BrowserModule,
@@ -229,20 +231,26 @@ import { ConnectionRequestsComponent } from './connection-requests/connection-re
       {
         path: 'connections',
         component: ConnectionComponent,
-        data: { title: 'Manage connections' },
-
-      },
-      {
-        path: 'add-connections',
-        component: AddConnectionComponent,
-        data: { title: 'Add connection' },
-
-      },
-      {
-        path: 'connection-requests',
-        component: ConnectionRequestsComponent,
-        data: { title: 'Request connection' },
-
+        children:
+        [
+          {
+            path: '',
+            redirectTo: 'connections',
+            pathMatch: 'full'
+          },
+          {
+            path: 'view',
+            component: ViewConnectionsComponent,
+          },
+          {
+            path: 'add',
+            component: AddConnectionComponent,
+          },
+          {
+            path: 'request',
+            component: ConnectionRequestsComponent
+          }
+         ]
       },
       {
         path: 'unauthorized',

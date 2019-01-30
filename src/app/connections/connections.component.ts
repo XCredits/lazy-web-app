@@ -4,6 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { UserService, User } from '../user.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { ValueTransformer } from '@angular/compiler/src/util';
 
 @Component({
   selector: 'app-connections',
@@ -13,19 +14,10 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 export class ConnectionComponent implements OnInit {
   form: FormGroup;
   user: User;
-  receiverUserId: string;
   link: string;
-  formErrorMessage: string;
-  confirmedConnections = [];
-  pendedConnections = [];
-  pendingConnectionsCounter: number;
-  confirmedConnectionsCounter: number;
-  IsViewPending = false;
-  IsViewConfirmed = true;
-  IsAddUserRequest = true;
-  isUserAfterFound = false;
-  isRequestSent = false;
-  isLoggedIn: boolean;
+  pendingConnectionsCounter: string;
+  confirmedConnectionsCounter: string;
+
 
   constructor(
     private http: HttpClient,
@@ -43,70 +35,23 @@ export class ConnectionComponent implements OnInit {
     this.userService.userObservable
       .subscribe(user => {
         this.user = user;
-        this.isLoggedIn = !!this.user;
-        this.pendingConnectionsCounter = 0;
-        this.confirmedConnectionsCounter = 0;
         console.log('user logged in is --> ' + user.id);
       });
     this.link = 'https://xcredits.com/';
-    this.http.post('/api/connection/get-pending-request', {
+
+
+    this.http.post('/api/connection/requests/count', {
       'userId': this.user.id,
     })
-      .subscribe((data) => {
-        this.pendingConnectionsCounter = Object.keys(data).length;
+      .subscribe((returnedResult) => {
+        console.log('sss' + returnedResult.message);
+        this.pendingConnectionsCounter = returnedResult.message; // JSON.stringify(data).toString(); // data.toString();
       });
+    console.log('This is main');
 
   }
   onSelect(friends) {
     console.log('you clicked on ' + friends);
   }
-
-  reloadPage = function () {
-    location.reload();
-  };
-
-  loadPendingRequests = function () {
-    this.IsViewPending = true;
-    this.IsViewConfirmed = false;
-    this.IsAddUserRequest = false;
-    this.pendedConnections = [];
-    this.http.post('/api/connection/get-connection-request', {
-      'userId': this.user.id,
-    })
-      .subscribe((data) => {
-        this.pendingConnectionsCounter = Object.keys(data).length;
-      });
-  };
-
-  loadConfirmedRequests = function () {
-    this.IsViewPending = false;
-    this.IsViewConfirmed = true;
-    this.IsAddUserRequest = false;
-
-    this.confirmedConnections = [];
-    this.http.post('/api/connection/get-connection-confirmed', {
-      'userId': this.user.id,
-    })
-      .subscribe((data) => {
-        this.confirmedConnectionsCounter = Object.keys(data).length;
-        let num = 0;
-        for (num = 0; num < data.length; num++) {
-          this.confirmedConnections.push(Object[0].familyName + ' ' + Object[0].givenName);
-        }
-        console.log('returned username is ' + data.length);
-      });
-  };
-
-  viewSearchForm = function () {
-    this.IsViewPending = false;
-    this.IsViewConfirmed = false;
-    this.IsAddUserRequest = true;
-    this.isUserAfterFound = false;
-  };
-
-
-  ApproveUserConnection = function () { };
-
-  IgnoreUserConnection = function () { };
 
 }

@@ -1,4 +1,5 @@
-import * as validator from 'validator';
+import * as validation from 'validator';
+import { ConsoleReporter } from 'jasmine';
 const statsService = require('../services/stats.service.js');
 const { isValidDisplayUsername, normalizeUsername } =
   require('./utils.controller');
@@ -7,12 +8,11 @@ const User = require('../models/user.model');
 const auth = require('./jwt-auth.controller');
 
 module.exports = function (app) {
-  app.post('/api/connection/check-user-status', auth.jwt, requestUserStatus); // SAME NAME
-  app.post('/api/connection/get-connection-confirmed', auth.jwt, requestConfirmedUserConnections);
-  app.post('/api/connection/get-connection-request', auth.jwt, requestPendingUserConnections);
-  app.post('/api/connection/action-connection-request', auth.jwt, actionConnectionRequested);
-
   app.post('/api/connection/add-connection-request', auth.jwt, addConnectionRequest);
+  app.post('/api/connection/get-pending-connections', auth.jwt, getPendingConnections);
+  app.post('/api/connection/get-confirmed-connections', auth.jwt, getConfirmedConnections);
+  app.post('/api/connection/action-connection-request', auth.jwt, actionConnectionRequested);
+  app.post('/api/connection/requests/count', auth.jwt, getPendingRequestsCount);
 
 };
 
@@ -23,7 +23,6 @@ module.exports = function (app) {
  * @return {*}
  */
 function addConnectionRequest(req, res) {
-  console.log('received id is ' + req.body.userId + '   ' + req.body.username);
   // Save the login userId
   const userId = req.userId;
   let searchableUsername = req.body.username;
@@ -67,57 +66,23 @@ function addConnectionRequest(req, res) {
     });
 }
 
-
-
-/**
- * returns user status
- * @param {*} req request object
- * @param {*} res response object
- * @returns {*}
- */
-function requestUserStatus(req, res) {
-  // req.userId
-  Connections.find({ senderUserId: req.$$$$$$$body.senderUserId, receiverUserId: req.body.receiverUserId })
-    .then((result) => {
-      const resultsFiltered = result.map((x) => {
-        return {
-          senderUserId: x.senderUserId,
-          receiverUserId: x.receiverUserId,
-          status: x.status,
-          requestTimeStamp: x.requestTimeStamp
-        };
-      });
-      res.send(resultsFiltered);
-    })
-    .catch((err) => {
-      res.status(500)
-        .send({ message: 'Error retrieving users from contacts database' });
-    });
-}
-
-
 /**
  * request user connection based on status { Pending }
  * @param {*} req request object
  * @param {*} res response object
  * @return {*}
  */
-function requestPendingUserConnections(req, res) {
-  status = req.body.status; // PROBLEM
-
-  // VALIDATION !!!!
-
-  Connections.find({ receiverUserId: req.userId, status: req.body.status }) // PROBLEM
+function getPendingConnections(req, res) {
+  return Connections.find({ receiverUserId: req.userId, status: 'Pending' })
       .then((result) => {
-        const senderIdArr = result.map((e => e.receiverUserId));
+        const senderIdArr = result.map((e => e.senderUserId));
         return User.find({ '_id': { '$in': senderIdArr } })
             .then((filteredResults) => {
               const resultsFiltered = filteredResults.map((x) => {
                 return {
                   username: x.username,
-                  senderUserId: result.senderUserId,
-                  firstName: x.firstName,
-                  lastName: x.lastName,
+                  givenName: x.givenName,
+                  familyName: x.familyName,
                 };
               });
               res.send(resultsFiltered);
@@ -125,7 +90,7 @@ function requestPendingUserConnections(req, res) {
       })
       .catch((err) => {
         res.status(500)
-          .send({ message: 'Error retrieving users from contacts database' });
+          .send({ message: 'Error retrieving pending requests' });
       });
 }
 
@@ -137,28 +102,26 @@ function requestPendingUserConnections(req, res) {
  * @param {*} res response object
  * @return {*}
  */
-function requestConfirmedUserConnections(req, res) {
-  status = req.body.status;
-  Connections.find({ receiverUserId: req.userId, status: req.body.status })
-    .then((result) => {
-      const senderIdArr = result.map((e => e.receiverUserId));
-      return User.find({ '_id': { '$in': senderIdArr } })
+function getConfirmedConnections(req, res) {
+  return Connections.find({ receiverUserId: req.userId, status: 'Confirmed' })
+  .then((result) => {
+    const senderIdArr = result.map((e => e.senderUserId));
+    return User.find({ '_id': { '$in': senderIdArr } })
         .then((filteredResults) => {
           const resultsFiltered = filteredResults.map((x) => {
             return {
               username: x.username,
-              senderUserId: x.senderUserId,
-              firstName: x.firstName,
-              lastName: x.lastName,
+              givenName: x.givenName,
+              familyName: x.familyName,
             };
           });
           res.send(resultsFiltered);
         });
-    })
-    .catch((err) => {
-      res.status(500)
-        .send({ message: 'Error retrieving users from contacts database' });
-    });
+  })
+  .catch((err) => {
+    res.status(500)
+      .send({ message: 'Error retrieving confirmed connections' });
+  });
 }
 
 /**
@@ -167,13 +130,13 @@ function requestConfirmedUserConnections(req, res) {
  * @param {*} res response object
  */
 function actionConnectionRequested(req, res) {
-  status = req.body.actionNeeded;
+  const status = req.body.actionNeeded;
   return Connections.updateOne(
     { '_id': req.body.userId },
     {
       $set:
       {
-        'status': req.body.status
+        'status': status
       }
     }
   ).then((result) => {
@@ -186,3 +149,19 @@ function actionConnectionRequested(req, res) {
 }
 
 
+
+/**
+ * request user connection based on status { Pending }
+ * @param {*} req request object
+ * @param {*} res response object
+ * @return {*}
+ */
+function getPendingRequestsCount(req, res) {
+  console.log('API');
+  return Connections.count({ receiverUserId: req.body.userId, status: 'Pending'})
+  .then((result) => {
+    console.log(result);
+    res.status(200).send({ message: result });
+
+  });
+  }
