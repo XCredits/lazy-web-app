@@ -2,12 +2,16 @@
   <mat-card>
     <div class="col-md-8 offset-md-2">
       <nav mat-tab-nav-bar>
-        <a mat-tab-link *ngFor="let link of navLinks"
-         [routerLink]="link" >
-          {{link}}
-        </a>
+        <button class="simple-form-button" color="primary" mat-raised-button [routerLink]=navLinks[0]> 
+          Connections {{pendingConnectionsCounter}}
+        </button>
+        <button class="simple-form-button" color="primary" mat-raised-button [routerLink]=navLinks[1]> 
+          Pending {{pendingConnectionsCounter}}
+        </button>
+        <button class="simple-form-button" color="primary" mat-raised-button [routerLink]=navLinks[2]> 
+          Add
+        </button>
       </nav>
-
       <router-outlet></router-outlet>
     </div>
   </mat-card>

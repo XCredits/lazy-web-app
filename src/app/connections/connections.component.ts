@@ -17,6 +17,7 @@ export class ConnectionComponent implements OnInit {
   link: string;
   pendingConnectionsCounter: string;
   confirmedConnectionsCounter: string;
+  ConfirmedConnectionsCounter: string;
   navLinks = [];
 
   constructor(
@@ -46,12 +47,14 @@ export class ConnectionComponent implements OnInit {
       .subscribe((returnedResult) => {
         console.log('sss' + returnedResult);
         this.pendingConnectionsCounter = '8'; // returnedResult.message; // JSON.stringify(data).toString(); // data.toString();
+        this.ConfirmedConnectionsCounter = '8'; // returnedResult.message; // JSON.stringify(data).toString(); // data.toString();
       });
     console.log('This is main');
 
     this.navLinks.push('./view');
-    this.navLinks.push('./add');
     this.navLinks.push('./request');
+    this.navLinks.push('./add');
+
 
 
   }
