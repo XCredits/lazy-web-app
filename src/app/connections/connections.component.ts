@@ -17,7 +17,7 @@ export class ConnectionComponent implements OnInit {
   link: string;
   pendingConnectionsCounter: string;
   confirmedConnectionsCounter: string;
-
+  navLinks = [];
 
   constructor(
     private http: HttpClient,
@@ -44,10 +44,15 @@ export class ConnectionComponent implements OnInit {
       'userId': this.user.id,
     })
       .subscribe((returnedResult) => {
-        console.log('sss' + returnedResult.message);
-        this.pendingConnectionsCounter = returnedResult.message; // JSON.stringify(data).toString(); // data.toString();
+        console.log('sss' + returnedResult);
+        this.pendingConnectionsCounter = '8'; // returnedResult.message; // JSON.stringify(data).toString(); // data.toString();
       });
     console.log('This is main');
+
+    this.navLinks.push('./view');
+    this.navLinks.push('./add');
+    this.navLinks.push('./request');
+
 
   }
   onSelect(friends) {

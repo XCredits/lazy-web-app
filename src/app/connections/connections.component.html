@@ -1,21 +1,14 @@
 <div class="container">
   <mat-card>
     <div class="col-md-8 offset-md-2">
-      <p>
-        <button mat-button routerLink="./view">
-          Welcome {{user?.username}}
-        </button>
-        <button mat-button routerLink="./request">
-          <mat-icon>person</mat-icon> {{pendingConnectionsCounter}}
-        </button>
-        <button mat-button routerLink="./add">
-          <mat-icon>view_carousel</mat-icon> Add +
-        </button>
-      </p>
-      <hr>
+      <nav mat-tab-nav-bar>
+        <a mat-tab-link *ngFor="let link of navLinks"
+         [routerLink]="link" >
+          {{link}}
+        </a>
+      </nav>
+
+      <router-outlet></router-outlet>
     </div>
   </mat-card>
-</div>
-<div class="m-t-1">
-  <router-outlet></router-outlet>
 </div>
