@@ -6,6 +6,7 @@ const ConnectionRequestSchema = new Schema({
   senderUserId: { type: String },
   receiverUserId: { type: String },
   status: { type: String },
+  actorId: { type: String },
   requestTimeStamp: { type: Date, default: Date.now },
 }
 );
@@ -20,8 +21,9 @@ ConnectionRequestSchema.methods.frontendData = function () {
     id: this._id,
     senderUserId: this.senderUserId,
     receiverUserId: this.receiverUserId,
+    status: this.status,
     requestTimeStamp: this.requestTimeStamp,
   };
 };
 
-module.exports = mongoose.model('Connections', ConnectionRequestSchema);
+module.exports = mongoose.model('ConnectionRequest', ConnectionRequestSchema);

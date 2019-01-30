@@ -3,25 +3,30 @@ import * as mongoose from 'mongoose';
 const Schema = mongoose.Schema;
 
 const ConnectionSchema = new Schema({
-  senderUserId: { type: String },
-  receiverUserId: { type: String },
+  partAUserId: { type: String },
+  partBUserId: { type: String },
   status: { type: String },
-  requestTimeStamp: { type: Date, default: Date.now },
+  connectionRequestRef: { type: Date },
+  connectionTimeStamp: { type: Date, default: Date.now },
 }
 );
 
-ConnectionSchema.index({ senderUserId: 1 });
-ConnectionSchema.index({ receiverUserId: 1 });
+ConnectionSchema.index({ partAUserId: 1 });
+ConnectionSchema.index({ partBUserId: 1 });
 ConnectionSchema.index({ status: 1 });
-ConnectionSchema.index({ requestTimeStamp: 1 });
+ConnectionSchema.index({ connectionRequestRef: 1 });
+ConnectionSchema.index({ connectionTimeStamp: 1 });
+
 
 ConnectionSchema.methods.frontendData = function () {
   return {
     id: this._id,
-    senderUserId: this.senderUserId,
-    receiverUserId: this.receiverUserId,
-    requestTimeStamp: this.requestTimeStamp,
+    partAUserId: this.partAUserId,
+    partBUserId: this.partBUserId,
+    status: this.status,
+    connectionRequestRef: this.connectionRequestRef,
+    connectionTimeStamp: this.connectionTimeStamp,
   };
 };
 
-module.exports = mongoose.model('Connections', ConnectionSchema);
+module.exports = mongoose.model('Connection', ConnectionSchema);

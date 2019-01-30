@@ -1,9 +1,7 @@
-import * as validation from 'validator';
-import { ConsoleReporter } from 'jasmine';
 const statsService = require('../services/stats.service.js');
 const { isValidDisplayUsername, normalizeUsername } =
   require('./utils.controller');
-const Connections = require('../models/connections.model');
+const connectionRequest = require('../models/connection-request.model');
 const User = require('../models/user.model');
 const auth = require('./jwt-auth.controller');
 
@@ -13,6 +11,7 @@ module.exports = function (app) {
   app.post('/api/connection/get-confirmed-connections', auth.jwt, getConfirmedConnections);
   app.post('/api/connection/action-connection-request', auth.jwt, actionConnectionRequested);
   app.post('/api/connection/requests/count', auth.jwt, getPendingRequestsCount);
+  app.post('/api/connection/connections/count', auth.jwt, getConfirmedConnectionsCount);
 
 };
 
@@ -36,11 +35,11 @@ function addConnectionRequest(req, res) {
   return User.findOne({ username: searchableUsername })
     .then((resultUserId) => {
       // Check if they have connection
-      return Connections.findOne({ senderUserId: userId, receiverUserId: resultUserId._id })
+      return connectionRequest.findOne({ senderUserId: userId, receiverUserId: resultUserId._id })
       .then((resultConnection) => {
         if (resultConnection === null) {
           // Making new connection
-          const _connection = new Connections();
+          const _connection = new connectionRequest();
           _connection.senderUserId = userId;
           _connection.receiverUserId = resultUserId._id;
           _connection.status = 'Pending';
@@ -73,7 +72,7 @@ function addConnectionRequest(req, res) {
  * @return {*}
  */
 function getPendingConnections(req, res) {
-  return Connections.find({ receiverUserId: req.userId, status: 'Pending' })
+  return connectionRequest.find({ receiverUserId: req.userId, status: 'Pending' })
       .then((result) => {
         const senderIdArr = result.map((e => e.senderUserId));
         return User.find({ '_id': { '$in': senderIdArr } })
@@ -103,7 +102,7 @@ function getPendingConnections(req, res) {
  * @return {*}
  */
 function getConfirmedConnections(req, res) {
-  return Connections.find({ receiverUserId: req.userId, status: 'Confirmed' })
+  return connectionRequest.find({ receiverUserId: req.userId, status: 'Confirmed' })
   .then((result) => {
     const senderIdArr = result.map((e => e.senderUserId));
     return User.find({ '_id': { '$in': senderIdArr } })
@@ -131,7 +130,7 @@ function getConfirmedConnections(req, res) {
  */
 function actionConnectionRequested(req, res) {
   const status = req.body.actionNeeded;
-  return Connections.updateOne(
+  return connectionRequest.updateOne(
     { '_id': req.body.userId },
     {
       $set:
@@ -157,8 +156,25 @@ function actionConnectionRequested(req, res) {
  * @return {*}
  */
 function getPendingRequestsCount(req, res) {
-  console.log('API');
-  return Connections.count({ receiverUserId: req.body.userId, status: 'Pending'})
+  return connectionRequest.count({ receiverUserId: req.body.userId, status: 'Pending'})
+  .then((result) => {
+    console.log(result);
+    res.status(200).send({ message: result });
+
+  });
+  }
+
+
+
+
+/**
+ * request user connection based on status { Pending }
+ * @param {*} req request object
+ * @param {*} res response object
+ * @return {*}
+ */
+function getConfirmedConnectionsCount(req, res) {
+  return Connections.count({ receiverUserId: req.body.userId, status: 'Confirmed'})
   .then((result) => {
     console.log(result);
     res.status(200).send({ message: result });
