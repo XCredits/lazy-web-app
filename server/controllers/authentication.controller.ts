@@ -55,8 +55,7 @@ const emailService = require('../services/email.service');
 const Session = require('../models/session.model');
 const jwt = require('jsonwebtoken');
 const auth = require('./jwt-auth.controller');
-const {isValidDisplayUsername, normalizeUsername} =
-    require('./utils.controller');
+import { isValidDisplayUsername, normalizeUsername } from './utils.controller';
 const passport = require('passport');
 // const crypto = require('crypto');
 import * as crypto from 'crypto';

@@ -37,13 +37,13 @@ export class ViewConnectionsComponent implements OnInit {
 
   loadConfirmedRequests = function () {
     this.confirmedConnections = [];
-    this.http.post('/api/connection/get-connection-confirmed', {
+    this.http.post('/api/connection/get-confirmed-connections', {
       'userId': this.user.id,
     })
       .subscribe((data) => {
         let num = 0;
         for (num = 0; num < data.length; num++) {
-          this.confirmedConnections.push(Object[0].familyName + ' ' + Object[0].givenName);
+          this.confirmedConnections.push(Object[num].familyName + ' ' + Object[num].givenName);
         }
         console.log('returned username is ' + data.length);
       });

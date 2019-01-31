@@ -49,15 +49,36 @@ export class ConnectionRequestsComponent implements OnInit {
     this.IsViewConfirmed = false;
     this.IsAddUserRequest = false;
     this.pendedConnections = [];
-    this.http.post('/api/connection/get-connection-request', {
+    this.http.post('/api/connection/get-pending-connections', {
       'userId': this.user.id,
     })
       .subscribe((data) => {
         let num = 0;
         for (num = 0; num < data.length; num++) {
-          this.pendedConnections.push(data[0].familyName + ' ' + data[0].givenName);
+          this.pendedConnections.push(data[num].familyName + ' ' + data[num].givenName);
         }
         console.log('returned username is ' + data.length);
+      });
+  };
+  ApproveUserConnection = function () {
+    this.http.post('/api/connection/action-connection-request', {
+      'userId': this.user.id,
+      'actionNeeded': 'accept',
+      'receiverUsername': this.friends,
+    })
+      .subscribe((returnedResult) => {
+        console.log( returnedResult.message);
+      });
+  };
+
+  IgnoreUserConnection = function () {
+    this.http.post('/api/connection/action-connection-request', {
+      'userId': this.user.id,
+      'actionNeeded': 'rejected',
+      'receiverUsername': this.friends,
+    })
+      .subscribe((returnedResult) => {
+        console.log( returnedResult.message);
       });
   };
 }

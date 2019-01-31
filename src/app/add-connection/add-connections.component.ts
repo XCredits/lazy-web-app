@@ -1,5 +1,3 @@
-// Use card
-// Position:fixed, to the right below the menu bar
 import { Component, OnInit } from '@angular/core';
 import { UserService, User } from '../user.service';
 import { FormGroup, FormControl } from '@angular/forms';

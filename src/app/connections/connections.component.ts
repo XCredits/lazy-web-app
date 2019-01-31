@@ -19,7 +19,7 @@ export class ConnectionComponent implements OnInit {
   confirmedConnectionsCounter: string;
   ConfirmedConnectionsCounter: string;
   navLinks = [];
-
+  pages = [];
   constructor(
     private http: HttpClient,
     private userService: UserService,
@@ -39,21 +39,30 @@ export class ConnectionComponent implements OnInit {
         console.log('user logged in is --> ' + user.id);
       });
     this.link = 'https://xcredits.com/';
-
-
-    this.http.post('/api/connection/requests/count', {
+    this.http.post('/api/connection/get-pending-count', {
       'userId': this.user.id,
     })
       .subscribe((returnedResult) => {
-        console.log('sss' + returnedResult);
-        this.pendingConnectionsCounter = '8'; // returnedResult.message; // JSON.stringify(data).toString(); // data.toString();
-        this.ConfirmedConnectionsCounter = '8'; // returnedResult.message; // JSON.stringify(data).toString(); // data.toString();
+          console.log('sss' + returnedResult);
+          this.pendingConnectionsCounter = returnedResult.message;
+      });
+
+    this.http.post('/api/connection/get-confirmed-count', {
+      'userId': this.user.id,
+    })
+      .subscribe((returnedResult) => {
+          console.log('sss' + returnedResult.message);
+          this.ConfirmedConnectionsCounter = returnedResult.message;
       });
     console.log('This is main');
 
     this.navLinks.push('./view');
     this.navLinks.push('./request');
     this.navLinks.push('./add');
+
+    this.pages.push('View');
+    this.pages.push('request');
+    this.pages.push('add');
 
 
 
