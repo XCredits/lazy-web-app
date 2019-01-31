@@ -44,15 +44,15 @@ export class ConnectionComponent implements OnInit {
     })
       .subscribe((returnedResult) => {
           console.log('sss' + returnedResult);
-          this.pendingConnectionsCounter = returnedResult.message;
+          this.pendingConnectionsCounter = returnedResult.toString();
       });
 
     this.http.post('/api/connection/get-confirmed-count', {
       'userId': this.user.id,
     })
       .subscribe((returnedResult) => {
-          console.log('sss' + returnedResult.message);
-          this.ConfirmedConnectionsCounter = returnedResult.message;
+          console.log('sss' + returnedResult.toString());
+          this.ConfirmedConnectionsCounter = returnedResult.toString();
       });
     console.log('This is main');
 

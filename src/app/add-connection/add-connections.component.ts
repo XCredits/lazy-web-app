@@ -1,3 +1,4 @@
+import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { UserService, User } from '../user.service';
 import { FormGroup, FormControl } from '@angular/forms';
@@ -14,6 +15,7 @@ export class AddConnectionComponent implements OnInit {
   formErrorMessage: string;
 
   constructor(
+    private http: HttpClient,
     private userService: UserService,
   ) { }
 
@@ -31,6 +33,7 @@ export class AddConnectionComponent implements OnInit {
         console.log('user logged in is --> ' + user.id);
       });
 
+
   }
   onSelect(friends) {
     console.log('you clicked on ' + friends);
@@ -39,6 +42,11 @@ export class AddConnectionComponent implements OnInit {
   // Add new connection
   RequestUserConnection = function (formData) {
     this.IsAddUserRequest = true;
+    console.log('=============');
+    console.log(this.user.id);
+    console.log(formData.username);
+    console.log(new Date());
+
     this.http.post('/api/connection/add-connection-request', {
       'userId': this.user.id,
       'username': formData.username,

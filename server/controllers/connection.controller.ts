@@ -22,6 +22,10 @@ module.exports = function (app) {
  */
 function addConnectionRequest(req, res) {
   // Save the login userId
+  console.log('====API=====');
+  console.log(req.body.userId);
+  console.log(req.body.username);
+  console.log('----------');
   const userId = req.userId;
   let searchableUsername = req.body.username;
   // Validate
@@ -42,10 +46,11 @@ function addConnectionRequest(req, res) {
           connectionReq.senderUserId = userId;
           connectionReq.receiverUserId = resultUserId._id;
           connectionReq.permissions = 'Default';
-          connectionReq.sendTimeStamp = Date.now;
+          console.log(Date.now);
+          connectionReq.sendTimeStamp = new Date();
           return connectionReq.save()
             .then(() => {
-              res.status(200).send({ message: 'Success' });
+              res.send({ message: 'Success' });
               return statsService.increment(connectionReq)
                 .catch((err) => {
                   return res.status(200).json({ message: err.message });
