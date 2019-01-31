@@ -12,6 +12,7 @@ module.exports = function(app) {
   app.post('/api/organization/update-details', authenticate.jwt, updateOrg);
   app.post('/api/organization/image-upload', authenticate.jwt, orgImageUpload);
   app.post('/api/organization/add-user', authenticate.jwt, orgAddUser);
+  app.post('/api/organization/delete', authenticate.jwt, deleteOrg);
 };
 
 function createOrg(req, res) {
@@ -189,5 +190,27 @@ function orgAddUser(req, res) {
       })
       .catch(() => {
         return res.status(500).send({message: 'Cannot find user'});
+      });
+}
+
+function deleteOrg(req, res) {
+  const userId = req.userId;
+  const orgId = req.body.id;
+  if (typeof userId !== 'string' ||
+      typeof orgId !== 'string') {
+        return res.status(500).send({message: 'Request validation failed'});
+      }
+  return UserOrganization.deleteMany({'orgId': orgId})
+      .then(() => {
+        return Organization.deleteMany({'_id': orgId})
+          .then(() => {
+            return res.status(200).send({message: 'Organization deleted successfully'});
+          })
+          .catch(() => {
+            return res.status(500).send({message: 'Error in deleting organization'});
+          });
+      })
+      .catch(() => {
+        return  res.status(500).send({message: 'Error in deleting UserOrganization'});
       });
 }

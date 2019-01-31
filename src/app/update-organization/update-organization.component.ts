@@ -5,6 +5,7 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { ActivatedRoute } from '@angular/router';
 import { MatSnackBar } from '@angular/material';
+import { MatDialog } from '@angular/material';
 
 @Component({
   selector: 'app-update-organization',
@@ -20,9 +21,10 @@ export class UpdateOrganizationComponent implements OnInit, OnDestroy {
   logo: string;
   sub: any;
   ready = false;
+  modalReference = null;
 
   constructor(private snackBar: MatSnackBar, private http: HttpClient,
-              private router: Router, private route: ActivatedRoute) { }
+              private router: Router, private route: ActivatedRoute, private dialogService: MatDialog) { }
 
   ngOnInit() {
     this.sub = this.route.params.subscribe(params => {
@@ -54,6 +56,27 @@ export class UpdateOrganizationComponent implements OnInit, OnDestroy {
 
   handleImageError() {
     this.organization.logo = '';
+  }
+  openDialog(modal) {
+    this.modalReference = this.dialogService.open(modal);
+  }
+  delete() {
+    this.modalReference.close();
+    this.http.post('api/organization/delete', {
+      'id': this.organization._id,
+    })
+    .subscribe((data) => {
+      this.router.navigateByUrl('/organization');
+      this.snackBar.open('Organization deleted Successfully', 'Dismiss', {
+        duration: 5000,
+        verticalPosition: 'top',
+        horizontalPosition: 'right',
+      });
+    });
+  }
+
+  cancel() {
+    this.modalReference.close();
   }
 
   submit = function(formData) {
