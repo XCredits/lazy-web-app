@@ -5,6 +5,7 @@ import { Component, OnInit } from '@angular/core';
 import { UserService, User } from '../user.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { ValueTransformer } from '@angular/compiler/src/util';
+import { stringify } from '@angular/core/src/render3/util';
 
 @Component({
   selector: 'app-connections',
@@ -44,7 +45,7 @@ export class ConnectionComponent implements OnInit {
     })
       .subscribe((returnedResult) => {
           console.log('sss' + returnedResult);
-          this.pendingConnectionsCounter = returnedResult.toString();
+          this.pendingConnectionsCounter = JSON.stringify(returnedResult.message);
       });
 
     this.http.post('/api/connection/get-confirmed-count', {
@@ -52,7 +53,7 @@ export class ConnectionComponent implements OnInit {
     })
       .subscribe((returnedResult) => {
           console.log('sss' + returnedResult.toString());
-          this.ConfirmedConnectionsCounter = returnedResult.toString();
+          this.ConfirmedConnectionsCounter = JSON.stringify(returnedResult.message);
       });
     console.log('This is main');
 
