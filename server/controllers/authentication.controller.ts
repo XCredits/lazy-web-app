@@ -47,6 +47,7 @@ const passwordSettings = {
 
 
 import * as validator from 'validator';
+const Contact = require('../models/contact.model');
 const User = require('../models/user.model');
 const UserStats = require('../models/user-stats.model');
 const statsService = require('../services/stats.service');
@@ -54,9 +55,8 @@ const emailService = require('../services/email.service');
 const Session = require('../models/session.model');
 import * as jwt from 'jsonwebtoken';
 const auth = require('./jwt-auth.controller');
-const {isValidDisplayUsername, normalizeUsername} =
-    require('./utils.controller');
-import * as passport from 'passport';
+import { isValidDisplayUsername, normalizeUsername } from './utils.controller';
+const passport = require('passport');
 // const crypto = require('crypto');
 import * as crypto from 'crypto';
 require('../config/passport');
@@ -65,6 +65,7 @@ import * as zxcvbn from 'zxcvbn';
 module.exports = function(app) {
   app.use(passport.initialize());
   app.post('/api/user/register', register);
+  app.post('/api/testAPI', testFun);
   app.post('/api/user/username-available', usernameAvailable);
   app.post('/api/user/check-password', checkPassword);
   app.post('/api/user/login', login);
@@ -78,6 +79,8 @@ module.exports = function(app) {
       auth.jwtTemporaryLinkToken, changePassword);
   app.post('/api/user/forgot-username', forgotUsername);
   app.post('/api/user/logout', auth.jwtRefreshToken, logout);
+  app.get('/api/get-user-details', userInfo);
+
 };
 
 /**
@@ -86,6 +89,8 @@ module.exports = function(app) {
  * @param {*} res response object
  * @return {*}
  */
+
+
 function register(req, res) {
   // Extract req.body
   const email = req.body.email;
@@ -175,6 +180,13 @@ function register(req, res) {
       });
 }
 
+function testFun(req, res) {
+  console.log('testing the API...');
+  // Extract req.body
+  const givenName = req.body.givenName;
+  const familyName = req.body.familyName;
+  const email = req.body.email;
+}
 /**
  * Determines if username available
  * @param {*} req
@@ -314,6 +326,27 @@ function userDetails(req, res) {
         return res.status(500).send({message: 'UserId not found'});
       });
 }
+
+/**
+ * returns all users for now
+ * @param {*} req request object
+ * @param {*} res response object
+ * @returns {*}
+ */
+function userInfo(req, res) {
+  Contact.find({})
+  .then((result) => {
+    const resultsFiltered = result.map((x) => {
+      return {givenName: x.givenName, familyName: x.familyName, email: x.email};
+    });
+    res.send(resultsFiltered);
+  })
+  .catch((err) => {
+    res.status(500)
+        .send({message: 'Error retrieving users from contacts database'});
+  });
+}
+
 
 /**
  * change password

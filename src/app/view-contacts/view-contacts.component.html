@@ -1,0 +1,46 @@
+<div class="simple-form-aligner">
+  <mat-card class="simple-form-card">
+    <form [formGroup]="form" (ngSubmit)="submit(form.value)">
+      <mat-card-title style="text-align:center;"> Contact Info </mat-card-title>
+      <mat-card-content>
+        <div class="form-group">
+          <mat-form-field class="simple-form-field-50">
+            <input matInput placeholder="Given name" name="givenName" formControlName="givenName">
+          </mat-form-field>
+          <mat-form-field class="simple-form-field-50">
+            <input matInput placeholder="Family name" name="familyName" formControlName="familyName">
+          </mat-form-field>
+          <br>
+          <mat-form-field>
+            <input matInput placeholder="Email" name="email" formControlName="email">
+          </mat-form-field>
+          <br>
+          <br>
+          <button
+              [disabled]="waiting"
+              (click)="previousContact()"
+              class="simple-form-button" 
+              style="margin-right:50px" 
+              color="primary" 
+              mat-raised-button 
+              type="submit" 
+               >
+            Previous Contact
+          </button>
+          <button
+            [disabled]="waiting"
+            (click)="nextContact()" 
+            class="simple-form-button" 
+            style="margin-left:50px" 
+            color="primary" 
+            mat-raised-button 
+            type="submit" 
+             >
+            Next Contact
+           </button>
+          </div>
+      </mat-card-content>
+    </form>
+  </mat-card>
+</div>
+

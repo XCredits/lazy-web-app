@@ -1,0 +1,18 @@
+<div class="container">
+  <mat-card>
+    <div class="col-md-8 offset-md-2">
+      <nav mat-tab-nav-bar>
+        <a mat-tab-link [routerLink]="navLinks[0]" routerLinkActive #rla="routerLinkActive" [active]="rla.isActive">
+            View connections {{ConfirmedConnectionsCounter}}
+        </a>
+        <a mat-tab-link [routerLink]="navLinks[1]" routerLinkActive #rla="routerLinkActive" [active]="rla.isActive">
+           Requests {{pendingConnectionsCounter}}
+        </a>
+        <a mat-tab-link [routerLink]="navLinks[2]" routerLinkActive #rla="routerLinkActive" [active]="rla.isActive">
+            Add 
+        </a>
+      </nav>
+      <router-outlet></router-outlet>
+    </div>
+  </mat-card>
+</div>

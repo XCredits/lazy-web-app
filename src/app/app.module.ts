@@ -11,7 +11,6 @@ import { StatsService } from './stats.service';
 import { AnalyticsService } from './analytics.service';
 import { AuthGuard } from './auth.guard';
 import { AdminGuard } from './admin.guard';
-
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AngularFontAwesomeModule } from 'angular-font-awesome';
 
@@ -81,6 +80,12 @@ import { PrivacyComponent } from './privacy/privacy.component';
 import { FooterComponent } from './footer/footer.component';
 import { ImageUploadModule } from './image-upload/image-upload.module';
 import { ChangeThemeComponent } from './change-theme/change-theme.component';
+import { AddContactsComponent } from './addcontact/add-contact.component';
+import { ViewContactsComponent } from './view-contacts/view-contacts.component';
+import { ConnectionComponent } from './connections/connections.component';
+import { AddConnectionComponent } from './add-connection/add-connections.component';
+import { ConnectionRequestsComponent } from './connection-requests/connection-requests.component';
+import { ViewConnectionsComponent } from './view-connections/view-connections.component';
 
 @NgModule({
   declarations: [
@@ -109,6 +114,12 @@ import { ChangeThemeComponent } from './change-theme/change-theme.component';
     PrivacyComponent,
     FooterComponent,
     ChangeThemeComponent,
+    AddContactsComponent,
+    ViewContactsComponent,
+    ConnectionComponent,
+    AddConnectionComponent,
+    ConnectionRequestsComponent,
+    ViewConnectionsComponent,
   ],
   imports: [
     BrowserModule,
@@ -205,6 +216,42 @@ import { ChangeThemeComponent } from './change-theme/change-theme.component';
         path: 'privacy',
         component: PrivacyComponent,
         data: { title: 'Privacy' },
+      },
+      {
+        path: 'add-contact',
+        component: AddContactsComponent,
+        data: { title: 'AddContact' },
+
+      },
+      {
+        path: 'view-contacts',
+        component: ViewContactsComponent,
+        data: { title: 'ViewContacts' },
+
+      },
+      {
+        path: 'connections',
+        component: ConnectionComponent,
+        children:
+        [
+          {
+            path: '',
+            redirectTo: 'connections',
+            pathMatch: 'full'
+          },
+          {
+            path: 'view',
+            component: ViewConnectionsComponent,
+          },
+          {
+            path: 'add',
+            component: AddConnectionComponent,
+          },
+          {
+            path: 'request',
+            component: ConnectionRequestsComponent
+          }
+         ]
       },
       {
         path: 'unauthorized',

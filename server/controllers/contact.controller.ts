@@ -1,21 +1,23 @@
 import * as validator from 'validator';
-const MailingList = require('../models/mailing-list.model');
-const emailService = require('../services/email.service');
-const MailingListStats = require('../models/mailing-list-stats.model');
-const statsService = require('../services/stats.service');
+import { ContactsComponent } from '../../src/app/contacts/contacts.component';
+const MailingList = require('../models/mailing-list.model.js');
+const emailService = require('../services/email.service.js');
+const statsService = require('../services/stats.service.js');
+const Contact = require('../models/contact.model.js');
 
 module.exports = function(app) {
-  console.log('Hi');
-  app.post('/api/join-mailing-list', joinMailingList);
+  console.log('Before API===');
+  app.post('/api/join-contact-list', joinContactList);
 };
 
 /**
- * join a mailing list
+ * join a contact list
  * @param {*} req request object
  * @param {*} res response object
  * @return {*}
  */
-function joinMailingList(req, res) {
+function joinContactList(req, res) {
+  console.log('joingContactList function');
   const email = req.body.email;
   const givenName = req.body.givenName;
   const familyName = req.body.familyName;
@@ -28,16 +30,16 @@ function joinMailingList(req, res) {
     return res.status(422).json({message: 'Request failed validation'});
   }
 
-  const mailingListUser = new MailingList();
-  mailingListUser.email = email;
-  mailingListUser.givenName = givenName;
-  mailingListUser.familyName = familyName;
-  return mailingListUser.save()
+  const contactListUser = new Contact();
+  contactListUser.email = email;
+  contactListUser.givenName = givenName;
+  contactListUser.familyName = familyName;
+  return contactListUser.save()
       .then((result) => {
         res.status(200).send({message: 'Success'});
-        return statsService.increment(MailingListStats)
+        return statsService.increment(Contact)
             .catch((err) => {
-              console.log('Error in the stats service');
+              console.log('Error in the contact service');
             });
       })
       .then(() => {

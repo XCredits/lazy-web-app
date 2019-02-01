@@ -1,0 +1,21 @@
+<div class="container">
+  <mat-card>
+    <div class="col-md-8 offset-md-2">
+      <div class="container">
+        <mat-card>
+          <div class="col-md-8 offset-md-2">
+            <div>
+              <p> your connections are </p>
+              <ul>
+                <li *ngFor="let friend of confirmedConnections" (click)="onSelect(friend)">
+                  {{ friend }}
+                  &nbsp; &nbsp;
+                  <a href="{{link}}" target="_blank">view profile</a>
+                  <br>
+                  <br>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </mat-card>
+      </div>

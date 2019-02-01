@@ -6,11 +6,11 @@ import { UserService } from '../user.service';
 import { AnalyticsService } from '../analytics.service';
 
 @Component({
-  selector: 'app-mailing-list',
-  templateUrl: './mailing-list.component.html',
-  styleUrls: ['./mailing-list.component.scss']
+  selector: 'app-add-contact',
+  templateUrl: './add-contact.component.html',
+  styleUrls: ['./add-contact.component.scss']
 })
-export class MailingListComponent implements OnInit {
+export class AddContactsComponent implements OnInit {
   form: FormGroup;
   waiting = false;
   formErrorMessage: string;
@@ -25,9 +25,9 @@ export class MailingListComponent implements OnInit {
 
   ngOnInit() {
     this.form = new FormGroup ({
-    givenName: new FormControl(''),
-    familyName: new FormControl(''),
-    email: new FormControl('', [Validators.required, Validators.email]),
+      givenName: new FormControl(''),
+      familyName: new FormControl(''),
+      email: new FormControl('', [Validators.required, Validators.email]),
     });
   }
 
@@ -39,8 +39,8 @@ export class MailingListComponent implements OnInit {
     this.formErrorMessage = undefined;
     this.submitSuccess = false;
     this.waiting = true;
-  
-    this.http.post('/api/join-mailing-list', {
+    console.log('before function...');
+    this.http.post('/api/join-contact-list', {
           'givenName': formData.givenName,
           'familyName': formData.familyName,
           'email': formData.email
@@ -48,16 +48,13 @@ export class MailingListComponent implements OnInit {
         .subscribe(data => {
           this.waiting = false;
           this.submitSuccess = true;
-          // this.snackBar.open('Successfully subscribed to the mailing list', 'Dismiss', {
-          //    duration: 5000,
-          //    verticalPosition: 'top',
-          //    horizontalPosition: 'right',
-          //  });
-          // this.analytics.mailingList();
+          console.log('subscribe...');
         },
         errorResponse => {
           this.waiting = false;
-          this.formErrorMessage = 'There was a problem submitting the form..';
+          console.log('error ... ');
+          console.dir(errorResponse);
+          this.formErrorMessage = 'There was a problem submitting the form.';
         });
   };
 }
