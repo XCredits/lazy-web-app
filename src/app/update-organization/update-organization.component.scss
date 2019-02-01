@@ -1,9 +1,9 @@
 .img-class{
-  width: 250px;
+  border-radius: 50%;
 }
 
-.profile-image{
-  width: 252px;
+.organization-logo{
+  width: 152px;
   height: 152px;
   margin:auto;
   position: relative;
@@ -11,7 +11,7 @@
 
   .app-image-upload-positioner {
     position: absolute;
-    right: 66px;
+    right: 17px;
     top: 98px;
     width: 152px;
     padding-left: 64px;

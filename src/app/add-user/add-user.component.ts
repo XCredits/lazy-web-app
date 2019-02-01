@@ -25,10 +25,8 @@ export class AddUserComponent implements OnInit {
 
   ngOnInit() {
     this.sub = this.route.params.subscribe(params => {
-      this.http.get<Organization>('/api/organization/get-details', {
-        params: {
-          username: params.orgUsername
-        }
+      this.http.post<Organization>('/api/organization/get-details', {
+          'username': params.orgUsername
       })
       .subscribe(organization => {
         this.authorized = true;

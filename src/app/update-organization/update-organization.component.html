@@ -8,8 +8,8 @@
       <form [formGroup]="form" (ngSubmit)="submit(form.value)">
         <mat-card-title> Update Organization </mat-card-title>
         <mat-card-content>
-          <div class="profile-image">
-            <img mat-card-lg-image class="img-class" [src]="organization.logo" alt='Profile Photo'>
+          <div class="organization-logo">
+            <img mat-card-lg-image class="img-class" [src]="organization.logo" alt='Organization Logo'>
             <div class="app-image-upload-positioner">
               <app-image-upload
                   (imageUploaded)="handleImageUpload($event)"
@@ -59,9 +59,31 @@
             <span *ngIf="submitSuccess"  class="successMessage">
                 {{successMessage}}
             </span>
-            <span style="display:flex; margin-top: 10px;">
-              <mat-icon style="font-size:20px;">person</mat-icon>{{users}}</span>
+            <span *ngFor="let user of users" style="display:flex;">
+                <img mat-card-sm-image style="width:40px; height:40px; border-radius:50%; margin-top: 10px;" [src]="user.profileImage" alt='Profile Image'><span style="margin-top: 19px;margin-left: 7px;">{{user.username}}</span>
+              <label (click)="userDialog(user._id, deleteUser)">
+                <mat-icon style="font-size:16px;color: red; margin: 21px 4px;; cursor:pointer;" matSuffix>block</mat-icon>
+              </label>
+            </span>
           </div>
+          <ng-template #deleteUser>
+            <div style="width:350px;">
+              <mat-dialog-content>
+                Are you sure yo want delete
+              </mat-dialog-content>
+              <mat-dialog-actions align='end'>
+                  <button (click)="cancel()"
+                          mat-raised-button
+                          color='warn'>Cancel
+                  </button>
+                  <button (click)="delUser()"
+                          mat-raised-button
+                          cdkFocusInitial
+                          color='primary'>Remove
+                  </button>
+                </mat-dialog-actions>
+              </div>
+          </ng-template>
         </mat-card-content>
       </form>
       <mat-accordion>
@@ -85,7 +107,7 @@
                     mat-raised-button
                     color='warn'>Cancel
             </button>
-            <button (click)="delete()"
+            <button (click)="deleteOrg()"
                     mat-raised-button
                     cdkFocusInitial
                     color='primary'>Yes

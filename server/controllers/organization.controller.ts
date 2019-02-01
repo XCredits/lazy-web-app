@@ -8,12 +8,12 @@ import {uploadSingleImage} from '../services/image-upload';
 module.exports = function(app) {
   app.post('/api/organization/create', authenticate.jwt, createOrg);
   app.get('/api/organization/all-user-org-details-summary', authenticate.jwt, allOrgDetails);
-  app.get('/api/organization/get-details', authenticate.jwt, singleOrgGet);
+  app.post('/api/organization/get-details', authenticate.jwt, singleOrgGet);
   app.post('/api/organization/update-details', authenticate.jwt, updateOrg);
   app.post('/api/organization/image-upload', authenticate.jwt, orgImageUpload);
   app.post('/api/organization/add-user', authenticate.jwt, orgAddUser);
   app.post('/api/organization/delete', authenticate.jwt, deleteOrg);
-  // app.get('/api/organization/get-users', authenticate.jwt, getUsers);
+  app.post('/api/organization/delete-user', authenticate.jwt, deleteUser);
 };
 
 /**
@@ -160,7 +160,7 @@ function orgImageUpload(req, res) {
 
 function singleOrgGet(req, res) {
   const userId = req.userId;
-  const username = req.query.username;
+  const username = req.body.username;
   if (typeof userId !== 'string' ||
       typeof username !== 'string') {
         return res.status(500).send({message: 'Request validation failed'});
@@ -174,8 +174,9 @@ function singleOrgGet(req, res) {
               const userIds = userOrgArr.map(orgEle => orgEle.userId);
               User.find({ '_id': userIds})
                .then((users) => {
-                 const usernames = users.map(userEle => userEle.username);
-                 return res.json({orgDetail, usernames});
+                //  const usernames = users.map(userEle => userEle.username);
+                //  const profileImage = users.map(userEle => userEle.profileImage);
+                 return res.json({orgDetail, users});
                 });
             });
         })
@@ -233,8 +234,10 @@ function orgAddUser(req, res) {
       return res.status(500).send({message: 'User does not exist in organization'});
     })
     .then(() => {
-      Organization.update({'_id': orgId}, {$inc: { userCount: 1 }});
-      return res.status(200).send({message: 'User added successfully'});
+      Organization.update({'_id': orgId}, {$inc: { userCount: 1 }})
+        .then(() => {
+          return res.status(200).send({message: 'User added successfully'});
+        });
     })
     .catch(() => {
       return res.status(500).send({message: 'Unsuccessful in saving user org'});
@@ -263,16 +266,38 @@ function deleteOrg(req, res) {
       });
 }
 
-// function getUsers(req, res) {
-//   const userId = req.userId;
-//   const id = req.query.id;
-//   UserOrganization.find({ 'orgId': { '$in': id}})
-//     .then((userOrgArr) => {
-//       const userIds = userOrgArr.map(orgEle => orgEle.userId);
-//       User.find({ '_id': userIds})
-//         .then((users) => {
-//           console.log(userIds);
-//           return res.send(users);
-//         });
-//     });
-// }
+function deleteUser(req, res) {
+  const userId = req.userId;
+  const userToBeDeleted = req.body.userId;
+  const orgId = req.body.orgId;
+  if (typeof userId !== 'string' ||
+      typeof userId !== 'string' ||
+      typeof userId !== 'string') {
+        return res.status(500).send({message: 'Request validation failed'});
+      }
+    isOrgAdmin(userId, orgId)
+      .then(() => {
+        User.findOne({'_id': userToBeDeleted})
+          .then(() => {
+            UserOrganization.deleteOne({'userId': userToBeDeleted, 'orgId': orgId})
+              .then(() => {
+                Organization.update({'_id': orgId}, {$inc: { userCount: -1 }})
+                  .then(() => {
+                    return res.status(200).send({message: 'User removed successfully'});
+                  })
+                  .catch(() => {
+                    return res.status(500).send({message: 'Error in decreasing user count'});
+                  });
+              })
+              .catch(() => {
+                return res.status(500).send({message: 'User not found in organization'});
+              });
+          })
+          .catch((err) => {
+            return res.status(500).send({message: 'User not found'});
+          });
+      })
+      .catch(() => {
+        return res.status(500).send({message: 'You do not have authourity to remove user'});
+      });
+}

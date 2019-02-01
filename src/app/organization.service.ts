@@ -3,8 +3,12 @@ import { Subject, BehaviorSubject, ReplaySubject, Observable} from 'rxjs';
 
 @Injectable()
 export class OrganizationService implements OnDestroy {
+    organization: Organization;
+
     private _data: BehaviorSubject<Organization> = new BehaviorSubject<Organization>(null);
-    orgObservable: Subject<Organization> = new ReplaySubject<Organization>(1);
+    orgObservable: Subject<any> = new ReplaySubject<any>(1);
+
+    constructor () {}
 
     public setData(data: Organization) {
         this._data.next(data);
@@ -27,4 +31,5 @@ export interface Organization {
   logo: string;
   phoneNumber: number;
   username: string;
+  userCount: number;
 }

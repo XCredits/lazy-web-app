@@ -22,27 +22,26 @@ export class UpdateOrganizationComponent implements OnInit, OnDestroy {
   sub: any;
   ready = false;
   modalReference = null;
-  users: any;
+  users: Array<string> = [];
+  userToBeDeleted: any;
 
   constructor(private snackBar: MatSnackBar, private http: HttpClient,
               private router: Router, private route: ActivatedRoute, private dialogService: MatDialog) { }
 
   ngOnInit() {
     this.sub = this.route.params.subscribe(params => {
-      this.http.get<Organization>('/api/organization/get-details', {
-        params: {
-          username: params.orgUsername
-        }
+      this.http.post<Organization>('/api/organization/get-details', {
+          'username': params.orgUsername
       })
       .subscribe(organization => {
           this.organization = organization['orgDetail'];
           this.logo = organization.logo;
-          this.users = organization['usernames'];
+          this.users = organization['users'];
           this.form = new FormGroup ({
             name: new FormControl(organization['orgDetail'].name, Validators.required),
             website: new FormControl(organization['orgDetail'].website, Validators.required),
             phoneNumber: new FormControl(organization['orgDetail'].phoneNumber),
-            username: new FormControl(organization['orgDetail'].username, Validators.required)
+            username: new FormControl(organization['orgDetail'].username, Validators.required),
         });
         this.ready = true;
       });
@@ -62,12 +61,12 @@ export class UpdateOrganizationComponent implements OnInit, OnDestroy {
   openDialog(modal) {
     this.modalReference = this.dialogService.open(modal);
   }
-  delete() {
+  deleteOrg() {
     this.modalReference.close();
     this.http.post('api/organization/delete', {
       'id': this.organization._id,
     })
-    .subscribe((data) => {
+    .subscribe(() => {
       this.router.navigateByUrl('/organization');
       this.snackBar.open('Organization deleted Successfully', 'Dismiss', {
         duration: 5000,
@@ -78,6 +77,23 @@ export class UpdateOrganizationComponent implements OnInit, OnDestroy {
   }
 
   cancel() {
+    this.modalReference.close();
+  }
+
+  userDialog(user, modal) {
+    this.userToBeDeleted = user;
+    this.modalReference = this.dialogService.open(modal, user);
+  }
+
+  delUser() {
+    this.http.post('/api/organization/delete-user', {
+      'userId': this.userToBeDeleted,
+      'orgId': this.organization._id,
+    })
+    .subscribe((data) => {
+      const userIndex = this.users.findIndex((user) => user['_id'] === this.userToBeDeleted);
+      this.users.splice(userIndex, 1);
+    });
     this.modalReference.close();
   }
 
