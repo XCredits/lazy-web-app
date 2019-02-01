@@ -24,54 +24,51 @@ module.exports = function (app) {
 function addConnectionRequest(req, res) {
   // Save the login userId
   const userId = req.userId;
-  let searchableUsername = req.body.username;
+  let username = req.body.username;
   // Validate
-  if (typeof searchableUsername !== 'string' ||
-      !isValidDisplayUsername(searchableUsername)) {
+  if (typeof username !== 'string' ||
+      !isValidDisplayUsername(username)) {
     return res.status(422).json({message: 'Request failed validation'});
   }
-  searchableUsername = normalizeUsername(searchableUsername);
+  username = normalizeUsername(username);
   // Check if the user exist
-  return User.findOne({ username: searchableUsername })
-    .then((resultUserId) => {
-      // Check if they have connection
-      return connectionRequest.findOne({
-        senderUserId: userId,
-        receiverUserId: resultUserId._id,
-        active: { $eq: false },
-        snoozed: { $eq: false },
-      })
-      .then((resultConnection) => {
-        if (resultConnection === null) {
-          // Making new connection
-          const connectionReq = new connectionRequest();
-          connectionReq.senderUserId = userId;
-          connectionReq.receiverUserId = resultUserId._id;
-          connectionReq.permissions = { category: 'default'};
-          connectionReq.active = false;
-          connectionReq.snoozed = false;
-          connectionReq.timeout = 10;
-          connectionReq.sendTimeStamp = new Date();
-          connectionReq.updateTimeStamp = new Date();
-          return connectionReq.save()
-            .then(() => {
-              res.send({ message: 'Success' });
-              return statsService.increment(connectionReq)
-                .catch((err) => {
-                  return res.status(200).json({ message: err.message });
-                });
+  return User.findOne({username})
+      .then((receivingUser) => {
+        // Check if they have connection
+        return connectionRequest.findOne({
+              senderUserId: userId,
+              receiverUserId: receivingUser._id,
+              active: { $eq: true },
             })
-            .catch((error) => {
-              console.log(error.message);
-              return res.status(200).json({ message: error.message });
+            .then((resultConnection) => {
+              if (resultConnection === null) {
+                // Making new connection
+                const connectionReq = new connectionRequest();
+                connectionReq.senderUserId = userId;
+                connectionReq.receiverUserId = receivingUser._id;
+                connectionReq.permissions = { category: 'default'};
+                connectionReq.active = true;
+                connectionReq.snoozed = false;
+                connectionReq.timeout = new Date().getTime() + 10 * (1000 * 60 * 60 * 24); // days
+                connectionReq.sendTimeStamp = new Date();
+                connectionReq.updateTimeStamp = new Date();
+                return connectionReq.save()
+                    .then(() => {
+                      res.send({ message: 'Success' });
+                    })
+                    .catch((error) => {
+                      return res.status(500).json({ message: 'Could not save connection request.' });
+                    });
+              } else {
+                return res.status(500).json({message: 'Pending'});
+              }
+            })
+            .catch(() => {
+              return res.status(500).send('Problem finding connection requests.');
             });
-        } else {
-          return res.status(200).json({message: 'Pending'});
-        }
-      });
     })
     .catch ((err) => {
-      return res.status(200).send({ message: 'User not found'});
+      return res.status(500).send({ message: 'User not found'});
     });
 }
 
@@ -86,40 +83,45 @@ function getPendingConnections(req, res) {
   // Check pending for snooze
   const currentDate = new Date();
   const nextTimeoutDate = new Date();
-  connectionRequest.updateMany({
-    receiverUserId: req.userId,
-    active: { $eq: false },
-    snoozed: { $eq: false },
-    sendTimeStamp: { $gt: nextTimeoutDate.setDate(currentDate.getDate() - connectionRequest.timeout) },
-  },
-    {
-      snoozed: true
-    });
+  function checkExpiredRequests() {
+    return connectionRequest.updateMany({
+          receiverUserId: req.userId,
+          active: { $eq: true },
+          timeout: { $lt: new Date().getTime()},
+        },
+        {
+          active: false,
+          currentStatus: 'expired'
+        });
+  }
 
-  return connectionRequest.find({
-    receiverUserId: req.userId,
-    active: { $eq: false },
-    snoozed: { $eq: false },
-    sendTimeStamp: { $eq: connectionRequest.updateTimeStamp }
-  })
-      .then((result) => {
-        const senderIdArr = result.map((e => e.senderUserId));
-        return User.find({ '_id': { '$in': senderIdArr } })
-            .then((filteredResults) => {
-              const resultsFiltered = filteredResults.map((x) => {
-                return {
-                  username: x.username,
-                  givenName: x.givenName,
-                  familyName: x.familyName,
-                  userId: x._id,
-                };
+  function findPendingConnections() {
+    return connectionRequest.find({
+          receiverUserId: req.userId,
+          active: { $eq: true },
+          snoozed: { $eq: false },
+        })
+        .then((result) => {
+          const senderIdArr = result.map((e => e.senderUserId));
+          return User.find({ '_id': { '$in': senderIdArr } })
+              .then((filteredResults) => {
+                const resultsFiltered = filteredResults.map((x) => {
+                  return {
+                    username: x.username,
+                    givenName: x.givenName,
+                    familyName: x.familyName,
+                    userId: x._id,
+                  };
+                });
+                res.send(resultsFiltered);
               });
-              res.send(resultsFiltered);
-            });
-      })
-      .catch((err) => {
-        res.status(500).send({ message: 'Error retrieving pending requests' });
-      });
+        })
+        .catch((err) => {
+          res.status(500).send({ message: 'Error retrieving pending requests' });
+        });
+  }
+  return checkExpiredRequests()
+      .then(findPendingConnections);
 }
 
 
