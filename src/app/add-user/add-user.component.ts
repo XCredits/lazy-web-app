@@ -13,10 +13,12 @@ import { ActivatedRoute } from '@angular/router';
 })
 export class AddUserComponent implements OnInit {
   form: FormGroup;
+  org: string;
   orgId: string;
   success: string;
   sub: any;
   authorized = false;
+  errorMessage: string;
 
   constructor(private router: Router,
               private http: HttpClient, private route: ActivatedRoute, private snackBar: MatSnackBar) { }
@@ -30,7 +32,8 @@ export class AddUserComponent implements OnInit {
       })
       .subscribe(organization => {
         this.authorized = true;
-        this.orgId = organization['_id'];
+        this.org = organization['orgDetail'];
+        this.orgId = this.org['_id'];
       },
       (errorespone) => {
         this.authorized = false;
@@ -58,6 +61,9 @@ export class AddUserComponent implements OnInit {
         verticalPosition: 'top',
         horizontalPosition: 'right',
       });
+    },
+    (errorRespone) => {
+      this.errorMessage = errorRespone.error.message;
     });
   };
 }

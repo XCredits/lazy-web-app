@@ -22,6 +22,7 @@ export class UpdateOrganizationComponent implements OnInit, OnDestroy {
   sub: any;
   ready = false;
   modalReference = null;
+  users: any;
 
   constructor(private snackBar: MatSnackBar, private http: HttpClient,
               private router: Router, private route: ActivatedRoute, private dialogService: MatDialog) { }
@@ -34,13 +35,14 @@ export class UpdateOrganizationComponent implements OnInit, OnDestroy {
         }
       })
       .subscribe(organization => {
-          this.organization = organization;
+          this.organization = organization['orgDetail'];
           this.logo = organization.logo;
+          this.users = organization['usernames'];
           this.form = new FormGroup ({
-            name: new FormControl(organization.name, Validators.required),
-            website: new FormControl(organization.website, Validators.required),
-            phoneNumber: new FormControl(organization.phoneNumber),
-            username: new FormControl(organization.username, Validators.required)
+            name: new FormControl(organization['orgDetail'].name, Validators.required),
+            website: new FormControl(organization['orgDetail'].website, Validators.required),
+            phoneNumber: new FormControl(organization['orgDetail'].phoneNumber),
+            username: new FormControl(organization['orgDetail'].username, Validators.required)
         });
         this.ready = true;
       });

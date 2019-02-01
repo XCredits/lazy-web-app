@@ -9,6 +9,11 @@
               <mat-error>Required</mat-error>
             </mat-form-field>
             <button mat-raised-button color="primary">Add user</button>
+            <span 
+                *ngIf='errorMessage'
+                class="text-error-color">
+              {{errorMessage}}
+            </span>
           </div>
         </mat-card-content>
       </form>

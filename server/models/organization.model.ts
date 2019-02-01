@@ -8,6 +8,7 @@ const OrganizationSchema = new Schema({
   logo: {type: String},
   phoneNumber: {type: Number},
   username: {type: String, unique: true, required: true},
+  userCount: {type: Number},
 });
 
 OrganizationSchema.index({name: 'text'});

@@ -1,5 +1,4 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { FormGroup, FormControl, Validators, ValidatorFn, ValidationErrors, AbstractControl } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { Organization } from '../organization.service';
 import { Router } from '@angular/router';
@@ -14,27 +13,31 @@ export class OrganizationComponent implements OnInit, OnDestroy {
 
   organization: Organization;
   roles = [];
+  orgId: Array<string> = [];
+
 
   constructor(private http: HttpClient,
       private router: Router, private organizationService: OrganizationService) {
-
   }
 
   ngOnInit() {
-    this.http.get<Organization>('/api/organization/details', {}) // orgUsername: 'subway-sydney'
-        .subscribe(org =>  {  // join roles on the backend
-          this.organization = org['Org'];
-          Object.keys(org['Org']).forEach(i => {
-            this.roles[i] = org['userOrg'][i].roles[0];
+    this.http.get<Organization>('/api/organization/all-user-org-details-summary', {})
+        .subscribe((response: any)  =>  {
+          this.organization = response['orgDetails'];
+          Object.keys(response.orgDetails).forEach(i => {
+            this.orgId.push(response['orgDetails'][i]._id);
+            this.roles[i] = response['userOrg'][i].roles[0];
           });
         });
   }
+
 
   sendOrg(organization) {
     this.router.navigate(['/organization/' + organization.username + '/update']);
   }
 
   addUser(organization) {
+    console.log(organization._id);
     this.organizationService.setData(organization._id);
     this.router.navigate(['/organization/' + organization.username + '/add-user']);
   }
