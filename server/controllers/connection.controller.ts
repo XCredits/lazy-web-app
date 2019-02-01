@@ -38,7 +38,7 @@ function addConnectionRequest(req, res) {
   return User.findOne({ username: searchableUsername })
     .then((resultUserId) => {
       // Check if they have connection
-      return connectionRequest.findOne({ senderUserId: userId, receiverUserId: resultUserId._id })
+      return connectionRequest.findOne({ senderUserId: userId, receiverUserId: resultUserId._id, active: {$eq: 0} })
       .then((resultConnection) => {
         if (resultConnection === null) {
           // Making new connection
@@ -46,7 +46,7 @@ function addConnectionRequest(req, res) {
           connectionReq.senderUserId = userId;
           connectionReq.receiverUserId = resultUserId._id;
           connectionReq.permissions = 'Default';
-          console.log(Date.now);
+          connectionReq.active = 0;
           connectionReq.sendTimeStamp = new Date();
           return connectionReq.save()
             .then(() => {
@@ -61,7 +61,7 @@ function addConnectionRequest(req, res) {
               return res.status(200).json({ message: error.message });
             });
         } else {
-          return res.status(200).json({message: resultConnection.status});
+          return res.status(200).json({message: 'Pending'});
         }
       });
     })
@@ -77,7 +77,7 @@ function addConnectionRequest(req, res) {
  * @return {*}
  */
 function getPendingConnections(req, res) {
-  return connectionRequest.find({ receiverUserId: req.userId, sendTimeStamp : {$ne: null} })
+  return connectionRequest.find({ receiverUserId: req.body.userId, active: {$eq: 0} })
       .then((result) => {
         const senderIdArr = result.map((e => e.senderUserId));
         return User.find({ '_id': { '$in': senderIdArr } })
@@ -87,6 +87,7 @@ function getPendingConnections(req, res) {
                   username: x.username,
                   givenName: x.givenName,
                   familyName: x.familyName,
+                  userId: x._id,
                 };
               });
               res.send(resultsFiltered);
@@ -105,7 +106,7 @@ function getPendingConnections(req, res) {
  * @return {*}
  */
 function getConfirmedConnections(req, res) {
-  return connectionRequest.find({ receiverUserId: req.userId, active: {$eq: 1} })
+  return connectionRequest.find({ receiverUserId: req.body.userId, active: {$eq: 1} })
   .then((result) => {
     const senderIdArr = result.map((e => e.senderUserId));
     return User.find({ '_id': { '$in': senderIdArr } })
@@ -135,70 +136,91 @@ function getConfirmedConnections(req, res) {
 function actionConnectionRequest(req, res) {
   // Save the login userId
   const action = req.body.actionNeeded;
-  const userId = req.userId;
-  let searchableUsername = req.body.receiverUsername;
-  // Validate
-  if (typeof searchableUsername !== 'string' ||
-      !isValidDisplayUsername(searchableUsername)) {
-    return res.status(422).json({message: 'Request failed validation'});
-  }
-  searchableUsername = normalizeUsername(searchableUsername);
-  // Check if the user exist
-  return User.findOne({ username: searchableUsername })
-    .then((resultUserId) => {
-      // Check if they have connection
-      return connectionRequest.findOne({ senderUserId: userId, receiverUserId: resultUserId._id })
-      .then(() => {
-          // connection { cancel, accept or reject }
-          const connectionReq = new connectionRequest();
-          switch (action) {
-            case 'Accepted':
-              connectionReq.senderUserId = userId;
-              connectionReq.receiverUserId = resultUserId._id;
-              connectionReq.permissions = 'Default';
-              connectionReq.active = 1;
-              connectionReq.sendTimeStamp = null;
-              connectionReq.acceptTimeStamp = Date.now;
-              connectionReq.cancelTimeStamp = null;
-              connectionReq.rejectTimeStamp = null;
-            break;
-            case 'Canceled':
-              connectionReq.senderUserId = userId;
-              connectionReq.receiverUserId = resultUserId._id;
-              connectionReq.permissions = 'Default';
-              connectionReq.active = 0;
-              connectionReq.acceptTimeStamp = null;
-              connectionReq.cancelTimeStamp = Date.now;
-              connectionReq.rejectTimeStamp = null;
-            break;
-            case 'rejected':
-              connectionReq.senderUserId = userId;
-              connectionReq.receiverUserId = resultUserId._id;
-              connectionReq.permissions = 'Default';
-              connectionReq.active = 0;
-              connectionReq.acceptTimeStamp = null;
-              connectionReq.cancelTimeStamp = null;
-              connectionReq.rejectTimeStamp =  Date.now;
-            break;
+  const userId = req.body.userId;
+  const senderUserId = req.body.senderUserId;
+
+  switch (action) {
+    case 'Accept':
+      connectionRequest.findOneAndUpdate({
+        senderUserId: senderUserId,
+        receiverUserId: userId,
+        sendTimeStamp: { $ne: null },
+        active: { $ne: 0 }
+      },
+      {
+         $set:
+          {
+            active: 1,
+            acceptTimeStamp: new Date(),
           }
-          return connectionReq.Update()
-            .then(() => {
-              res.status(200).send({ message: 'Success' });
-              return statsService.increment(connectionReq)
-                .catch((err) => {
-                  return res.status(200).json({ message: err.message });
-                });
-            })
-            .catch((error) => {
-              console.log(error.message);
-              return res.status(200).json({ message: error.message });
-            });
-      });
-    })
-    .catch ((err) => {
-      return res.status(200).send({ message: 'User not found'});
-    });
-}
+      })
+        .then((data) => {
+          if (data === null) {
+            return res.status(200).send({ message: 'Request accept error' });
+          }
+          return res.status(200).send({ message: 'Request accepted' });
+        })
+        .catch((err) => {
+          res.status(500)
+            .send({ message: err });
+        });
+      break;
+    case 'Cancel':
+      connectionRequest.findOneAndUpdate({
+        senderUserId: senderUserId,
+        receiverUserId: userId,
+        sendTimeStamp: { $ne: null },
+        active: { $ne: 0 }
+      },
+      {
+         $set:
+         {
+           active: -2,
+           cancelTimeStamp: new Date(),
+         }
+       })
+        .then((data) => {
+          if (data === null) {
+            return res.status(200).send({ message: 'Request cancel error' });
+          }
+          return res.status(200).send({ message: 'Request canceled' });
+        })
+        .catch((err) => {
+          res.status(500)
+            .send({ message: err });
+        });
+      break;
+    case 'Reject':
+      connectionRequest.findOneAndUpdate({
+        senderUserId: senderUserId,
+        receiverUserId: userId,
+        sendTimeStamp: { $ne: null },
+        active: { $eq: 0 }
+      },
+      {
+         $set:
+         {
+           active: -1,
+           rejectTimeStamp: new Date(),
+         }
+      })
+        .then((data) => {
+          if (data === null) {
+            return res.status(200).send({ message: 'Request ignored error' });
+          }
+          return res.status(200).send({ message: 'Request rejected' });
+        })
+        .catch((err) => {
+          res.status(500)
+            .send({ message: err });
+        });
+      break;
+  }
+
+    }
+
+
+
 /**
  * request user connection based on status { Pending }
  * @param {*} req request object
@@ -209,10 +231,7 @@ function getPendingRequestsCount(req, res) {
   return connectionRequest.count({
     receiverUserId: req.body.userId,
     sendTimeStamp : {$ne: null},
-    cancelTimeStamp : {$eq: null},
-    acceptTimeStamp : {$eq: null},
-    rejectTimeStamp : {$eq: null},
-    active: {$ne: 0 }
+    active: {$eq: 0 }
   })
   .then((result) => {
     console.log(result);

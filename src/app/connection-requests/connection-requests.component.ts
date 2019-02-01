@@ -16,13 +16,14 @@ export class ConnectionRequestsComponent implements OnInit {
   user: User;
   receiverUserId: string;
   link: string;
-  pendedConnections = [];
+  pendingConnections: { userId: string, givenName: string, familyName: string }[] = [];
+
 
   constructor(
     private http: HttpClient,
     private userService: UserService,
-    private route: Router
-  ) { }
+    private router: Router,
+    ) { }
 
   ngOnInit() {
 
@@ -40,45 +41,56 @@ export class ConnectionRequestsComponent implements OnInit {
     this.link = 'https://xcredits.com/';
     this.loadPendingRequests();
   }
-  onSelect(friends) {
-    console.log('you clicked on ' + friends);
-  }
 
   loadPendingRequests = function () {
     this.IsViewPending = true;
     this.IsViewConfirmed = false;
     this.IsAddUserRequest = false;
-    this.pendedConnections = [];
+    this.pendingConnections = [];
     this.http.post('/api/connection/get-pending-connections', {
       'userId': this.user.id,
     })
       .subscribe((data) => {
         let num = 0;
         for (num = 0; num < data.length; num++) {
-          this.pendedConnections.push(data[num].familyName + ' ' + data[num].givenName);
+          this.pendingConnections.push(
+            {
+              'userId': data[num].userId,
+              'givenName': data[num].givenName,
+              'familyName': data[num].familyName
+            });
         }
         console.log('returned username is ' + data.length);
+        console.log(this.pendingConnections[0]);
       });
   };
-  ApproveUserConnection = function () {
+  ApproveUserConnection = function (friends) {
+
+
+    this.router.navigateByUrl('/connections');
+    return;
     this.http.post('/api/connection/action-connection-request', {
       'userId': this.user.id,
-      'actionNeeded': 'accept',
-      'receiverUsername': this.friends,
+      'actionNeeded': 'Accept',
+      'senderUserId': friends.userId,
     })
       .subscribe((returnedResult) => {
-        console.log( returnedResult.message);
+        if (returnedResult.message === 'Request accepted') {
+          this.router.navigateByUrl('/connections');
+        }
       });
   };
 
-  IgnoreUserConnection = function () {
+  IgnoreUserConnection = function (friends) {
     this.http.post('/api/connection/action-connection-request', {
       'userId': this.user.id,
-      'actionNeeded': 'rejected',
-      'receiverUsername': this.friends,
+      'actionNeeded': 'Reject',
+      'senderUserId': friends.userId,
     })
       .subscribe((returnedResult) => {
-        console.log( returnedResult.message);
+        if (returnedResult.message === 'Request rejected') {
+          this.router.navigateByUrl('/connections');
+        }
       });
   };
 }

@@ -24,7 +24,9 @@ export class ConnectionComponent implements OnInit {
   constructor(
     private http: HttpClient,
     private userService: UserService,
-  ) { }
+  ) {
+    console.log('This is cons');
+  }
 
   ngOnInit() {
     this.form = new FormGroup({
@@ -45,7 +47,7 @@ export class ConnectionComponent implements OnInit {
     })
       .subscribe((returnedResult) => {
           console.log('sss' + returnedResult);
-          this.pendingConnectionsCounter = JSON.stringify(returnedResult.message);
+          this.pendingConnectionsCounter = JSON.stringify(returnedResult);
       });
 
     this.http.post('/api/connection/get-confirmed-count', {
@@ -53,7 +55,7 @@ export class ConnectionComponent implements OnInit {
     })
       .subscribe((returnedResult) => {
           console.log('sss' + returnedResult.toString());
-          this.ConfirmedConnectionsCounter = JSON.stringify(returnedResult.message);
+          this.ConfirmedConnectionsCounter = JSON.stringify(returnedResult);
       });
     console.log('This is main');
 
