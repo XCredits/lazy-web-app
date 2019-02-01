@@ -1,0 +1,18 @@
+input {
+  display: none;
+}
+
+.icon{
+  cursor:pointer;
+  color: white;
+  text-shadow: 0px 2px 10px black;
+}
+
+.okButton {
+  display: inline-flex;
+}
+
+.dialogStyle {
+  width: 500px;
+  max-width: calc(85vw - 75px);
+}

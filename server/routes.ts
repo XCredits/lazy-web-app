@@ -5,11 +5,9 @@ const authenticationController =
 const statsController =
     require('./controllers/stats.controller');
 const profileController =
-    require('./controllers/profile-controller');
+    require('./controllers/profile.controller');
 const contactController =
     require('./controllers/contact.controller');
-const testapiController =
-    require('./controllers/authentication.controller');
 const connectionController =
     require('./controllers/connection.controller');
 

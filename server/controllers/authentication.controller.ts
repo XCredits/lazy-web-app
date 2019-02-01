@@ -53,14 +53,14 @@ const UserStats = require('../models/user-stats.model');
 const statsService = require('../services/stats.service');
 const emailService = require('../services/email.service');
 const Session = require('../models/session.model');
-const jwt = require('jsonwebtoken');
+import * as jwt from 'jsonwebtoken';
 const auth = require('./jwt-auth.controller');
 import { isValidDisplayUsername, normalizeUsername } from './utils.controller';
 const passport = require('passport');
 // const crypto = require('crypto');
 import * as crypto from 'crypto';
 require('../config/passport');
-const zxcvbn = require('zxcvbn');
+import * as zxcvbn from 'zxcvbn';
 
 module.exports = function(app) {
   app.use(passport.initialize());

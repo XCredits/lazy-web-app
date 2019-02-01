@@ -1,11 +1,10 @@
-'use strict';
 // The social controller intercepts scrapers and serves new URLs
 // The social controller should explicitly state the routes that it is
 // intercepting.
 
 const socialLinks = require('./social-links.controller');
 import * as path from 'path';
-const fs = require('fs');
+import * as fs from 'fs';
 
 module.exports = function(req, res, next) {
   let ua = req.headers['user-agent'];

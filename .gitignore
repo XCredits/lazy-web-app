@@ -2,6 +2,7 @@
 
 # Secrets
 *.env
+credentials
 
 # compiled output
 /dist
