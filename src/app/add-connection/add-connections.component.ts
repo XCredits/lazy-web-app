@@ -40,7 +40,7 @@ export class AddConnectionComponent implements OnInit {
   }
 
   // Add new connection
-  RequestUserConnection = function (formData) {
+  requestUserConnection = function (formData) {
     this.IsAddUserRequest = true;
     console.log('=============');
     console.log(this.user.id);

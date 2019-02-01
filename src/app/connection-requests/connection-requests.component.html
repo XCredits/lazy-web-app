@@ -3,14 +3,14 @@
     <div class="col-md-8 offset-md-2">
       <p> your pending connections are </p>
       <ul>
-        <li *ngFor="let friends of pendingConnections">
-          <button class="simple-form-button" color="primary" mat-raised-button (click)="ApproveUserConnection(form.value)">Confirm
+        <li *ngFor="let friend of pendingConnections">
+          <button class="simple-form-button" color="primary" mat-raised-button (click)="approveUserConnection(form.value)">Confirm
           </button>
           &nbsp;
-          <button class="simple-form-button" mat-raised-button (click)="IgnoreUserConnection(friends)">Ignore
+          <button class="simple-form-button" mat-raised-button (click)="ignoreUserConnection(friend)">Ignore
           </button>
           &nbsp;
-          {{ friends.givenName}}   &nbsp;{{ friends.familyName }}
+          {{ friend.givenName}}   &nbsp;{{ friend.familyName }}
           &nbsp; &nbsp;
           <a href="{{link}}" target="_blank">view profile</a>
           <br>

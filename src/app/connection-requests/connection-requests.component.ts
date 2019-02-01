@@ -64,15 +64,12 @@ export class ConnectionRequestsComponent implements OnInit {
         console.log(this.pendingConnections[0]);
       });
   };
-  ApproveUserConnection = function (friends) {
 
+  approveUserConnection = function (friend) {
 
-    this.router.navigateByUrl('/connections');
-    return;
     this.http.post('/api/connection/action-connection-request', {
-      'userId': this.user.id,
       'actionNeeded': 'Accept',
-      'senderUserId': friends.userId,
+      'senderUserId': friend.userId,
     })
       .subscribe((returnedResult) => {
         if (returnedResult.message === 'Request accepted') {
@@ -81,11 +78,10 @@ export class ConnectionRequestsComponent implements OnInit {
       });
   };
 
-  IgnoreUserConnection = function (friends) {
+  ignoreUserConnection = function (friend) {
     this.http.post('/api/connection/action-connection-request', {
-      'userId': this.user.id,
       'actionNeeded': 'Reject',
-      'senderUserId': friends.userId,
+      'senderUserId': friend.userId,
     })
       .subscribe((returnedResult) => {
         if (returnedResult.message === 'Request rejected') {

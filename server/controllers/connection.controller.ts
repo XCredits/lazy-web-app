@@ -1,5 +1,6 @@
 const statsService = require('../services/stats.service.js');
 import { isValidDisplayUsername, normalizeUsername } from './utils.controller';
+import { CONNREFUSED } from 'dns';
 const connectionRequest = require('../models/connection-request.model');
 const User = require('../models/user.model');
 const auth = require('./jwt-auth.controller');
@@ -22,10 +23,6 @@ module.exports = function (app) {
  */
 function addConnectionRequest(req, res) {
   // Save the login userId
-  console.log('====API=====');
-  console.log(req.body.userId);
-  console.log(req.body.username);
-  console.log('----------');
   const userId = req.userId;
   let searchableUsername = req.body.username;
   // Validate
@@ -38,16 +35,24 @@ function addConnectionRequest(req, res) {
   return User.findOne({ username: searchableUsername })
     .then((resultUserId) => {
       // Check if they have connection
-      return connectionRequest.findOne({ senderUserId: userId, receiverUserId: resultUserId._id, active: {$eq: 0} })
+      return connectionRequest.findOne({
+        senderUserId: userId,
+        receiverUserId: resultUserId._id,
+        active: { $eq: false },
+        snoozed: { $eq: false },
+      })
       .then((resultConnection) => {
         if (resultConnection === null) {
           // Making new connection
           const connectionReq = new connectionRequest();
           connectionReq.senderUserId = userId;
           connectionReq.receiverUserId = resultUserId._id;
-          connectionReq.permissions = 'Default';
-          connectionReq.active = 0;
+          connectionReq.permissions = { category: 'default'};
+          connectionReq.active = false;
+          connectionReq.snoozed = false;
+          connectionReq.timeout = 10;
           connectionReq.sendTimeStamp = new Date();
+          connectionReq.updateTimeStamp = new Date();
           return connectionReq.save()
             .then(() => {
               res.send({ message: 'Success' });
@@ -77,7 +82,26 @@ function addConnectionRequest(req, res) {
  * @return {*}
  */
 function getPendingConnections(req, res) {
-  return connectionRequest.find({ receiverUserId: req.body.userId, active: {$eq: 0} })
+
+  // Check pending for snooze
+  const currentDate = new Date();
+  const nextTimeoutDate = new Date();
+  connectionRequest.updateMany({
+    receiverUserId: req.userId,
+    active: { $eq: false },
+    snoozed: { $eq: false },
+    sendTimeStamp: { $gt: nextTimeoutDate.setDate(currentDate.getDate() - connectionRequest.timeout) },
+  },
+    {
+      snoozed: true
+    });
+
+  return connectionRequest.find({
+    receiverUserId: req.userId,
+    active: { $eq: false },
+    snoozed: { $eq: false },
+    sendTimeStamp: { $eq: connectionRequest.updateTimeStamp }
+  })
       .then((result) => {
         const senderIdArr = result.map((e => e.senderUserId));
         return User.find({ '_id': { '$in': senderIdArr } })
@@ -106,7 +130,7 @@ function getPendingConnections(req, res) {
  * @return {*}
  */
 function getConfirmedConnections(req, res) {
-  return connectionRequest.find({ receiverUserId: req.body.userId, active: {$eq: 1} })
+  return connectionRequest.find({ receiverUserId: req.userId, currentStatus: {$eq: 'Accepted'} })
   .then((result) => {
     const senderIdArr = result.map((e => e.senderUserId));
     return User.find({ '_id': { '$in': senderIdArr } })
@@ -136,7 +160,7 @@ function getConfirmedConnections(req, res) {
 function actionConnectionRequest(req, res) {
   // Save the login userId
   const action = req.body.actionNeeded;
-  const userId = req.body.userId;
+  const userId = req.userId;
   const senderUserId = req.body.senderUserId;
 
   switch (action) {
@@ -144,14 +168,15 @@ function actionConnectionRequest(req, res) {
       connectionRequest.findOneAndUpdate({
         senderUserId: senderUserId,
         receiverUserId: userId,
-        sendTimeStamp: { $ne: null },
-        active: { $ne: 0 }
+        sendTimeStamp: { $eq: connectionRequest.updateTimeStamp },
+        active: { $eq: false }
       },
       {
          $set:
           {
-            active: 1,
-            acceptTimeStamp: new Date(),
+            active: true,
+            currentStatus: 'Accepted',
+            updateTimeStamp: new Date(),
           }
       })
         .then((data) => {
@@ -169,14 +194,15 @@ function actionConnectionRequest(req, res) {
       connectionRequest.findOneAndUpdate({
         senderUserId: senderUserId,
         receiverUserId: userId,
-        sendTimeStamp: { $ne: null },
-        active: { $ne: 0 }
+        sendTimeStamp: { $eq: connectionRequest.updateTimeStamp },
+        active: { $eq: false }
       },
       {
          $set:
          {
-           active: -2,
-           cancelTimeStamp: new Date(),
+          active: false,
+          currentStatus: 'Cancelled',
+          updateTimeStamp: new Date(),
          }
        })
         .then((data) => {
@@ -194,14 +220,15 @@ function actionConnectionRequest(req, res) {
       connectionRequest.findOneAndUpdate({
         senderUserId: senderUserId,
         receiverUserId: userId,
-        sendTimeStamp: { $ne: null },
-        active: { $eq: 0 }
+        sendTimeStamp: { $eq: connectionRequest.updateTimeStamp },
+        active: { $eq: false }
       },
       {
          $set:
          {
-           active: -1,
-           rejectTimeStamp: new Date(),
+          active: false,
+          currentStatus: 'Rejected',
+          updateTimeStamp: new Date(),
          }
       })
         .then((data) => {
@@ -216,7 +243,6 @@ function actionConnectionRequest(req, res) {
         });
       break;
   }
-
     }
 
 
@@ -229,9 +255,9 @@ function actionConnectionRequest(req, res) {
  */
 function getPendingRequestsCount(req, res) {
   return connectionRequest.count({
-    receiverUserId: req.body.userId,
-    sendTimeStamp : {$ne: null},
-    active: {$eq: 0 }
+    receiverUserId: req.userId,
+    sendTimeStamp: { $eq: connectionRequest.updateTimeStamp },
+    active: {$eq: false }
   })
   .then((result) => {
     console.log(result);
@@ -247,12 +273,8 @@ function getPendingRequestsCount(req, res) {
  */
 function getConfirmedConnectionsCount(req, res) {
   return connectionRequest.count({
-    receiverUserId: req.body.userId,
-    sendTimeStamp : {$ne: null},
-    cancelTimeStamp : {$eq: null},
-    acceptTimeStamp : {$ne: null},
-    rejectTimeStamp : {$eq: null},
-    active: {$eq: 1 }
+    receiverUserId: req.userId,
+    currentStatus: {$eq: 'Accepted'},
   })
   .then((result) => {
     console.log(result);

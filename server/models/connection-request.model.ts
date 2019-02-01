@@ -6,11 +6,12 @@ const ConnectionRequestSchema = new Schema({
   senderUserId: { type: String },
   receiverUserId: { type: String },
   sendTimeStamp: { type: Date },
-  permissions: { type: String },
-  active: { type: Number},
-  cancelTimeStamp: {type: Date },
-  acceptTimeStamp: {type: Date },
-  rejectTimeStamp: {type: Date },
+  permissions: { type: Object },
+  timeout: {type: Number },
+  active: { type: Boolean },
+  updateTimeStamp: {type: Date },
+  currentStatus: {type: String },
+  snoozed: {type: Boolean },
 }
 );
 
@@ -19,9 +20,10 @@ ConnectionRequestSchema.index({ receiverUserId: 1 });
 ConnectionRequestSchema.index({ sendTimeStamp: 1 });
 ConnectionRequestSchema.index({ permissions: 1 });
 ConnectionRequestSchema.index({ active: 1 });
-ConnectionRequestSchema.index({ cancelTimeStamp: 1 });
-ConnectionRequestSchema.index({ acceptTimeStamp: 1 });
-ConnectionRequestSchema.index({ rejectTimeStamp: 1 });
+ConnectionRequestSchema.index({ timeout: 1 });
+ConnectionRequestSchema.index({ updateTimeStamp: 1 });
+ConnectionRequestSchema.index({ currentStatus: 1 });
+ConnectionRequestSchema.index({ snoozed: 1 });
 
 
 ConnectionRequestSchema.methods.frontendData = function () {
@@ -32,9 +34,10 @@ ConnectionRequestSchema.methods.frontendData = function () {
     sendTimeStamp: this.sendTimeStamp,
     permissions: this.permissions,
     active: this.active,
-    cancelTimeStamp: this.cancelTimeStamp,
-    acceptTimeStamp: this.acceptTimeStamp,
-    rejectTimeStamp: this.rejectTimeStamp,
+    timeout: this.timeout,
+    updateTimeStamp: this.updateTimeStamp,
+    currentStatus: this.currentStatus,
+    snoozed: this.snoozed,
   };
 };
 

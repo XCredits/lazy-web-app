@@ -17,7 +17,6 @@ module.exports = function(app) {
   statsController(app);
   profileController(app);
   contactController(app);
-  testapiController(app);
   connectionController(app);
 };
 

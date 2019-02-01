@@ -7,8 +7,8 @@
             <div>
               <p> your connections are </p>
               <ul>
-                <li *ngFor="let friends of confirmedConnections" (click)="onSelect(friends)">
-                  {{ friends }}
+                <li *ngFor="let friend of confirmedConnections" (click)="onSelect(friend)">
+                  {{ friend }}
                   &nbsp; &nbsp;
                   <a href="{{link}}" target="_blank">view profile</a>
                   <br>

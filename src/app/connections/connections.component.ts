@@ -42,20 +42,15 @@ export class ConnectionComponent implements OnInit {
         console.log('user logged in is --> ' + user.id);
       });
     this.link = 'https://xcredits.com/';
-    this.http.post('/api/connection/get-pending-count', {
-      'userId': this.user.id,
-    })
+    this.http.post('/api/connection/get-pending-count', {})
       .subscribe((returnedResult) => {
-          console.log('sss' + returnedResult);
-          this.pendingConnectionsCounter = JSON.stringify(returnedResult);
+        console.log(returnedResult);
+        this.pendingConnectionsCounter = String(returnedResult);
       });
 
-    this.http.post('/api/connection/get-confirmed-count', {
-      'userId': this.user.id,
-    })
+    this.http.post('/api/connection/get-confirmed-count', {})
       .subscribe((returnedResult) => {
-          console.log('sss' + returnedResult.toString());
-          this.ConfirmedConnectionsCounter = JSON.stringify(returnedResult);
+          this.ConfirmedConnectionsCounter = String(returnedResult);
       });
     console.log('This is main');
 
@@ -66,9 +61,6 @@ export class ConnectionComponent implements OnInit {
     this.pages.push('View');
     this.pages.push('request');
     this.pages.push('add');
-
-
-
   }
   onSelect(friends) {
     console.log('you clicked on ' + friends);
