@@ -79,7 +79,6 @@ module.exports = function(app) {
       auth.jwtTemporaryLinkToken, changePassword);
   app.post('/api/user/forgot-username', forgotUsername);
   app.post('/api/user/logout', auth.jwtRefreshToken, logout);
-  app.get('/api/get-user-details', userInfo);
 
 };
 
@@ -326,27 +325,6 @@ function userDetails(req, res) {
         return res.status(500).send({message: 'UserId not found'});
       });
 }
-
-/**
- * returns all users for now
- * @param {*} req request object
- * @param {*} res response object
- * @returns {*}
- */
-function userInfo(req, res) {
-  Contact.find({})
-  .then((result) => {
-    const resultsFiltered = result.map((x) => {
-      return {givenName: x.givenName, familyName: x.familyName, email: x.email};
-    });
-    res.send(resultsFiltered);
-  })
-  .catch((err) => {
-    res.status(500)
-        .send({message: 'Error retrieving users from contacts database'});
-  });
-}
-
 
 /**
  * change password

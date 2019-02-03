@@ -43,15 +43,15 @@ export class ConnectionComponent implements OnInit {
       });
     this.link = 'https://xcredits.com/';
     this.http.post('/api/connection/get-pending-count', {})
-      .subscribe((returnedResult) => {
-        console.log(returnedResult);
-        this.pendingConnectionsCounter = String(returnedResult);
-      });
+    .subscribe((returnedResult: any) => {
+      console.log(returnedResult);
+      this.pendingConnectionsCounter = returnedResult.message;
+    });
 
-    this.http.post('/api/connection/get-confirmed-count', {})
-      .subscribe((returnedResult) => {
-          this.ConfirmedConnectionsCounter = String(returnedResult);
-      });
+  this.http.post('/api/connection/get-confirmed-count', {})
+    .subscribe((returnedResult: any) => {
+        this.ConfirmedConnectionsCounter = returnedResult.message;
+    });
     console.log('This is main');
 
     this.navLinks.push('./view');
