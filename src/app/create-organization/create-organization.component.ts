@@ -29,6 +29,7 @@ export class CreateOrganizationComponent implements OnInit {
     if (this.form.invalid) {
       return;
     }
+    this.formErrorMessage = undefined;
     this.disableButton = false;
     this.http.post('/api/organization/create', {
           'name': formData.name,
@@ -36,12 +37,12 @@ export class CreateOrganizationComponent implements OnInit {
           'phoneNumber': formData.phoneNumber,
           'username': formData.username,
     })
-    .subscribe(data => {
+    .subscribe(() => {
       this.disableButton = false;
       this.router.navigateByUrl('/organization');
     },
-    errorResponse => {
-      this.formErrorMessage = 'Error submitting the form';
+    (errorResponse) => {
+      this.formErrorMessage = errorResponse.error.message;
     });
   };
 }

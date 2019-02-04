@@ -15,7 +15,7 @@ import { MatDialog } from '@angular/material';
 export class UpdateOrganizationComponent implements OnInit, OnDestroy {
   form: FormGroup;
   organization: Organization;
-  successMessage: string;
+  formErrorMessage: string;
   submitSuccess = false;
   imageUploadRoute = '/api/organization/image-upload';
   logo: string;
@@ -43,7 +43,7 @@ export class UpdateOrganizationComponent implements OnInit, OnDestroy {
           this.users = organization['users'];
           this.form = new FormGroup ({
             name: new FormControl(organization['orgDetail'].name, Validators.required),
-            website: new FormControl(organization['orgDetail'].website, Validators.required),
+            website: new FormControl(organization['orgDetail'].website),
             phoneNumber: new FormControl(organization['orgDetail'].phoneNumber),
             username: new FormControl(organization['orgDetail'].username, Validators.required),
         });
@@ -51,6 +51,7 @@ export class UpdateOrganizationComponent implements OnInit, OnDestroy {
       });
     });
   }
+
   handleImageUpload(imageUrl: string) {
     this.snackBar.open('Image Uploaded Successfully', 'Dismiss', {
       duration: 5000,
@@ -63,7 +64,7 @@ export class UpdateOrganizationComponent implements OnInit, OnDestroy {
     this.organization.logo = '';
   }
 
-  openDialog(modal) {
+  deleteOrgDialog(modal) {
     this.modalReference = this.dialogService.open(modal);
   }
 
@@ -79,6 +80,9 @@ export class UpdateOrganizationComponent implements OnInit, OnDestroy {
         verticalPosition: 'top',
         horizontalPosition: 'right',
       });
+    },
+    (errorResponse) => {
+      this.formErrorMessage = errorResponse.error.message;
     });
   }
 
@@ -96,7 +100,7 @@ export class UpdateOrganizationComponent implements OnInit, OnDestroy {
       'userId': this.userToBeDeleted,
       'orgId': this.organization._id,
     })
-    .subscribe((data) => {
+    .subscribe(() => {
       const userIndex = this.users.findIndex((user) => user['_id'] === this.userToBeDeleted);
       this.users.splice(userIndex, 1);
     });
@@ -107,6 +111,7 @@ export class UpdateOrganizationComponent implements OnInit, OnDestroy {
     if (this.form.invalid) {
       return;
     }
+    this.formErrorMessage = undefined;
     this.http.post('/api/organization/update-details', {
         'id': this.organization._id,
         'name': formData.name,
@@ -116,8 +121,11 @@ export class UpdateOrganizationComponent implements OnInit, OnDestroy {
     })
     .subscribe(() => {
       this.submitSuccess = true;
-      this.successMessage = 'Success';
       this.router.navigateByUrl('/organization');
+    },
+    (errorResponse) => {
+      this.submitSuccess = false;
+      this.formErrorMessage = errorResponse.error.message;
     });
   };
 

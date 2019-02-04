@@ -13,24 +13,24 @@ import { ActivatedRoute } from '@angular/router';
 })
 export class AddUserComponent implements OnInit {
   form: FormGroup;
-  org: string;
+  organization: string;
   orgId: string;
   sub: any;
   authorized = false;
   errorMessage: string;
 
-  constructor(private router: Router,
-              private http: HttpClient, private route: ActivatedRoute, private snackBar: MatSnackBar) { }
+  constructor(private router: Router, private http: HttpClient,
+              private activatedRoute: ActivatedRoute, private snackBar: MatSnackBar) { }
 
   ngOnInit() {
-    this.sub = this.route.params.subscribe(params => {
+    this.sub = this.activatedRoute.params.subscribe(params => {
       this.http.post<Organization>('/api/organization/get-details', {
           'username': params.orgUsername
       })
       .subscribe(organization => {
         this.authorized = true;
-        this.org = organization['orgDetail'];
-        this.orgId = this.org['_id'];
+        this.organization = organization['orgDetail'];
+        this.orgId = this.organization['_id'];
       },
       (errorespone) => {
         this.authorized = false;

@@ -7,8 +7,8 @@ import {uploadSingleImage} from '../services/image-upload';
 
 module.exports = function(app) {
   app.post('/api/organization/create', authenticate.jwt, createOrg);
-  app.get('/api/organization/all-user-org-details-summary', authenticate.jwt, allOrgDetails);
-  app.post('/api/organization/get-details', authenticate.jwt, singleOrgGet);
+  app.post('/api/organization/all-user-org-details-summary', authenticate.jwt, allOrgDetails);
+  app.post('/api/organization/get-details', authenticate.jwt, singleOrgDetails);
   app.post('/api/organization/update-details', authenticate.jwt, updateOrg);
   app.post('/api/organization/image-upload', authenticate.jwt, orgImageUpload);
   app.post('/api/organization/add-user', authenticate.jwt, orgAddUser);
@@ -30,7 +30,6 @@ function isOrgAdmin(userId, orgId) {
         return true;
       })
       .catch((error) => {
-        console.log(error);
         throw new Error('User not found in organizaton.');
       });
 }
@@ -62,7 +61,9 @@ function createOrg(req, res) {
           });
         })
         .catch(() => {
-          res.status(500).send({message: 'Error in Saving user role and organization.'});
+          res.status(500).send({
+            message: 'Error in Saving user role and organization.'
+        });
       });
     })
     .catch(() => {
@@ -83,61 +84,68 @@ function allOrgDetails(req, res) {
         return Organization.find({ '_id': { '$in': orgIds}});
       })
       .then((orgDetails) => {
-        // orgArr[org.id[i]] = org[i];
-        // rolesArr[orgRole.id[i]] = orgRoles[i];
-        console.log('SEE IN THIS ERROR @$^%$^$^');
-        // throw new Error('MAKE SURE ORG ID IN ROLES IS MATCHED TO ORG ID IN ORGDETAILS');
         return res.json({orgDetails, userOrg});
       })
-      .catch((err) => {
+      .catch(() => {
         return res.status(500).send({message: 'Error in finding organization'});
       });
 }
 
 function updateOrg(req, res) {
   const userId = req.userId;
-  const id = req.body.id;
+  const orgId = req.body.id;
   const name = req.body.name;
   const website = req.body.website;
   const phoneNumber = req.body.phoneNumber;
   const username = req.body.username;
 
-  if (typeof id !== 'string') {
+  if (typeof userId !== 'string' ||
+      typeof orgId !== 'string' ||
+      typeof name !== 'string' ||
+      typeof username !== 'string') {
     return res.status(500).send({message: 'Request validation failed'});
   }
-  return Organization.findOne({'_id': id})
-    .then((org) => {
-      org.name = name;
-      org.website = website;
-      org.phoneNumber = phoneNumber;
-      org.username = username;
-      return org.save()
-        .then(() => {
-          return res.status(200).send({message: 'Organization details updated successfully'});
+  isOrgAdmin(userId, orgId)
+    .then(() => {
+      return Organization.findOne({'_id': orgId})
+        .then((org) => {
+          org.name = name;
+          org.website = website;
+          org.phoneNumber = phoneNumber;
+          org.username = username;
+          return org.save()
+            .then(() => {
+              return res.status(200).send({
+                message: 'Organization details updated successfully'
+              });
+            })
+            .catch(() => {
+              return res.status(500).send({message: 'Error in updating organization'});
+            });
         })
-        .catch(() => {
-          return res.status(500).send({message: 'Error in Updating'});
+        .catch((err) => {
+          return res.status(500).send({message: 'Orgainzation not found'});
         });
     })
-    .catch((err) => {
-      console.log(err);
-      return res.status(500).send({message: 'Orgainzation not found'});
+    .catch(() => {
+      return res.status(404).send({message: 'Unauthorised access'});
     });
 }
 
 function orgImageUpload(req, res) {
   const userId = req.userId;
-  const id = req.query.id;
-  if (typeof id !== 'string') {
+  const orgId = req.query.id;
+  if (typeof userId !== 'string' ||
+      typeof orgId !== 'string') {
     return res.status(500).send({message: 'Request validation failed'});
   }
-  isOrgAdmin(userId, id)
+  isOrgAdmin(userId, orgId)
     .then(() => {
       uploadSingleImage(req, res, function(err) {
         if (err) {
           return res.status(422).send({errors: [{title: 'Image Upload error', detail: err.message}]});
         }
-        Organization.findOne({'_id': id})
+        Organization.findOne({'_id': orgId})
           .then((org) => {
               org.logo = req.file.fileLocation;
               return org.save()
@@ -153,12 +161,12 @@ function orgImageUpload(req, res) {
           });
       });
     })
-    .catch((error) => {
-      return res.status(500).send({message: error});
+    .catch(() => {
+      return res.status(404).send({message: 'Unauthorised access'});
     });
 }
 
-function singleOrgGet(req, res) {
+function singleOrgDetails(req, res) {
   const userId = req.userId;
   const username = req.body.username;
   if (typeof userId !== 'string' ||
@@ -174,26 +182,23 @@ function singleOrgGet(req, res) {
               const userIds = userOrgArr.map(orgEle => orgEle.userId);
               User.find({ '_id': userIds})
                .then((users) => {
-                //  const usernames = users.map(userEle => userEle.username);
-                //  const profileImage = users.map(userEle => userEle.profileImage);
                  return res.json({orgDetail, users});
                 });
             });
         })
         .catch(() => {
-          return res.status(404).send({message: 'Unauthorised User'});
+          return res.status(404).send({message: 'Unauthorised access'});
         });
       })
-        .catch(() => {
-          return res.status(500).send({message: 'User not found'});
-        });
+      .catch(() => {
+        return res.status(500).send({message: 'Organization not found'});
+      });
 }
 
 function orgAddUser(req, res) {
   const userId = req.userId;
   const orgId = req.body.orgId;
   const username = req.body.username;
-  console.log(orgId, userId, username);
   if (typeof userId !== 'string' ||
       typeof orgId !== 'string' ||
       typeof username !== 'string') {
@@ -251,19 +256,25 @@ function deleteOrg(req, res) {
       typeof orgId !== 'string') {
         return res.status(500).send({message: 'Request validation failed'});
       }
-  return UserOrganization.deleteMany({'orgId': orgId})
-      .then(() => {
-        return Organization.deleteMany({'_id': orgId})
-          .then(() => {
-            return res.status(200).send({message: 'Organization deleted successfully'});
-          })
-          .catch(() => {
-            return res.status(500).send({message: 'Error in deleting organization'});
-          });
-      })
-      .catch(() => {
-        return  res.status(500).send({message: 'Error in deleting UserOrganization'});
-      });
+  isOrgAdmin(userId, orgId)
+    .then(() => {
+      return UserOrganization.deleteMany({'orgId': orgId})
+        .then(() => {
+          return Organization.deleteMany({'_id': orgId})
+            .then(() => {
+              return res.status(200).send({message: 'Organization deleted successfully'});
+            })
+            .catch(() => {
+              return res.status(500).send({message: 'Error in deleting organization'});
+            });
+        })
+        .catch(() => {
+          return  res.status(500).send({message: 'Error in deleting UserOrganization'});
+        });
+    })
+    .catch(() => {
+      return res.status(404).send({message: 'Unauthorised access'});
+    });
 }
 
 function deleteUser(req, res) {
@@ -275,29 +286,29 @@ function deleteUser(req, res) {
       typeof userId !== 'string') {
         return res.status(500).send({message: 'Request validation failed'});
       }
-    isOrgAdmin(userId, orgId)
-      .then(() => {
-        User.findOne({'_id': userToBeDeleted})
-          .then(() => {
-            UserOrganization.deleteOne({'userId': userToBeDeleted, 'orgId': orgId})
-              .then(() => {
-                Organization.update({'_id': orgId}, {$inc: { userCount: -1 }})
-                  .then(() => {
-                    return res.status(200).send({message: 'User removed successfully'});
-                  })
-                  .catch(() => {
-                    return res.status(500).send({message: 'Error in decreasing user count'});
-                  });
-              })
-              .catch(() => {
-                return res.status(500).send({message: 'User not found in organization'});
-              });
-          })
-          .catch((err) => {
-            return res.status(500).send({message: 'User not found'});
-          });
-      })
-      .catch(() => {
-        return res.status(500).send({message: 'You do not have authourity to remove user'});
-      });
+  isOrgAdmin(userId, orgId)
+    .then(() => {
+      User.findOne({'_id': userToBeDeleted})
+        .then(() => {
+          UserOrganization.deleteOne({'userId': userToBeDeleted, 'orgId': orgId})
+            .then(() => {
+              Organization.update({'_id': orgId}, {$inc: { userCount: -1 }})
+                .then(() => {
+                  return res.status(200).send({message: 'User removed successfully'});
+                })
+                .catch(() => {
+                  return res.status(500).send({message: 'Error in decreasing user count'});
+                });
+            })
+            .catch(() => {
+              return res.status(500).send({message: 'User not found in organization'});
+            });
+        })
+        .catch(() => {
+          return res.status(500).send({message: 'User not found'});
+        });
+    })
+    .catch(() => {
+      return res.status(404).send({message: 'Unauthorised access'});
+    });
 }

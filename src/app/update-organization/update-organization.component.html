@@ -22,6 +22,7 @@
           <div class="form-group">
             <mat-form-field class="simple-form-field-100">
               <input matInput placeholder="Organization Name" name="name" formControlName="name">
+              <mat-error>Required</mat-error>
             </mat-form-field>
             <mat-form-field class="simple-form-field-100">
               <input matInput placeholder="Website" name="website" formControlName="website">
@@ -33,6 +34,7 @@
             <br>
             <mat-form-field class="simple-form-field-100">
                 <input matInput placeholder="Username" name="username" formControlName="username">
+                <mat-error>Required</mat-error>
             </mat-form-field>
             <br>
             <button
@@ -59,10 +61,11 @@
             <span *ngIf="submitSuccess"  class="successMessage">
                 {{successMessage}}
             </span>
-            <span *ngFor="let user of users" style="display:flex;">
-                <img mat-card-sm-image style="width:40px; height:40px; border-radius:50%; margin-top: 10px;" [src]="user.profileImage" alt='Profile Image'><span style="margin-top: 19px;margin-left: 7px;">{{user.username}}</span>
+            <span *ngFor="let user of users" class="displayUsers">
+                <img mat-card-sm-image class="userImage" [src]="user.profileImage" alt='Profile Image'>
+                <span class="username">{{user.username}}</span>
               <label (click)="userDialog(user._id, deleteUser)">
-                <mat-icon style="font-size:16px;color: red; margin: 21px 4px;; cursor:pointer;" matSuffix>block</mat-icon>
+                <mat-icon class="removeIcon" matSuffix>block</mat-icon>
               </label>
             </span>
           </div>
@@ -93,7 +96,10 @@
               Advanced
             </mat-panel-title>
           </mat-expansion-panel-header>
-          <button mat-raised-button color="primary" (click)="openDialog(modal)" class="simple-form-button">Delete Organization</button>
+          <button mat-raised-button color="primary"
+                  (click)="deleteOrgDialog(modal)"
+                  class="simple-form-button">Delete Organization
+          </button>
         </mat-expansion-panel>
       </mat-accordion>
       <ng-template #modal>
@@ -115,6 +121,4 @@
           </mat-dialog-actions>
       </ng-template>
     </mat-card>
-  </div>
-  
-  
+</div>

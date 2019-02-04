@@ -2,7 +2,6 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Organization } from '../organization.service';
 import { Router } from '@angular/router';
-import { OrganizationService } from '../organization.service';
 
 @Component({
   selector: 'app-organization',
@@ -15,11 +14,10 @@ export class OrganizationComponent implements OnInit, OnDestroy {
   userRoles: Array<string> =  [];
 
   constructor(private http: HttpClient,
-      private router: Router, private organizationService: OrganizationService) {
-  }
+              private router: Router) {}
 
   ngOnInit() {
-    this.http.get<Organization>('/api/organization/all-user-org-details-summary', {})
+    this.http.post<Organization>('/api/organization/all-user-org-details-summary', {})
         .subscribe((response: any)  =>  {
           this.organization = response['orgDetails'];
           Object.values(response.userOrg).forEach(org => {
@@ -27,13 +25,12 @@ export class OrganizationComponent implements OnInit, OnDestroy {
           });
         });
   }
-  sendOrg(organization) {
+
+  updateOrg(organization) {
     this.router.navigate(['/organization/' + organization.username + '/update']);
   }
 
   addUser(organization) {
-    console.log(organization._id);
-    this.organizationService.setData(organization._id);
     this.router.navigate(['/organization/' + organization.username + '/add-user']);
   }
 
