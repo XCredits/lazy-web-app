@@ -60,7 +60,6 @@ import { HelpComponent } from './help/help.component';
 import { SettingsComponent } from './settings/settings.component';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import { FeedComponent } from './feed/feed.component';
-import { ContactsComponent } from './contacts/contacts.component';
 import { AboutComponent } from './about/about.component';
 import { LoginComponent } from './login/login.component';
 import { ForgotPasswordComponent } from './forgot-password/forgot-password.component';
@@ -80,6 +79,7 @@ import { PrivacyComponent } from './privacy/privacy.component';
 import { FooterComponent } from './footer/footer.component';
 import { ImageUploadModule } from './image-upload/image-upload.module';
 import { ChangeThemeComponent } from './change-theme/change-theme.component';
+import { ContactsComponent } from './contacts/contacts.component';
 import { AddContactsComponent } from './addcontact/add-contact.component';
 import { ViewContactsComponent } from './view-contacts/view-contacts.component';
 import { ConnectionComponent } from './connections/connections.component';
@@ -95,7 +95,6 @@ import { ViewConnectionsComponent } from './view-connections/view-connections.co
     SettingsComponent,
     PageNotFoundComponent,
     FeedComponent,
-    ContactsComponent,
     AboutComponent,
     LoginComponent,
     ForgotPasswordComponent,
@@ -114,6 +113,7 @@ import { ViewConnectionsComponent } from './view-connections/view-connections.co
     PrivacyComponent,
     FooterComponent,
     ChangeThemeComponent,
+    ContactsComponent,
     AddContactsComponent,
     ViewContactsComponent,
     ConnectionComponent,
@@ -218,16 +218,24 @@ import { ViewConnectionsComponent } from './view-connections/view-connections.co
         data: { title: 'Privacy' },
       },
       {
-        path: 'add-contact',
-        component: AddContactsComponent,
-        data: { title: 'AddContact' },
-
-      },
-      {
-        path: 'view-contacts',
-        component: ViewContactsComponent,
-        data: { title: 'ViewContacts' },
-
+        path: 'contacts',
+        component: ContactsComponent,
+        children:
+        [
+          {
+            path: '',
+            redirectTo: 'contacts',
+            pathMatch: 'full'
+          },
+          {
+            path: 'view',
+            component: ViewContactsComponent,
+          },
+          {
+            path: 'add',
+            component: AddContactsComponent,
+          }
+        ]
       },
       {
         path: 'connections',

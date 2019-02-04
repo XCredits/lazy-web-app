@@ -91,12 +91,7 @@ export class AppComponent implements OnInit {
       isAdminRoute: true,
     },
     {
-      routerLink: '/add-contact',
-      icon: 'person',
-      title: 'Add contact',
-    },
-    {
-      routerLink: '/view-contacts',
+      routerLink: '/contacts',
       icon: 'view_carousel',
       title: 'View contacts',
     },

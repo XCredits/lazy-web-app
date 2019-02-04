@@ -45,19 +45,19 @@ export class ViewContactsComponent implements OnInit {
 
   submit = function () { };
 
-  previousContact = function (form) {
+  previousContact = function () {
     console.log('Previous Contact');
     if (this.contactIndex > 0) {
         this.contactIndex --;
     }
-          form = new FormGroup({
+          this.form = new FormGroup({
             givenName: new FormControl(this.allContacts[this.contactIndex].givenName),
             familyName: new FormControl(this.allContacts[this.contactIndex].familyName),
             email: new FormControl(this.allContacts[this.contactIndex].email),
        });
   };
 
-  nextContact = function (form) {
+  nextContact = function () {
     if (this.contactIndex < this.allContacts.length - 1 ) {
         this.contactIndex++;
     }

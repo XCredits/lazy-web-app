@@ -24,9 +24,7 @@ export class ConnectionComponent implements OnInit {
   constructor(
     private http: HttpClient,
     private userService: UserService,
-  ) {
-    console.log('This is cons');
-  }
+  ) { }
 
   ngOnInit() {
     this.form = new FormGroup({
