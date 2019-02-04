@@ -207,46 +207,46 @@ function orgAddUser(req, res) {
   let userToAdd;
   isOrgAdmin(userId, orgId)
     .then(() => {
-      return User.findOne({'username': username});
-    })
-    .catch(() => {
-      return res.status(500).send({message: 'Cannot find user'});
-    })
-    .then((user) => {
-      userToAdd = user;
-      return Organization.findOne({'_id' : orgId});
-    })
-    .catch((error) => {
-      return res.status(500).send({message: error});
-    })
-    .then(() => {
-      return UserOrganization.findOne({'userId': userToAdd._id, 'orgId': orgId});
-    })
-    .catch((err) => {
-      return res.status(500).send({message: 'Cannot find user'});
-    })
-    .then((existingUser) => {
-      if (existingUser) {
-        return res.status(500).send({message: 'User already exist in this organization'});
-      }
-      const userOrg = new UserOrganization();
-      userOrg.userId = userToAdd._id;
-      userOrg.orgId = orgId;
-      userOrg.roles = ['POS'];
-      return userOrg.save();
-    })
-    .catch(() => {
-      return res.status(500).send({message: 'User does not exist in organization'});
-    })
-    .then(() => {
-      Organization.update({'_id': orgId}, {$inc: { userCount: 1 }})
+      return Organization.findOne({'_id' : orgId})
         .then(() => {
-          return res.status(200).send({message: 'User added successfully'});
+          return User.findOne({'username': username})
+            .then((user) => {
+              userToAdd = user;
+              return UserOrganization.findOne({'userId': userToAdd._id, 'orgId': orgId})
+                .then((existingUser) => {
+                    if (existingUser) {
+                      return res.status(500).send({message: 'User already exist in this organization'});
+                    }
+                    const userOrg = new UserOrganization();
+                    userOrg.userId = userToAdd._id;
+                    userOrg.orgId = orgId;
+                    userOrg.roles = ['POS'];
+                    return userOrg.save()
+                      .then(() => {
+                        Organization.update({'_id': orgId}, {$inc: { userCount: 1 }})
+                          .then(() => {
+                            return res.status(200).send({message: 'User count increased successfully'});
+                          })
+                          .catch(() => {
+                            return res.status(500).send({message: 'Error in increasing user count'});
+                          });
+                      })
+                      .catch(() => {
+                        return res.status(500).send({message: 'Error in saving user to organization'});
+                      });
+                });
+            })
+            .catch(() => {
+              return res.status(500).send({message: 'User not found'});
+            });
+        })
+        .catch(() => {
+          return res.status(404).send({message: 'Organization not found'});
         });
-    })
-    .catch(() => {
-      return res.status(500).send({message: 'Unsuccessful in saving user org'});
-    });
+      })
+      .catch(() => {
+        return res.status(500).send({message: 'Unauthorized access'});
+      });
 }
 
 function deleteOrg(req, res) {
@@ -312,3 +312,58 @@ function deleteUser(req, res) {
       return res.status(404).send({message: 'Unauthorised access'});
     });
 }
+
+
+// function orgAddUser(req, res) {
+//   const userId = req.userId;
+//   const orgId = req.body.orgId;
+//   const username = req.body.username;
+//   if (typeof userId !== 'string' ||
+//       typeof orgId !== 'string' ||
+//       typeof username !== 'string') {
+//         return res.status(500).send({message: 'Request validation failed'});
+//       }
+//   let userToAdd;
+//   isOrgAdmin(userId, orgId)
+//     .then(() => {
+//       return User.findOne({'username': username});
+//     })
+//     .catch(() => {
+//       return res.status(500).send({message: 'Cannot find user'});
+//     })
+//     .then((user) => {
+//       userToAdd = user;
+//       return Organization.findOne({'_id' : orgId});
+//     })
+//     .catch((error) => {
+//       return res.status(500).send({message: error});
+//     })
+//     .then(() => {
+//       return UserOrganization.findOne({'userId': userToAdd._id, 'orgId': orgId});
+//     })
+//     .catch((err) => {
+//       return res.status(500).send({message: 'Cannot find user'});
+//     })
+//     .then((existingUser) => {
+//       if (existingUser) {
+//         return res.status(500).send({message: 'User already exist in this organization'});
+//       }
+//       const userOrg = new UserOrganization();
+//       userOrg.userId = userToAdd._id;
+//       userOrg.orgId = orgId;
+//       userOrg.roles = ['POS'];
+//       return userOrg.save();
+//     })
+//     .catch(() => {
+//       return res.status(500).send({message: 'User does not exist in organization'});
+//     })
+//     .then(() => {
+//       Organization.update({'_id': orgId}, {$inc: { userCount: 1 }})
+//         .then(() => {
+//           return res.status(200).send({message: 'User added successfully'});
+//         });
+//     })
+//     .catch(() => {
+//       return res.status(500).send({message: 'Unsuccessful in saving user org'});
+//     });
+// }

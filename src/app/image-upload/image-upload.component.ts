@@ -24,8 +24,8 @@ export class ImageUploadComponent implements OnChanges {
   @Output() imageError = new EventEmitter();
   @Output() imageUploadUrl = new EventEmitter();
   @Output() croppingCanceled = new EventEmitter();
-  @Input('imageUploadRoute') imageUploadRoute: string;
-  @Input('id') id: string;
+  @Input() imageUploadRoute;
+  @Input() id;
 
   selectedFile: FileSnippet;
   imageChangedEvent: any;

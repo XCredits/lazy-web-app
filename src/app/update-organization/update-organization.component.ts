@@ -26,6 +26,7 @@ export class UpdateOrganizationComponent implements OnInit, OnDestroy {
   users: Array<string> = [];
   userToBeDeleted: any;
   usernameErrorMessage: string;
+  selectedRatio = 4 / 3;
   options: any = {
     size: 'dialog-centered',
     panelClass: 'custom-modalbox'
