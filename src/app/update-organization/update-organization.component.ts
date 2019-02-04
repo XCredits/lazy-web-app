@@ -6,6 +6,7 @@ import { Router } from '@angular/router';
 import { ActivatedRoute } from '@angular/router';
 import { MatSnackBar } from '@angular/material';
 import { MatDialog } from '@angular/material';
+import { UserService } from '../user.service';
 
 @Component({
   selector: 'app-update-organization',
@@ -24,13 +25,15 @@ export class UpdateOrganizationComponent implements OnInit, OnDestroy {
   modalReference = null;
   users: Array<string> = [];
   userToBeDeleted: any;
+  usernameErrorMessage: string;
   options: any = {
     size: 'dialog-centered',
     panelClass: 'custom-modalbox'
   };
 
   constructor(private snackBar: MatSnackBar, private http: HttpClient,
-              private router: Router, private route: ActivatedRoute, private dialogService: MatDialog) { }
+              private router: Router, private route: ActivatedRoute,
+              private dialogService: MatDialog, private userService: UserService) { }
 
   ngOnInit() {
     this.sub = this.route.params.subscribe(params => {
@@ -48,8 +51,53 @@ export class UpdateOrganizationComponent implements OnInit, OnDestroy {
             username: new FormControl(organization['orgDetail'].username, Validators.required),
         });
         this.ready = true;
+        this.form.valueChanges.subscribe(changes => this.checkUsername(changes));
       });
     });
+  }
+
+  checkUsername = function (formData)  {
+    this.form.controls['username'].setErrors(null);
+    const displayUsernameRegex =
+        new RegExp(this.userService.displayUsernameRegexString);
+
+    // this.currentUsername - designed to prevent the form from reporting an
+    // error if the username has been updated
+    const initialUsername = this.organization.username;
+    this.currentUsername = this.normalizeUsername(formData.username);
+    this.currentDisplayName = formData.username;
+    if (initialUsername.length === 0) {
+      this.form.controls['username'].setErrors({'incorrect': true});
+      this.usernameErrorMessage = 'Required.';
+      return;
+    }
+    if (initialUsername !== this.currentUsername) {
+      this.http.post('/api/user/username-available', {
+            username: this.currentUsername,
+          })
+          .subscribe(data => {
+            if (initialUsername !== this.currentUsername) {
+              if (!data.available) {
+                this.form.controls['username'].setErrors({'incorrect': true});
+                this.usernameErrorMessage =
+                    'Username is not available. Please choose another.';
+              } else {
+                this.form.controls['username'].setErrors(null);
+              }
+            }
+          },
+          errorResponse => {
+            this.formErrorMessage = 'There may be a connection issue.';
+          });
+    }
+  };
+
+  normalizeUsername(username) {
+    return username
+        .split('.').join('')
+        .split('_').join('')
+        .split('-').join('')
+        .toLowerCase();
   }
 
   handleImageUpload(imageUrl: string) {
