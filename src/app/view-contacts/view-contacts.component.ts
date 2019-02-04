@@ -10,61 +10,61 @@ import { HttpClient } from '@angular/common/http';
 })
 export class ViewContactsComponent implements OnInit {
 
-form: FormGroup;
+  form: FormGroup;
 
-disableButton = true;
-waiting = false;
-submitSuccess = false;
-formErrorMessage: string;
-user: User;
-contactIndex: Number = 0;
-private allData;
+  disableButton = true;
+  waiting = false;
+  submitSuccess = false;
+  formErrorMessage: string;
+  user: User;
+  contactIndex: Number = 0;
+  private allContacts;
 
-constructor(
-  private http: HttpClient,
-  private userService: UserService,
-) { }
+  constructor(
+    private http: HttpClient,
+    private userService: UserService,
+  ) { }
 
-ngOnInit() {
-  this.form = new FormGroup ({
-    givenName: new FormControl(''),
-    familyName: new FormControl(''),
-    email: new FormControl('', [Validators.required, Validators.email]),
-  });
-  this.http.get<any>('/api/get-user-details')
-  .subscribe((data) =>  {
+  ngOnInit() {
     this.form = new FormGroup({
-      givenName: new FormControl(data[0].givenName),
-      familyName: new FormControl(data[0].familyName),
-      email: new FormControl(data[0].email),
+        givenName: new FormControl(''),
+        familyName: new FormControl(''),
+        email: new FormControl('', [Validators.required, Validators.email]),
     });
-    console.log(data);
-    this.allData = data;
+    this.http.get<any>('/api/get-user-details')
+        .subscribe((data) => {
+         this.allContacts = data;
+        });
+
+    this.form = new FormGroup({
+        givenName: new FormControl(this.allContacts[0].givenName),
+        familyName: new FormControl(this.allContacts[0].familyName),
+        email: new FormControl(this.allContacts[0].email),
       });
- }
+  }
 
- submit = function (formData) {};
+  submit = function () { };
 
- previousContact = function () {
-   console.log('Previous Contact');
-   this.contactIndex -= 2;
-  console.log(this.contactIndex);
-  this.form = new FormGroup({
-    givenName: new FormControl(this.allData[this.contactIndex].givenName),
-    familyName: new FormControl(this.allData[this.contactIndex].familyName),
-    email: new FormControl(this.allData[this.contactIndex].email),
-  });
-};
+  previousContact = function () {
+    console.log('Previous Contact');
+    this.contactIndex --;
+    console.log(this.contactIndex);
+    this.form = new FormGroup({
+          givenName: new FormControl(this.allContacts[this.contactIndex].givenName),
+          familyName: new FormControl(this.allContacts[this.contactIndex].familyName),
+          email: new FormControl(this.allContacts[this.contactIndex].email),
+       });
+  };
 
- nextContact = function () {
-  console.log('Next Contact');
-  this.contactIndex += 2;
-  console.log(this.contactIndex);
-  this.form = new FormGroup({
-    givenName: new FormControl(this.allData[this.contactIndex].givenName),
-    familyName: new FormControl(this.allData[this.contactIndex].familyName),
-    email: new FormControl(this.allData[this.contactIndex].email),
-  });
-};
+  nextContact = function () {
+    console.log('Next Contact');
+    this.contactIndex ++;
+    console.log(this.contactIndex);
+    this.form = new FormGroup({
+          givenName: new FormControl(this.allContacts[this.contactIndex].givenName),
+          familyName: new FormControl(this.allContacts[this.contactIndex].familyName),
+          email: new FormControl(this.allContacts[this.contactIndex].email),
+        });
+  };
 
 }

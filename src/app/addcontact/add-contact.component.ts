@@ -44,16 +44,15 @@ export class AddContactsComponent implements OnInit {
           'familyName': formData.familyName,
           'email': formData.email
         })
-          .subscribe(data => {
+        .subscribe(data => {
             this.waiting = false;
             this.submitSuccess = true;
             console.log('subscribe...');
           },
-        errorResponse => {
-            this.waiting = false;
-            console.log('error ... ');
-            console.dir(errorResponse);
-            this.formErrorMessage = 'There was a problem submitting the form.';
-        });
+          errorResponse => {
+              this.waiting = false;
+              console.log('error ... ');
+              this.formErrorMessage = 'There was a problem submitting the form.';
+          });
   };
 }
