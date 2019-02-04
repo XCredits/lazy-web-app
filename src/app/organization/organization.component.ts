@@ -12,9 +12,7 @@ import { OrganizationService } from '../organization.service';
 export class OrganizationComponent implements OnInit, OnDestroy {
 
   organization: Organization;
-  roles = [];
-  orgId: Array<string> = [];
-
+  userRoles: Array<string> =  [];
 
   constructor(private http: HttpClient,
       private router: Router, private organizationService: OrganizationService) {
@@ -24,14 +22,11 @@ export class OrganizationComponent implements OnInit, OnDestroy {
     this.http.get<Organization>('/api/organization/all-user-org-details-summary', {})
         .subscribe((response: any)  =>  {
           this.organization = response['orgDetails'];
-          Object.keys(response.orgDetails).forEach(i => {
-            this.orgId.push(response['orgDetails'][i]._id);
-            this.roles[i] = response['userOrg'][i].roles[0];
+          Object.values(response.userOrg).forEach(org => {
+            this.userRoles[org['orgId']] = org['roles'];
           });
         });
   }
-
-
   sendOrg(organization) {
     this.router.navigate(['/organization/' + organization.username + '/update']);
   }

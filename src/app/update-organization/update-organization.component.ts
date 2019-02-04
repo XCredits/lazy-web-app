@@ -24,6 +24,10 @@ export class UpdateOrganizationComponent implements OnInit, OnDestroy {
   modalReference = null;
   users: Array<string> = [];
   userToBeDeleted: any;
+  options: any = {
+    size: 'dialog-centered',
+    panelClass: 'custom-modalbox'
+  };
 
   constructor(private snackBar: MatSnackBar, private http: HttpClient,
               private router: Router, private route: ActivatedRoute, private dialogService: MatDialog) { }
@@ -58,9 +62,11 @@ export class UpdateOrganizationComponent implements OnInit, OnDestroy {
   handleImageError() {
     this.organization.logo = '';
   }
+
   openDialog(modal) {
     this.modalReference = this.dialogService.open(modal);
   }
+
   deleteOrg() {
     this.modalReference.close();
     this.http.post('api/organization/delete', {
@@ -82,7 +88,7 @@ export class UpdateOrganizationComponent implements OnInit, OnDestroy {
 
   userDialog(user, modal) {
     this.userToBeDeleted = user;
-    this.modalReference = this.dialogService.open(modal, user);
+    this.modalReference = this.dialogService.open(modal, this.options);
   }
 
   delUser() {

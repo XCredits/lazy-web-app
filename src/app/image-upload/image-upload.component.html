@@ -11,10 +11,10 @@
   <ng-template #imageCropper>
     <h5 mat-dialog-title>Set Thumbnail</h5>
     <mat-dialog-content>
-      <image-cropper class=dialogStyle 
+      <image-cropper class="dialogStyle" 
           [imageChangedEvent]="imageChangedEvent"
           [maintainAspectRatio]="true"
-          [aspectRatio]="1 / 1"
+          [aspectRatio]="4 / 3"
           format="jpeg"
           (imageCroppedFile)="imageCropped($event)">
       </image-cropper>

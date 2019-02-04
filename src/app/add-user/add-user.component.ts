@@ -15,7 +15,6 @@ export class AddUserComponent implements OnInit {
   form: FormGroup;
   org: string;
   orgId: string;
-  success: string;
   sub: any;
   authorized = false;
   errorMessage: string;
@@ -53,7 +52,6 @@ export class AddUserComponent implements OnInit {
     })
     .subscribe(() => {
       this.router.navigate(['/organization']);
-      this.success = 'Success';
       this.snackBar.open('User added successfully', 'Dismiss', {
         duration: 5000,
         verticalPosition: 'top',
