@@ -190,6 +190,12 @@ import { CreateProductComponent } from './create-product/create-product.componen
         canActivate: [AuthGuard],
       },
       {
+        path: 'create-product',
+        component: CreateProductComponent,
+        data: { title: 'Create Product' },
+        canActivate: [AuthGuard],
+      },
+      {
         path: 'settings',
         component: SettingsComponent,
         data: { title: 'Settings' },
