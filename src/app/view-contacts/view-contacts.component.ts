@@ -18,7 +18,7 @@ export class ViewContactsComponent implements OnInit {
   formErrorMessage: string;
   user: User;
   contactIndex: Number = 0;
-  private allContacts;
+  private allContacts = [];
 
   constructor(
     private http: HttpClient,
@@ -47,7 +47,9 @@ export class ViewContactsComponent implements OnInit {
 
   previousContact = function () {
     console.log('Previous Contact');
-    this.contactIndex --;
+    if (this.contactIndex > 0) {
+      this.contactIndex --;
+    }
     console.log(this.contactIndex);
     this.form = new FormGroup({
           givenName: new FormControl(this.allContacts[this.contactIndex].givenName),
@@ -58,7 +60,9 @@ export class ViewContactsComponent implements OnInit {
 
   nextContact = function () {
     console.log('Next Contact');
-    this.contactIndex ++;
+    if (this.contactIndex < this.allContacts.length) {
+      this.contactIndex ++;
+    }
     console.log(this.contactIndex);
     this.form = new FormGroup({
           givenName: new FormControl(this.allContacts[this.contactIndex].givenName),
