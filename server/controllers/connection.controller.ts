@@ -51,8 +51,8 @@ function addConnectionRequest(req, res) {
                 connectionReq.active = true;
                 connectionReq.snoozed = false;
                 connectionReq.timeout = new Date().getTime() + 10 * (1000 * 60 * 60 * 24); // days
-                connectionReq.sendTimeStamp = new Date();
-                connectionReq.updateTimeStamp = new Date();
+                connectionReq.sendTimeStamp = new Date().getTime();
+                connectionReq.updateTimeStamp = new Date().getTime();
                 return connectionReq.save()
                     .then(() => {
                       res.send({ message: 'Success' });
@@ -82,8 +82,6 @@ function addConnectionRequest(req, res) {
 function getPendingConnections(req, res) {
 
   // Check pending for snooze
-  const currentDate = new Date();
-  const nextTimeoutDate = new Date();
   function checkExpiredRequests() {
     return connectionRequest.updateMany({
           receiverUserId: req.userId,
@@ -171,7 +169,7 @@ function actionConnectionRequest(req, res) {
   console.log(userId);
 
   switch (action) {
-    case 'Reject':
+    case 'accept':
       connectionRequest.findOneAndUpdate({
         senderUserId: senderUserId,
         receiverUserId: userId,
@@ -181,8 +179,8 @@ function actionConnectionRequest(req, res) {
          $set:
           {
             active: false,
-            currentStatus: 'Accepted',
-            updateTimeStamp: new Date(),
+            currentStatus: 'accepted',
+            updateTimeStamp: new Date().getTime(),
           }
       })
         .then((data) => {
@@ -210,7 +208,7 @@ function actionConnectionRequest(req, res) {
             .send({ message: err });
         });
       break;
-    case 'Cancel':
+    case 'cancel':
       connectionRequest.findOneAndUpdate({
         senderUserId: senderUserId,
         receiverUserId: userId,
@@ -220,8 +218,8 @@ function actionConnectionRequest(req, res) {
          $set:
          {
           active: false,
-          currentStatus: 'Cancelled',
-          updateTimeStamp: new Date(),
+          currentStatus: 'cancelled',
+          updateTimeStamp: new Date().getTime(),
          }
        })
         .then((data) => {
@@ -235,7 +233,7 @@ function actionConnectionRequest(req, res) {
             .send({ message: err });
         });
       break;
-    case 'Accept':
+    case 'reject':
     console.log('*456**');
       connectionRequest.findOneAndUpdate({
         senderUserId: senderUserId,
@@ -246,8 +244,8 @@ function actionConnectionRequest(req, res) {
          $set:
          {
           active: false,
-          currentStatus: 'Rejected22asd',
-          updateTimeStamp: new Date(),
+          currentStatus: 'rejected',
+          updateTimeStamp: new Date().getTime(),
          }
       })
         .then((data) => {
@@ -291,7 +289,7 @@ function getPendingRequestsCount(req, res) {
 function getConfirmedConnectionsCount(req, res) {
   return connectionRequest.count({
     receiverUserId: req.userId,
-    currentStatus: {$eq: 'Accepted'},
+    currentStatus: {$eq: 'accepted'},
   })
   .then((result) => {
     console.log(result);

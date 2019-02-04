@@ -68,7 +68,7 @@ export class ConnectionRequestsComponent implements OnInit {
   approveUserConnection = function (friend) {
 
     this.http.post('/api/connection/action-connection-request', {
-      'actionNeeded': 'Accept',
+      'actionNeeded': 'accept',
       'senderUserId': friend.userId,
     })
       .subscribe((returnedResult) => {
@@ -80,7 +80,7 @@ export class ConnectionRequestsComponent implements OnInit {
 
   ignoreUserConnection = function (friend) {
     this.http.post('/api/connection/action-connection-request', {
-      'actionNeeded': 'Reject',
+      'actionNeeded': 'reject',
       'senderUserId': friend.userId,
     })
       .subscribe((returnedResult) => {

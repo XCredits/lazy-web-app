@@ -42,11 +42,6 @@ export class AddConnectionComponent implements OnInit {
   // Add new connection
   requestUserConnection = function (formData) {
     this.IsAddUserRequest = true;
-    console.log('=============');
-    console.log(this.user.id);
-    console.log(formData.username);
-    console.log(new Date());
-
     this.http.post('/api/connection/add-connection-request', {
       'userId': this.user.id,
       'username': formData.username,
