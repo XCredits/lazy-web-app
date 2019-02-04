@@ -9,8 +9,8 @@ const ContactSchema = new Schema({
   }
 );
 
-ContactSchema.index({username: 1});
-ContactSchema.index({displayUsername: 1});
+ContactSchema.index({givenName: 1});
+ContactSchema.index({familyName: 1});
 ContactSchema.index({email: 1});
 
 

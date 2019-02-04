@@ -32,43 +32,40 @@ export class ViewContactsComponent implements OnInit {
         email: new FormControl('', [Validators.required, Validators.email]),
     });
     this.http.get<any>('/api/get-user-details')
-        .subscribe((data) => {
-         this.allContacts = data;
-        });
+      .subscribe((data) => {
+        this.allContacts = data;
 
-    this.form = new FormGroup({
-        givenName: new FormControl(this.allContacts[0].givenName),
-        familyName: new FormControl(this.allContacts[0].familyName),
-        email: new FormControl(this.allContacts[0].email),
+        this.form = new FormGroup({
+          givenName: new FormControl(this.allContacts[0].givenName),
+          familyName: new FormControl(this.allContacts[0].familyName),
+          email: new FormControl(this.allContacts[0].email),
+        });
       });
-  }
+   }
 
   submit = function () { };
 
-  previousContact = function () {
+  previousContact = function (form) {
     console.log('Previous Contact');
     if (this.contactIndex > 0) {
-      this.contactIndex --;
+        this.contactIndex --;
     }
-    console.log(this.contactIndex);
-    this.form = new FormGroup({
-          givenName: new FormControl(this.allContacts[this.contactIndex].givenName),
-          familyName: new FormControl(this.allContacts[this.contactIndex].familyName),
-          email: new FormControl(this.allContacts[this.contactIndex].email),
+          form = new FormGroup({
+            givenName: new FormControl(this.allContacts[this.contactIndex].givenName),
+            familyName: new FormControl(this.allContacts[this.contactIndex].familyName),
+            email: new FormControl(this.allContacts[this.contactIndex].email),
        });
   };
 
-  nextContact = function () {
-    console.log('Next Contact');
-    if (this.contactIndex < this.allContacts.length) {
-      this.contactIndex ++;
+  nextContact = function (form) {
+    if (this.contactIndex < this.allContacts.length - 1 ) {
+        this.contactIndex++;
     }
-    console.log(this.contactIndex);
-    this.form = new FormGroup({
+        this.form = new FormGroup({
           givenName: new FormControl(this.allContacts[this.contactIndex].givenName),
           familyName: new FormControl(this.allContacts[this.contactIndex].familyName),
           email: new FormControl(this.allContacts[this.contactIndex].email),
-        });
+      });
   };
 
 }
