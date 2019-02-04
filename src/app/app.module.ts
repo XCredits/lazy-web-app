@@ -86,6 +86,7 @@ import { OrganizationComponent } from './organization/organization.component';
 import { CreateOrganizationComponent } from './create-organization/create-organization.component';
 import { UpdateOrganizationComponent } from './update-organization/update-organization.component';
 import { AddUserComponent } from './add-user/add-user.component';
+import { CreateProductComponent } from './create-product/create-product.component';
 
 @NgModule({
   declarations: [
@@ -118,6 +119,7 @@ import { AddUserComponent } from './add-user/add-user.component';
     CreateOrganizationComponent,
     UpdateOrganizationComponent,
     AddUserComponent,
+    CreateProductComponent,
   ],
   imports: [
     BrowserModule,
