@@ -32,9 +32,6 @@ export class CreateOrganizationComponent implements OnInit {
 
   checkUsername = function (formData)  {
     this.form.controls['username'].setErrors(null);
-    const displayUsernameRegex =
-        new RegExp(this.userService.displayUsernameRegexString);
-
     // this.currentUsername - designed to prevent the form from reporting an
     // error if the username has been updated
     const initialUsername = formData.username;
@@ -42,11 +39,6 @@ export class CreateOrganizationComponent implements OnInit {
     if (initialUsername.length === 0) {
       this.form.controls['username'].setErrors({'incorrect': true});
       this.usernameErrorMessage = 'Required.';
-      return;
-    }
-    if (!displayUsernameRegex.test(initialUsername)) {
-      this.form.controls['username'].setErrors({'incorrect': true});
-      this.usernameErrorMessage = 'Not a valid username. Use only a-z, 0-9 and "_", "." or "-".';
       return;
     }
     setTimeout(() => { // Wait 1 second before checking username
