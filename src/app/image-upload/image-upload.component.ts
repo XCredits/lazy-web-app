@@ -1,4 +1,4 @@
-import { Component, OnInit, EventEmitter, Output, Input} from '@angular/core';
+import { Component, OnInit, EventEmitter, Output, Input, OnChanges} from '@angular/core';
 import { ImageUploadService } from './image-upload.service';
 import { UserService } from './../user.service';
 import { MatSnackBar } from '@angular/material';
@@ -15,10 +15,11 @@ class FileSnippet {
   templateUrl: './image-upload.component.html',
   styleUrls: ['./image-upload.component.scss']
 })
-export class ImageUploadComponent {
+export class ImageUploadComponent implements OnChanges {
 
   userService: UserService;
 
+  @Input() ratio;
   @Output() imageUploaded = new EventEmitter();
   @Output() imageError = new EventEmitter();
   @Output() imageUploadUrl = new EventEmitter();
@@ -36,6 +37,14 @@ export class ImageUploadComponent {
   };
 
   constructor(private imageService: ImageUploadService, private snackBar: MatSnackBar, public modalService: MatDialog) { }
+
+  ngOnChanges (changes) {
+    const ratio = changes.ratio;
+    if (ratio.previousValue !== ratio.currentValue) {
+      const newEvent = this.imageChangedEvent;
+      this.imageChangedEvent = null;
+  }
+}
 
   private onSuccess(imageUrl: string) {
     this.modalReference.close();
