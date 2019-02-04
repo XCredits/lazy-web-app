@@ -84,6 +84,7 @@ export class ConnectionRequestsComponent implements OnInit {
       'senderUserId': friend.userId,
     })
       .subscribe((returnedResult) => {
+        console.log(' returnedResult ' + returnedResult);
         if (returnedResult.message === 'Request rejected') {
           this.router.navigateByUrl('/connections');
         }

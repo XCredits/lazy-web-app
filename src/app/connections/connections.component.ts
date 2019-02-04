@@ -4,8 +4,6 @@ import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { UserService, User } from '../user.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { ValueTransformer } from '@angular/compiler/src/util';
-import { stringify } from '@angular/core/src/render3/util';
 
 @Component({
   selector: 'app-connections',
@@ -24,7 +22,7 @@ export class ConnectionComponent implements OnInit {
   constructor(
     private http: HttpClient,
     private userService: UserService,
-  ) { }
+  ) { console.log('CONSTRUCTOR'); }
 
   ngOnInit() {
     this.form = new FormGroup({
@@ -39,10 +37,11 @@ export class ConnectionComponent implements OnInit {
         this.user = user;
         console.log('user logged in is --> ' + user.id);
       });
+    console.log('Getting counter here ....');
     this.link = 'https://xcredits.com/';
     this.http.post('/api/connection/get-pending-count', {})
     .subscribe((returnedResult: any) => {
-      console.log(returnedResult);
+      console.log('returnedResult ....' + returnedResult);
       this.pendingConnectionsCounter = returnedResult.message;
     });
 
@@ -60,6 +59,8 @@ export class ConnectionComponent implements OnInit {
     this.pages.push('request');
     this.pages.push('add');
   }
+
+
   onSelect(friends) {
     console.log('you clicked on ' + friends);
   }

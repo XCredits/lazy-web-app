@@ -2,6 +2,7 @@ const statsService = require('../services/stats.service.js');
 import { isValidDisplayUsername, normalizeUsername } from './utils.controller';
 import { CONNREFUSED } from 'dns';
 const connectionRequest = require('../models/connection-request.model');
+const connection = require('../models/connection.model');
 const User = require('../models/user.model');
 const auth = require('./jwt-auth.controller');
 
@@ -165,29 +166,46 @@ function actionConnectionRequest(req, res) {
   const userId = req.userId;
   const senderUserId = req.body.senderUserId;
 
+  console.log('======7===');
+  console.log(action);
+  console.log(userId);
+
   switch (action) {
-    case 'Accept':
+    case 'Reject':
       connectionRequest.findOneAndUpdate({
         senderUserId: senderUserId,
         receiverUserId: userId,
-        sendTimeStamp: { $eq: connectionRequest.updateTimeStamp },
-        active: { $eq: false }
+        active: { $eq: true }
       },
       {
          $set:
           {
-            active: true,
+            active: false,
             currentStatus: 'Accepted',
             updateTimeStamp: new Date(),
           }
       })
         .then((data) => {
           if (data === null) {
-            return res.status(200).send({ message: 'Request accept error' });
+            return res.status(200).send({ message: 'Request accept error1' });
           }
+
+          const _connection = new connection();
+                _connection.partOne = userId;
+                _connection.partTwo = senderUserId;
+                _connection.status = 'connected';
+                _connection.connectionRequestRef = connectionRequest._id;
+                _connection.save()
+                            .then(() => {
+                                 res.send({ message: 'Success new DB' });
+                              })
+                              .catch((error) => {
+                                 return res.status(500).json({ message: 'Could not save connection request.' });
+                                 });
           return res.status(200).send({ message: 'Request accepted' });
         })
         .catch((err) => {
+          console.log('err ' + err.message);
           res.status(500)
             .send({ message: err });
         });
@@ -196,8 +214,7 @@ function actionConnectionRequest(req, res) {
       connectionRequest.findOneAndUpdate({
         senderUserId: senderUserId,
         receiverUserId: userId,
-        sendTimeStamp: { $eq: connectionRequest.updateTimeStamp },
-        active: { $eq: false }
+        active: { $eq: true }
       },
       {
          $set:
@@ -218,18 +235,18 @@ function actionConnectionRequest(req, res) {
             .send({ message: err });
         });
       break;
-    case 'Reject':
+    case 'Accept':
+    console.log('*456**');
       connectionRequest.findOneAndUpdate({
         senderUserId: senderUserId,
         receiverUserId: userId,
-        sendTimeStamp: { $eq: connectionRequest.updateTimeStamp },
-        active: { $eq: false }
+        active: { $eq: true }
       },
       {
          $set:
          {
           active: false,
-          currentStatus: 'Rejected',
+          currentStatus: 'Rejected22asd',
           updateTimeStamp: new Date(),
          }
       })
@@ -258,11 +275,9 @@ function actionConnectionRequest(req, res) {
 function getPendingRequestsCount(req, res) {
   return connectionRequest.count({
     receiverUserId: req.userId,
-    sendTimeStamp: { $eq: connectionRequest.updateTimeStamp },
-    active: {$eq: false }
+    active: {$eq: true }
   })
   .then((result) => {
-    console.log(result);
     res.send({ message: result });
   });
   }
