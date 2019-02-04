@@ -27,9 +27,9 @@ function joinContactList(req, res) {
     typeof givenName !== 'string' ||
     typeof familyName !== 'string' ||
     !validator.isEmail(email)
-    ) {
+  ) {
         return res.status(422).json({ message: 'Request failed validation' });
-      }
+    }
 
   const contactListUser = new Contact();
   contactListUser.email = email;
@@ -54,12 +54,12 @@ function joinContactList(req, res) {
 function findAllContacts(req, res) {
   Contact.find({})
       .then((result) => {
-            const resultsFiltered = result.map((x) => {
+            const resut = result.map((x) => {
               return { givenName: x.givenName, familyName: x.familyName, email: x.email };
               });
-          res.send(resultsFiltered);
+          res.send(resut);
         })
-        .catch((err) => {
+        .catch(() => {
         return res.status(500).send({ message: 'Error retrieving users from contacts database' });
       });
 }

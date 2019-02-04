@@ -1,7 +1,17 @@
+import {SelectionModel} from '@angular/cdk/collections';
+import {MatTableDataSource} from '@angular/material';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { UserService, User } from '../user.service';
 import { HttpClient } from '@angular/common/http';
+
+
+export interface ContactElements {
+  position: number;
+  givenName: string;
+  familyName: number;
+  email: number;
+}
 
 @Component({
   selector: 'app-view-contacts',
@@ -11,14 +21,15 @@ import { HttpClient } from '@angular/common/http';
 export class ViewContactsComponent implements OnInit {
 
   form: FormGroup;
-
   disableButton = true;
-  waiting = false;
   submitSuccess = false;
   formErrorMessage: string;
   user: User;
   contactIndex: Number = 0;
   private allContacts = [];
+  displayedColumns: string[] = ['select', 'No', 'Given Name', 'Family Name', 'Email'];
+  selection = new SelectionModel<ContactElements>(true, []);
+  dataSource = new MatTableDataSource<ContactElements>(this.allContacts);
 
   constructor(
     private http: HttpClient,
@@ -34,14 +45,20 @@ export class ViewContactsComponent implements OnInit {
     this.http.get<any>('/api/get-user-details')
       .subscribe((data) => {
         this.allContacts = data;
+        this.dataSource = new MatTableDataSource<ContactElements>(this.allContacts);
 
-        this.form = new FormGroup({
-          givenName: new FormControl(this.allContacts[0].givenName),
-          familyName: new FormControl(this.allContacts[0].familyName),
-          email: new FormControl(this.allContacts[0].email),
+        for (let entry = 0; entry < this.allContacts.length; entry++) {
+            this.allContacts[entry].position = entry + 1;
+        }
+
+          this.form = new FormGroup({
+            givenName: new FormControl(this.allContacts[0].givenName),
+            familyName: new FormControl(this.allContacts[0].familyName),
+            email: new FormControl(this.allContacts[0].email),
+          });
         });
-      });
-   }
+    }
+
 
   submit = function () { };
 
@@ -67,5 +84,18 @@ export class ViewContactsComponent implements OnInit {
           email: new FormControl(this.allContacts[this.contactIndex].email),
       });
   };
+
+  isAllSelected() {
+    const numSelected = this.selection.selected.length;
+    const numRows = this.dataSource.data.length;
+    return numSelected === numRows;
+  }
+
+  masterToggle() {
+    this.isAllSelected() ?
+        this.selection.clear() :
+        this.dataSource.data.forEach(row => this.selection.select(row));
+  }
+
 
 }
