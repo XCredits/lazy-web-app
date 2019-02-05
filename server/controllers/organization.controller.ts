@@ -1,20 +1,20 @@
 const Organization = require('../models/organization.model');
 const UserOrganization = require('../models/user-organization.model');
-const authenticate = require('./jwt-auth.controller');
+const auth = require('./jwt-auth.controller');
 const User = require('../models/user.model');
 
 import {uploadSingleImage} from '../services/image-upload';
 
 module.exports = function(app) {
-  app.post('/api/organization/create', authenticate.jwt, createOrg);
-  app.post('/api/organization/all-user-org-details-summary', authenticate.jwt, allOrgDetails);
-  app.post('/api/organization/get-details', authenticate.jwt, singleOrgDetails);
-  app.post('/api/organization/update-details', authenticate.jwt, updateOrg);
-  app.post('/api/organization/image-upload', authenticate.jwt, orgImageUpload);
-  app.post('/api/organization/add-user', authenticate.jwt, orgAddUser);
-  app.post('/api/organization/delete', authenticate.jwt, deleteOrg);
-  app.post('/api/organization/delete-user', authenticate.jwt, deleteUser);
-  app.get('/api/organization/updated-details', authenticate.jwt, updatedOrgDetails);
+  app.post('/api/organization/create', auth.jwt, createOrg);
+  app.post('/api/organization/all-user-org-details-summary', auth.jwt, allOrgDetails);
+  app.post('/api/organization/get-details', auth.jwt, singleOrgDetails);
+  app.post('/api/organization/update-details', auth.jwt, updateOrg);
+  app.post('/api/organization/image-upload', auth.jwt, orgImageUpload);
+  app.post('/api/organization/add-user', auth.jwt, orgAddUser);
+  app.post('/api/organization/delete', auth.jwt, deleteOrg);
+  app.post('/api/organization/delete-user', auth.jwt, deleteUser);
+  app.get('/api/organization/updated-details', auth.jwt, updatedOrgDetails);
 };
 
 /**

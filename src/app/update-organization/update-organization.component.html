@@ -9,7 +9,7 @@
         <mat-card-title> Update Organization </mat-card-title>
         <mat-card-content>
           <div class="organization-logo">
-            <img mat-card-lg-image class="img-class" [src]="logo" alt='Organization Logo'>
+            <img  mat-card-lg-image class="img-class" [src]="organization.logo" alt='Organization Logo'>
             <div class="app-image-upload-positioner">
               <app-image-upload
                   (imageUploaded)="handleImageUpload($event)"

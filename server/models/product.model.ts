@@ -13,16 +13,6 @@ const ProductSchema = new Schema({
 ProductSchema.index({productName: 'text'} );
 ProductSchema.index({category: 1});
 
-ProductSchema.methods.frontendData = function() {
-  return {
-    id: this._id,
-    productId: this.productId,
-    productName: this.productName,
-    category: this.category,
-    description: this.description,
-    productImage: this.productImage,
-  };
-};
 
 module.exports = mongoose.model('Product', ProductSchema);
 

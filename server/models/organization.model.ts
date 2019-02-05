@@ -6,7 +6,7 @@ const OrganizationSchema = new Schema({
   name: {type: String, required: true},
   website: {type: String},
   logo: {type: String},
-  phoneNumber: {type: Number},
+  phoneNumber: {type: String},
   username: {type: String, unique: true, required: true},
   userCount: {type: Number},
 });
