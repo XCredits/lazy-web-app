@@ -12,6 +12,8 @@ import { UserService, User } from '../user.service';
 export class ProfileComponent implements OnInit {
   form: FormGroup;
 
+  imageUploadRoute = '/api/user/profile-image-upload';
+
   waiting = false;
   disableButton = true;
   submitSuccess = false;
@@ -19,6 +21,9 @@ export class ProfileComponent implements OnInit {
   user: User;
   profileImage: string;
   usernameErrorMessage: string;
+  ratios = [{value: 1 / 1, view: '1 / 1'}, {value: 4 / 3, view: ' 4 / 3'}];
+  selectedRatio = 1 / 1;
+
   constructor(
     private snackBar: MatSnackBar,
     private http: HttpClient,
