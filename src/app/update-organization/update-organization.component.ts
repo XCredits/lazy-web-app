@@ -48,6 +48,7 @@ export class UpdateOrganizationComponent implements OnInit, OnDestroy {
       })
       .subscribe(organization => {
           this.organization = organization;
+          this.logo = organization.logo;
           this.form = new FormGroup ({
             name: new FormControl(organization.name, Validators.required),
             website: new FormControl(organization.website),
@@ -130,7 +131,7 @@ export class UpdateOrganizationComponent implements OnInit, OnDestroy {
   deleteOrg() {
     this.modalReference.close();
     this.http.post('api/organization/delete', {
-      'id': this.organization._id,
+      'id': this.organization['id'],
     })
     .subscribe(() => {
       this.router.navigateByUrl('/organization');
@@ -157,7 +158,7 @@ export class UpdateOrganizationComponent implements OnInit, OnDestroy {
   delUser() {
     this.http.post('/api/organization/remove-user', {
       'userId': this.userToBeDeleted,
-      'orgId': this.organization._id,
+      'orgId': this.organization['id'],
     })
     .subscribe(() => {
       const userIndex = this.users.findIndex((user) => user['_id'] === this.userToBeDeleted);
@@ -172,7 +173,7 @@ export class UpdateOrganizationComponent implements OnInit, OnDestroy {
     }
     this.formErrorMessage = undefined;
     this.http.post('/api/organization/update-details', {
-        'id': this.organization._id,
+        'id': this.organization.id,
         'name': formData.name,
         'website': formData.website,
         'phoneNumber': formData.phoneNumber,

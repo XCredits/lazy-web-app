@@ -1,6 +1,7 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { Subject, BehaviorSubject, ReplaySubject, Observable} from 'rxjs';
 import { HttpClient } from '@angular/common/http';
+import { isEqual } from 'lodash';
 
 @Injectable()
 export class OrganizationService implements OnDestroy {
@@ -20,8 +21,10 @@ export class OrganizationService implements OnDestroy {
     }
 
     private _setOrganization(organization) {
-        this.organization = organization;
-        this.orgObservable.next(this.organization);
+        if (!isEqual(this.organization, organization)) {
+            this.organization = organization;
+            this.orgObservable.next(this.organization);
+        }
     }
 
     updateOrgDetails(org) {
