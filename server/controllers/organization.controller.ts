@@ -6,15 +6,15 @@ const User = require('../models/user.model');
 import {uploadSingleImage} from '../services/image-upload';
 
 module.exports = function(app) {
-  app.post('/api/organization/create', auth.jwt, createOrg);
-  app.post('/api/organization/all-user-org-details-summary', auth.jwt, allOrgDetails);
-  app.post('/api/organization/get-details', auth.jwt, singleOrgDetails);
-  app.post('/api/organization/update-details', auth.jwt, updateOrg);
-  app.post('/api/organization/image-upload', auth.jwt, orgImageUpload);
-  app.post('/api/organization/add-user', auth.jwt, orgAddUser);
-  app.post('/api/organization/delete', auth.jwt, deleteOrg);
-  app.post('/api/organization/delete-user', auth.jwt, deleteUser);
-  app.get('/api/organization/updated-details', auth.jwt, updatedOrgDetails);
+  app.post('/api/organization/create', authenticate.jwt, createOrg);
+  app.post('/api/organization/user-org-summary', authenticate.jwt, userOrgSummary);
+  app.post('/api/organization/get-details', authenticate.jwt, getDetails);
+  app.post('/api/organization/update-details', authenticate.jwt, updateDetails);
+  app.post('/api/organization/image-upload', authenticate.jwt, imageUpload);
+  app.post('/api/organization/add-user', authenticate.jwt, addUser);
+  app.post('/api/organization/delete', authenticate.jwt, deleteOrg);
+  app.post('/api/organization/remove-user', authenticate.jwt, removeUser);
+  app.get('/api/organization/updated-details', authenticate.jwt, updatedOrgDetails);
 };
 
 /**
@@ -26,12 +26,12 @@ function isOrgAdmin(userId, orgId) {
   return UserOrganization.findOne({'userId': userId, 'orgId': orgId})
       .then((userOrg) => {
         if (userOrg.roles.indexOf('admin') === -1) {
-          throw new Error('User part of organisation but not authorized admin.');
+          throw new Error('User part of organization but not authorized admin.');
         }
         return true;
       })
       .catch((error) => {
-        throw new Error('User not found in organizaton.');
+        throw new Error('User not found in organization.');
       });
 }
 
@@ -43,36 +43,35 @@ function createOrg(req, res) {
       typeof website !== 'string' ||
       typeof phoneNumber !== 'string' ||
       typeof username !== 'string') {
-
-      return res.status(500).send({message: 'Request validation failed'});
+    return res.status(500).send({message: 'Request validation failed'});
   }
-  const organization = new Organization({ name, website,
-      phoneNumber, username });
+  const organization =
+      new Organization({ name, website, phoneNumber, username });
   organization.userCount = 1;
   const userOrg = new UserOrganization();
   return organization.save()
-    .then(() => {
-      userOrg.userId = userId;
-      userOrg.orgId = organization._id;
-      userOrg.roles = ['admin'];
-      return userOrg.save()
-        .then(() => {
-          res.status(200).send({
-            message: 'UserId and OrganizationId saved successfully'
-          });
-        })
-        .catch(() => {
-          res.status(500).send({
-            message: 'Error in Saving user role and organization.'
+      .then(() => {
+        userOrg.userId = userId;
+        userOrg.orgId = organization._id;
+        userOrg.roles = ['admin'];
+        return userOrg.save()
+            .then(() => {
+              res.status(200).send({
+                message: 'UserId and OrganizationId saved successfully'
+              });
+            })
+            .catch(() => {
+              res.status(500).send({
+                message: 'Error in Saving user role and organization.'
+            });
         });
+      })
+      .catch(() => {
+        res.status(500).send({message: 'Error in saving organization'});
       });
-    })
-    .catch(() => {
-      res.status(500).send({message: 'Error in saving organization'});
-  });
 }
 
-function allOrgDetails(req, res) {
+function userOrgSummary(req, res) {
   const userId = req.userId;
   if (typeof userId !== 'string') {
     return res.status(500).send({message: 'Request validation failed'});
@@ -92,7 +91,7 @@ function allOrgDetails(req, res) {
       });
 }
 
-function updateOrg(req, res) {
+function updateDetails(req, res) {
   const userId = req.userId;
   const orgId = req.body.id;
   const name = req.body.name;
@@ -107,33 +106,33 @@ function updateOrg(req, res) {
     return res.status(500).send({message: 'Request validation failed'});
   }
   isOrgAdmin(userId, orgId)
-    .then(() => {
-      return Organization.findOne({'_id': orgId})
-        .then((org) => {
-          org.name = name;
-          org.website = website;
-          org.phoneNumber = phoneNumber;
-          org.username = username;
-          return org.save()
-            .then(() => {
-              return res.status(200).send({
-                message: 'Organization details updated successfully'
-              });
+      .then(() => {
+        return Organization.findOne({'_id': orgId})
+            .then((org) => {
+              org.name = name;
+              org.website = website;
+              org.phoneNumber = phoneNumber;
+              org.username = username;  // TO DO: VALIDATE!!!!
+              return org.save()
+                  .then(() => {
+                    return res.status(200).send({
+                      message: 'Organization details updated successfully'
+                    });
+                  })
+                  .catch(() => {
+                    return res.status(500).send({message: 'Error in updating organization'});
+                  });
             })
-            .catch(() => {
-              return res.status(500).send({message: 'Error in updating organization'});
+            .catch((err) => {
+              return res.status(500).send({message: 'Organization not found'});
             });
-        })
-        .catch((err) => {
-          return res.status(500).send({message: 'Orgainzation not found'});
-        });
-    })
-    .catch(() => {
-      return res.status(404).send({message: 'Unauthorised access'});
-    });
+      })
+      .catch(() => {
+        return res.status(404).send({message: 'Unauthorized access'});
+      });
 }
 
-function orgImageUpload(req, res) {
+function imageUpload(req, res) {
   const userId = req.userId;
   const orgId = req.query.id;
   if (typeof userId !== 'string' ||
@@ -141,33 +140,33 @@ function orgImageUpload(req, res) {
     return res.status(500).send({message: 'Request validation failed'});
   }
   isOrgAdmin(userId, orgId)
-    .then(() => {
-      uploadSingleImage(req, res, function(err) {
-        if (err) {
-          return res.status(422).send({errors: [{title: 'Image Upload error', detail: err.message}]});
-        }
-        Organization.findOne({'_id': orgId})
-          .then((org) => {
-              org.logo = req.file.fileLocation;
-              return org.save()
-                .then(() => {
-                  return res.status(200).send({message: 'Image uploaded successfully'});
-                })
-                .catch(() => {
-                  return res.status(500).send({message: 'Image upload failed'});
-                });
-          })
-          .catch(() => {
-            return res.status(500).send({message: 'Organization not found'});
-          });
+      .then(() => {
+        return uploadSingleImage(req, res, function(err) {
+          if (err) {
+            return res.status(422).send({errors: [{title: 'Image Upload error', detail: err.message}]});
+          }
+          return Organization.findOne({'_id': orgId})
+              .then((org) => {
+                  org.logo = req.file.fileLocation;
+                  return org.save()
+                      .then(() => {
+                        return res.status(200).send({message: 'Image uploaded successfully'});
+                      })
+                      .catch(() => {
+                        return res.status(500).send({message: 'Image upload failed'});
+                      });
+              })
+              .catch(() => {
+                return res.status(500).send({message: 'Organization not found'});
+              });
+        });
+      })
+      .catch(() => {
+        return res.status(404).send({message: 'Unauthorized access'});
       });
-    })
-    .catch(() => {
-      return res.status(404).send({message: 'Unauthorised access'});
-    });
 }
 
-function singleOrgDetails(req, res) {
+function getDetails(req, res) {
   const userId = req.userId;
   const username = req.body.username;
   if (typeof userId !== 'string' ||
@@ -182,9 +181,9 @@ function singleOrgDetails(req, res) {
             .then((userOrgArr) => {
               const userIds = userOrgArr.map(orgEle => orgEle.userId);
               User.find({ '_id': userIds})
-               .then((users) => {
-                 return res.json({orgDetail, users});
-                });
+                  .then((users) => {
+                    return res.json({orgDetail, users});
+                  });
             });
         })
         .catch(() => {
@@ -196,7 +195,7 @@ function singleOrgDetails(req, res) {
       });
 }
 
-function orgAddUser(req, res) {
+function addUser(req, res) {
   const userId = req.userId;
   const orgId = req.body.orgId;
   const username = req.body.username;
@@ -274,11 +273,11 @@ function deleteOrg(req, res) {
         });
     })
     .catch(() => {
-      return res.status(404).send({message: 'Unauthorised access'});
+      return res.status(404).send({message: 'Unauthorized access'});
     });
 }
 
-function deleteUser(req, res) {
+function removeUser(req, res) {
   const userId = req.userId;
   const userToBeDeleted = req.body.userId;
   const orgId = req.body.orgId;

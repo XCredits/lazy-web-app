@@ -17,7 +17,7 @@ export class OrganizationComponent implements OnInit, OnDestroy {
               private router: Router) {}
 
   ngOnInit() {
-    this.http.post<Organization>('/api/organization/all-user-org-details-summary', {})
+    this.http.post<Organization>('/api/organization/user-org-summary', {})
         .subscribe((response: any)  =>  {
           this.organization = response['orgDetails'];
           Object.values(response.userOrg).forEach(org => {
