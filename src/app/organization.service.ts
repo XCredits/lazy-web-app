@@ -21,15 +21,12 @@ export class OrganizationService implements OnDestroy {
 
     private _setOrganization(organization) {
         this.organization = organization;
-        console.log(this.organization);
         this.orgObservable.next(this.organization);
     }
 
     updateOrgDetails(org) {
-        this.http.get<Organization>('/api/organization/updated-details', {
-            params: {
-                'orgId': org._id,
-            }
+        this.http.post<Organization>('/api/organization/get-details', {
+            'username': org.username
         })
         .subscribe((organization) => {
             this._setOrganization(organization);

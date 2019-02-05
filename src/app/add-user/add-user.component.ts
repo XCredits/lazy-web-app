@@ -24,15 +24,15 @@ export class AddUserComponent implements OnInit {
 
   ngOnInit() {
     this.sub = this.activatedRoute.params.subscribe(params => {
-      this.http.post<Organization>('/api/organization/get-details', {
+      this.http.post<any>('/api/organization/get-details', {
           'username': params.orgUsername
       })
       .subscribe(organization => {
         this.authorized = true;
-        this.organization = organization['orgDetail'];
+        this.organization = organization;
         this.orgId = this.organization['_id'];
       },
-      (errorespone) => {
+      (errorResponse) => {
         this.authorized = false;
       });
     });

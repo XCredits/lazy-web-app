@@ -6,15 +6,15 @@ const User = require('../models/user.model');
 import {uploadSingleImage} from '../services/image-upload';
 
 module.exports = function(app) {
-  app.post('/api/organization/create', authenticate.jwt, createOrg);
-  app.post('/api/organization/user-org-summary', authenticate.jwt, userOrgSummary);
-  app.post('/api/organization/get-details', authenticate.jwt, getDetails);
-  app.post('/api/organization/update-details', authenticate.jwt, updateDetails);
-  app.post('/api/organization/image-upload', authenticate.jwt, imageUpload);
-  app.post('/api/organization/add-user', authenticate.jwt, addUser);
-  app.post('/api/organization/delete', authenticate.jwt, deleteOrg);
-  app.post('/api/organization/remove-user', authenticate.jwt, removeUser);
-  app.get('/api/organization/updated-details', authenticate.jwt, updatedOrgDetails);
+  app.post('/api/organization/create', auth.jwt, createOrg);
+  app.post('/api/organization/user-org-summary', auth.jwt, userOrgSummary);
+  app.post('/api/organization/get-details', auth.jwt, getDetails);
+  app.post('/api/organization/update-details', auth.jwt, updateDetails);
+  app.post('/api/organization/image-upload', auth.jwt, imageUpload);
+  app.post('/api/organization/add-user', auth.jwt, addUser);
+  app.post('/api/organization/delete', auth.jwt, deleteOrg);
+  app.post('/api/organization/remove-user', auth.jwt, removeUser);
+  app.post('/api/organization/get-users', auth.jwt, getUsers);
 };
 
 /**
@@ -177,22 +177,51 @@ function getDetails(req, res) {
     .then((orgDetail) => {
       isOrgAdmin(userId, orgDetail._id)
         .then(() => {
-          return UserOrganization.find({'orgId': orgDetail._id, 'roles': 'POS'})
-            .then((userOrgArr) => {
-              const userIds = userOrgArr.map(orgEle => orgEle.userId);
-              User.find({ '_id': userIds})
-                  .then((users) => {
-                    return res.json({orgDetail, users});
-                  });
-            });
+            return res.send(orgDetail.frontendData());
         })
         .catch(() => {
-          return res.status(404).send({message: 'Unauthorised access'});
+          return res.status(500).send({message: 'Unauthorized access'});
         });
-      })
-      .catch(() => {
-        return res.status(500).send({message: 'Organization not found'});
-      });
+    })
+    .catch(() => {
+      return res.status(500).send({message: 'Organization not found'});
+    });
+}
+
+function getUsers(req, res) {
+  const userId = req.userId;
+  const username = req.body.username;
+  if (typeof userId !== 'string' ||
+      typeof username !== 'string') {
+    return res.status(500).send({message: 'Request validation failed'});
+    }
+  return Organization.findOne({'username': username})
+    .then((organization) => {
+      return isOrgAdmin(userId, organization._id)
+        .then(() => {
+          return UserOrganization
+            .find({'orgId': organization._id, 'roles': 'POS'})
+                .then((userOrgArr) => {
+                    const userIds = userOrgArr.map(orgEle => orgEle.userId);
+                    User.find({'_id': userIds})
+                        .then((users) => {
+                            return res.send(users);
+                        })
+                        .catch(() => {
+                          return res.status(500).send({message: 'Error in finding users'});
+                        });
+                })
+                .catch((err) => {
+                  return res.status(500).send({message: 'Error in finding userIds'});
+                });
+        })
+        .catch(() => {
+          return res.status(500).send({message: 'Unauthorized access'});
+        });
+    })
+    .catch(() => {
+      return res.status(500).send({message: 'Organization not found'});
+    });
 }
 
 function addUser(req, res) {
@@ -311,22 +340,6 @@ function removeUser(req, res) {
     .catch(() => {
       return res.status(404).send({message: 'Unauthorised access'});
     });
-}
-
-function updatedOrgDetails(req, res) {
-  const userId = req.userId;
-  const orgId = req.query.orgId;
-  if (typeof userId !== 'string' ||
-      typeof orgId !== 'string') {
-        res.status(500).send({message: 'Request validation failed'});
-      }
-  return Organization.findOne({'_id': orgId})
-      .then((organization) => {
-        res.send(organization.frontendData());
-      })
-      .catch(() => {
-        res.status(500).send({message: 'Organization not found'});
-      });
 }
 
 // function orgAddUser(req, res) {

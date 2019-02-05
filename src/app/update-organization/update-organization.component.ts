@@ -47,16 +47,21 @@ export class UpdateOrganizationComponent implements OnInit, OnDestroy {
           'username': params.orgUsername
       })
       .subscribe(organization => {
-          this.organization = organization['orgDetail'];
-          this.users = organization['users'];
+          this.organization = organization;
           this.form = new FormGroup ({
-            name: new FormControl(organization['orgDetail'].name, Validators.required),
-            website: new FormControl(organization['orgDetail'].website),
-            phoneNumber: new FormControl(organization['orgDetail'].phoneNumber),
-            username: new FormControl(organization['orgDetail'].username, Validators.required),
+            name: new FormControl(organization.name, Validators.required),
+            website: new FormControl(organization.website),
+            phoneNumber: new FormControl(organization.phoneNumber),
+            username: new FormControl(organization.username, Validators.required),
         });
         this.ready = true;
         this.form.valueChanges.subscribe(changes => this.checkUsername(changes));
+      });
+      this.http.post<any>('/api/organization/get-users', {
+        'username': params.orgUsername
+      })
+      .subscribe(users => {
+        this.users = users;
       });
     });
   }
