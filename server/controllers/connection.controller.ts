@@ -164,9 +164,7 @@ function actionConnectionRequest(req, res) {
   const userId = req.userId;
   const senderUserId = req.body.senderUserId;
 
-  console.log('======7===');
   console.log(action);
-  console.log(userId);
 
   switch (action) {
     case 'accept':
@@ -185,14 +183,14 @@ function actionConnectionRequest(req, res) {
       })
         .then((data) => {
           if (data === null) {
-            return res.status(200).send({ message: 'Request accept error1' });
+            return res.status(500).send({ message: 'Request accept error1' });
           }
 
           const _connection = new connection();
                 _connection.partOne = userId;
                 _connection.partTwo = senderUserId;
                 _connection.status = 'connected';
-                _connection.connectionRequestRef = connectionRequest._id;
+                _connection.connectionRequestRef = connectionRequest.id;
                 _connection.save()
                             .then(() => {
                                  res.send({ message: 'Success new DB' });

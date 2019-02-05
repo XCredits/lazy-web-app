@@ -5,11 +5,11 @@ const Schema = mongoose.Schema;
 const ConnectionRequestSchema = new Schema({
   senderUserId: { type: String },
   receiverUserId: { type: String },
-  sendTimeStamp: { type: Date },
+  sendTimeStamp: { type: Number },
   permissions: { type: Object },
   timeout: {type: Number },
   active: { type: Boolean },
-  updateTimeStamp: {type: Date },
+  updateTimeStamp: {type: Number },
   currentStatus: {type: String },
   snoozed: {type: Boolean },
 }

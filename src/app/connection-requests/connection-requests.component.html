@@ -1,10 +1,12 @@
 <div class="container">
   <mat-card>
     <div class="col-md-8 offset-md-2">
-      <p> your pending connections are </p>
+      <div *ngIf = 'pendingConnections.length === 0'>
+         <p> You dont have no new connections </p>
+      </div>
       <ul>
         <li *ngFor="let friend of pendingConnections">
-          <button class="simple-form-button" color="primary" mat-raised-button (click)="approveUserConnection(form.value)">Confirm
+          <button class="simple-form-button" color="primary" mat-raised-button (click)="approveUserConnection(friend)">Confirm
           </button>
           &nbsp;
           <button class="simple-form-button" mat-raised-button (click)="ignoreUserConnection(friend)">Ignore
@@ -12,7 +14,6 @@
           &nbsp;
           {{ friend.givenName}}   &nbsp;{{ friend.familyName }}
           &nbsp; &nbsp;
-          <a href="{{link}}" target="_blank">view profile</a>
           <br>
           <br>
         </li>

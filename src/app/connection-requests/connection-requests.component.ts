@@ -5,7 +5,7 @@ import { Component, OnInit } from '@angular/core';
 import { UserService, User } from '../user.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-
+import { ConnectionComponent } from '../connections/connections.component';
 @Component({
   selector: 'app-connection-requests',
   templateUrl: './connection-requests.component.html',
@@ -18,11 +18,11 @@ export class ConnectionRequestsComponent implements OnInit {
   link: string;
   pendingConnections: { userId: string, givenName: string, familyName: string }[] = [];
 
-
   constructor(
     private http: HttpClient,
     private userService: UserService,
     private router: Router,
+    private connectionRoute: ConnectionComponent,
     ) { }
 
   ngOnInit() {
@@ -35,17 +35,38 @@ export class ConnectionRequestsComponent implements OnInit {
     });
 
     this.userService.userObservable
-      .subscribe(user => {
-        this.user = user;
-      });
-    this.link = 'https://xcredits.com/';
+        .subscribe(user => {
+          this.user = user;
+        });
     this.loadPendingRequests();
   }
 
+  ignoreUserConnection = function (friend) {
+
+    console.log(' you are ignore ' + friend.givenName);
+
+    this.http.post('/api/connection/action-connection-request', {
+      'actionNeeded': 'reject',
+      'senderUserId': friend.userId,
+    })
+      .subscribe((returnedResult) => {
+        console.log(' returnedResult ' + returnedResult);
+        if (returnedResult.message === 'Request rejected') {
+            // Remove the request from the pendingConnections array
+            for ( let i = 0 ; i <= this.pendingConnections.length - 1; i++) {
+              if ( this.pendingConnections[i].userId === friend.userId) {
+                    this.pendingConnections.splice(this.pendingConnections.indexOf(this.pendingConnections[i]), 1);
+                }
+            }
+        }
+      });
+
+    // Update notification counter in parent.
+    this.connectionRoute.loadPageCounters();
+  };
+
+
   loadPendingRequests = function () {
-    this.IsViewPending = true;
-    this.IsViewConfirmed = false;
-    this.IsAddUserRequest = false;
     this.pendingConnections = [];
     this.http.post('/api/connection/get-pending-connections', {
       'userId': this.user.id,
@@ -60,34 +81,33 @@ export class ConnectionRequestsComponent implements OnInit {
               'familyName': data[num].familyName
             });
         }
-        console.log('returned username is ' + data.length);
-        console.log(this.pendingConnections[0]);
+        console.log(this.pendingConnections);
+        // Navigate to parent if there is no more connection requests
+        if (this.pendingConnections.length === 0) {
+          // this.router.navigateByUrl('/connections');
+        }
       });
   };
 
-  approveUserConnection = function (friend) {
 
+
+  approveUserConnection = function (friend) {
     this.http.post('/api/connection/action-connection-request', {
       'actionNeeded': 'accept',
       'senderUserId': friend.userId,
     })
       .subscribe((returnedResult) => {
         if (returnedResult.message === 'Request accepted') {
-          this.router.navigateByUrl('/connections');
-        }
-      });
-  };
+          // Reload pending connection requests
+          this.loadPendingRequests();
 
-  ignoreUserConnection = function (friend) {
-    this.http.post('/api/connection/action-connection-request', {
-      'actionNeeded': 'reject',
-      'senderUserId': friend.userId,
-    })
-      .subscribe((returnedResult) => {
-        console.log(' returnedResult ' + returnedResult);
-        if (returnedResult.message === 'Request rejected') {
-          this.router.navigateByUrl('/connections');
-        }
-      });
+          // Navigate to parent if there is no more connection requests
+          if (this.pendingConnections.length === 0) {
+                this.router.navigateByUrl('/connections');
+            }
+          }
+        });
+        // Update notification counter in parent.
+        this.connectionRoute.loadPageCounters();
   };
 }

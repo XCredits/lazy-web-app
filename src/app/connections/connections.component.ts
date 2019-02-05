@@ -22,7 +22,7 @@ export class ConnectionComponent implements OnInit {
   constructor(
     private http: HttpClient,
     private userService: UserService,
-  ) { console.log('CONSTRUCTOR'); }
+  ) { }
 
   ngOnInit() {
     console.log ( new Date().getTime());
@@ -38,19 +38,6 @@ export class ConnectionComponent implements OnInit {
         this.user = user;
         console.log('user logged in is --> ' + user.id);
       });
-    console.log('Getting counter here ....');
-    this.link = 'https://xcredits.com/';
-    this.http.post('/api/connection/get-pending-count', {})
-    .subscribe((returnedResult: any) => {
-      console.log('returnedResult ....' + returnedResult);
-      this.pendingConnectionsCounter = returnedResult.message;
-    });
-
-  this.http.post('/api/connection/get-confirmed-count', {})
-    .subscribe((returnedResult: any) => {
-        this.ConfirmedConnectionsCounter = returnedResult.message;
-    });
-    console.log('This is main');
 
     this.navLinks.push('./view');
     this.navLinks.push('./request');
@@ -59,6 +46,8 @@ export class ConnectionComponent implements OnInit {
     this.pages.push('View');
     this.pages.push('request');
     this.pages.push('add');
+
+    this.loadPageCounters();
   }
 
 
@@ -66,4 +55,18 @@ export class ConnectionComponent implements OnInit {
     console.log('you clicked on ' + friends);
   }
 
+
+  loadPageCounters = function () {
+    console.log('This is the parent');
+    this.http.post('/api/connection/get-pending-count', {})
+              .subscribe((returnedResult: any) => {
+                   console.log('returnedResult ....' + returnedResult);
+                   this.pendingConnectionsCounter = returnedResult.message;
+                });
+
+    this.http.post('/api/connection/get-confirmed-count', {})
+              .subscribe((returnedResult: any) => {
+                  this.ConfirmedConnectionsCounter = returnedResult.message;
+                });
+  };
 }

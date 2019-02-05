@@ -7,7 +7,7 @@ const ConnectionSchema = new Schema({
   partTwo: { type: String },
   status: { type: String },
   connectionRequestRef: { type: String },
-  connectionTimeStamp: { type: Date, default: Date.now },
+  connectionTimeStamp: { type: Number },
 }
 );
 
