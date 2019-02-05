@@ -54,12 +54,12 @@ function joinContactList(req, res) {
 function findAllContacts(req, res) {
   Contact.find({})
       .then((result) => {
-            const resut = result.map((x) => {
-              return { givenName: x.givenName, familyName: x.familyName, email: x.email };
-              });
-          res.send(resut);
-        })
-        .catch(() => {
+        const resut = result.map((x) => {
+          return { givenName: x.givenName, familyName: x.familyName, email: x.email };
+        });
+        res.send(resut);
+      })
+      .catch(() => {
         return res.status(500).send({ message: 'Error retrieving users from contacts database' });
       });
 }

@@ -3,16 +3,16 @@ import * as mongoose from 'mongoose';
 const Schema = mongoose.Schema;
 
 const ConnectionSchema = new Schema({
-  partOne: { type: String },
-  partTwo: { type: String },
+  senderUserId: { type: String },
+  receiverUserId: { type: String },
   status: { type: String },
   connectionRequestRef: { type: String },
   connectionTimeStamp: { type: Number },
 }
 );
 
-ConnectionSchema.index({ partOne: 1 });
-ConnectionSchema.index({ partTwo: 1 });
+ConnectionSchema.index({ senderUserId: 1 });
+ConnectionSchema.index({ receiverUserId: 1 });
 ConnectionSchema.index({ status: 1 });
 ConnectionSchema.index({ connectionRequestRef: 1 });
 ConnectionSchema.index({ connectionTimeStamp: 1 });
@@ -21,8 +21,8 @@ ConnectionSchema.index({ connectionTimeStamp: 1 });
 ConnectionSchema.methods.frontendData = function () {
   return {
     id: this._id,
-    partOne: this.partOne,
-    partTwo: this.partTwo,
+    senderUserId: this.senderUserId,
+    receiverUserId: this.receiverUserId,
     status: this.status,
     connectionRequestRef: this.connectionRequestRef,
     connectionTimeStamp: this.connectionTimeStamp,

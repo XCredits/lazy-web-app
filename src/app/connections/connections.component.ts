@@ -60,13 +60,20 @@ export class ConnectionComponent implements OnInit {
     console.log('This is the parent');
     this.http.post('/api/connection/get-pending-count', {})
               .subscribe((returnedResult: any) => {
-                   console.log('returnedResult ....' + returnedResult);
-                   this.pendingConnectionsCounter = returnedResult.message;
+                    if (returnedResult.message === 0) {
+                            this.pendingConnectionsCounter = '';
+                    } else {
+                            this.pendingConnectionsCounter = returnedResult.message;
+                           }
                 });
 
     this.http.post('/api/connection/get-confirmed-count', {})
               .subscribe((returnedResult: any) => {
-                  this.ConfirmedConnectionsCounter = returnedResult.message;
+                if (returnedResult.message === 0) {
+                  this.confirmedConnectionsCounter = '';
+                } else {
+                  this.confirmedConnectionsCounter = returnedResult.message;
+                 }
                 });
   };
 }

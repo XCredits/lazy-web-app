@@ -1,7 +1,15 @@
+import {MatTableDataSource} from '@angular/material';
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { UserService, User } from '../user.service';
 import { FormGroup, FormControl } from '@angular/forms';
+
+
+export interface ConnectionRequestElements {
+  givenName: string;
+  familyName: number;
+}
+
 @Component({
   selector: 'app-view-connections',
   templateUrl: './view-connections.component.html',
@@ -12,7 +20,11 @@ export class ViewConnectionsComponent implements OnInit {
   user: User;
   receiverUserId: string;
   link: string;
-  confirmedConnections = [];
+  confirmedConnections: { userId: string, givenName: string, familyName: string }[] = [];
+  displayedColumns: string[] = [ 'Given Name', 'Family Name'];
+  dataSource = new MatTableDataSource<ConnectionRequestElements>();
+
+
   constructor(private http: HttpClient, private userService: UserService) { }
 
   ngOnInit() {
@@ -42,11 +54,19 @@ export class ViewConnectionsComponent implements OnInit {
     })
       .subscribe((data) => {
         let num = 0;
+        console.log('----------');
+        console.log(data);
         for (num = 0; num < data.length; num++) {
-          this.confirmedConnections.push(Object[num].familyName + ' ' + Object[num].givenName);
+          this.confirmedConnections.push(
+            {
+              'userId': data[num].userId,
+              'givenName': data[num].givenName,
+              'familyName': data[num].familyName
+            });
         }
-        console.log('returned username is ' + data.length);
+        this.dataSource = new MatTableDataSource<ConnectionRequestElements>(this.confirmedConnections);
+
+        console.log('returned username is ' + this.confirmedConnections.length);
       });
   };
 }
-

@@ -131,7 +131,7 @@ function getPendingConnections(req, res) {
  * @return {*}
  */
 function getConfirmedConnections(req, res) {
-  return connectionRequest.find({ receiverUserId: req.userId, currentStatus: {$eq: 'Accepted'} })
+  return connectionRequest.find({ receiverUserId: req.userId, currentStatus: {$eq: 'accepted'} })
   .then((result) => {
     const senderIdArr = result.map((e => e.senderUserId));
     return User.find({ '_id': { '$in': senderIdArr } })
@@ -141,6 +141,7 @@ function getConfirmedConnections(req, res) {
               username: x.username,
               givenName: x.givenName,
               familyName: x.familyName,
+              userId: x._id,
             };
           });
           res.send(resultsFiltered);
@@ -181,27 +182,32 @@ function actionConnectionRequest(req, res) {
             updateTimeStamp: new Date().getTime(),
           }
       })
-        .then((data) => {
-          if (data === null) {
-            return res.status(500).send({ message: 'Request accept error1' });
-          }
+        .then((result) => {
+          const _connection1 = new connection();
+          _connection1.senderUserId = userId;
+          _connection1.receiverUserId = senderUserId;
+          _connection1.status = 'connected';
+          _connection1.connectionRequestRef =  result._id;
+          _connection1.save()
+              .then(() => {
+                const _connection2 = new connection();
+                _connection2.receiverUserId = userId;
+                _connection2.senderUserId = senderUserId;
+                _connection2.status = 'connected';
+                _connection2.connectionRequestRef =  result._id;
+                _connection2.save()
+                    .then(() => {
+                      res.send({ message: 'Success new DB' });
 
-          const _connection = new connection();
-                _connection.partOne = userId;
-                _connection.partTwo = senderUserId;
-                _connection.status = 'connected';
-                _connection.connectionRequestRef = connectionRequest.id;
-                _connection.save()
-                            .then(() => {
-                                 res.send({ message: 'Success new DB' });
-                              })
-                              .catch((error) => {
-                                 return res.status(500).json({ message: 'Could not save connection request.' });
-                                 });
+                    });
+              })
+              .catch((error) => {
+                return res.status(500).json({ message: 'Could not save connection request.' });
+              });
           return res.status(200).send({ message: 'Request accepted' });
         })
         .catch((err) => {
-          console.log('err ' + err.message);
+          console.log( err.message);
           res.status(500)
             .send({ message: err });
         });
@@ -288,9 +294,10 @@ function getConfirmedConnectionsCount(req, res) {
   return connectionRequest.count({
     receiverUserId: req.userId,
     currentStatus: {$eq: 'accepted'},
+    active: {$eq: false }
   })
   .then((result) => {
-    console.log(result);
+    console.log('accepted ' + result);
     res.send({ message: result });
   });
   }
