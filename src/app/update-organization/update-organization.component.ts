@@ -150,7 +150,7 @@ export class UpdateOrganizationComponent implements OnInit, OnDestroy {
   }
 
   delUser() {
-    this.http.post('/api/organization/delete-user', {
+    this.http.post('/api/organization/remove-user', {
       'userId': this.userToBeDeleted,
       'orgId': this.organization._id,
     })
