@@ -34,16 +34,20 @@ export class UpdateOrganizationComponent implements OnInit, OnDestroy {
 
   constructor(private snackBar: MatSnackBar, private http: HttpClient,
               private router: Router, private route: ActivatedRoute,
+              private organizationService: OrganizationService,
               private dialogService: MatDialog, private userService: UserService) { }
 
   ngOnInit() {
+    this.organizationService.orgObservable
+        .subscribe((organization) => {
+          this.logo = organization.logo;
+        });
     this.sub = this.route.params.subscribe(params => {
       this.http.post<Organization>('/api/organization/get-details', {
           'username': params.orgUsername
       })
       .subscribe(organization => {
           this.organization = organization['orgDetail'];
-          this.logo = organization.logo;
           this.users = organization['users'];
           this.form = new FormGroup ({
             name: new FormControl(organization['orgDetail'].name, Validators.required),
@@ -102,6 +106,7 @@ export class UpdateOrganizationComponent implements OnInit, OnDestroy {
   }
 
   handleImageUpload(imageUrl: string) {
+    this.organizationService.updateOrgDetails(this.organization);
     this.snackBar.open('Image Uploaded Successfully', 'Dismiss', {
       duration: 5000,
       verticalPosition: 'top',

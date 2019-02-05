@@ -14,6 +14,7 @@ module.exports = function(app) {
   app.post('/api/organization/add-user', authenticate.jwt, orgAddUser);
   app.post('/api/organization/delete', authenticate.jwt, deleteOrg);
   app.post('/api/organization/delete-user', authenticate.jwt, deleteUser);
+  app.get('/api/organization/updated-details', authenticate.jwt, updatedOrgDetails);
 };
 
 /**
@@ -313,6 +314,21 @@ function deleteUser(req, res) {
     });
 }
 
+function updatedOrgDetails(req, res) {
+  const userId = req.userId;
+  const orgId = req.query.orgId;
+  if (typeof userId !== 'string' ||
+      typeof orgId !== 'string') {
+        res.status(500).send({message: 'Request validation failed'});
+      }
+  return Organization.findOne({'_id': orgId})
+      .then((organization) => {
+        res.send(organization.frontendData());
+      })
+      .catch(() => {
+        res.status(500).send({message: 'Organization not found'});
+      });
+}
 
 // function orgAddUser(req, res) {
 //   const userId = req.userId;

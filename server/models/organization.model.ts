@@ -14,4 +14,16 @@ const OrganizationSchema = new Schema({
 OrganizationSchema.index({name: 'text'});
 OrganizationSchema.index({username: 1});
 
+OrganizationSchema.methods.frontendData = function() {
+  return {
+    id: this._id,
+    name: this.name,
+    website: this.website,
+    username: this.username,
+    logo: this.logo,
+    phoneNumber: this.phoneNumber,
+    userCount: this.userCount,
+  };
+};
+
 module.exports = mongoose.model('Organization', OrganizationSchema);
