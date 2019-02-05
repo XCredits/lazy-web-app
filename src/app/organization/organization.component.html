@@ -15,11 +15,7 @@
                width="100%"
               [src]="organizations.logo"
               alt='Company Logo'>
-          <img *ngIf="!organizations.logo"
-               width="100%"
-               height="222px"
-               src="assets/img/no-logo-available.gif"
-               alt='Company Logo'>
+          <div *ngIf="!organizations.logo" class="defaultLogo">{{organizations.name}}</div>
           <mat-card-content>  <br>
             <span class="icon">
               <mat-icon style="font-size:22px;" matSuffix>language</mat-icon>
