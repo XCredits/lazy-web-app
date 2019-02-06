@@ -30,7 +30,7 @@ export class AddUserComponent implements OnInit {
       .subscribe(organization => {
         this.authorized = true;
         this.organization = organization;
-        this.orgId = this.organization['_id'];
+        this.orgId = this.organization['id'];
       },
       (errorResponse) => {
         this.authorized = false;
@@ -58,8 +58,8 @@ export class AddUserComponent implements OnInit {
         horizontalPosition: 'right',
       });
     },
-    (errorRespone) => {
-      this.errorMessage = errorRespone.error.message;
+    (errorResponse) => {
+      this.errorMessage = errorResponse.error.message;
     });
   };
 }

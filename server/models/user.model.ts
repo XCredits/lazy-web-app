@@ -6,7 +6,6 @@ import * as bcrypt from 'bcrypt';
 const UserSchema = new Schema({
     givenName: {type: String},
     familyName: {type: String},
-    username: {type: String, unique: true, required: true},
     displayUsername: {type: String, required: true},
     email: {type: String},
     emailConfirmed: {type: Boolean, default: false},
@@ -18,7 +17,6 @@ const UserSchema = new Schema({
   }
 );
 
-UserSchema.index({username: 1});
 UserSchema.index({displayUsername: 1});
 UserSchema.index({email: 1});
 
@@ -45,7 +43,6 @@ UserSchema.methods.frontendData = function() {
     id: this._id,
     givenName: this.givenName,
     familyName: this.familyName,
-    username: this.username,
     displayUsername: this.displayUsername,
     email: this.email,
     emailConfirmed: this.emailConfirmed,
