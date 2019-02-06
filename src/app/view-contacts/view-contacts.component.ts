@@ -5,7 +5,6 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { UserService, User } from '../user.service';
 import { HttpClient } from '@angular/common/http';
 
-
 export interface ContactElements {
   position: number;
   givenName: string;
@@ -19,7 +18,6 @@ export interface ContactElements {
   styleUrls: ['./view-contacts.component.scss']
 })
 export class ViewContactsComponent implements OnInit {
-
   form: FormGroup;
   disableButton = true;
   submitSuccess = false;
@@ -38,9 +36,9 @@ export class ViewContactsComponent implements OnInit {
 
   ngOnInit() {
     this.form = new FormGroup({
-        givenName: new FormControl(''),
-        familyName: new FormControl(''),
-        email: new FormControl('', [Validators.required, Validators.email]),
+      givenName: new FormControl(''),
+      familyName: new FormControl(''),
+      email: new FormControl('', [Validators.required, Validators.email]),
     });
     this.http.get<any>('/api/contacts/view')
       .subscribe((data) => {
@@ -48,14 +46,14 @@ export class ViewContactsComponent implements OnInit {
         this.dataSource = new MatTableDataSource<ContactElements>(this.allContacts);
 
         for (let entry = 0; entry < this.allContacts.length; entry++) {
-            this.allContacts[entry].position = entry + 1;
+          this.allContacts[entry].position = entry + 1;
         }
 
-          this.form = new FormGroup({
-            givenName: new FormControl(this.allContacts[0].givenName),
-            familyName: new FormControl(this.allContacts[0].familyName),
-            email: new FormControl(this.allContacts[0].email),
-          });
+        this.form = new FormGroup({
+          givenName: new FormControl(this.allContacts[0].givenName),
+          familyName: new FormControl(this.allContacts[0].familyName),
+          email: new FormControl(this.allContacts[0].email),
+        });
         });
     }
 
@@ -64,24 +62,24 @@ export class ViewContactsComponent implements OnInit {
 
   previousContact = function () {
     if (this.contactIndex > 0) {
-        this.contactIndex --;
+      this.contactIndex --;
     }
-          this.form = new FormGroup({
-            givenName: new FormControl(this.allContacts[this.contactIndex].givenName),
-            familyName: new FormControl(this.allContacts[this.contactIndex].familyName),
-            email: new FormControl(this.allContacts[this.contactIndex].email),
-       });
+    this.form = new FormGroup({
+      givenName: new FormControl(this.allContacts[this.contactIndex].givenName),
+      familyName: new FormControl(this.allContacts[this.contactIndex].familyName),
+      email: new FormControl(this.allContacts[this.contactIndex].email),
+  });
   };
 
   nextContact = function () {
     if (this.contactIndex < this.allContacts.length - 1 ) {
-        this.contactIndex++;
+      this.contactIndex++;
     }
-        this.form = new FormGroup({
-          givenName: new FormControl(this.allContacts[this.contactIndex].givenName),
-          familyName: new FormControl(this.allContacts[this.contactIndex].familyName),
-          email: new FormControl(this.allContacts[this.contactIndex].email),
-      });
+    this.form = new FormGroup({
+      givenName: new FormControl(this.allContacts[this.contactIndex].givenName),
+      familyName: new FormControl(this.allContacts[this.contactIndex].familyName),
+      email: new FormControl(this.allContacts[this.contactIndex].email),
+  });
   };
 
   isAllSelected() {
@@ -92,8 +90,8 @@ export class ViewContactsComponent implements OnInit {
 
   masterToggle() {
     this.isAllSelected() ?
-        this.selection.clear() :
-        this.dataSource.data.forEach(row => this.selection.select(row));
+      this.selection.clear() :
+      this.dataSource.data.forEach(row => this.selection.select(row));
   }
 
 

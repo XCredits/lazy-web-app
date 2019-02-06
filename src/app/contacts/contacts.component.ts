@@ -15,7 +15,6 @@ export class ContactsComponent implements OnInit {
   ngOnInit() {
     this.navLinks.push('./view');
     this.navLinks.push('./add');
-
     this.pages.push('view');
     this.pages.push('add');
   }

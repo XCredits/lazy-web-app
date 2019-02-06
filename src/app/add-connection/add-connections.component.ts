@@ -48,13 +48,13 @@ export class AddConnectionComponent implements OnInit {
     })
       .subscribe(returnedResult => {
         switch (returnedResult.message) {
-          case 'Success':
+          case 'success':
             this.formErrorMessage = 'Added successfully';
             break;
-          case 'Pending':
+          case 'pending':
             this.formErrorMessage = 'You already sent a request';
             break;
-          case 'User not found':
+          case 'user not found':
             this.formErrorMessage = 'Sorry, this user not found';
             break;
         }

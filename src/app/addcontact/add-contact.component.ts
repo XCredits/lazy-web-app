@@ -40,19 +40,19 @@ export class AddContactsComponent implements OnInit {
     this.submitSuccess = false;
     this.waiting = true;
     this.http.post('/api/contacts/add', {
-          'givenName': formData.givenName,
-          'familyName': formData.familyName,
-          'email': formData.email
-        })
-        .subscribe(data => {
+      'givenName': formData.givenName,
+      'familyName': formData.familyName,
+      'email': formData.email
+    })
+      .subscribe(data => {
+          this.waiting = false;
+          this.submitSuccess = true;
+          console.log('subscribe...');
+        },
+        errorResponse => {
             this.waiting = false;
-            this.submitSuccess = true;
-            console.log('subscribe...');
-          },
-          errorResponse => {
-              this.waiting = false;
-              console.log('error ... ');
-              this.formErrorMessage = 'There was a problem submitting the form.';
-          });
+            console.log('error ... ');
+            this.formErrorMessage = 'There was a problem submitting the form.';
+        });
   };
 }

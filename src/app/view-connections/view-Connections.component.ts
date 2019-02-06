@@ -24,7 +24,6 @@ export class ViewConnectionsComponent implements OnInit {
   displayedColumns: string[] = [ 'Given Name', 'Family Name'];
   dataSource = new MatTableDataSource<ConnectionRequestElements>();
 
-
   constructor(private http: HttpClient, private userService: UserService) { }
 
   ngOnInit() {
@@ -54,8 +53,6 @@ export class ViewConnectionsComponent implements OnInit {
     })
       .subscribe((data) => {
         let num = 0;
-        console.log('----------');
-        console.log(data);
         for (num = 0; num < data.length; num++) {
           this.confirmedConnections.push(
             {
@@ -65,8 +62,6 @@ export class ViewConnectionsComponent implements OnInit {
             });
         }
         this.dataSource = new MatTableDataSource<ConnectionRequestElements>(this.confirmedConnections);
-
-        console.log('returned username is ' + this.confirmedConnections.length);
       });
   };
 }

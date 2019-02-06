@@ -38,7 +38,6 @@ export class ConnectionRequestsComponent implements OnInit {
     ) { }
 
   ngOnInit() {
-
     this.form = new FormGroup({
       username: new FormControl(''),
       givenName: new FormControl(''),
@@ -47,9 +46,9 @@ export class ConnectionRequestsComponent implements OnInit {
     });
 
     this.userService.userObservable
-        .subscribe(user => {
-          this.user = user;
-        });
+      .subscribe(user => {
+        this.user = user;
+      });
     this.loadPendingRequests();
   }
 
@@ -61,18 +60,16 @@ export class ConnectionRequestsComponent implements OnInit {
       .subscribe((returnedResult) => {
         console.log(' returnedResult ' + returnedResult);
         if (returnedResult.message === 'Request rejected') {
-            // Remove the request from the pendingConnections array
-            for ( let i = 0 ; i <= this.pendingConnections.length - 1; i++) {
-              if ( this.pendingConnections[i].userId === friend.userId) {
-                this.pendingConnections.splice(this.pendingConnections.indexOf(this.pendingConnections[i]), 1);
-              }
+          // Remove the request from the pendingConnections array
+          for ( let i = 0 ; i <= this.pendingConnections.length - 1; i++) {
+            if ( this.pendingConnections[i].userId === friend.userId) {
+              this.pendingConnections.splice(this.pendingConnections.indexOf(this.pendingConnections[i]), 1);
             }
-            this.dataSource = [];
-            this.dataSource = new MatTableDataSource<ConnectionRequestElements>(this.pendingConnections);
-
+          }
+          this.dataSource = [];
+          this.dataSource = new MatTableDataSource<ConnectionRequestElements>(this.pendingConnections);
         }
       });
-
     // Update notification counter in parent.
     this.connectionRoute.loadPageCounters();
   };
@@ -111,7 +108,7 @@ export class ConnectionRequestsComponent implements OnInit {
 
           // Navigate to parent if there is no more connection requests
           if (this.pendingConnections.length === 0) {
-                this.router.navigateByUrl('/connections');
+              this.router.navigateByUrl('/connections');
             }
           }
         });
