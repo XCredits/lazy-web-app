@@ -42,7 +42,7 @@ export class ViewContactsComponent implements OnInit {
         familyName: new FormControl(''),
         email: new FormControl('', [Validators.required, Validators.email]),
     });
-    this.http.get<any>('/api/get-user-details')
+    this.http.get<any>('/api/contacts/view')
       .subscribe((data) => {
         this.allContacts = data;
         this.dataSource = new MatTableDataSource<ContactElements>(this.allContacts);
@@ -63,7 +63,6 @@ export class ViewContactsComponent implements OnInit {
   submit = function () { };
 
   previousContact = function () {
-    console.log('Previous Contact');
     if (this.contactIndex > 0) {
         this.contactIndex --;
     }

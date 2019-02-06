@@ -5,7 +5,6 @@ const MailingListStats = require('../models/mailing-list-stats.model');
 const statsService = require('../services/stats.service');
 
 module.exports = function(app) {
-  console.log('Hi');
   app.post('/api/join-mailing-list', joinMailingList);
 };
 
@@ -57,7 +56,6 @@ function joinMailingList(req, res) {
             });
       })
       .catch((error) => {
-        console.log('Error');
         console.log(error.message);
         return res.status(500).json({message: error.message});
       });

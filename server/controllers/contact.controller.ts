@@ -6,10 +6,9 @@ const Contact = require('../models/contact.model.js');
 const auth = require('./jwt-auth.controller');
 
 module.exports = function(app) {
-  app.post('/api/join-contact-list', auth.jwt, joinContactList);
-  app.get('/api/get-user-details', auth.jwt, findAllContacts);
+  app.post('/api/contacts/add', auth.jwt, addContact);
+  app.get('/api/contacts/view', auth.jwt, viewContacts);
 };
-
 
 
 /**
@@ -18,20 +17,23 @@ module.exports = function(app) {
  * @param {*} res response object
  * @return {*}
  */
-function joinContactList(req, res) {
+function addContact(req, res) {
+
   const email = req.body.email;
   const givenName = req.body.givenName;
   const familyName = req.body.familyName;
-  // Validation
-  if (typeof email !== 'string' ||
-    typeof givenName !== 'string' ||
-    typeof familyName !== 'string' ||
-    !validator.isEmail(email)
-  ) {
-        return res.status(422).json({ message: 'Request failed validation' });
-    }
+
+  // Validate
+  if (typeof req.userId !== 'string' ||
+      typeof email !== 'string' ||
+      typeof givenName !== 'string' ||
+      typeof familyName !== 'string' ||
+      !validator.isEmail(email) ) {
+            return res.status(422).json({ message: 'Request failed validation' });
+        }
 
   const contactListUser = new Contact();
+  contactListUser.loginUserId = req.userId;
   contactListUser.email = email;
   contactListUser.givenName = givenName;
   contactListUser.familyName = familyName;
@@ -51,15 +53,24 @@ function joinContactList(req, res) {
  * @param {*} res response object
  * @returns {*}
  */
-function findAllContacts(req, res) {
-  Contact.find({})
+function viewContacts(req, res) {
+  const userId = req.userId;
+  if (typeof userId !== 'string') {
+    return res.status(422).json({ message: 'Request failed validation' });
+  }
+
+  Contact.find({ loginUserId: userId })
       .then((result) => {
-        const resut = result.map((x) => {
-          return { givenName: x.givenName, familyName: x.familyName, email: x.email };
+            const filteredResult = result.map((x) => {
+              return {
+                    givenName: x.givenName,
+                    familyName: x.familyName,
+                    email: x.email
+                    };
+            });
+            res.send(filteredResult);
+        })
+        .catch(() => {
+          return res.status(500).send({ message: 'Error retrieving users from contacts database' });
         });
-        res.send(resut);
-      })
-      .catch(() => {
-        return res.status(500).send({ message: 'Error retrieving users from contacts database' });
-      });
 }
