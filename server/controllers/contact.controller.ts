@@ -24,7 +24,7 @@ function addContact(req, res) {
     typeof givenName !== 'string' ||
     typeof familyName !== 'string' ||
     !validator.isEmail(email) ) {
-      return res.status(422).json({ message: 'Request failed validation' });
+      return res.status(422).json({ message: 'request failed validation' });
       }
 
   const contactListUser = new Contact();
@@ -34,10 +34,10 @@ function addContact(req, res) {
   contactListUser.familyName = familyName;
   return contactListUser.save()
     .then((result) => {
-      res.status(200).send({ message: 'Success' });
+      res.status(200).send({ message: 'success' });
     })
     .catch((error) => {
-      return res.status(500).send('Problem finding contacts.');
+      return res.status(500).send('problem finding contacts.');
     });
 }
 
@@ -51,7 +51,7 @@ function addContact(req, res) {
 function viewContacts(req, res) {
   const userId = req.userId;
   if (typeof userId !== 'string') {
-    return res.status(422).json({ message: 'Request failed validation' });
+    return res.status(422).json({ message: 'request failed validation' });
   }
 
   Contact.find({ loginUserId: userId })
@@ -66,6 +66,6 @@ function viewContacts(req, res) {
         res.send(filteredResult);
       })
       .catch(() => {
-        return res.status(500).send({ message: 'Error retrieving users from contacts database' });
+        return res.status(500).send({ message: 'error retrieving users from contacts database' });
       });
 }

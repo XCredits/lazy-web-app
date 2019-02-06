@@ -59,7 +59,7 @@ export class ConnectionRequestsComponent implements OnInit {
     })
       .subscribe((returnedResult) => {
         console.log(' returnedResult ' + returnedResult);
-        if (returnedResult.message === 'Request rejected') {
+        if (returnedResult.message === 'request rejected') {
           // Remove the request from the pendingConnections array
           for ( let i = 0 ; i <= this.pendingConnections.length - 1; i++) {
             if ( this.pendingConnections[i].userId === friend.userId) {
@@ -102,7 +102,7 @@ export class ConnectionRequestsComponent implements OnInit {
       'senderUserId': friend.userId,
     })
       .subscribe((returnedResult) => {
-        if (returnedResult.message === 'Request accepted') {
+        if (returnedResult.message === 'request accepted') {
           // Reload pending connection requests
           this.loadPendingRequests();
 
