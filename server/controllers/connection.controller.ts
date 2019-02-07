@@ -163,40 +163,19 @@ function getConfirmedConnections(req, res) {
  */
 function actionConnectionRequest(req, res) {
   // Save the login userId
-  const action = req.body.actionNeeded;
   const userId = req.userId;
+
+  // VALIDATION@actionConnectionRequest (strings only)
+  const action = req.body.actionNeeded;
   const senderUserId = req.body.senderUserId;
+
 
   switch (action) {
     case 'accept':
       acceptConnection();
       break;
     case 'cancel':
-      connectionRequest.findOneAndUpdate({
-        senderUserId: senderUserId,
-        receiverUserId: userId,
-        active: { $eq: true }
-      },
-        {
-          $set:
-          {
-            active: false,
-            currentStatus: 'cancelled',
-            updateTimeStamp: new Date().getTime(),
-          }
-        })
-        .then((data) => {
-          if (data === null) {
-            return res.status(200)
-              .send({ message: 'Request cancel error' });
-          }
-          return res.status(200)
-            .send({ message: 'Request canceled' });
-        })
-        .catch((err) => {
-          res.status(500)
-            .send({ message: err });
-        });
+      cancelConnection();
       break;
     case 'reject':
       connectionRequest.findOneAndUpdate({
@@ -228,7 +207,7 @@ function actionConnectionRequest(req, res) {
   }
 
   function acceptConnection() {
-    connectionRequest.findOneAndUpdate({
+    return connectionRequest.findOneAndUpdate({
           senderUserId: senderUserId,
           receiverUserId: userId,
           active: { $eq: true }
@@ -267,7 +246,35 @@ function actionConnectionRequest(req, res) {
         .catch(() => {
           res.status(500).send({message: 'Could not save connection request.'});
         });
-    }
+  }
+
+  function cancelConnection() {
+    return connectionRequest.findOneAndUpdate({
+      senderUserId: senderUserId,
+      receiverUserId: userId,
+      active: { $eq: true }
+    },
+      {
+        $set:
+        {
+          active: false,
+          currentStatus: 'cancelled',
+          updateTimeStamp: new Date().getTime(),
+        }
+      })
+      .then((data) => {
+        if (data === null) {
+          return res.status(200)
+            .send({ message: 'Request cancel error' });
+        }
+        return res.status(200)
+          .send({ message: 'Request canceled' });
+      })
+      .catch((err) => {
+        res.status(500)
+          .send({ message: err });
+      });
+  }
 }
 
 
