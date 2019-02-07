@@ -17,13 +17,6 @@ const ConnectionRequestSchema = new Schema({
 
 ConnectionRequestSchema.index({ senderUserId: 1 });
 ConnectionRequestSchema.index({ receiverUserId: 1 });
-ConnectionRequestSchema.index({ sendTimeStamp: 1 });
-ConnectionRequestSchema.index({ permissions: 1 });
-ConnectionRequestSchema.index({ active: 1 });
-ConnectionRequestSchema.index({ timeout: 1 });
-ConnectionRequestSchema.index({ updateTimeStamp: 1 });
-ConnectionRequestSchema.index({ currentStatus: 1 });
-ConnectionRequestSchema.index({ snoozed: 1 });
 
 
 module.exports = mongoose.model('ConnectionRequest', ConnectionRequestSchema);

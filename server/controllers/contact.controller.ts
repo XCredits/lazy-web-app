@@ -28,7 +28,7 @@ function addContact(req, res) {
       }
 
   const contactListUser = new Contact();
-  contactListUser.loginUserId = req.userId;
+  contactListUser.userId = req.userId;
   contactListUser.email = email;
   contactListUser.givenName = givenName;
   contactListUser.familyName = familyName;
@@ -54,7 +54,7 @@ function viewContacts(req, res) {
     return res.status(422).json({ message: 'request failed validation' });
   }
 
-  Contact.find({ loginUserId: userId })
+  Contact.find({ userId })
     .then((result) => {
       const filteredResult = result.map((x) => {
         return {

@@ -13,9 +13,7 @@ const ConnectionSchema = new Schema({
 
 ConnectionSchema.index({ senderUserId: 1 });
 ConnectionSchema.index({ receiverUserId: 1 });
-ConnectionSchema.index({ status: 1 });
 ConnectionSchema.index({ connectionRequestRef: 1 });
-ConnectionSchema.index({ connectionTimeStamp: 1 });
 
 
 module.exports = mongoose.model('Connection', ConnectionSchema);
