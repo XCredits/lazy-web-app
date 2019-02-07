@@ -458,31 +458,31 @@ function forgotUsername(req, res) {
   // find all users by email
   return User.find({email: email}).select('username givenName familyName')
       .then((users) => {
-          // Success object must be identical, to avoid people
-          // discovering emails in the system
-          const successObject = {message: 'Email sent if users found in database.'};
-          if (!users || users.length === 0) {
-            res.send(successObject); // Note that if errors in send in emails occur, the front end will not see them
-            return;
-          }
-          return Username.find({userId: users._id})
-              .then((username) => {
-                  return emailService.sendUsernameRetrieval({
-                    givenName: users[0].givenName, // just use the name of the first account
-                    familyName: users[0].familyName,
-                    email: email,
-                    userNameArr: username,
-                  })
-                  .then(() => {
-                    res.send(successObject); // Note that if errors in send in emails occur, the front end will not see them
-                  })
-                  .catch((err) => {
-                    res.status(500).send({message: 'Could not send email.'});
-                  });
-                })
-                .catch(() => {
-                  res.status(500).send({message: 'Username not found'});
-                });
+        // Success object must be identical, to avoid people
+        // discovering emails in the system
+        const successObject = {message: 'Email sent if users found in database.'};
+        if (!users || users.length === 0) {
+          res.send(successObject); // Note that if errors in send in emails occur, the front end will not see them
+          return;
+        }
+        return Username.find({userId: users._id})
+            .then((username) => {
+              return emailService.sendUsernameRetrieval({
+                givenName: users[0].givenName, // just use the name of the first account
+                familyName: users[0].familyName,
+                email: email,
+                userNameArr: username,
+              })
+              .then(() => {
+                res.send(successObject); // Note that if errors in send in emails occur, the front end will not see them
+              })
+              .catch((err) => {
+                res.status(500).send({message: 'Could not send email.'});
+              });
+            })
+            .catch(() => {
+              res.status(500).send({message: 'Username not found'});
+            });
       })
       .catch((err) => {
         res.status(500).send({message: 'Error accessing user database.'});
