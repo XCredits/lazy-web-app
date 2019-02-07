@@ -50,10 +50,6 @@ function addContact(req, res) {
  */
 function viewContacts(req, res) {
   const userId = req.userId;
-  if (typeof userId !== 'string') {
-    return res.status(422).json({ message: 'request failed validation' });
-  }
-
   Contact.find({ userId })
       .then((result) => {
         const filteredResult = result.map((x) => {
