@@ -150,7 +150,7 @@ function getConfirmedConnections(req, res) {
             });
       })
       .catch((err) => {
-      res.send(500)
+        res.status(500)
           .send({ message: 'error retrieving confirmed connections' });
       });
 }
