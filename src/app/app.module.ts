@@ -16,6 +16,7 @@ import { AngularFontAwesomeModule } from 'angular-font-awesome';
 
 // Material modules
 import {
+  MatBadgeModule,
   MatAutocompleteModule,
   MatButtonModule,
   MatButtonToggleModule,
@@ -285,6 +286,7 @@ import { ViewConnectionsComponent } from './view-connections/view-connections.co
     AngularFontAwesomeModule,
 
     // Material modules
+    MatBadgeModule,
     MatAutocompleteModule,
     MatButtonModule,
     MatButtonToggleModule,
