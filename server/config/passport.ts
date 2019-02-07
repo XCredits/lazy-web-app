@@ -40,13 +40,17 @@ function(username, password, done) {
     if (err) {
       return done(err);
     }
-    // Return if user not found in database
+    // Return if username not found in database
     if (!userName) {
       return done(null, false, {
-        message: 'User not found',
+        message: 'Username not found',
       });
     }
     Auth.findOne({'userId': userName.refId}, function(error, userAuth) {
+      if (error) {
+        return done(error);
+      }
+      // Return if password is incorrect
       if (!userAuth.checkPassword(password)) {
         return done(null, false, {
           message: 'Password is incorrect',
@@ -54,6 +58,10 @@ function(username, password, done) {
       }
       User1.findOne({'_id': userName.refId}, function(er, user) {
         if (er) {
+          return done(er);
+        }
+        // Return if user not found in database
+        if (!user ) {
           return done(null, false, {
             message: 'User not found',
           });

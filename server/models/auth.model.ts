@@ -9,6 +9,8 @@ const AuthSchema = new Schema ({
   saltRounds: Number, // stored in case we increase the salt rounds in the future
 });
 
+AuthSchema.index({userId: 1});
+
 AuthSchema.methods.createPasswordHash = function(password) {
   // https://hackernoon.com/your-node-js-authentication-tutorial-is-wrong-f1a3bf831a46
   // https://codahale.com/how-to-safely-store-a-password/
