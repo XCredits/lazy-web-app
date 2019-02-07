@@ -263,7 +263,7 @@ function actionConnectionRequest(req, res) {
           }
         })
         .then((data) => {
-          return res.status(200).send({ message: 'Request canceled' });
+          return res.status(200).send({ message: 'Request cancelled' });
         })
         .catch((err) => {
           res.status(500)
