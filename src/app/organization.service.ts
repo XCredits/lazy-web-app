@@ -27,12 +27,12 @@ export class OrganizationService implements OnDestroy {
         }
     }
 
-    updateOrgDetails(org) {
+    updateOrgDetails(username) {
         this.http.post<Organization>('/api/organization/get-details', {
-            'username': org.username
+            'username': username
         })
         .subscribe((organization) => {
-            this._setOrganization(organization);
+            this._setOrganization(organization['orgDetail']);
         });
       }
 
@@ -48,6 +48,5 @@ export interface Organization {
   website: string;
   logo: string;
   phoneNumber: number;
-  username: string;
   userCount: number;
 }

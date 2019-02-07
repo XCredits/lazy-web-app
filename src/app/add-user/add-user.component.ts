@@ -29,8 +29,8 @@ export class AddUserComponent implements OnInit {
       })
       .subscribe(organization => {
         this.authorized = true;
-        this.organization = organization;
-        this.orgId = this.organization['id'];
+        this.organization = organization['orgDetail'];
+        this.orgId = this.organization['_id'];
       },
       (errorResponse) => {
         this.authorized = false;

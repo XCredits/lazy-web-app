@@ -12,6 +12,7 @@ export class OrganizationComponent implements OnInit, OnDestroy {
 
   organization: Organization;
   userRoles: Array<string> =  [];
+  username: Array<string> =  [];
 
   constructor(private http: HttpClient,
               private router: Router) {}
@@ -20,18 +21,21 @@ export class OrganizationComponent implements OnInit, OnDestroy {
     this.http.post<Organization>('/api/organization/user-org-summary', {})
         .subscribe((response: any)  =>  {
           this.organization = response['orgDetails'];
+          Object.values(response.orgUsername).forEach(org => {
+            this.username[org['refId']] = org['username'];
+          });
           Object.values(response.userOrg).forEach(org => {
             this.userRoles[org['orgId']] = org['roles'];
           });
         });
   }
 
-  updateOrg(organization) {
-    this.router.navigate(['/organization/' + organization.username + '/update']);
+  updateOrg(orgUsername) {
+    this.router.navigate(['/organization/' + orgUsername + '/update']);
   }
 
-  addUser(organization) {
-    this.router.navigate(['/organization/' + organization.username + '/add-user']);
+  addUser(orgUsername) {
+    this.router.navigate(['/organization/' + orgUsername + '/add-user']);
   }
 
   ngOnDestroy() {

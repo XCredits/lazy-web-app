@@ -2,6 +2,7 @@ const Organization = require('../models/organization.model');
 const UserOrganization = require('../models/user-organization.model');
 const auth = require('./jwt-auth.controller');
 const User = require('../models/user.model');
+const UsernameCheck = require('../models/username.model');
 
 import {uploadSingleImage} from '../services/image-upload';
 
@@ -37,6 +38,7 @@ function isOrgAdmin(userId, orgId) {
 
 function createOrg(req, res) {
   const { name, website, phoneNumber, username } = req.body;
+  console.log(name, website, phoneNumber, username);
   const userId = req.userId;
   if (typeof userId !== 'string' ||
       typeof name !== 'string' ||
@@ -45,20 +47,34 @@ function createOrg(req, res) {
       typeof username !== 'string') {
     return res.status(500).send({message: 'Request validation failed'});
   }
-  const organization =
-      new Organization({ name, website, phoneNumber, username });
+  const organization = new Organization();
+  organization.name = name;
+  organization.website = website;
+  organization.phoneNumber = phoneNumber;
   organization.userCount = 1;
   const userOrg = new UserOrganization();
   return organization.save()
       .then(() => {
+        console.log('Inside');
         userOrg.userId = userId;
         userOrg.orgId = organization._id;
         userOrg.roles = ['admin'];
         return userOrg.save()
             .then(() => {
-              res.status(200).send({
-                message: 'UserId and OrganizationId saved successfully'
-              });
+                const usernameCheck = new UsernameCheck();
+                usernameCheck.username = username;
+                usernameCheck.refId = organization._id;
+                usernameCheck.type = 'Organization';
+                usernameCheck.current = true;
+                return usernameCheck.save()
+                    .then(() => {
+                      res.status(200).send({
+                          message: 'UserId and OrganizationId saved successfully'
+                      });
+                    })
+                    .catch(() => {
+                      res.status(500).send({message: 'Error in saving username'});
+                    });
             })
             .catch(() => {
               res.status(500).send({
@@ -66,7 +82,8 @@ function createOrg(req, res) {
             });
         });
       })
-      .catch(() => {
+      .catch((err) => {
+        console.log(err);
         res.status(500).send({message: 'Error in saving organization'});
       });
 }
@@ -77,17 +94,26 @@ function userOrgSummary(req, res) {
     return res.status(500).send({message: 'Request validation failed'});
   }
   let userOrg;
-  UserOrganization.find({'userId': userId})
+  return UserOrganization.find({'userId': userId})
       .then((userOrgArr) => {
         const orgIds = userOrgArr.map(orgEle => orgEle.orgId);
         userOrg = userOrgArr;
-        return Organization.find({ '_id': { '$in': orgIds}});
-      })
-      .then((orgDetails) => {
-        return res.json({orgDetails, userOrg});
+        return UsernameCheck.find({ 'refId': { '$in': orgIds}})
+            .then((orgUsername) => {
+              return Organization.find({ '_id': { '$in': orgIds}})
+                .then((orgDetails) => {
+                  return res.json({orgDetails, userOrg, orgUsername});
+                })
+                .catch(() => {
+                  return res.status(500).send({message: 'Error in finding organization'});
+                });
+            })
+            .catch(() => {
+              return res.status(500).send({message: 'Error in finding username'});
+            });
       })
       .catch(() => {
-        return res.status(500).send({message: 'Error in finding organization'});
+        return res.status(500).send({message: 'Error in finding userId'});
       });
 }
 
@@ -98,7 +124,7 @@ function updateDetails(req, res) {
   const website = req.body.website;
   const phoneNumber = req.body.phoneNumber;
   const username = req.body.username;
-
+  console.log(username);
   if (typeof userId !== 'string' ||
       typeof orgId !== 'string' ||
       typeof name !== 'string' ||
@@ -112,12 +138,42 @@ function updateDetails(req, res) {
               org.name = name;
               org.website = website;
               org.phoneNumber = phoneNumber;
-              org.username = username;  // TO DO: VALIDATE!!!!
               return org.save()
                   .then(() => {
-                    return res.status(200).send({
-                      message: 'Organization details updated successfully'
-                    });
+                    return UsernameCheck.findOne({'refId': orgId, 'current': true})
+                        .then((response) => {
+                          if (response.username === username) {
+                            return res.status(200).send({message: 'Updated successfully'});
+                          }
+                          response.current = false;
+                          return response.save()
+                              .then(() => {
+                                const usernameCheck = new UsernameCheck();
+                                usernameCheck.username = username;
+                                usernameCheck.refId = response.refId;
+                                usernameCheck.current = true;
+                                usernameCheck.type = 'Organization';
+                                return usernameCheck.save()
+                                    .then(() => {
+                                      return res.status(200).send({
+                                        message: 'Organization details updated successfully'
+                                      });
+                                    })
+                                    .catch((err) => {
+                                      return res.status(500).send({
+                                          message: 'Error in saving organization username'
+                                      });
+                                    });
+                              })
+                              .catch(() => {
+                                return res.status(500).send({message: 'Error in saving old username'});
+                              });
+                        })
+                        .catch((err) => {
+                          return res.status(500).send({
+                            message: 'Error in finding organization username'
+                        });
+                        });
                   })
                   .catch(() => {
                     return res.status(500).send({message: 'Error in updating organization'});
@@ -173,18 +229,24 @@ function getDetails(req, res) {
       typeof username !== 'string') {
         return res.status(500).send({message: 'Request validation failed'});
   }
-  return Organization.findOne({'username': username})
-    .then((orgDetail) => {
-      isOrgAdmin(userId, orgDetail._id)
+  return UsernameCheck.findOne({'username': username})
+    .then((response) => {
+      isOrgAdmin(userId, response.refId)
         .then(() => {
-            return res.send(orgDetail.frontendData());
+            return Organization.findOne({_id: response.refId})
+                .then((orgDetail) => {
+                  return res.json({orgDetail, response});
+                })
+                .catch(() => {
+                  return res.status(500).send({message: 'Organization not found'});
+                });
         })
         .catch(() => {
           return res.status(500).send({message: 'Unauthorized access'});
         });
     })
     .catch(() => {
-      return res.status(500).send({message: 'Organization not found'});
+      return res.status(500).send({message: 'Organization username not found'});
     });
 }
 
@@ -195,39 +257,51 @@ function getUsers(req, res) {
       typeof username !== 'string') {
     return res.status(500).send({message: 'Request validation failed'});
     }
-  return Organization.findOne({'username': username})
-    .then((organization) => {
-      return isOrgAdmin(userId, organization._id)
-        .then(() => {
-          return UserOrganization
-            .find({'orgId': organization._id, 'roles': 'POS'})
-                .then((userOrgArr) => {
-                    const userIds = userOrgArr.map(orgEle => orgEle.userId);
-                    User.find({'_id': userIds})
-                        .then((users) => {
-                            return res.send(users);
+  return UsernameCheck.findOne({'username': username})
+      .then((response) => {
+        return Organization.findOne({'_id': response.refId})
+          .then((organization) => {
+              return isOrgAdmin(userId, organization._id)
+                .then(() => {
+                  return UserOrganization
+                    .find({'orgId': organization._id, 'roles': 'POS'})
+                        .then((userOrgArr) => {
+                            const userIds =
+                                  userOrgArr.map(orgEle => orgEle.userId);
+                            return UsernameCheck.find({'refId': userIds})
+                                .then((users) => {
+                                    return res.send(users);
+                                })
+                                .catch(() => {
+                                  return res.status(500).send({
+                                    message: 'Error in finding users'
+                                  });
+                                });
                         })
-                        .catch(() => {
-                          return res.status(500).send({message: 'Error in finding users'});
+                        .catch((err) => {
+                          return res.status(500).send({
+                            message: 'Error in finding userIds'
+                          });
                         });
                 })
-                .catch((err) => {
-                  return res.status(500).send({message: 'Error in finding userIds'});
+                .catch(() => {
+                  return res.status(500).send({message: 'Unauthorized access'});
                 });
-        })
-        .catch(() => {
-          return res.status(500).send({message: 'Unauthorized access'});
-        });
-    })
-    .catch(() => {
-      return res.status(500).send({message: 'Organization not found'});
-    });
+          })
+          .catch(() => {
+            return res.status(500).send({message: 'Organization not found'});
+          });
+      })
+      .catch(() => {
+        return res.status(500).send({message: 'Organization username is invalid'});
+      });
 }
 
 function addUser(req, res) {
   const userId = req.userId;
   const orgId = req.body.orgId;
   const username = req.body.username;
+  console.log(userId, orgId, username);
   if (typeof userId !== 'string' ||
       typeof orgId !== 'string' ||
       typeof username !== 'string') {
@@ -238,35 +312,41 @@ function addUser(req, res) {
     .then(() => {
       return Organization.findOne({'_id' : orgId})
         .then(() => {
-          return User.findOne({'username': username})
-            .then((user) => {
-              userToAdd = user;
-              return UserOrganization.findOne({'userId': userToAdd._id, 'orgId': orgId})
-                .then((existingUser) => {
-                    if (existingUser) {
-                      return res.status(500).send({message: 'User already exist in this organization'});
-                    }
-                    const userOrg = new UserOrganization();
-                    userOrg.userId = userToAdd._id;
-                    userOrg.orgId = orgId;
-                    userOrg.roles = ['POS'];
-                    return userOrg.save()
-                      .then(() => {
-                        Organization.update({'_id': orgId}, {$inc: { userCount: 1 }})
-                          .then(() => {
-                            return res.status(200).send({message: 'User count increased successfully'});
-                          })
-                          .catch(() => {
-                            return res.status(500).send({message: 'Error in increasing user count'});
-                          });
-                      })
-                      .catch(() => {
-                        return res.status(500).send({message: 'Error in saving user to organization'});
+          return UsernameCheck.findOne({'username': username, 'type': 'user'})
+            .then((response) => {
+              return User.findOne({'_id': response.refId})
+                  .then((user) => {
+                    userToAdd = user;
+                    return UserOrganization.findOne({'userId': userToAdd._id, 'orgId': orgId})
+                      .then((existingUser) => {
+                          if (existingUser) {
+                            return res.status(500).send({message: 'User already exist in this organization'});
+                          }
+                          const userOrg = new UserOrganization();
+                          userOrg.userId = userToAdd._id;
+                          userOrg.orgId = orgId;
+                          userOrg.roles = ['POS'];
+                          return userOrg.save()
+                            .then(() => {
+                              Organization.update({'_id': orgId}, {$inc: { userCount: 1 }})
+                                .then(() => {
+                                  return res.status(200).send({message: 'User count increased successfully'});
+                                })
+                                .catch(() => {
+                                  return res.status(500).send({message: 'Error in increasing user count'});
+                                });
+                            })
+                            .catch(() => {
+                              return res.status(500).send({message: 'Error in saving user to organization'});
+                            });
                       });
-                });
+                  })
+                  .catch(() => {
+                    return res.status(500).send({message: 'User not found'});
+                  });
             })
             .catch(() => {
-              return res.status(500).send({message: 'User not found'});
+              return res.status(500).send({message: 'Username not found'});
             });
         })
         .catch(() => {

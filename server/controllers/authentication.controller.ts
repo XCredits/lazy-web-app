@@ -132,36 +132,36 @@ function register(req, res) {
                   .then(() => {
                     // The below promises are structured to report failure but not
                     // block on failure
-                    return createAndSendRefreshAndSessionJwt(username, user, req, res)
-                    .then(() => {
-                      return statsService.increment(UserStats)
-                          .catch((err) => {
-                            console.log('Error in the stats service');
-                          });
-                    })
-                    .then(() => {
-                      return emailService.addUserToMailingList({
-                            givenName, familyName, email, userId: user._id,
-                          })
-                          .catch((err) => {
-                            console.log('Error in the mailing list service');
-                          });
-                    })
-                    .then(() => {
-                      return emailService.sendRegisterWelcome({
-                            givenName, familyName, email,
-                          })
-                          .catch((err) => {
-                            console.log('Error in the send email service');
-                          });
-                    })
-                    .catch((err) => {
-                      console.log('Error in createAndSendRefreshAndSessionJwt');
-                    });
-                  })
-                  .catch(() => {
-                    return res.status(500).send({message: 'Error in saving username'});
-                  });
+                      return createAndSendRefreshAndSessionJwt(username, user, req, res)
+                        .then(() => {
+                          return statsService.increment(UserStats)
+                              .catch((err) => {
+                                console.log('Error in the stats service');
+                              });
+                        })
+                        .then(() => {
+                          return emailService.addUserToMailingList({
+                                givenName, familyName, email, userId: user._id,
+                              })
+                              .catch((err) => {
+                                console.log('Error in the mailing list service');
+                              });
+                        })
+                        .then(() => {
+                          return emailService.sendRegisterWelcome({
+                                givenName, familyName, email,
+                              })
+                              .catch((err) => {
+                                console.log('Error in the send email service');
+                              });
+                        })
+                        .catch((err) => {
+                          console.log('Error in createAndSendRefreshAndSessionJwt');
+                        });
+                      })
+                      .catch(() => {
+                        return res.status(500).send({message: 'Error in saving username'});
+                      });
             })
             .catch((dbError) => {
               let err;
@@ -449,19 +449,24 @@ function forgotUsername(req, res) {
             res.send(successObject); // Note that if errors in send in emails occur, the front end will not see them
             return;
           }
-          const userNameArr = users.map((user) => user.username);
-          return emailService.sendUsernameRetrieval({
-                givenName: users[0].givenName, // just use the name of the first account
-                familyName: users[0].familyName,
-                email: email,
-                userNameArr: userNameArr,
-              })
-              .then(() => {
-                res.send(successObject); // Note that if errors in send in emails occur, the front end will not see them
-              })
-              .catch((err) => {
-                res.status(500).send({message: 'Could not send email.'});
-              });
+          return UsernameCheck.find({userId: users._id})
+              .then((username) => {
+                  return emailService.sendUsernameRetrieval({
+                    givenName: users[0].givenName, // just use the name of the first account
+                    familyName: users[0].familyName,
+                    email: email,
+                    userNameArr: username,
+                  })
+                  .then(() => {
+                    res.send(successObject); // Note that if errors in send in emails occur, the front end will not see them
+                  })
+                  .catch((err) => {
+                    res.status(500).send({message: 'Could not send email.'});
+                  });
+                })
+                .catch(() => {
+                  res.status(500).send({message: 'Username not found'});
+                });
       })
       .catch((err) => {
         res.status(500).send({message: 'Error accessing user database.'});

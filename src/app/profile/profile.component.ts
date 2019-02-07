@@ -56,7 +56,7 @@ export class ProfileComponent implements OnInit {
 
     // this.currentUsername - designed to prevent the form from reporting an
     // error if the username has been updated
-    const initialUsername = this.user.username;
+    const initialUsername = this.normalizeUsername(this.user.displayUsername);
     const displayUsername = this.user.displayUsername;
     this.currentUsername = this.normalizeUsername(formData.username);
     this.currentDisplayName = formData.username;
@@ -127,7 +127,7 @@ export class ProfileComponent implements OnInit {
     const tempDisplayName = this.user.displayUsername;
     fields.forEach(element => {
       if (this.user[element] !== currentValue[element]
-          || tempUsername !== this.user.username
+          || tempUsername !== this.normalizeUsername(this.user.displayUsername)
           || tempDisplayName !== currentValue.username) {
         this.disableButton = false;
         return;

@@ -27,6 +27,7 @@ export class UpdateOrganizationComponent implements OnInit, OnDestroy {
   userToBeDeleted: any;
   usernameErrorMessage: string;
   selectedRatio = 4 / 3;
+  orgUsername: string;
   options: any = {
     size: 'dialog-centered',
     panelClass: 'custom-modalbox'
@@ -47,13 +48,14 @@ export class UpdateOrganizationComponent implements OnInit, OnDestroy {
           'username': params.orgUsername
       })
       .subscribe(organization => {
-          this.organization = organization;
-          this.logo = organization.logo;
+          this.organization = organization['orgDetail'];
+          this.orgUsername = organization['response'].username;
+          this.logo = organization['orgDetail'].logo;
           this.form = new FormGroup ({
-            name: new FormControl(organization.name, Validators.required),
-            website: new FormControl(organization.website),
-            phoneNumber: new FormControl(organization.phoneNumber),
-            username: new FormControl(organization.username, Validators.required),
+            name: new FormControl(organization['orgDetail'].name, Validators.required),
+            website: new FormControl(organization['orgDetail'].website),
+            phoneNumber: new FormControl(organization['orgDetail'].phoneNumber),
+            username: new FormControl(organization['response'].username, Validators.required),
         });
         this.ready = true;
         this.form.valueChanges.subscribe(changes => this.checkUsername(changes));
@@ -74,7 +76,7 @@ export class UpdateOrganizationComponent implements OnInit, OnDestroy {
 
     // this.currentUsername - designed to prevent the form from reporting an
     // error if the username has been updated
-    const initialUsername = this.organization.username;
+    const initialUsername = this.orgUsername;
     this.currentUsername = this.normalizeUsername(formData.username);
     this.currentDisplayName = formData.username;
     if (initialUsername.length === 0) {
@@ -112,7 +114,7 @@ export class UpdateOrganizationComponent implements OnInit, OnDestroy {
   }
 
   handleImageUpload(imageUrl: string) {
-    this.organizationService.updateOrgDetails(this.organization);
+    this.organizationService.updateOrgDetails(this.orgUsername);
     this.snackBar.open('Image Uploaded Successfully', 'Dismiss', {
       duration: 5000,
       verticalPosition: 'top',
@@ -131,7 +133,7 @@ export class UpdateOrganizationComponent implements OnInit, OnDestroy {
   deleteOrg() {
     this.modalReference.close();
     this.http.post('api/organization/delete', {
-      'id': this.organization['id'],
+      'id': this.organization._id,
     })
     .subscribe(() => {
       this.router.navigateByUrl('/organization');
@@ -173,7 +175,7 @@ export class UpdateOrganizationComponent implements OnInit, OnDestroy {
     }
     this.formErrorMessage = undefined;
     this.http.post('/api/organization/update-details', {
-        'id': this.organization.id,
+        'id': this.organization._id,
         'name': formData.name,
         'website': formData.website,
         'phoneNumber': formData.phoneNumber,
