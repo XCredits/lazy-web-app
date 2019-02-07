@@ -471,7 +471,7 @@ function forgotUsername(req, res) {
                 givenName: users[0].givenName, // just use the name of the first account
                 familyName: users[0].familyName,
                 email: email,
-                userNameArr: username,
+                usernameArr: username,
               })
               .then(() => {
                 res.send(successObject); // Note that if errors in send in emails occur, the front end will not see them
