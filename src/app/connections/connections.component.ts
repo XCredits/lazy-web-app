@@ -34,10 +34,10 @@ export class ConnectionComponent implements OnInit {
     });
 
     this.userService.userObservable
-      .subscribe(user => {
-        this.user = user;
-        console.log('user logged in is --> ' + user.id);
-      });
+        .subscribe(user => {
+          this.user = user;
+          console.log('user logged in is --> ' + user.id);
+        });
 
     this.navLinks.push('./view');
     this.navLinks.push('./request');
@@ -59,21 +59,21 @@ export class ConnectionComponent implements OnInit {
   loadPageCounters = function () {
     console.log('This is the parent');
     this.http.post('/api/connection/get-pending-count', {})
-      .subscribe((returnedResult: any) => {
-        if (returnedResult.message === 0) {
-          this.pendingConnectionsCounter = '';
-        } else {
-          this.pendingConnectionsCounter = returnedResult.message;
-          }
+        .subscribe((returnedResult: any) => {
+          if (returnedResult.message === 0) {
+            this.pendingConnectionsCounter = '';
+          } else {
+            this.pendingConnectionsCounter = returnedResult.message;
+            }
         });
 
     this.http.post('/api/connection/get-confirmed-count', {})
-      .subscribe((returnedResult: any) => {
-        if (returnedResult.message === 0) {
-          this.confirmedConnectionsCounter = '';
-        } else {
-          this.confirmedConnectionsCounter = returnedResult.message;
-        }
+        .subscribe((returnedResult: any) => {
+          if (returnedResult.message === 0) {
+            this.confirmedConnectionsCounter = '';
+          } else {
+            this.confirmedConnectionsCounter = returnedResult.message;
+          }
         });
   };
 
