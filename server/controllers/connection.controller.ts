@@ -178,32 +178,9 @@ function actionConnectionRequest(req, res) {
       cancelConnection();
       break;
     case 'reject':
-      connectionRequest.findOneAndUpdate({
-        senderUserId: senderUserId,
-        receiverUserId: userId,
-        active: { $eq: true }
-      },
-        {
-          $set:
-          {
-            active: false,
-            currentStatus: 'rejected',
-            updateTimeStamp: new Date().getTime(),
-          }
-        })
-        .then((data) => {
-          if (data === null) {
-            return res.status(200)
-              .send({ message: 'Request ignored error' });
-          }
-          return res.status(200)
-            .send({ message: 'Request rejected' });
-        })
-        .catch((err) => {
-          res.status(500)
-            .send({ message: err });
-        });
+      rejectConnection();
       break;
+    // TODO default
   }
 
   function acceptConnection() {
@@ -269,6 +246,34 @@ function actionConnectionRequest(req, res) {
           res.status(500)
               .send({ message: 'Could not cancel connection request.' });
         });
+  }
+
+  function rejectConnection() {
+    connectionRequest.findOneAndUpdate({
+      senderUserId: senderUserId,
+      receiverUserId: userId,
+      active: { $eq: true }
+    },
+      {
+        $set:
+        {
+          active: false,
+          currentStatus: 'rejected',
+          updateTimeStamp: new Date().getTime(),
+        }
+      })
+      .then((data) => {
+        if (data === null) {
+          return res.status(200)
+            .send({ message: 'Request ignored error' });
+        }
+        return res.status(200)
+          .send({ message: 'Request rejected' });
+      })
+      .catch((err) => {
+        res.status(500)
+          .send({ message: err });
+      });
   }
 }
 
