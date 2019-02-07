@@ -226,7 +226,7 @@ function actionConnectionRequest(req, res) {
         });
       break;
   }
-  
+
   function acceptConnection() {
     connectionRequest.findOneAndUpdate({
           senderUserId: senderUserId,
@@ -241,33 +241,32 @@ function actionConnectionRequest(req, res) {
             updateTimeStamp: new Date().getTime(),
           }
         })
-      .then((result) => {
-        const _connection1 = new connection();
-        _connection1.senderUserId = userId;
-        _connection1.receiverUserId = senderUserId;
-        _connection1.status = 'connected';
-        _connection1.connectionRequestRef = result._id;
-        return _connection1.save()
-          .then(() => {
-            const _connection2 = new connection();
-            _connection2.receiverUserId = userId;
-            _connection2.senderUserId = senderUserId;
-            _connection2.status = 'connected';
-            _connection2.connectionRequestRef = result._id;
-            return _connection2.save()
+        .then((result) => {
+          const _connection1 = new connection();
+          _connection1.senderUserId = userId;
+          _connection1.receiverUserId = senderUserId;
+          _connection1.status = 'connected';
+          _connection1.connectionRequestRef = result._id;
+          return _connection1.save()
               .then(() => {
-                res.send({ message: 'request accepted' });
+                const _connection2 = new connection();
+                _connection2.receiverUserId = userId;
+                _connection2.senderUserId = senderUserId;
+                _connection2.status = 'connected';
+                _connection2.connectionRequestRef = result._id;
+                return _connection2.save()
+                    .then(() => {
+                      res.send({message: 'request accepted'});
+                    });
+              })
+              .catch(() => {
+                return res.status(500)
+                  .send({message: 'Could not save connection request.'});
               });
-          })
-          .catch(() => {
-            return res.status(500)
-              .send({ message: 'could not save connection request.' });
-          });
-      })
-      .catch(() => {
-        res.status(500)
-          .send({ message: 'could not save connection request.'  });
-      });
+        })
+        .catch(() => {
+          res.status(500).send({message: 'Could not save connection request.'});
+        });
     }
 }
 
