@@ -58,7 +58,7 @@ export class ConnectionComponent implements OnInit {
 
   loadPageCounters = function () {
     console.log('This is the parent');
-    this.http.post('/api/connection/get-pending-count', {})
+    this.http.post('/api/connection/get-pending-request-count', {})
         .subscribe((returnedResult: any) => {
           if (returnedResult.message === 0) {
             this.pendingConnectionsCounter = '';
@@ -67,7 +67,7 @@ export class ConnectionComponent implements OnInit {
             }
         });
 
-    this.http.post('/api/connection/get-confirmed-count', {})
+    this.http.post('/api/connection/get-connection-count', {})
         .subscribe((returnedResult: any) => {
           if (returnedResult.message === 0) {
             this.confirmedConnectionsCounter = '';

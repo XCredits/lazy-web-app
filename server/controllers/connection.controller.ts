@@ -5,12 +5,12 @@ const User = require('../models/user.model');
 const auth = require('./jwt-auth.controller');
 
 module.exports = function (app) {
-  app.post('/api/connection/add-connection-request', auth.jwt, addConnectionRequest);
-  app.post('/api/connection/get-pending-connections', auth.jwt, getPendingConnections);
-  app.post('/api/connection/get-confirmed-connections', auth.jwt, getConfirmedConnections);
-  app.post('/api/connection/action-connection-request', auth.jwt, actionConnectionRequest);
-  app.post('/api/connection/get-pending-count', auth.jwt, getPendingRequestsCount);
-  app.post('/api/connection/get-confirmed-count', auth.jwt, getConfirmedConnectionsCount);
+  app.post('/api/connection/add-request', auth.jwt, addRequest);
+  app.post('/api/connection/get-pending-requests', auth.jwt, getPendingRequests);
+  app.post('/api/connection/get-connections', auth.jwt, getConnections);
+  app.post('/api/connection/action-request', auth.jwt, actionConnectionRequest);
+  app.post('/api/connection/get-pending-request-count', auth.jwt, getPendingRequestCount);
+  app.post('/api/connection/get-connection-count', auth.jwt, getConnectionCount);
 };
 
 
@@ -20,7 +20,7 @@ module.exports = function (app) {
  * @param {*} res response object
  * @return {*}
  */
-function addConnectionRequest(req, res) {
+function addRequest(req, res) {
   // Save the login userId
   const userId = req.userId;
   let username = req.body.username;
@@ -82,7 +82,7 @@ function addConnectionRequest(req, res) {
  * @param {*} res response object
  * @return {*}
  */
-function getPendingConnections(req, res) {
+function getPendingRequests(req, res) {
   // Check pending for snooze
   function checkExpiredRequests() {
     return connectionRequest.updateMany({
@@ -132,7 +132,7 @@ function getPendingConnections(req, res) {
  * @param {*} res response object
  * @return {*}
  */
-function getConfirmedConnections(req, res) {
+function getConnections(req, res) {
   return connectionRequest.find({ receiverUserId: req.userId, currentStatus: { $eq: 'accepted' } })
       .then((result) => {
         const senderIdArr = result.map((e => e.senderUserId));
@@ -280,7 +280,7 @@ function actionConnectionRequest(req, res) {
  * @param {*} res response object
  * @return {*}
  */
-function getPendingRequestsCount(req, res) {
+function getPendingRequestCount(req, res) {
   return connectionRequest.count({
         receiverUserId: req.userId,
         active: { $eq: true }
@@ -296,7 +296,7 @@ function getPendingRequestsCount(req, res) {
  * @param {*} res response object
  * @return {*}
  */
-function getConfirmedConnectionsCount(req, res) {
+function getConnectionCount(req, res) {
   return connectionRequest.count({
         receiverUserId: req.userId,
         currentStatus: { $eq: 'accepted' },
