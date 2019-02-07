@@ -33,7 +33,7 @@ function addContact(req, res) {
   });
   return contact.save()
       .then((result) => {
-        res.status(200).send({ message: 'success' });
+        res.send({ message: 'success' });
       })
       .catch((error) => {
         return res.status(500).send('problem finding contacts.');

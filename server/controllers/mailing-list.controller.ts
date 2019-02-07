@@ -33,7 +33,7 @@ function joinMailingList(req, res) {
   mailingListUser.familyName = familyName;
   return mailingListUser.save()
       .then((result) => {
-        res.status(200).send({message: 'Success'});
+        res.send({message: 'Success'});
         return statsService.increment(MailingListStats)
             .catch((err) => {
               console.log('Error in the stats service');
