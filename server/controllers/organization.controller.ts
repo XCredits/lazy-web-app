@@ -46,7 +46,7 @@ function createOrg(req, res) {
       typeof username !== 'string') {
     return res.status(500).send({message: 'Request validation failed'});
   }
-  return UsernameCheck.find({username: username})
+  return UsernameCheck.findOne({username: username})
       .then((usernameExist) => {
           if (usernameExist) {
               return res.status(409).send({message: 'Username already taken.'});
