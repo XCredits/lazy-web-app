@@ -1,0 +1,24 @@
+<div class="container">
+  <mat-card>
+    <div class="col-md-8 offset-md-2">
+      <p> Find user </p>
+        <mat-card-content>
+          <form [formGroup]="form">
+            <div class="form-group">
+              <mat-form-field class="simple-form-field-10">
+                  <input matInput placeholder="Username" name="username" formControlName="username">
+              </mat-form-field>
+              <span *ngIf='formErrorMessage' class="text-error-color">
+                  {{formErrorMessage}}
+              </span>
+              <br>
+              <br>
+              <button class="simple-form-button" color="primary" mat-raised-button (click)="requestUserConnection(form.value)">
+                  Add
+              </button>
+            </div>
+          </form>
+        </mat-card-content>
+    </div>
+  </mat-card>
+</div>

@@ -11,12 +11,12 @@ import { StatsService } from './stats.service';
 import { AnalyticsService } from './analytics.service';
 import { AuthGuard } from './auth.guard';
 import { AdminGuard } from './admin.guard';
-
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AngularFontAwesomeModule } from 'angular-font-awesome';
 
 // Material modules
 import {
+  MatBadgeModule,
   MatAutocompleteModule,
   MatButtonModule,
   MatButtonToggleModule,
@@ -61,7 +61,6 @@ import { HelpComponent } from './help/help.component';
 import { SettingsComponent } from './settings/settings.component';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import { FeedComponent } from './feed/feed.component';
-import { ContactsComponent } from './contacts/contacts.component';
 import { AboutComponent } from './about/about.component';
 import { LoginComponent } from './login/login.component';
 import { ForgotPasswordComponent } from './forgot-password/forgot-password.component';
@@ -81,6 +80,13 @@ import { PrivacyComponent } from './privacy/privacy.component';
 import { FooterComponent } from './footer/footer.component';
 import { ImageUploadModule } from './image-upload/image-upload.module';
 import { ChangeThemeComponent } from './change-theme/change-theme.component';
+import { ContactsComponent } from './contacts/contacts.component';
+import { AddContactsComponent } from './addcontact/add-contact.component';
+import { ViewContactsComponent } from './view-contacts/view-contacts.component';
+import { ConnectionComponent } from './connections/connections.component';
+import { AddConnectionComponent } from './add-connection/add-connections.component';
+import { ConnectionRequestsComponent } from './connection-requests/connection-requests.component';
+import { ViewConnectionsComponent } from './view-connections/view-connections.component';
 
 @NgModule({
   declarations: [
@@ -90,7 +96,6 @@ import { ChangeThemeComponent } from './change-theme/change-theme.component';
     SettingsComponent,
     PageNotFoundComponent,
     FeedComponent,
-    ContactsComponent,
     AboutComponent,
     LoginComponent,
     ForgotPasswordComponent,
@@ -109,6 +114,13 @@ import { ChangeThemeComponent } from './change-theme/change-theme.component';
     PrivacyComponent,
     FooterComponent,
     ChangeThemeComponent,
+    ContactsComponent,
+    AddContactsComponent,
+    ViewContactsComponent,
+    ConnectionComponent,
+    AddConnectionComponent,
+    ConnectionRequestsComponent,
+    ViewConnectionsComponent,
   ],
   imports: [
     BrowserModule,
@@ -207,6 +219,50 @@ import { ChangeThemeComponent } from './change-theme/change-theme.component';
         data: { title: 'Privacy' },
       },
       {
+        path: 'contacts',
+        component: ContactsComponent,
+        children:
+        [
+          {
+            path: '',
+            redirectTo: 'contacts',
+            pathMatch: 'full'
+          },
+          {
+            path: 'view',
+            component: ViewContactsComponent,
+          },
+          {
+            path: 'add',
+            component: AddContactsComponent,
+          }
+        ]
+      },
+      {
+        path: 'connections',
+        component: ConnectionComponent,
+        children:
+        [
+          {
+            path: '',
+            redirectTo: 'connections',
+            pathMatch: 'full'
+          },
+          {
+            path: 'view',
+            component: ViewConnectionsComponent,
+          },
+          {
+            path: 'add',
+            component: AddConnectionComponent,
+          },
+          {
+            path: 'request',
+            component: ConnectionRequestsComponent
+          }
+         ]
+      },
+      {
         path: 'unauthorized',
         component: UnauthorizedComponent,
         data: { title: 'Unauthorized' },
@@ -230,6 +286,7 @@ import { ChangeThemeComponent } from './change-theme/change-theme.component';
     AngularFontAwesomeModule,
 
     // Material modules
+    MatBadgeModule,
     MatAutocompleteModule,
     MatButtonModule,
     MatButtonToggleModule,
