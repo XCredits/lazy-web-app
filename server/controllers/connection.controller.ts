@@ -27,7 +27,7 @@ function addRequest(req, res) {
   // Validate
   if (typeof username !== 'string' ||
     !isValidDisplayUsername(username)) {
-    return res.status(422).json({ message: 'request failed validation' });
+    return res.status(422).json({ message: 'Request failed validation' });
   }
   username = normalizeUsername(username);
   // Check if the user exist

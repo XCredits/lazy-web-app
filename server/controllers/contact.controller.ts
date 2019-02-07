@@ -22,7 +22,7 @@ function addContact(req, res) {
   if (typeof givenName !== 'string' ||
       typeof familyName !== 'string' ||
       !validator.isEmail(email) ) {
-    return res.status(422).json({ message: 'request failed validation' });
+    return res.status(422).json({ message: 'Request failed validation' });
   }
 
   const contact = new Contact({
@@ -36,7 +36,7 @@ function addContact(req, res) {
         res.send({ message: 'success' });
       })
       .catch((error) => {
-        return res.status(500).send('problem finding contacts.');
+        return res.status(500).send('Problem finding contacts.');
       });
 }
 
@@ -57,7 +57,7 @@ function viewContacts(req, res) {
             familyName: x.familyName,
             email: x.email
           };
-      });
+        });
         res.send(filteredResult);
       })
       .catch(() => {
