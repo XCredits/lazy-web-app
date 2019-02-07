@@ -129,44 +129,44 @@ function register(req, res) {
               authUser.createPasswordHash(password);
               return authUser.save()
                   .then(() => {
-                      usernameDocument.username = username;
-                      usernameDocument.refId = userDetail._id;
-                      usernameDocument.type = 'user';
-                      usernameDocument.current = true;
-                      return usernameDocument.save()
-                          .then(() => {
-                            // The below promises are structured to report failure but not
-                            // block on failure
-                              return createAndSendRefreshAndSessionJwt(username, user, req, res)
-                                .then(() => {
-                                  return statsService.increment(UserStats)
-                                      .catch((err) => {
-                                        console.log('Error in the stats service');
-                                      });
-                                })
-                                .then(() => {
-                                  return emailService.addUserToMailingList({
-                                        givenName, familyName, email, userId: user._id,
-                                      })
-                                      .catch((err) => {
-                                        console.log('Error in the mailing list service');
-                                      });
-                                })
-                                .then(() => {
-                                  return emailService.sendRegisterWelcome({
-                                        givenName, familyName, email,
-                                      })
-                                      .catch((err) => {
-                                        console.log('Error in the send email service');
-                                      });
-                                })
-                                .catch((err) => {
-                                  console.log('Error in createAndSendRefreshAndSessionJwt');
-                                });
+                    usernameDocument.username = username;
+                    usernameDocument.refId = userDetail._id;
+                    usernameDocument.type = 'user';
+                    usernameDocument.current = true;
+                    return usernameDocument.save()
+                        .then(() => {
+                          // The below promises are structured to report failure but not
+                          // block on failure
+                          return createAndSendRefreshAndSessionJwt(username, user, req, res)
+                              .then(() => {
+                                return statsService.increment(UserStats)
+                                    .catch((err) => {
+                                      console.log('Error in the stats service');
+                                    });
                               })
-                              .catch(() => {
-                                return res.status(500).send({message: 'Error in saving username'});
+                              .then(() => {
+                                return emailService.addUserToMailingList({
+                                      givenName, familyName, email, userId: user._id,
+                                    })
+                                    .catch((err) => {
+                                      console.log('Error in the mailing list service');
+                                    });
+                              })
+                              .then(() => {
+                                return emailService.sendRegisterWelcome({
+                                      givenName, familyName, email,
+                                    })
+                                    .catch((err) => {
+                                      console.log('Error in the send email service');
+                                    });
+                              })
+                              .catch((err) => {
+                                console.log('Error in createAndSendRefreshAndSessionJwt');
                               });
+                        })
+                        .catch(() => {
+                          return res.status(500).send({message: 'Error in saving username'});
+                        });
                   })
                   .catch(() => {
                     return res.status(500).send({message: 'Error in saving password'});
