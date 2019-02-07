@@ -580,7 +580,7 @@ function setJwtCookie({res, userId, username, isAdmin, xsrf, sessionId}) {
   const jwtObj = {
     sub: userId,
     // Note this id is set using the refresh token session id so that we can
-    // easily determine which session is responisble for an action
+    // easily determine which session is responsible for an action
     jti: sessionId,
     username: username,
     isAdmin: isAdmin,
