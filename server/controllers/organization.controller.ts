@@ -36,7 +36,7 @@ function isOrgAdmin(userId, orgId) {
       });
 }
 
-function threeMonthFromNow() {
+function threeMonthsFromNow() {
     const date = new Date();
     const targetMonth = date.getMonth() + 3;
     date.setMonth(targetMonth);
@@ -174,7 +174,7 @@ function updateDetails(req, res) {
                                 });
                               }
                               response.current = false;
-                              response.forward = threeMonthFromNow();
+                              response.forward = threeMonthsFromNow();
                               return response.save()
                                   .then(() => {
                                       const usernameCheck = new UsernameCheck();
