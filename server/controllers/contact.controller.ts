@@ -19,20 +19,19 @@ function addContact(req, res) {
   const givenName = req.body.givenName;
   const familyName = req.body.familyName;
   // Validate
-  if (typeof req.userId !== 'string' ||
-      typeof email !== 'string' ||
-      typeof givenName !== 'string' ||
+  if (typeof givenName !== 'string' ||
       typeof familyName !== 'string' ||
       !validator.isEmail(email) ) {
     return res.status(422).json({ message: 'request failed validation' });
   }
 
-  const contactListUser = new Contact();
-  contactListUser.userId = req.userId;
-  contactListUser.email = email;
-  contactListUser.givenName = givenName;
-  contactListUser.familyName = familyName;
-  return contactListUser.save()
+  const contact = new Contact({
+    userId: req.userId,
+    email,
+    givenName,
+    familyName,
+  });
+  return contact.save()
       .then((result) => {
         res.status(200).send({ message: 'success' });
       })
