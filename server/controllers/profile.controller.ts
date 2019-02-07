@@ -1,6 +1,6 @@
 import * as validator from 'validator';
 const User = require('../models/user.model');
-const UsernameCheck = require('../models/username.model');
+const Username = require('../models/username.model');
 const auth = require('./jwt-auth.controller');
 const {isValidDisplayUsername, normalizeUsername} =
     require('./utils.controller');
@@ -42,7 +42,7 @@ function saveDetails(req, res) {
         user.displayUsername = displayUsername;
         return user.save()
             .then(() => {
-                return UsernameCheck.findOne({refId: userId})
+                return Username.findOne({refId: userId})
                     .then((response) => {
                       if (response.username === username) {
                         return res.send({message: 'Details Changed successfully'});
@@ -50,12 +50,12 @@ function saveDetails(req, res) {
                       response.current = false;
                       return response.save()
                           .then(() => {
-                              const usernameCheck = new UsernameCheck();
-                              usernameCheck.username = username;
-                              usernameCheck.current = true;
-                              usernameCheck.refId = response.refId;
-                              usernameCheck.type = 'User';
-                              return usernameCheck.save()
+                              const usernameDocument = new Username();
+                              usernameDocument.username = username;
+                              usernameDocument.current = true;
+                              usernameDocument.refId = response.refId;
+                              usernameDocument.type = 'User';
+                              return usernameDocument.save()
                                   .then(() => {
                                     return res.status(200).send({message: 'Details Changed successfully'});
                                   })

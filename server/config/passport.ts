@@ -26,7 +26,7 @@ import * as passport from 'passport';
 import * as passportLocal from 'passport-local';
 const LocalStrategy = passportLocal.Strategy;
 const User1 = require('../models/user.model');
-const UsernameCheck = require('../models/username.model');
+const Username = require('../models/username.model');
 const Auth = require('../models/auth.model');
 // Note: the above variable is set to "User1" instead of "User" because it
 // appears that passport has a User type declared in block scope.
@@ -36,19 +36,19 @@ passport.use(new LocalStrategy({
   passwordField: 'password',
 },
 function(username, password, done) {
-  UsernameCheck.findOne({username: username}, function(err, userName) {
-    if (err) {
-      return done(err);
+  Username.findOne({username: username}, function(err1, usernameDocument) {
+    if (err1) {
+      return done(err1);
     }
     // Return if username not found in database
-    if (!userName) {
+    if (!usernameDocument) {
       return done(null, false, {
         message: 'Username not found',
       });
     }
-    Auth.findOne({'userId': userName.refId}, function(error, userAuth) {
-      if (error) {
-        return done(error);
+    Auth.findOne({'userId': usernameDocument.refId}, function(err2, userAuth) {
+      if (err2) {
+        return done(err2);
       }
       // Return if password is incorrect
       if (!userAuth.checkPassword(password)) {
@@ -56,12 +56,12 @@ function(username, password, done) {
           message: 'Password is incorrect',
         });
       }
-      User1.findOne({'_id': userName.refId}, function(er, user) {
-        if (er) {
-          return done(er);
+      User1.findOne({'_id': usernameDocument.refId}, function(err3, user) {
+        if (err3) {
+          return done(err3);
         }
         // Return if user not found in database
-        if (!user ) {
+        if (!user) {
           return done(null, false, {
             message: 'User not found',
           });

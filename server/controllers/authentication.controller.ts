@@ -48,7 +48,7 @@ const passwordSettings = {
 
 import * as validator from 'validator';
 const User = require('../models/user.model');
-const UsernameCheck = require('../models/username.model');
+const Username = require('../models/username.model');
 const Auth = require('../models/auth.model');
 const UserStats = require('../models/user-stats.model');
 const statsService = require('../services/stats.service');
@@ -111,13 +111,13 @@ function register(req, res) {
   const username = normalizeUsername(displayUsername);
 
   // check that there is not an existing user with this username
-  return UsernameCheck.findOne({username: username})
+  return Username.findOne({username: username})
       .then((existingUser) => {
         if (existingUser) {
           return res.status(409).send({message: 'Username already taken.'});
         }
         const user = new User();
-        const usernameCheck = new UsernameCheck();
+        const usernameDocument = new Username();
         const authUser = new Auth();
         user.givenName = givenName;
         user.familyName = familyName;
@@ -129,44 +129,44 @@ function register(req, res) {
               authUser.createPasswordHash(password);
               return authUser.save()
                   .then(() => {
-                      usernameCheck.username = username;
-                      usernameCheck.refId = userDetail._id;
-                      usernameCheck.type = 'user';
-                      usernameCheck.current = true;
-                      return usernameCheck.save()
-                          .then(() => {
-                            // The below promises are structured to report failure but not
-                            // block on failure
-                              return createAndSendRefreshAndSessionJwt(username, user, req, res)
-                                .then(() => {
-                                  return statsService.increment(UserStats)
-                                      .catch((err) => {
-                                        console.log('Error in the stats service');
-                                      });
-                                })
-                                .then(() => {
-                                  return emailService.addUserToMailingList({
-                                        givenName, familyName, email, userId: user._id,
-                                      })
-                                      .catch((err) => {
-                                        console.log('Error in the mailing list service');
-                                      });
-                                })
-                                .then(() => {
-                                  return emailService.sendRegisterWelcome({
-                                        givenName, familyName, email,
-                                      })
-                                      .catch((err) => {
-                                        console.log('Error in the send email service');
-                                      });
-                                })
-                                .catch((err) => {
-                                  console.log('Error in createAndSendRefreshAndSessionJwt');
-                                });
+                    usernameDocument.username = username;
+                    usernameDocument.refId = userDetail._id;
+                    usernameDocument.type = 'user';
+                    usernameDocument.current = true;
+                    return usernameDocument.save()
+                        .then(() => {
+                          // The below promises are structured to report failure but not
+                          // block on failure
+                          return createAndSendRefreshAndSessionJwt(username, user, req, res)
+                              .then(() => {
+                                return statsService.increment(UserStats)
+                                    .catch((err) => {
+                                      console.log('Error in the stats service');
+                                    });
                               })
-                              .catch(() => {
-                                return res.status(500).send({message: 'Error in saving username'});
+                              .then(() => {
+                                return emailService.addUserToMailingList({
+                                      givenName, familyName, email, userId: user._id,
+                                    })
+                                    .catch((err) => {
+                                      console.log('Error in the mailing list service');
+                                    });
+                              })
+                              .then(() => {
+                                return emailService.sendRegisterWelcome({
+                                      givenName, familyName, email,
+                                    })
+                                    .catch((err) => {
+                                      console.log('Error in the send email service');
+                                    });
+                              })
+                              .catch((err) => {
+                                console.log('Error in createAndSendRefreshAndSessionJwt');
                               });
+                        })
+                        .catch(() => {
+                          return res.status(500).send({message: 'Error in saving username'});
+                        });
                   })
                   .catch(() => {
                     return res.status(500).send({message: 'Error in saving password'});
@@ -224,7 +224,7 @@ function usernameAvailable(req, res) {
     return res.send({available: true});
   }
 
-  return UsernameCheck.findOne({username: username})
+  return Username.findOne({username: username})
       .then((existingUser) => {
         if (existingUser) {
           return res.send({available: false});
@@ -398,7 +398,7 @@ function requestResetPassword(req, res) {
       .then((user) => {
         // Success object must be identical, to avoid people discovering
         // emails in the system
-        return UsernameCheck.findOne({userId: user._id}, function(err, usernameReturn) {
+        return Username.findOne({userId: user._id}, function(err, usernameReturn) {
           if (err) {
             return;
           }
@@ -458,31 +458,31 @@ function forgotUsername(req, res) {
   // find all users by email
   return User.find({email: email}).select('username givenName familyName')
       .then((users) => {
-          // Success object must be identical, to avoid people
-          // discovering emails in the system
-          const successObject = {message: 'Email sent if users found in database.'};
-          if (!users || users.length === 0) {
-            res.send(successObject); // Note that if errors in send in emails occur, the front end will not see them
-            return;
-          }
-          return UsernameCheck.find({userId: users._id})
-              .then((username) => {
-                  return emailService.sendUsernameRetrieval({
-                    givenName: users[0].givenName, // just use the name of the first account
-                    familyName: users[0].familyName,
-                    email: email,
-                    userNameArr: username,
-                  })
-                  .then(() => {
-                    res.send(successObject); // Note that if errors in send in emails occur, the front end will not see them
-                  })
-                  .catch((err) => {
-                    res.status(500).send({message: 'Could not send email.'});
-                  });
-                })
-                .catch(() => {
-                  res.status(500).send({message: 'Username not found'});
-                });
+        // Success object must be identical, to avoid people
+        // discovering emails in the system
+        const successObject = {message: 'Email sent if users found in database.'};
+        if (!users || users.length === 0) {
+          res.send(successObject); // Note that if errors in send in emails occur, the front end will not see them
+          return;
+        }
+        return Username.find({userId: users._id})
+            .then((username) => {
+              return emailService.sendUsernameRetrieval({
+                givenName: users[0].givenName, // just use the name of the first account
+                familyName: users[0].familyName,
+                email: email,
+                usernameArr: username,
+              })
+              .then(() => {
+                res.send(successObject); // Note that if errors in send in emails occur, the front end will not see them
+              })
+              .catch((err) => {
+                res.status(500).send({message: 'Could not send email.'});
+              });
+            })
+            .catch(() => {
+              res.status(500).send({message: 'Username not found'});
+            });
       })
       .catch((err) => {
         res.status(500).send({message: 'Error accessing user database.'});
@@ -580,7 +580,7 @@ function setJwtCookie({res, userId, username, isAdmin, xsrf, sessionId}) {
   const jwtObj = {
     sub: userId,
     // Note this id is set using the refresh token session id so that we can
-    // easily determine which session is responisble for an action
+    // easily determine which session is responsible for an action
     jti: sessionId,
     username: username,
     isAdmin: isAdmin,
