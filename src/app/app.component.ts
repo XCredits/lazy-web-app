@@ -69,6 +69,12 @@ export class AppComponent implements OnInit {
       isLoggedInRoute: true,
     },
     {
+      routerLink: '/organization',
+      icon: 'work',
+      title: 'Organization',
+      isLoggedInRoute: true,
+    },
+    {
       routerLink: '/mailing-list',
       icon: 'email',
       title: 'Mailing list',

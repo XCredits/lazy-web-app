@@ -11,6 +11,7 @@ import { StatsService } from './stats.service';
 import { AnalyticsService } from './analytics.service';
 import { AuthGuard } from './auth.guard';
 import { AdminGuard } from './admin.guard';
+import { OrganizationService } from './organization.service';
 
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AngularFontAwesomeModule } from 'angular-font-awesome';
@@ -81,6 +82,11 @@ import { PrivacyComponent } from './privacy/privacy.component';
 import { FooterComponent } from './footer/footer.component';
 import { ImageUploadModule } from './image-upload/image-upload.module';
 import { ChangeThemeComponent } from './change-theme/change-theme.component';
+import { OrganizationComponent } from './organization/organization.component';
+import { CreateOrganizationComponent } from './create-organization/create-organization.component';
+import { UpdateOrganizationComponent } from './update-organization/update-organization.component';
+import { AddUserComponent } from './add-user/add-user.component';
+import { CreateProductComponent } from './create-product/create-product.component';
 
 @NgModule({
   declarations: [
@@ -109,6 +115,11 @@ import { ChangeThemeComponent } from './change-theme/change-theme.component';
     PrivacyComponent,
     FooterComponent,
     ChangeThemeComponent,
+    OrganizationComponent,
+    CreateOrganizationComponent,
+    UpdateOrganizationComponent,
+    AddUserComponent,
+    CreateProductComponent,
   ],
   imports: [
     BrowserModule,
@@ -153,6 +164,36 @@ import { ChangeThemeComponent } from './change-theme/change-theme.component';
         path: 'mailing-list',
         component: MailingListComponent,
         data: { title: 'Mailing list' },
+      },
+      {
+        path: 'organization',
+        component: OrganizationComponent,
+        data: { title: 'Organization' },
+        canActivate: [AuthGuard],
+      },
+      {
+        path: 'create-organization',
+        component: CreateOrganizationComponent,
+        data: { title: 'Create Organization' },
+        canActivate: [AuthGuard],
+      },
+      {
+        path: 'organization/:orgUsername/update',
+        component: UpdateOrganizationComponent,
+        data: { title: 'Update Organization' },
+        canActivate: [AuthGuard],
+      },
+      {
+        path: 'organization/:orgUsername/add-user',
+        component: AddUserComponent,
+        data: { title: 'Add User' },
+        canActivate: [AuthGuard],
+      },
+      {
+        path: 'create-product',
+        component: CreateProductComponent,
+        data: { title: 'Create Product' },
+        canActivate: [AuthGuard],
       },
       {
         path: 'settings',
@@ -267,7 +308,7 @@ import { ChangeThemeComponent } from './change-theme/change-theme.component';
     ServiceWorkerModule.register('/ngsw-worker.js',
         {enabled: environment.production})
   ],
-  providers: [UserService, SettingsService, StatsService, AnalyticsService],
+  providers: [UserService, SettingsService, StatsService, AnalyticsService, OrganizationService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

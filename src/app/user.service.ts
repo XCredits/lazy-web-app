@@ -30,7 +30,6 @@ export class UserService {
   // next called. The '1' refers to how many states are kept in the buffer to be
   // replay for the subscription.
   userObservable: Subject<User> = new ReplaySubject<User>(1);
-
   nav: NavObj;
 
   // Local storage variables
@@ -273,7 +272,6 @@ export interface User {
   isAdmin: boolean;
   profileImage: string;
 }
-
 
 interface NavObj {
   route: string;

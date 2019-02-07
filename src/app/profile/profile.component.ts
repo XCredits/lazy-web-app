@@ -12,6 +12,8 @@ import { UserService, User } from '../user.service';
 export class ProfileComponent implements OnInit {
   form: FormGroup;
 
+  imageUploadRoute = '/api/user/profile-image-upload';
+
   waiting = false;
   disableButton = true;
   submitSuccess = false;
@@ -19,6 +21,9 @@ export class ProfileComponent implements OnInit {
   user: User;
   profileImage: string;
   usernameErrorMessage: string;
+  ratios = [{value: 1 / 1, view: '1 / 1'}, {value: 4 / 3, view: ' 4 / 3'}];
+  selectedRatio = 1 / 1;
+
   constructor(
     private snackBar: MatSnackBar,
     private http: HttpClient,
@@ -51,7 +56,7 @@ export class ProfileComponent implements OnInit {
 
     // this.currentUsername - designed to prevent the form from reporting an
     // error if the username has been updated
-    const initialUsername = this.user.username;
+    const initialUsername = this.normalizeUsername(this.user.displayUsername);
     const displayUsername = this.user.displayUsername;
     this.currentUsername = this.normalizeUsername(formData.username);
     this.currentDisplayName = formData.username;
@@ -122,7 +127,7 @@ export class ProfileComponent implements OnInit {
     const tempDisplayName = this.user.displayUsername;
     fields.forEach(element => {
       if (this.user[element] !== currentValue[element]
-          || tempUsername !== this.user.username
+          || tempUsername !== this.normalizeUsername(this.user.displayUsername)
           || tempDisplayName !== currentValue.username) {
         this.disableButton = false;
         return;
