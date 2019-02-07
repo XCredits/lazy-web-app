@@ -250,25 +250,25 @@ function actionConnectionRequest(req, res) {
 
   function cancelConnection() { // res, userId, senderUserId
     return connectionRequest.findOneAndUpdate({
-      senderUserId: senderUserId,
-      receiverUserId: userId,
-      active: { $eq: true }
-    },
-      {
-        $set:
+          senderUserId: senderUserId,
+          receiverUserId: userId,
+          active: { $eq: true }
+        },
         {
-          active: false,
-          currentStatus: 'cancelled',
-          updateTimeStamp: new Date().getTime(),
-        }
-      })
-      .then((data) => {
-        return res.status(200).send({ message: 'Request canceled' });
-      })
-      .catch((err) => {
-        res.status(500)
-          .send({ message: 'Could not cancel connection request.' });
-      });
+          $set:
+          {
+            active: false,
+            currentStatus: 'cancelled',
+            updateTimeStamp: new Date().getTime(),
+          }
+        })
+        .then((data) => {
+          return res.status(200).send({ message: 'Request canceled' });
+        })
+        .catch((err) => {
+          res.status(500)
+              .send({ message: 'Could not cancel connection request.' });
+        });
   }
 }
 
