@@ -151,7 +151,7 @@ function getConnections(req, res) {
       })
       .catch((err) => {
         res.status(500)
-          .send({ message: 'error retrieving confirmed connections' });
+            .send({ message: 'error retrieving confirmed connections' });
       });
 }
 
@@ -172,18 +172,18 @@ function actionConnectionRequest(req, res) {
 
   switch (action) {
     case 'accept':
-      acceptConnection();
+      acceptConnectionRequest();
       break;
     case 'cancel':
-      cancelConnection();
+      cancelConnectionRequest();
       break;
     case 'reject':
-      rejectConnection();
+      rejectConnectionRequest();
       break;
     // TODO default
   }
 
-  function acceptConnection() {
+  function acceptConnectionRequest() {
     return connectionRequest.findOneAndUpdate({
           senderUserId: senderUserId,
           receiverUserId: userId,
@@ -225,7 +225,7 @@ function actionConnectionRequest(req, res) {
         });
   }
 
-  function cancelConnection() { // res, userId, senderUserId
+  function cancelConnectionRequest() { // res, userId, senderUserId
     return connectionRequest.findOneAndUpdate({
           senderUserId: senderUserId,
           receiverUserId: userId,
@@ -248,7 +248,7 @@ function actionConnectionRequest(req, res) {
         });
   }
 
-  function rejectConnection() {
+  function rejectConnectionRequest() {
     return connectionRequest.findOneAndUpdate({
           senderUserId: senderUserId,
           receiverUserId: userId,
