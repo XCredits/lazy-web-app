@@ -247,23 +247,22 @@ function actionConnectionRequest(req, res) {
         _connection1.receiverUserId = senderUserId;
         _connection1.status = 'connected';
         _connection1.connectionRequestRef = result._id;
-        _connection1.save()
+        return _connection1.save()
           .then(() => {
             const _connection2 = new connection();
             _connection2.receiverUserId = userId;
             _connection2.senderUserId = senderUserId;
             _connection2.status = 'connected';
             _connection2.connectionRequestRef = result._id;
-            _connection2.save()
+            return _connection2.save()
               .then(() => {
-                res.send({ message: 'success' });
+                res.send({ message: 'request accepted' });
               });
           })
           .catch(() => {
             return res.status(500)
               .send({ message: 'could not save connection request.' });
           });
-        return res.status(200).send({ message: 'request accepted' });
       })
       .catch(() => {
         res.status(500)
