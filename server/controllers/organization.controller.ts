@@ -36,6 +36,16 @@ function isOrgAdmin(userId, orgId) {
       });
 }
 
+function threeMonthFromNow() {
+    const date = new Date();
+    const targetMonth = date.getMonth() + 3;
+    date.setMonth(targetMonth);
+    if (date.getMonth() !== targetMonth % 12) {
+      date.setDate(0); // last day of previous month if month ends with 29,30,31
+    }
+    return date;
+}
+
 function createOrg(req, res) {
   const { name, website, phoneNumber, username } = req.body;
   const userId = req.userId;
@@ -164,6 +174,7 @@ function updateDetails(req, res) {
                                 });
                               }
                               response.current = false;
+                              response.forward = threeMonthFromNow();
                               return response.save()
                                   .then(() => {
                                       const usernameCheck = new UsernameCheck();

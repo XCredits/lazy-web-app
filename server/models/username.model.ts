@@ -7,7 +7,7 @@ const UsernameCheckSchema = new Schema ({
   type: {type: String},
   refId: {type: String},
   current: {type: Boolean},
-  forward: {type: Number}
+  forward: {type: Date}
 });
 
 UsernameCheckSchema.index({refId: 1, current: 1});
