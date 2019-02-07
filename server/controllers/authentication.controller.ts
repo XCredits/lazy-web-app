@@ -355,17 +355,23 @@ function changePassword(req, res) {
   }
 
   return User.findOne({_id: userId})
-      .then((user) => {
-          // Create new password hash
-          user.createPasswordHash(password);
-          return user.save()
-          .then(() => {
-            return res.send({message: 'Password successfully changed'});
-          })
-          .catch((err) => {
-            console.log(err);
-            return res.status(500).send({message: 'Password change failed'});
-          });
+      .then(() => {
+          return Auth.findOne({userId: userId})
+              .then((userAuth) => {
+                  // Create new password hash
+                  userAuth.createPasswordHash(password);
+                  return userAuth.save()
+                    .then(() => {
+                        return res.send({message: 'Password successfully changed'});
+                    })
+                    .catch((err) => {
+                        console.log(err);
+                        return res.status(500).send({message: 'Password change failed'});
+                    });
+              })
+              .catch(() => {
+                return res.status(500).send({message: 'Error in accessing auth database'});
+              });
       })
       .catch((err) => {
         return res.status(500).send({message: 'UserId not found'});
