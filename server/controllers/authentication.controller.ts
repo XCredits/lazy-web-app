@@ -48,7 +48,7 @@ const passwordSettings = {
 
 import * as validator from 'validator';
 const User = require('../models/user.model');
-const UsernameCheck = require('../models/username.model');
+const Username = require('../models/username.model');
 const Auth = require('../models/auth.model');
 const UserStats = require('../models/user-stats.model');
 const statsService = require('../services/stats.service');
@@ -111,13 +111,13 @@ function register(req, res) {
   const username = normalizeUsername(displayUsername);
 
   // check that there is not an existing user with this username
-  return UsernameCheck.findOne({username: username})
+  return Username.findOne({username: username})
       .then((existingUser) => {
         if (existingUser) {
           return res.status(409).send({message: 'Username already taken.'});
         }
         const user = new User();
-        const usernameCheck = new UsernameCheck();
+        const usernameCheck = new Username();
         const authUser = new Auth();
         user.givenName = givenName;
         user.familyName = familyName;
@@ -224,7 +224,7 @@ function usernameAvailable(req, res) {
     return res.send({available: true});
   }
 
-  return UsernameCheck.findOne({username: username})
+  return Username.findOne({username: username})
       .then((existingUser) => {
         if (existingUser) {
           return res.send({available: false});
@@ -398,7 +398,7 @@ function requestResetPassword(req, res) {
       .then((user) => {
         // Success object must be identical, to avoid people discovering
         // emails in the system
-        return UsernameCheck.findOne({userId: user._id}, function(err, usernameReturn) {
+        return Username.findOne({userId: user._id}, function(err, usernameReturn) {
           if (err) {
             return;
           }
@@ -465,7 +465,7 @@ function forgotUsername(req, res) {
             res.send(successObject); // Note that if errors in send in emails occur, the front end will not see them
             return;
           }
-          return UsernameCheck.find({userId: users._id})
+          return Username.find({userId: users._id})
               .then((username) => {
                   return emailService.sendUsernameRetrieval({
                     givenName: users[0].givenName, // just use the name of the first account

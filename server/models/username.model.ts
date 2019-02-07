@@ -2,7 +2,7 @@ import * as mongoose from 'mongoose';
 (<any>mongoose).Promise = Promise;
 const Schema = mongoose.Schema;
 
-const UsernameCheckSchema = new Schema ({
+const UsernameSchema = new Schema ({
   username: {type: String, unique: true },
   type: {type: String},
   refId: {type: String},
@@ -10,5 +10,5 @@ const UsernameCheckSchema = new Schema ({
   forward: {type: Date}
 });
 
-UsernameCheckSchema.index({refId: 1, current: 1});
-module.exports = mongoose.model('UsernameCheck', UsernameCheckSchema);
+UsernameSchema.index({refId: 1, current: 1});
+module.exports = mongoose.model('Username', UsernameSchema);

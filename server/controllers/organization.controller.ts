@@ -2,7 +2,7 @@ const Organization = require('../models/organization.model');
 const UserOrganization = require('../models/user-organization.model');
 const auth = require('./jwt-auth.controller');
 const User = require('../models/user.model');
-const UsernameCheck = require('../models/username.model');
+const Username = require('../models/username.model');
 
 import {uploadSingleImage} from '../services/image-upload';
 
@@ -56,7 +56,7 @@ function createOrg(req, res) {
       typeof username !== 'string') {
     return res.status(500).send({message: 'Request validation failed'});
   }
-  return UsernameCheck.findOne({username: username})
+  return Username.findOne({username: username})
       .then((usernameExist) => {
           if (usernameExist) {
               return res.status(409).send({message: 'Username already taken.'});
@@ -74,7 +74,7 @@ function createOrg(req, res) {
                   userOrg.roles = ['admin'];
                   return userOrg.save()
                       .then(() => {
-                          const usernameCheck = new UsernameCheck();
+                          const usernameCheck = new Username();
                           usernameCheck.username = username;
                           usernameCheck.refId = organization._id;
                           usernameCheck.type = 'Organization';
@@ -120,7 +120,7 @@ function userOrgSummary(req, res) {
       .then((userOrgArr) => {
           const orgIds = userOrgArr.map(orgEle => orgEle.orgId);
           userOrg = userOrgArr;
-          return UsernameCheck.find({ 'refId': { '$in': orgIds}})
+          return Username.find({ 'refId': { '$in': orgIds}})
               .then((orgUsername) => {
                   return Organization.find({ '_id': { '$in': orgIds}})
                     .then((orgDetails) => {
@@ -165,7 +165,7 @@ function updateDetails(req, res) {
                 org.phoneNumber = phoneNumber;
                 return org.save()
                     .then(() => {
-                      return UsernameCheck
+                      return Username
                           .findOne({'refId': orgId, 'current': true})
                           .then((response) => {
                               if (response.username === username) {
@@ -177,7 +177,7 @@ function updateDetails(req, res) {
                               response.forward = threeMonthsFromNow();
                               return response.save()
                                   .then(() => {
-                                      const usernameCheck = new UsernameCheck();
+                                      const usernameCheck = new Username();
                                       usernameCheck.username = username;
                                       usernameCheck.refId = response.refId;
                                       usernameCheck.current = true;
@@ -272,7 +272,7 @@ function getDetails(req, res) {
       typeof username !== 'string') {
         return res.status(500).send({message: 'Request validation failed'});
   }
-  return UsernameCheck.findOne({'username': username})
+  return Username.findOne({'username': username})
     .then((response) => {
         isOrgAdmin(userId, response.refId)
             .then(() => {
@@ -304,7 +304,7 @@ function getUsers(req, res) {
       typeof username !== 'string') {
     return res.status(500).send({message: 'Request validation failed'});
     }
-  return UsernameCheck.findOne({'username': username})
+  return Username.findOne({'username': username})
       .then((response) => {
           return Organization.findOne({'_id': response.refId})
             .then((organization) => {
@@ -317,7 +317,7 @@ function getUsers(req, res) {
                                     userOrgArr.map(orgEle => orgEle.userId);
                               return User.find({'_id': userIds})
                                     .then((users) => {
-                                      return UsernameCheck.find({'refId': userIds})
+                                      return Username.find({'refId': userIds})
                                           .then((usernames) => {
                                               return res.json({users, usernames});
                                           })
@@ -366,7 +366,7 @@ function addUser(req, res) {
     .then(() => {
       return Organization.findOne({'_id' : orgId})
         .then(() => {
-          return UsernameCheck.findOne({'username': username, 'type': 'user'})
+          return Username.findOne({'username': username, 'type': 'user'})
             .then((response) => {
               return User.findOne({'_id': response.refId})
                   .then((user) => {
