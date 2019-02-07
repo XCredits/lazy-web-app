@@ -26,19 +26,4 @@ ConnectionRequestSchema.index({ currentStatus: 1 });
 ConnectionRequestSchema.index({ snoozed: 1 });
 
 
-ConnectionRequestSchema.methods.frontendData = function () {
-  return {
-    id: this._id,
-    senderUserId: this.senderUserId,
-    receiverUserId: this.receiverUserId,
-    sendTimeStamp: this.sendTimeStamp,
-    permissions: this.permissions,
-    active: this.active,
-    timeout: this.timeout,
-    updateTimeStamp: this.updateTimeStamp,
-    currentStatus: this.currentStatus,
-    snoozed: this.snoozed,
-  };
-};
-
 module.exports = mongoose.model('ConnectionRequest', ConnectionRequestSchema);

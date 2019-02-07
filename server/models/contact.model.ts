@@ -15,14 +15,4 @@ ContactSchema.index({familyName: 1});
 ContactSchema.index({email: 1});
 ContactSchema.index({loginUserId: 1}),
 
-ContactSchema.methods.frontendData = function() {
-  return {
-    id: this._id,
-    loginUserId: this.givenName,
-    givenName: this.givenName,
-    familyName: this.familyName,
-    email: this.email,
-  };
-};
-
 module.exports = mongoose.model('Contact', ContactSchema);
