@@ -24,6 +24,7 @@ export class UpdateOrganizationComponent implements OnInit, OnDestroy {
   ready = false;
   modalReference = null;
   users: Array<string> = [];
+  usernames: Array<string> = [];
   userToBeDeleted: any;
   usernameErrorMessage: string;
   selectedRatio = 4 / 3;
@@ -63,16 +64,17 @@ export class UpdateOrganizationComponent implements OnInit, OnDestroy {
       this.http.post<any>('/api/organization/get-users', {
         'username': params.orgUsername
       })
-      .subscribe(users => {
-        this.users = users;
+      .subscribe(response => {
+        this.usernames = response.usernames;
+        Object.values(response.users).forEach(user => {
+          this.users[user['_id']] = user['profileImage'];
+        });
       });
     });
   }
 
   checkUsername = function (formData)  {
     this.form.controls['username'].setErrors(null);
-    const displayUsernameRegex =
-        new RegExp(this.userService.displayUsernameRegexString);
 
     // this.currentUsername - designed to prevent the form from reporting an
     // error if the username has been updated
@@ -160,11 +162,11 @@ export class UpdateOrganizationComponent implements OnInit, OnDestroy {
   delUser() {
     this.http.post('/api/organization/remove-user', {
       'userId': this.userToBeDeleted,
-      'orgId': this.organization['id'],
+      'orgId': this.organization._id,
     })
     .subscribe(() => {
-      const userIndex = this.users.findIndex((user) => user['_id'] === this.userToBeDeleted);
-      this.users.splice(userIndex, 1);
+      const userIndex = this.usernames.findIndex((user) => user['refId'] === this.userToBeDeleted);
+      this.usernames.splice(userIndex, 1);
     });
     this.modalReference.close();
   }
