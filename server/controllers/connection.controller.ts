@@ -239,41 +239,36 @@ function actionConnectionRequest(req, res) {
             updateTimeStamp: new Date().getTime(),
           }
         })
-        .then((data) => {
+        .then(() => {
           return res.status(200).send({ message: 'Request cancelled' });
         })
-        .catch((err) => {
+        .catch(() => {
           res.status(500)
               .send({ message: 'Could not cancel connection request.' });
         });
   }
 
   function rejectConnection() {
-    connectionRequest.findOneAndUpdate({
-      senderUserId: senderUserId,
-      receiverUserId: userId,
-      active: { $eq: true }
-    },
-      {
-        $set:
+    return connectionRequest.findOneAndUpdate({
+          senderUserId: senderUserId,
+          receiverUserId: userId,
+          active: { $eq: true }
+        },
         {
-          active: false,
-          currentStatus: 'rejected',
-          updateTimeStamp: new Date().getTime(),
-        }
-      })
-      .then((data) => {
-        if (data === null) {
-          return res.status(200)
-            .send({ message: 'Request ignored error' });
-        }
-        return res.status(200)
-          .send({ message: 'Request rejected' });
-      })
-      .catch((err) => {
-        res.status(500)
-          .send({ message: err });
-      });
+          $set:
+          {
+            active: false,
+            currentStatus: 'rejected',
+            updateTimeStamp: new Date().getTime(),
+          }
+        })
+        .then(() => {
+          return res.status(200).send({ message: 'Request rejected' });
+        })
+        .catch(() => {
+          res.status(500)
+              .send({ message: 'Could not reject connection request.' });
+        });
   }
 }
 
@@ -287,12 +282,12 @@ function actionConnectionRequest(req, res) {
  */
 function getPendingRequestsCount(req, res) {
   return connectionRequest.count({
-    receiverUserId: req.userId,
-    active: { $eq: true }
-  })
-    .then((result) => {
-      res.send({ message: result });
-    });
+        receiverUserId: req.userId,
+        active: { $eq: true }
+      })
+      .then((result) => {
+        res.send({ message: result });
+      });
 }
 
 /**
@@ -303,11 +298,11 @@ function getPendingRequestsCount(req, res) {
  */
 function getConfirmedConnectionsCount(req, res) {
   return connectionRequest.count({
-    receiverUserId: req.userId,
-    currentStatus: { $eq: 'accepted' },
-    active: { $eq: false }
-  })
-    .then((result) => {
-      res.send({ message: result });
-    });
+        receiverUserId: req.userId,
+        currentStatus: { $eq: 'accepted' },
+        active: { $eq: false }
+      })
+      .then((result) => {
+        res.send({ message: result });
+      });
 }
