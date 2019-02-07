@@ -74,12 +74,12 @@ function createOrg(req, res) {
                   userOrg.roles = ['admin'];
                   return userOrg.save()
                       .then(() => {
-                          const usernameCheck = new Username();
-                          usernameCheck.username = username;
-                          usernameCheck.refId = organization._id;
-                          usernameCheck.type = 'Organization';
-                          usernameCheck.current = true;
-                          return usernameCheck.save()
+                          const usernameDocument = new Username();
+                          usernameDocument.username = username;
+                          usernameDocument.refId = organization._id;
+                          usernameDocument.type = 'Organization';
+                          usernameDocument.current = true;
+                          return usernameDocument.save()
                               .then(() => {
                                   res.status(200).send({
                                       message: 'UserId and OrganizationId saved successfully'
@@ -177,12 +177,12 @@ function updateDetails(req, res) {
                               response.forward = threeMonthsFromNow();
                               return response.save()
                                   .then(() => {
-                                      const usernameCheck = new Username();
-                                      usernameCheck.username = username;
-                                      usernameCheck.refId = response.refId;
-                                      usernameCheck.current = true;
-                                      usernameCheck.type = 'Organization';
-                                      return usernameCheck.save()
+                                      const usernameDocument = new Username();
+                                      usernameDocument.username = username;
+                                      usernameDocument.refId = response.refId;
+                                      usernameDocument.current = true;
+                                      usernameDocument.type = 'Organization';
+                                      return usernameDocument.save()
                                           .then(() => {
                                             return res.status(200).send({
                                               message: 'Organization details updated successfully'

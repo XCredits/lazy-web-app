@@ -50,12 +50,12 @@ function saveDetails(req, res) {
                       response.current = false;
                       return response.save()
                           .then(() => {
-                              const usernameCheck = new Username();
-                              usernameCheck.username = username;
-                              usernameCheck.current = true;
-                              usernameCheck.refId = response.refId;
-                              usernameCheck.type = 'User';
-                              return usernameCheck.save()
+                              const usernameDocument = new Username();
+                              usernameDocument.username = username;
+                              usernameDocument.current = true;
+                              usernameDocument.refId = response.refId;
+                              usernameDocument.type = 'User';
+                              return usernameDocument.save()
                                   .then(() => {
                                     return res.status(200).send({message: 'Details Changed successfully'});
                                   })

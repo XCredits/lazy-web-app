@@ -117,7 +117,7 @@ function register(req, res) {
           return res.status(409).send({message: 'Username already taken.'});
         }
         const user = new User();
-        const usernameCheck = new Username();
+        const usernameDocument = new Username();
         const authUser = new Auth();
         user.givenName = givenName;
         user.familyName = familyName;
@@ -129,11 +129,11 @@ function register(req, res) {
               authUser.createPasswordHash(password);
               return authUser.save()
                   .then(() => {
-                      usernameCheck.username = username;
-                      usernameCheck.refId = userDetail._id;
-                      usernameCheck.type = 'user';
-                      usernameCheck.current = true;
-                      return usernameCheck.save()
+                      usernameDocument.username = username;
+                      usernameDocument.refId = userDetail._id;
+                      usernameDocument.type = 'user';
+                      usernameDocument.current = true;
+                      return usernameDocument.save()
                           .then(() => {
                             // The below promises are structured to report failure but not
                             // block on failure
