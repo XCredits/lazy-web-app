@@ -49,6 +49,7 @@ const passwordSettings = {
 import * as validator from 'validator';
 const User = require('../models/user.model');
 const UsernameCheck = require('../models/username.model');
+const Auth = require('../models/auth.model');
 const UserStats = require('../models/user-stats.model');
 const statsService = require('../services/stats.service');
 const emailService = require('../services/email.service');
@@ -117,51 +118,59 @@ function register(req, res) {
         }
         const user = new User();
         const usernameCheck = new UsernameCheck();
+        const authUser = new Auth();
         user.givenName = givenName;
         user.familyName = familyName;
         user.displayUsername = displayUsername;
         user.email = email;
-        user.createPasswordHash(password);
         return user.save()
             .then((userDetail) => {
-              usernameCheck.username = username;
-              usernameCheck.refId = userDetail._id;
-              usernameCheck.type = 'user';
-              usernameCheck.current = true;
-              return usernameCheck.save()
+              authUser.userId = userDetail._id;
+              authUser.createPasswordHash(password);
+              return authUser.save()
                   .then(() => {
-                    // The below promises are structured to report failure but not
-                    // block on failure
-                      return createAndSendRefreshAndSessionJwt(username, user, req, res)
-                        .then(() => {
-                          return statsService.increment(UserStats)
-                              .catch((err) => {
-                                console.log('Error in the stats service');
-                              });
-                        })
-                        .then(() => {
-                          return emailService.addUserToMailingList({
-                                givenName, familyName, email, userId: user._id,
+                      usernameCheck.username = username;
+                      usernameCheck.refId = userDetail._id;
+                      usernameCheck.type = 'user';
+                      usernameCheck.current = true;
+                      return usernameCheck.save()
+                          .then(() => {
+                            // The below promises are structured to report failure but not
+                            // block on failure
+                              return createAndSendRefreshAndSessionJwt(username, user, req, res)
+                                .then(() => {
+                                  return statsService.increment(UserStats)
+                                      .catch((err) => {
+                                        console.log('Error in the stats service');
+                                      });
+                                })
+                                .then(() => {
+                                  return emailService.addUserToMailingList({
+                                        givenName, familyName, email, userId: user._id,
+                                      })
+                                      .catch((err) => {
+                                        console.log('Error in the mailing list service');
+                                      });
+                                })
+                                .then(() => {
+                                  return emailService.sendRegisterWelcome({
+                                        givenName, familyName, email,
+                                      })
+                                      .catch((err) => {
+                                        console.log('Error in the send email service');
+                                      });
+                                })
+                                .catch((err) => {
+                                  console.log('Error in createAndSendRefreshAndSessionJwt');
+                                });
                               })
-                              .catch((err) => {
-                                console.log('Error in the mailing list service');
+                              .catch(() => {
+                                return res.status(500).send({message: 'Error in saving username'});
                               });
-                        })
-                        .then(() => {
-                          return emailService.sendRegisterWelcome({
-                                givenName, familyName, email,
-                              })
-                              .catch((err) => {
-                                console.log('Error in the send email service');
-                              });
-                        })
-                        .catch((err) => {
-                          console.log('Error in createAndSendRefreshAndSessionJwt');
-                        });
-                      })
-                      .catch(() => {
-                        return res.status(500).send({message: 'Error in saving username'});
-                      });
+                  })
+                  .catch(() => {
+                    return res.status(500).send({message: 'Error in saving password'});
+                  });
             })
             .catch((dbError) => {
               let err;
@@ -181,6 +190,7 @@ function register(req, res) {
             });
       })
       .catch((err) => {
+        console.log(err);
         res.status(500).send({
             message: 'Error accessing database while checking for existing users'});
       });
