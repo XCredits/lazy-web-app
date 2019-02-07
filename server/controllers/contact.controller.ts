@@ -20,12 +20,12 @@ function addContact(req, res) {
   const familyName = req.body.familyName;
   // Validate
   if (typeof req.userId !== 'string' ||
-    typeof email !== 'string' ||
-    typeof givenName !== 'string' ||
-    typeof familyName !== 'string' ||
-    !validator.isEmail(email) ) {
-      return res.status(422).json({ message: 'request failed validation' });
-      }
+      typeof email !== 'string' ||
+      typeof givenName !== 'string' ||
+      typeof familyName !== 'string' ||
+      !validator.isEmail(email) ) {
+    return res.status(422).json({ message: 'request failed validation' });
+  }
 
   const contactListUser = new Contact();
   contactListUser.userId = req.userId;
@@ -33,12 +33,12 @@ function addContact(req, res) {
   contactListUser.givenName = givenName;
   contactListUser.familyName = familyName;
   return contactListUser.save()
-    .then((result) => {
-      res.status(200).send({ message: 'success' });
-    })
-    .catch((error) => {
-      return res.status(500).send('problem finding contacts.');
-    });
+      .then((result) => {
+        res.status(200).send({ message: 'success' });
+      })
+      .catch((error) => {
+        return res.status(500).send('problem finding contacts.');
+      });
 }
 
 
@@ -55,12 +55,12 @@ function viewContacts(req, res) {
   }
 
   Contact.find({ userId })
-    .then((result) => {
-      const filteredResult = result.map((x) => {
-        return {
-          givenName: x.givenName,
-          familyName: x.familyName,
-          email: x.email
+      .then((result) => {
+        const filteredResult = result.map((x) => {
+          return {
+            givenName: x.givenName,
+            familyName: x.familyName,
+            email: x.email
           };
       });
         res.send(filteredResult);
