@@ -248,7 +248,7 @@ function actionConnectionRequest(req, res) {
         });
   }
 
-  function cancelConnection() {
+  function cancelConnection() { // res, userId, senderUserId
     return connectionRequest.findOneAndUpdate({
       senderUserId: senderUserId,
       receiverUserId: userId,
@@ -263,16 +263,11 @@ function actionConnectionRequest(req, res) {
         }
       })
       .then((data) => {
-        if (data === null) {
-          return res.status(200)
-            .send({ message: 'Request cancel error' });
-        }
-        return res.status(200)
-          .send({ message: 'Request canceled' });
+        return res.status(200).send({ message: 'Request canceled' });
       })
       .catch((err) => {
         res.status(500)
-          .send({ message: err });
+          .send({ message: 'Could not cancel connection request.' });
       });
   }
 }
