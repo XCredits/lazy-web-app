@@ -32,47 +32,47 @@ function addConnectionRequest(req, res) {
   username = normalizeUsername(username);
   // Check if the user exist
   return User.findOne({ username })
-    .then((receivingUser) => {
-      // Check if they have connection
-      return connectionRequest.findOne({
-        senderUserId: userId,
-        receiverUserId: receivingUser._id,
-        active: { $eq: true },
-      })
-        .then((resultConnection) => {
-          if (resultConnection === null) {
-            // Making new connection
-            const connectionReq = new connectionRequest();
-            connectionReq.senderUserId = userId;
-            connectionReq.receiverUserId = receivingUser._id;
-            connectionReq.permissions = { category: 'default' };
-            connectionReq.active = true;
-            connectionReq.snoozed = false;
-            connectionReq.timeout = new Date().getTime() + 10 * (1000 * 60 * 60 * 24); // days
-            connectionReq.sendTimeStamp = new Date().getTime();
-            connectionReq.updateTimeStamp = new Date().getTime();
-            return connectionReq.save()
-              .then(() => {
-                res.send({ message: 'success' });
-              })
-              .catch((error) => {
-                return res.status(500)
-                  .json({ message: 'could not save connection request.' });
-              });
-          } else {
+      .then((receivingUser) => {
+        // Check if they have connection
+        return connectionRequest.findOne({
+              senderUserId: userId,
+              receiverUserId: receivingUser._id,
+              active: { $eq: true },
+            })
+            .then((resultConnection) => {
+              if (resultConnection === null) {
+                // Making new connection
+                const connectionReq = new connectionRequest();
+                connectionReq.senderUserId = userId;
+                connectionReq.receiverUserId = receivingUser._id;
+                connectionReq.permissions = { category: 'default' };
+                connectionReq.active = true;
+                connectionReq.snoozed = false;
+                connectionReq.timeout = new Date().getTime() + 10 * (1000 * 60 * 60 * 24); // days
+                connectionReq.sendTimeStamp = new Date().getTime();
+                connectionReq.updateTimeStamp = new Date().getTime();
+                return connectionReq.save()
+                    .then(() => {
+                      res.send({ message: 'success' });
+                    })
+                    .catch((error) => {
+                      return res.status(500)
+                          . json({ message: 'could not save connection request.' });
+                    });
+              } else {
+                  return res.status(500)
+                      .send({ message: 'pending' });
+              }
+            })
+            .catch(() => {
               return res.status(500)
-                .send({ message: 'pending' });
-            }
-        })
-        .catch(() => {
-          return res.status(500)
-            .send('problem finding connection requests.');
-        });
-    })
-    .catch((err) => {
-      return res.status(500)
-        .send({ message: 'user not found' });
-    });
+                .send('problem finding connection requests.');
+            });
+      })
+      .catch((err) => {
+        return res.status(500)
+          .send({ message: 'user not found' });
+      });
 }
 
 
@@ -86,44 +86,43 @@ function getPendingConnections(req, res) {
   // Check pending for snooze
   function checkExpiredRequests() {
     return connectionRequest.updateMany({
-      receiverUserId: req.userId,
-      active: { $eq: true },
-      timeout: { $lt: new Date().getTime() },
-    },
-      {
-        active: false,
-        currentStatus: 'expired'
-      });
+          receiverUserId: req.userId,
+          active: { $eq: true },
+          timeout: { $lt: new Date().getTime() },
+        },
+        {
+          active: false,
+          currentStatus: 'expired'
+        });
   }
 
   function findPendingConnections() {
     return connectionRequest.find({
-      receiverUserId: req.userId,
-      active: { $eq: true },
-      snoozed: { $eq: false },
-    })
-      .then((result) => {
-        const senderIdArr = result.map((e => e.senderUserId));
-        return User.find({ '_id': { '$in': senderIdArr } })
-          .then((filteredResults) => {
-            const resultsFiltered = filteredResults.map((x) => {
-              return {
-                username: x.username,
-                givenName: x.givenName,
-                familyName: x.familyName,
-                userId: x._id,
-              };
-            });
-            res.send(resultsFiltered);
-          });
-      })
-      .catch((err) => {
-        res.status(500)
-          .send({ message: 'error retrieving pending requests' });
-      });
+          receiverUserId: req.userId,
+          active: { $eq: true },
+          snoozed: { $eq: false },
+        })
+        .then((result) => {
+          const senderIdArr = result.map((e => e.senderUserId));
+          return User.find({ '_id': { '$in': senderIdArr } })
+              .then((filteredResults) => {
+                const resultsFiltered = filteredResults.map((x) => {
+                  return {
+                    username: x.username,
+                    givenName: x.givenName,
+                    familyName: x.familyName,
+                    userId: x._id,
+                  };
+                });
+                res.send(resultsFiltered);
+              });
+        })
+        .catch((err) => {
+          res.status(500).send({message: 'error retrieving pending requests'});
+        });
   }
   return checkExpiredRequests()
-    .then(findPendingConnections);
+      .then(findPendingConnections);
 }
 
 
@@ -135,25 +134,25 @@ function getPendingConnections(req, res) {
  */
 function getConfirmedConnections(req, res) {
   return connectionRequest.find({ receiverUserId: req.userId, currentStatus: { $eq: 'accepted' } })
-    .then((result) => {
-      const senderIdArr = result.map((e => e.senderUserId));
-      return User.find({ '_id': { '$in': senderIdArr } })
-        .then((filteredResults) => {
-          const resultsFiltered = filteredResults.map((x) => {
-            return {
-              username: x.username,
-              givenName: x.givenName,
-              familyName: x.familyName,
-              userId: x._id,
-            };
-          });
-          res.send(resultsFiltered);
-        });
-    })
-    .catch((err) => {
+      .then((result) => {
+        const senderIdArr = result.map((e => e.senderUserId));
+        return User.find({ '_id': { '$in': senderIdArr } })
+            .then((filteredResults) => {
+              const resultsFiltered = filteredResults.map((x) => {
+                return {
+                  username: x.username,
+                  givenName: x.givenName,
+                  familyName: x.familyName,
+                  userId: x._id,
+                };
+              });
+              res.send(resultsFiltered);
+            });
+      })
+      .catch((err) => {
       res.send(500)
-        .send({ message: 'error retrieving confirmed connections' });
-    });
+          .send({ message: 'error retrieving confirmed connections' });
+      });
 }
 
 
