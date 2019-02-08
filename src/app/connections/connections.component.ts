@@ -36,7 +36,6 @@ export class ConnectionComponent implements OnInit {
     this.userService.userObservable
         .subscribe(user => {
           this.user = user;
-          console.log('user logged in is --> ' + user.id);
         });
 
     this.navLinks.push('./view');
@@ -57,7 +56,6 @@ export class ConnectionComponent implements OnInit {
 
 
   loadPageCounters = function () {
-    console.log('This is the parent');
     this.http.post('/api/connection/get-pending-request-count', {})
         .subscribe((returnedResult: any) => {
           if (returnedResult.message === 0) {

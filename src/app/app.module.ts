@@ -245,7 +245,7 @@ import { ViewConnectionsComponent } from './view-connections/view-connections.co
         [
           {
             path: '',
-            redirectTo: 'connections',
+            redirectTo: 'view',
             pathMatch: 'full'
           },
           {

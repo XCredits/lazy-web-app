@@ -26,6 +26,8 @@ export class ConnectionRequestsComponent implements OnInit {
   user: User;
   receiverUserId: string;
   link: string;
+  formErrorMessage: string;
+  userErrorId: string;
   pendingConnections: { userId: string, givenName: string, familyName: string }[] = [];
   displayedColumns: string[] = [ 'Given Name', 'Family Name', 'Action'];
   dataSource = new MatTableDataSource<ConnectionRequestElements>();
@@ -38,6 +40,8 @@ export class ConnectionRequestsComponent implements OnInit {
     ) { }
 
   ngOnInit() {
+    this.formErrorMessage = undefined;
+    this.userErrorId = undefined;
     this.form = new FormGroup({
       username: new FormControl(''),
       givenName: new FormControl(''),
@@ -53,13 +57,15 @@ export class ConnectionRequestsComponent implements OnInit {
   }
 
   ignoreUserConnection = function (friend) {
+    this.formErrorMessage = undefined;
+    this.userErrorId = undefined;
+
     this.http.post('/api/connection/action-request', {
-      'actionNeeded': 'reject',
+      'action': 'reject',
       'senderUserId': friend.userId,
     })
       .subscribe((returnedResult) => {
-        console.log(' returnedResult ' + returnedResult);
-        if (returnedResult.message === 'request rejected') {
+        if (returnedResult.message === 'Request rejected') {
           // Remove the request from the pendingConnections array
           for ( let i = 0 ; i <= this.pendingConnections.length - 1; i++) {
             if ( this.pendingConnections[i].userId === friend.userId) {
@@ -68,14 +74,19 @@ export class ConnectionRequestsComponent implements OnInit {
           }
           this.dataSource = [];
           this.dataSource = new MatTableDataSource<ConnectionRequestElements>(this.pendingConnections);
+          this.connectionRoute.loadPageCounters();
         }
-      });
-    // Update notification counter in parent.
-    this.connectionRoute.loadPageCounters();
+        },
+          errorResponse => {
+            this.formErrorMessage = 'There was a problem ignoring this request.';
+            this.userErrorId = friend.userId;
+          });
   };
 
 
   loadPendingRequests = function () {
+    this.formErrorMessage = undefined;
+    this.userErrorId = undefined;
     this.pendingConnections = [];
     this.http.post('/api/connection/get-pending-requests', {
       'userId': this.user.id,
@@ -97,20 +108,35 @@ export class ConnectionRequestsComponent implements OnInit {
 
 
   approveUserConnection = function (friend) {
+    this.formErrorMessage = undefined;
+    this.userErrorId = undefined;
     this.http.post('/api/connection/action-request', {
-      'actionNeeded': 'accept',
+      'action': 'accept',
       'senderUserId': friend.userId,
     })
       .subscribe((returnedResult) => {
         if (returnedResult.message === 'request accepted') {
+           // Remove the request from the pendingConnections array
+           for ( let i = 0 ; i <= this.pendingConnections.length - 1; i++) {
+            if ( this.pendingConnections[i].userId === friend.userId) {
+              this.pendingConnections.splice(this.pendingConnections.indexOf(this.pendingConnections[i]), 1);
+            }
+          }
+          this.dataSource = [];
+          this.dataSource = new MatTableDataSource<ConnectionRequestElements>(this.pendingConnections);
+
           // Reload pending connection requests
-          this.loadPendingRequests();
+           // this.loadPendingRequests();
 
           // Navigate to parent if there is no more connection requests
           if (this.pendingConnections.length === 0) {
-              this.router.navigateByUrl('/connections');
+              // this.router.navigateByUrl('/connections');
             }
           }
+        },
+        errorResponse => {
+          this.formErrorMessage = 'There was a problem accepting this request.';
+          this.userErrorId = friend.userId;
         });
         // Update notification counter in parent.
         this.connectionRoute.loadPageCounters();

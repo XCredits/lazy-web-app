@@ -39,6 +39,11 @@
                     <button class="simple-form-button" mat-raised-button (click)="ignoreUserConnection(element)">
                         Ignore
                     </button>
+                    <span *ngIf='userErrorId == element.userId'>
+                         <span *ngIf='formErrorMessage' class="text-error-color">
+                            {{formErrorMessage}}
+                         </span>
+                    </span>
                 </td>
             </ng-container>
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>

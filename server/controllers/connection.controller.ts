@@ -164,11 +164,13 @@ function getConnections(req, res) {
 function actionConnectionRequest(req, res) {
   // Save the login userId
   const userId = req.userId;
-
-  // VALIDATION@actionConnectionRequest (strings only)
-  const action = req.body.actionNeeded;
+  const action = req.body.action;
   const senderUserId = req.body.senderUserId;
-
+  // Validate
+  if (typeof action !== 'string' ||
+      typeof senderUserId !== 'string') {
+        return res.status(422).json({ message: 'Request failed validation' });
+    }
 
   switch (action) {
     case 'accept':
@@ -180,7 +182,9 @@ function actionConnectionRequest(req, res) {
     case 'reject':
       rejectConnectionRequest();
       break;
-    // TODO default
+    default:
+      res.status(422).send({message: 'Could not action connection request.'});
+    break;
   }
 
   function acceptConnectionRequest() {
@@ -199,16 +203,18 @@ function actionConnectionRequest(req, res) {
         })
         .then((result) => {
           const _connection1 = new connection();
-          _connection1.senderUserId = userId;
-          _connection1.receiverUserId = senderUserId;
+          _connection1.userId = userId;
+          _connection1.connectionId = senderUserId;
           _connection1.status = 'connected';
+          _connection1.permissions = { category: 'default' };
           _connection1.connectionRequestRef = result._id;
           return _connection1.save()
               .then(() => {
                 const _connection2 = new connection();
-                _connection2.receiverUserId = userId;
-                _connection2.senderUserId = senderUserId;
+                _connection2.connectionId = userId;
+                _connection2.userId = senderUserId;
                 _connection2.status = 'connected';
+                _connection2.permissions = { category: 'default' };
                 _connection2.connectionRequestRef = result._id;
                 return _connection2.save()
                     .then(() => {

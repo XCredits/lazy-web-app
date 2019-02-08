@@ -3,8 +3,7 @@
       <div class="col-md-8 offset-md-2">
         <nav mat-tab-nav-bar>
             <a mat-tab-link [routerLink]="navLinks[0]" routerLinkActive #rla0="routerLinkActive" [active]="rla0.isActive">
-              View connections 
-                <span matBadge="{{confirmedConnectionsCounter}}" matBadgeOverlap="false" matBadgeColor="warn"> </span>
+              Connections 
             </a> 
             <a mat-tab-link [routerLink]="navLinks[1]" routerLinkActive #rla1="routerLinkActive" [active]="rla1.isActive">
               Requests 

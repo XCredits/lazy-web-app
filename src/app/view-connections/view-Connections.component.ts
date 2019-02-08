@@ -37,7 +37,6 @@ export class ViewConnectionsComponent implements OnInit {
     this.userService.userObservable
       .subscribe(user => {
         this.user = user;
-        console.log('user logged in is --> ' + user.id);
       });
     this.link = 'https://xcredits.com/';
     this.loadConfirmedRequests();

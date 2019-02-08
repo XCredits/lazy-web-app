@@ -30,7 +30,6 @@ export class AddConnectionComponent implements OnInit {
     this.userService.userObservable
       .subscribe(user => {
         this.user = user;
-        console.log('user logged in is --> ' + user.id);
       });
 
 

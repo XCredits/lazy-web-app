@@ -3,16 +3,17 @@ import * as mongoose from 'mongoose';
 const Schema = mongoose.Schema;
 
 const ConnectionSchema = new Schema({
-  senderUserId: { type: String },
-  receiverUserId: { type: String },
+  userId: { type: String },
+  connectionId: { type: String },
   status: { type: String },
+  permissions: { type: Object },
   connectionRequestRef: { type: String },
   connectionTimeStamp: { type: Number },
 }
 );
 
-ConnectionSchema.index({ senderUserId: 1 });
-ConnectionSchema.index({ receiverUserId: 1 });
+ConnectionSchema.index({ userId: 1 });
+ConnectionSchema.index({ connectionId: 1 });
 ConnectionSchema.index({ connectionRequestRef: 1 });
 
 

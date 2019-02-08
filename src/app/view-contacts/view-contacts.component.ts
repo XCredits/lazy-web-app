@@ -25,7 +25,7 @@ export class ViewContactsComponent implements OnInit {
   user: User;
   contactIndex: Number = 0;
   private allContacts = [];
-  displayedColumns: string[] = ['select', 'No', 'Given Name', 'Family Name', 'Email'];
+  displayedColumns: string[] = ['select', 'Given Name', 'Family Name', 'Email'];
   selection = new SelectionModel<ContactElements>(true, []);
   dataSource = new MatTableDataSource<ContactElements>(this.allContacts);
 
@@ -44,10 +44,6 @@ export class ViewContactsComponent implements OnInit {
       .subscribe((data) => {
         this.allContacts = data;
         this.dataSource = new MatTableDataSource<ContactElements>(this.allContacts);
-
-        for (let entry = 0; entry < this.allContacts.length; entry++) {
-          this.allContacts[entry].position = entry + 1;
-        }
 
         this.form = new FormGroup({
           givenName: new FormControl(this.allContacts[0].givenName),

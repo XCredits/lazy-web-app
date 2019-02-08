@@ -92,12 +92,12 @@ export class AppComponent implements OnInit {
     },
     {
       routerLink: '/contacts',
-      icon: 'view_carousel',
-      title: 'View contacts',
+      icon: 'import_contacts',
+      title: 'Contacts',
     },
     {
       routerLink: '/connections',
-      icon: 'Setting',
+      icon: 'group',
       title: 'Connections',
     }
   ];
