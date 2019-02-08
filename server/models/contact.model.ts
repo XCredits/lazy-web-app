@@ -12,9 +12,7 @@ const ContactSchema = new Schema({
 
 
 ContactSchema.index({userId: 1});
-
-// ContactSchema.index({givenName: 1});
-// ContactSchema.index({familyName: 1});
-// ContactSchema.index({email: 1});
+ContactSchema.index({userId: 1, givenName: 1});
+ContactSchema.index({userId: 1, familyName: 1});
 
 module.exports = mongoose.model('Contact', ContactSchema);

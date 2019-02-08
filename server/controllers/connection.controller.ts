@@ -49,19 +49,18 @@ function addRequest(req, res) {
                 connectionReq.active = true;
                 connectionReq.snoozed = false;
                 connectionReq.timeout = new Date().getTime() + 10 * (1000 * 60 * 60 * 24); // days
-                connectionReq.sendTimeStamp = new Date().getTime();
-                connectionReq.updateTimeStamp = new Date().getTime();
+                connectionReq.sendTimestamp = new Date().getTime();
+                connectionReq.updateTimestamp = new Date().getTime();
                 return connectionReq.save()
                     .then(() => {
-                      res.send({ message: 'success' });
+                      return res.send({ message: 'success' });
                     })
                     .catch((error) => {
                       return res.status(500)
                           . json({ message: 'could not save connection request.' });
                     });
               } else {
-                  return res.status(500)
-                      .send({ message: 'pending' });
+                  return res.send({ message: 'pending' });
               }
             })
             .catch(() => {
@@ -70,8 +69,7 @@ function addRequest(req, res) {
             });
       })
       .catch((err) => {
-        return res.status(500)
-          .send({ message: 'user not found' });
+        return res.send({ message: 'user not found' });
       });
 }
 
@@ -133,9 +131,9 @@ function getPendingRequests(req, res) {
  * @return {*}
  */
 function getConnections(req, res) {
-  return connectionRequest.find({ receiverUserId: req.userId, currentStatus: { $eq: 'accepted' } })
+  return connection.find({ userId: req.userId })
       .then((result) => {
-        const senderIdArr = result.map((e => e.senderUserId));
+        const senderIdArr = result.map((e => e.connectionId));
         return User.find({ '_id': { '$in': senderIdArr } })
             .then((filteredResults) => {
               const resultsFiltered = filteredResults.map((x) => {
@@ -198,7 +196,7 @@ function actionConnectionRequest(req, res) {
           {
             active: false,
             currentStatus: 'accepted',
-            updateTimeStamp: new Date().getTime(),
+            updateTimestamp: new Date().getTime(),
           }
         })
         .then((result) => {
@@ -242,7 +240,7 @@ function actionConnectionRequest(req, res) {
           {
             active: false,
             currentStatus: 'cancelled',
-            updateTimeStamp: new Date().getTime(),
+            updateTimestamp: new Date().getTime(),
           }
         })
         .then(() => {
@@ -265,7 +263,7 @@ function actionConnectionRequest(req, res) {
           {
             active: false,
             currentStatus: 'rejected',
-            updateTimeStamp: new Date().getTime(),
+            updateTimestamp: new Date().getTime(),
           }
         })
         .then(() => {
@@ -287,6 +285,8 @@ function actionConnectionRequest(req, res) {
  * @return {*}
  */
 function getPendingRequestCount(req, res) {
+  // Save the login userId
+  const userId = req.userId;
   return connectionRequest.count({
         receiverUserId: req.userId,
         active: { $eq: true }
@@ -303,10 +303,10 @@ function getPendingRequestCount(req, res) {
  * @return {*}
  */
 function getConnectionCount(req, res) {
-  return connectionRequest.count({
-        receiverUserId: req.userId,
-        currentStatus: { $eq: 'accepted' },
-        active: { $eq: false }
+  // Save the login userId
+  const userId = req.userId;
+  return connection.count({
+        userId: req.userId,
       })
       .then((result) => {
         res.send({ message: result });

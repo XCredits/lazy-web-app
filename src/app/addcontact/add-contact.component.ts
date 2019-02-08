@@ -14,7 +14,7 @@ export class AddContactsComponent implements OnInit {
   form: FormGroup;
   waiting = false;
   formErrorMessage: string;
-  submitSuccess: string;
+  submitSuccess: boolean;
 
   constructor(
     private http: HttpClient,
@@ -29,6 +29,8 @@ export class AddContactsComponent implements OnInit {
       familyName: new FormControl(''),
       email: new FormControl('', [Validators.required, Validators.email]),
     });
+   // this.form.valueChanges.subscribe(formData => this.checkUsername(formData));
+
   }
 
   submit = function (formData) {
@@ -47,11 +49,9 @@ export class AddContactsComponent implements OnInit {
       .subscribe(data => {
           this.waiting = false;
           this.submitSuccess = true;
-          console.log('subscribe...');
         },
         errorResponse => {
             this.waiting = false;
-            console.log('error ... ');
             this.formErrorMessage = 'There was a problem submitting the form.';
         });
   };

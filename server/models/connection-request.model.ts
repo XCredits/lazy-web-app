@@ -5,11 +5,11 @@ const Schema = mongoose.Schema;
 const ConnectionRequestSchema = new Schema({
   senderUserId: { type: String },
   receiverUserId: { type: String },
-  sendTimeStamp: { type: Number },
+  sendTimestamp: { type: Number },
   permissions: { type: Object },
   timeout: {type: Number },
   active: { type: Boolean },
-  updateTimeStamp: {type: Number },
+  updateTimestamp: {type: Number },
   currentStatus: {type: String },
   snoozed: {type: Boolean },
 }
@@ -17,6 +17,9 @@ const ConnectionRequestSchema = new Schema({
 
 ConnectionRequestSchema.index({ senderUserId: 1 });
 ConnectionRequestSchema.index({ receiverUserId: 1 });
+ConnectionRequestSchema.index({ senderUserId: 1, receiverUserId: 1, active: 1 });
+ConnectionRequestSchema.index({ receiverUserId: 1, active: 1, timeout: 1 });
+ConnectionRequestSchema.index({ receiverUserId: 1, active: 1, snoozed: 1 });
 
 
 module.exports = mongoose.model('ConnectionRequest', ConnectionRequestSchema);

@@ -221,6 +221,7 @@ import { ViewConnectionsComponent } from './view-connections/view-connections.co
       {
         path: 'contacts',
         component: ContactsComponent,
+        data: { title: 'Contacts' },
         children:
         [
           {
@@ -241,6 +242,7 @@ import { ViewConnectionsComponent } from './view-connections/view-connections.co
       {
         path: 'connections',
         component: ConnectionComponent,
+        data: { title: 'Connections' },
         children:
         [
           {

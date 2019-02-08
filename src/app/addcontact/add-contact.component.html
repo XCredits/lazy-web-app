@@ -14,6 +14,9 @@
                 <br>
                 <mat-form-field class="simple-form-field-100">
                   <input matInput placeholder="Email" name="email" formControlName="email">
+                    <mat-error>
+                      Not a valid email
+                    </mat-error>
                 </mat-form-field>
                 <br>
                 <button [disabled]="waiting" class="simple-form-button" color="primary" mat-raised-button type="submit"
@@ -35,8 +38,8 @@
         <mat-card-subtitle>
             You have successfully added a new contact.
         </mat-card-subtitle>
-        <button routerLink='/' class="simple-form-button" color="primary" mat-raised-button>
-            Go to the home page
+        <button routerLink='/contacts/view' class="simple-form-button" color="primary" mat-raised-button>
+            View contacts
         </button>
       </div>
     </mat-card>

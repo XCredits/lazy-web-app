@@ -25,7 +25,6 @@ export class ConnectionComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    console.log ( new Date().getTime());
     this.form = new FormGroup({
       username: new FormControl(''),
       givenName: new FormControl(''),

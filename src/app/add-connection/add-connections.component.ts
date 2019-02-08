@@ -12,8 +12,7 @@ export class AddConnectionComponent implements OnInit {
   form: FormGroup;
   user: User;
   receiverUserId: string;
-  formErrorMessage: string;
-
+  requestFromMessage: string;
   constructor(
     private http: HttpClient,
     private userService: UserService,
@@ -32,12 +31,22 @@ export class AddConnectionComponent implements OnInit {
         this.user = user;
       });
 
-
   }
   onSelect(friends) {
     console.log('you clicked on ' + friends);
   }
 
+  func1 = function() {
+    this.requestFromMessage = undefined;
+    this.form = new FormGroup({
+      username: new FormControl(''),
+      givenName: new FormControl(''),
+      familyName: new FormControl(''),
+      email: new FormControl(''),
+    });
+
+
+  };
   // Add new connection
   requestUserConnection = function (formData) {
     this.IsAddUserRequest = true;
@@ -48,13 +57,13 @@ export class AddConnectionComponent implements OnInit {
       .subscribe(returnedResult => {
         switch (returnedResult.message) {
           case 'success':
-            this.formErrorMessage = 'Added successfully';
+            this.requestFromMessage = 'Request sent successfully. \nAdd more connections?';
             break;
           case 'pending':
-            this.formErrorMessage = 'You already sent a request';
+            this.requestFromMessage = 'Request is on the way';
             break;
           case 'user not found':
-            this.formErrorMessage = 'Sorry, this user not found';
+            this.requestFromMessage = 'Sorry, this user cannot be found';
             break;
         }
 

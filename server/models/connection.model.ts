@@ -8,13 +8,14 @@ const ConnectionSchema = new Schema({
   status: { type: String },
   permissions: { type: Object },
   connectionRequestRef: { type: String },
-  connectionTimeStamp: { type: Number },
+  connectionTimestamp: { type: Number },
 }
 );
 
 ConnectionSchema.index({ userId: 1 });
 ConnectionSchema.index({ connectionId: 1 });
 ConnectionSchema.index({ connectionRequestRef: 1 });
+ConnectionSchema.index({ userId: 1, connectionId: 1 });
 
 
 module.exports = mongoose.model('Connection', ConnectionSchema);

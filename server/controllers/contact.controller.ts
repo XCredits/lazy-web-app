@@ -4,7 +4,7 @@ const auth = require('./jwt-auth.controller');
 
 module.exports = function(app) {
   app.post('/api/contacts/add', auth.jwt, addContact);
-  app.get('/api/contacts/view', auth.jwt, viewContacts);
+  app.post('/api/contacts/view', auth.jwt, viewContacts);
 };
 
 
@@ -33,7 +33,7 @@ function addContact(req, res) {
   });
   return contact.save()
       .then((result) => {
-        res.send({ message: 'success' });
+        return res.send({ message: 'success' });
       })
       .catch((error) => {
         return res.status(500).send('Problem finding contacts.');
@@ -58,7 +58,7 @@ function viewContacts(req, res) {
             email: x.email
           };
         });
-        res.send(filteredResult);
+        return res.send(filteredResult);
       })
       .catch(() => {
         return res.status(500).send({ message: 'error retrieving users from contacts database' });

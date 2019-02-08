@@ -40,43 +40,16 @@ export class ViewContactsComponent implements OnInit {
       familyName: new FormControl(''),
       email: new FormControl('', [Validators.required, Validators.email]),
     });
-    this.http.get<any>('/api/contacts/view')
-      .subscribe((data) => {
-        this.allContacts = data;
-        this.dataSource = new MatTableDataSource<ContactElements>(this.allContacts);
 
-        this.form = new FormGroup({
-          givenName: new FormControl(this.allContacts[0].givenName),
-          familyName: new FormControl(this.allContacts[0].familyName),
-          email: new FormControl(this.allContacts[0].email),
-        });
-        });
+    this.http.post('/api/contacts/view', { })
+      .subscribe ((data: any) => {
+           this.allContacts = data;
+           this.dataSource = new MatTableDataSource<ContactElements>(this.allContacts);
+          });
     }
 
 
   submit = function () { };
-
-  previousContact = function () {
-    if (this.contactIndex > 0) {
-      this.contactIndex --;
-    }
-    this.form = new FormGroup({
-      givenName: new FormControl(this.allContacts[this.contactIndex].givenName),
-      familyName: new FormControl(this.allContacts[this.contactIndex].familyName),
-      email: new FormControl(this.allContacts[this.contactIndex].email),
-  });
-  };
-
-  nextContact = function () {
-    if (this.contactIndex < this.allContacts.length - 1 ) {
-      this.contactIndex++;
-    }
-    this.form = new FormGroup({
-      givenName: new FormControl(this.allContacts[this.contactIndex].givenName),
-      familyName: new FormControl(this.allContacts[this.contactIndex].familyName),
-      email: new FormControl(this.allContacts[this.contactIndex].email),
-  });
-  };
 
   isAllSelected() {
     const numSelected = this.selection.selected.length;
