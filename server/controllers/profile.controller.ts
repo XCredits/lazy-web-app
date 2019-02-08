@@ -1,5 +1,6 @@
 import * as validator from 'validator';
 const User = require('../models/user.model');
+const Username = require('../models/username.model');
 const auth = require('./jwt-auth.controller');
 const {isValidDisplayUsername, normalizeUsername} =
     require('./utils.controller');
@@ -38,15 +39,41 @@ function saveDetails(req, res) {
         user.email = email;
         user.givenName = givenName;
         user.familyName = familyName;
-        user.username = username;
-        user.displayUsername = displayUsername;
         return user.save()
             .then(() => {
-              return res.send({message: 'Details Changed successfully'});
-            })
-            .catch((err) => {
-              return res.status(500).send({message: 'Error in saving changes'});
-            });
+                return Username.findOne({refId: userId, current: true})
+                    .then((response) => {
+                      if (response.displayUsername === displayUsername) {
+                        return res.send({message: 'Details Changed successfully'});
+                      }
+                      response.current = false;
+                      return response.save()
+                          .then(() => {
+                              const usernameDocument = new Username();
+                              usernameDocument.displayUsername = displayUsername;
+                              usernameDocument.username = username;
+                              usernameDocument.current = true;
+                              usernameDocument.refId = response.refId;
+                              usernameDocument.type = 'User';
+                              return usernameDocument.save()
+                                  .then(() => {
+                                    return res.status(200).send({message: 'Details Changed successfully'});
+                                  })
+                                  .catch(() => {
+                                    return res.status(500).send({message: 'Error in saving username'});
+                                  });
+                          })
+                          .catch(() => {
+                            return res.status(500).send({message: 'Error in changing existing username'});
+                          });
+                      })
+                      .catch((err) => {
+                        return res.status(500).send({message: 'Error in finding username'});
+                      });
+                    })
+                    .catch(() => {
+                      return res.status(500).send({message: 'Error in saving user details'});
+                    });
       })
       .catch((err) => {
         return res.status(500).send({message: 'UserId not found'});
@@ -61,7 +88,8 @@ function saveDetails(req, res) {
  */
 
 function profileImageUpload(req, res) {
-  const userId = req.userId;
+  const userId = req.query.id;
+
   if (typeof userId !== 'string') {
     return res.status(422).json({message: 'Error in UserId'});
   }
