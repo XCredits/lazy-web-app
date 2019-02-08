@@ -263,7 +263,6 @@ export class UserService {
 
 export interface User {
   id: string;
-  username: string;
   displayUsername: string;
   givenName: string;
   familyName: string;

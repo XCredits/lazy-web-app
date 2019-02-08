@@ -3,7 +3,8 @@ import * as mongoose from 'mongoose';
 const Schema = mongoose.Schema;
 
 const UsernameSchema = new Schema ({
-  username: {type: String, unique: true },
+  username: {type: String},
+  displayUsername: {type: String, unique: true},
   type: {type: String},
   refId: {type: String},
   current: {type: Boolean},

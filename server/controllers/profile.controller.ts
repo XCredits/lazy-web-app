@@ -39,18 +39,18 @@ function saveDetails(req, res) {
         user.email = email;
         user.givenName = givenName;
         user.familyName = familyName;
-        user.displayUsername = displayUsername;
         return user.save()
             .then(() => {
-                return Username.findOne({refId: userId})
+                return Username.findOne({refId: userId, current: true})
                     .then((response) => {
-                      if (response.username === username) {
+                      if (response.displayUsername === displayUsername) {
                         return res.send({message: 'Details Changed successfully'});
                       }
                       response.current = false;
                       return response.save()
                           .then(() => {
                               const usernameDocument = new Username();
+                              usernameDocument.displayUsername = displayUsername;
                               usernameDocument.username = username;
                               usernameDocument.current = true;
                               usernameDocument.refId = response.refId;

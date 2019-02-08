@@ -5,7 +5,6 @@ const Schema = mongoose.Schema;
 const UserSchema = new Schema({
     givenName: {type: String},
     familyName: {type: String},
-    displayUsername: {type: String, required: true},
     email: {type: String},
     emailConfirmed: {type: Boolean, default: false},
     timeRegistered: {type: Date, default: Date.now},
@@ -27,7 +26,6 @@ UserSchema.methods.frontendData = function() {
     id: this._id,
     givenName: this.givenName,
     familyName: this.familyName,
-    displayUsername: this.displayUsername,
     email: this.email,
     emailConfirmed: this.emailConfirmed,
     timeRegistered: this.timeRegistered,

@@ -66,7 +66,7 @@ function(username, password, done) {
             message: 'User not found',
           });
         }
-        return done(null, user);
+        return done(null, user, usernameDocument);
       });
     });
   });

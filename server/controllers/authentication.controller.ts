@@ -121,7 +121,6 @@ function register(req, res) {
         const authUser = new Auth();
         user.givenName = givenName;
         user.familyName = familyName;
-        user.displayUsername = displayUsername;
         user.email = email;
         return user.save()
             .then((userDetail) => {
@@ -130,6 +129,7 @@ function register(req, res) {
               return authUser.save()
                   .then(() => {
                     usernameDocument.username = username;
+                    usernameDocument.displayUsername = displayUsername;
                     usernameDocument.refId = userDetail._id;
                     usernameDocument.type = 'user';
                     usernameDocument.current = true;
@@ -137,7 +137,7 @@ function register(req, res) {
                         .then(() => {
                           // The below promises are structured to report failure but not
                           // block on failure
-                          return createAndSendRefreshAndSessionJwt(username, user, req, res)
+                          return createAndSendRefreshAndSessionJwt(usernameDocument, user, req, res)
                               .then(() => {
                                 return statsService.increment(UserStats)
                                     .catch((err) => {
@@ -279,7 +279,7 @@ function login(req, res) {
   // Sanitize (update username)
   req.body.username = normalizedUsername;
 
-  passport.authenticate('local', function(err, user, info) {
+  passport.authenticate('local', function(err, user, usernameDocument, info) {
     if (err) {
       return res.status(500).json(err);
     }
@@ -288,7 +288,7 @@ function login(req, res) {
       return res.status(401)
           .send({message: 'Error in finding user: ' + info.message});
     }
-    return createAndSendRefreshAndSessionJwt(normalizedUsername, user, req, res);
+    return createAndSendRefreshAndSessionJwt(usernameDocument, user, req, res);
   })(req, res);
 }
 
@@ -308,7 +308,6 @@ function refreshJwt(req, res) {
     xsrf: req.jwtRefreshToken.xsrf,
     sessionId: req.jwtRefreshToken.jwt,
   });
-
   res.send({
       jwtExp: token.jwtObj.exp,
       message: 'JWT successfully refreshed.',
@@ -330,9 +329,18 @@ function userDetails(req, res) {
   }
   return User.findOne({_id: userId})
       .then((user) => {
-        res.send(user.frontendData());
+        return Username.findOne({refId: user._id, current: true})
+            .then((username) => {
+              const returnUser = user.frontendData();
+              returnUser.username = username.username;
+              returnUser.displayUsername = username.displayUsername;
+              return res.send(returnUser);
+            })
+            .catch(() => {
+              return res.status(500).send({message: 'Error accessing username database'});
+            });
       })
-      .catch((err) => {
+      .catch(() => {
         return res.status(500).send({message: 'UserId not found'});
       });
 }
@@ -517,7 +525,7 @@ function logout(req, res) {
  * @param {*} res response object
  * @return {*}
  */
-function createAndSendRefreshAndSessionJwt(username, user, req, res) {
+function createAndSendRefreshAndSessionJwt(usernameDocument, user, req, res) {
   const userAgentString = req.header('User-Agent').substring(0, 512);
   // Validate
   if (typeof userAgentString !== 'string') {
@@ -547,20 +555,23 @@ function createAndSendRefreshAndSessionJwt(username, user, req, res) {
         const token = setJwtCookie({
             res,
             userId: user._id,
-            username: username,
+            username: usernameDocument.username,
             isAdmin: user.isAdmin,
             xsrf,
             sessionId: sessionReturned._id});
         const refreshToken = setJwtRefreshTokenCookie({
             res,
             userId: user._id,
-            username: username,
+            username: usernameDocument.username,
             isAdmin: user.isAdmin,
             xsrf,
             sessionId: sessionReturned._id,
             exp: refreshTokenExpiry});
+        const returnedUserData = user.frontendData();
+        returnedUserData.username = usernameDocument.username;
+        returnedUserData.displayUsername = usernameDocument.displayUsername;
         return res.json({
-            user: user.frontendData(),
+            user: returnedUserData,
             jwtExp: token.jwtObj.exp,
             jwtRefreshTokenExp: refreshToken.jwtObj.exp,
         });
