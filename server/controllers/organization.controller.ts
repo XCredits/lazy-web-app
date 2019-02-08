@@ -3,6 +3,7 @@ const UserOrganization = require('../models/user-organization.model');
 const auth = require('./jwt-auth.controller');
 const User = require('../models/user.model');
 const Username = require('../models/username.model');
+const {isValidDisplayUsername, normalizeUsername} = require('./utils.controller');
 
 import {uploadSingleImage} from '../services/image-upload';
 
@@ -47,16 +48,19 @@ function threeMonthsFromNow() {
 }
 
 function createOrg(req, res) {
-  const { name, website, phoneNumber, username } = req.body;
+  const { name, website, phoneNumber } = req.body;
+  const displayUsername = req.body.username;
   const userId = req.userId;
   if (typeof userId !== 'string' ||
       typeof name !== 'string' ||
       typeof website !== 'string' ||
       typeof phoneNumber !== 'string' ||
-      typeof username !== 'string') {
+      typeof displayUsername !== 'string' ||
+      !isValidDisplayUsername(displayUsername)) {
     return res.status(500).send({message: 'Request validation failed'});
   }
-  return Username.findOne({username: username})
+  const username = normalizeUsername(displayUsername);
+  return Username.findOne({displayUsername: displayUsername})
       .then((usernameExist) => {
           if (usernameExist) {
               return res.status(409).send({message: 'Username already taken.'});
@@ -76,6 +80,7 @@ function createOrg(req, res) {
                       .then(() => {
                           const usernameDocument = new Username();
                           usernameDocument.username = username;
+                          usernameDocument.displayUsername = displayUsername;
                           usernameDocument.refId = organization._id;
                           usernameDocument.type = 'Organization';
                           usernameDocument.current = true;
@@ -149,13 +154,15 @@ function updateDetails(req, res) {
   const name = req.body.name;
   const website = req.body.website;
   const phoneNumber = req.body.phoneNumber;
-  const username = req.body.username;
+  const displayUsername = req.body.username;
   if (typeof userId !== 'string' ||
       typeof orgId !== 'string' ||
       typeof name !== 'string' ||
-      typeof username !== 'string') {
+      typeof displayUsername !== 'string' ||
+      !isValidDisplayUsername(displayUsername)) {
     return res.status(500).send({message: 'Request validation failed'});
   }
+  const username = normalizeUsername(displayUsername);
   isOrgAdmin(userId, orgId)
       .then(() => {
           return Organization.findOne({'_id': orgId})
@@ -168,7 +175,7 @@ function updateDetails(req, res) {
                       return Username
                           .findOne({'refId': orgId, 'current': true})
                           .then((response) => {
-                              if (response.username === username) {
+                              if (response.displayUsername === displayUsername) {
                                 return res.status(200).send({
                                   message: 'Updated successfully'
                                 });
@@ -179,6 +186,7 @@ function updateDetails(req, res) {
                                   .then(() => {
                                       const usernameDocument = new Username();
                                       usernameDocument.username = username;
+                                      usernameDocument.displayUsername = displayUsername;
                                       usernameDocument.refId = response.refId;
                                       usernameDocument.current = true;
                                       usernameDocument.type = 'Organization';
@@ -267,12 +275,13 @@ function imageUpload(req, res) {
 
 function getDetails(req, res) {
   const userId = req.userId;
-  const username = req.body.username;
+  const displayUsername = req.body.username;
   if (typeof userId !== 'string' ||
-      typeof username !== 'string') {
+      typeof displayUsername !== 'string' ||
+      !isValidDisplayUsername(displayUsername)) {
         return res.status(500).send({message: 'Request validation failed'});
   }
-  return Username.findOne({'username': username})
+  return Username.findOne({'displayUsername': displayUsername})
     .then((response) => {
         isOrgAdmin(userId, response.refId)
             .then(() => {
@@ -299,12 +308,13 @@ function getDetails(req, res) {
 
 function getUsers(req, res) {
   const userId = req.userId;
-  const username = req.body.username;
+  const displayUsername = req.body.username;
   if (typeof userId !== 'string' ||
-      typeof username !== 'string') {
+      typeof displayUsername !== 'string' ||
+      !isValidDisplayUsername(displayUsername)) {
     return res.status(500).send({message: 'Request validation failed'});
     }
-  return Username.findOne({'username': username})
+  return Username.findOne({'displayUsername': displayUsername})
       .then((response) => {
           return Organization.findOne({'_id': response.refId})
             .then((organization) => {
@@ -366,7 +376,7 @@ function addUser(req, res) {
     .then(() => {
       return Organization.findOne({'_id' : orgId})
         .then(() => {
-          return Username.findOne({'username': username, 'type': 'user'})
+          return Username.findOne({'username': username, 'type': 'User'})
             .then((response) => {
               return User.findOne({'_id': response.refId})
                   .then((user) => {

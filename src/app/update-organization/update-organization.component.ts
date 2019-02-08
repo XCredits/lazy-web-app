@@ -56,7 +56,7 @@ export class UpdateOrganizationComponent implements OnInit, OnDestroy {
             name: new FormControl(organization['orgDetail'].name, Validators.required),
             website: new FormControl(organization['orgDetail'].website),
             phoneNumber: new FormControl(organization['orgDetail'].phoneNumber),
-            username: new FormControl(organization['response'].username, Validators.required),
+            username: new FormControl(organization['response'].displayUsername, Validators.required),
         });
         this.ready = true;
         this.form.valueChanges.subscribe(changes => this.checkUsername(changes));
@@ -75,10 +75,13 @@ export class UpdateOrganizationComponent implements OnInit, OnDestroy {
 
   checkUsername = function (formData)  {
     this.form.controls['username'].setErrors(null);
+    const displayUsernameRegex =
+        new RegExp(this.userService.displayUsernameRegexString);
 
     // this.currentUsername - designed to prevent the form from reporting an
     // error if the username has been updated
-    const initialUsername = this.orgUsername;
+    const initialUsername = this.normalizeUsername(this.user.displayUsername);
+    const displayUsername = this.user.displayUsername;
     this.currentUsername = this.normalizeUsername(formData.username);
     this.currentDisplayName = formData.username;
     if (initialUsername.length === 0) {
@@ -86,13 +89,19 @@ export class UpdateOrganizationComponent implements OnInit, OnDestroy {
       this.usernameErrorMessage = 'Required.';
       return;
     }
+    if (!displayUsernameRegex.test(initialUsername)) {
+      this.form.controls['username'].setErrors({'incorrect': true});
+      this.usernameErrorMessage = 'Not a valid username. Use only a-z, 0-9 and "_", "." or "-".';
+      return;
+    }
     if (initialUsername !== this.currentUsername) {
-      this.http.post('/api/user/username-available', {
+      this.http.post('/api/username-available', {
             username: this.currentUsername,
           })
           .subscribe(data => {
-            if (initialUsername !== this.currentUsername) {
+            if (initialUsername !== this.currentUsername || this.currentDisplayName !== displayUsername) {
               if (!data.available) {
+                this.disableButton = true;
                 this.form.controls['username'].setErrors({'incorrect': true});
                 this.usernameErrorMessage =
                     'Username is not available. Please choose another.';

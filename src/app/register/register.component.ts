@@ -82,7 +82,7 @@ export class RegisterComponent implements OnInit {
     }
     setTimeout(() => { // Wait 1 second before checking username
       if (initialUsername === this.currentUsername) {
-        this.http.post('/api/user/username-available', {
+        this.http.post('/api/username-available', {
               username: initialUsername,
             })
             .subscribe(data => {

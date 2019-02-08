@@ -67,7 +67,7 @@ import * as zxcvbn from 'zxcvbn';
 module.exports = function(app) {
   app.use(passport.initialize());
   app.post('/api/user/register', register);
-  app.post('/api/user/username-available', usernameAvailable);
+  app.post('/api/username-available', usernameAvailable);
   app.post('/api/user/check-password', checkPassword);
   app.post('/api/user/login', login);
   app.get('/api/user/refresh-jwt', auth.jwtRefreshToken, refreshJwt);
@@ -111,7 +111,7 @@ function register(req, res) {
   const username = normalizeUsername(displayUsername);
 
   // check that there is not an existing user with this username
-  return Username.findOne({username: username})
+  return Username.findOne({displayUsername: displayUsername})
       .then((existingUser) => {
         if (existingUser) {
           return res.status(409).send({message: 'Username already taken.'});
@@ -131,7 +131,7 @@ function register(req, res) {
                     usernameDocument.username = username;
                     usernameDocument.displayUsername = displayUsername;
                     usernameDocument.refId = userDetail._id;
-                    usernameDocument.type = 'user';
+                    usernameDocument.type = 'User';
                     usernameDocument.current = true;
                     return usernameDocument.save()
                         .then(() => {

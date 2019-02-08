@@ -71,7 +71,7 @@ export class ProfileComponent implements OnInit {
       return;
     }
     if (initialUsername !== this.currentUsername) {
-      this.http.post('/api/user/username-available', {
+      this.http.post('/api/username-available', {
             username: this.currentUsername,
           })
           .subscribe(data => {

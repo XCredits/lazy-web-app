@@ -22,7 +22,7 @@ export class OrganizationComponent implements OnInit, OnDestroy {
         .subscribe((response: any)  =>  {
           this.organization = response['orgDetails'];
           Object.values(response.orgUsername).forEach(org => {
-            this.username[org['refId']] = org['username'];
+            this.username[org['refId']] = org['displayUsername'];
           });
           Object.values(response.userOrg).forEach(org => {
             this.userRoles[org['orgId']] = org['roles'];
