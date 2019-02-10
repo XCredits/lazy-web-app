@@ -51,10 +51,14 @@ function saveDetails(req, res) {
                       response.displayUsername = displayUsername;
                       return response.save()
                           .then(() => {
-                            return res.status(200).send({message: 'Details changed successfully'});
+                            return res.status(200).send({
+                              message: 'Details changed successfully'
+                            });
                           })
                           .catch(() => {
-                            return res.status(500).send({message: 'Error in saving display username'});
+                            return res.status(500).send({
+                              message: 'Error in saving display username'
+                            });
                           });
                     } else {
                       // Changing display AND base username
@@ -71,7 +75,7 @@ function saveDetails(req, res) {
                                 .then(() => {
                                   return res.status(200).send({message: 'Details changed successfully'});
                                 })
-                                .catch(() => {
+                                .catch((err) => {
                                   return res.status(500).send({message: 'Error in saving username'});
                                 });
                           })

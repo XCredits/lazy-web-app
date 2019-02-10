@@ -29,6 +29,7 @@ export class UpdateOrganizationComponent implements OnInit, OnDestroy {
   usernameErrorMessage: string;
   selectedRatio = 4 / 3;
   orgUsername: string;
+  dispUsername: string;
   options: any = {
     size: 'dialog-centered',
     panelClass: 'custom-modalbox'
@@ -45,12 +46,13 @@ export class UpdateOrganizationComponent implements OnInit, OnDestroy {
           this.logo = organization.logo;
         });
     this.sub = this.route.params.subscribe(params => {
-      this.http.post<Organization>('/api/organization/get-details', {
+      this.http.post<any>('/api/organization/get-details', {
           'username': params.orgUsername
       })
       .subscribe(organization => {
           this.organization = organization['orgDetail'];
           this.orgUsername = organization['response'].username;
+          this.dispUsername = organization['response'];
           this.logo = organization['orgDetail'].logo;
           this.form = new FormGroup ({
             name: new FormControl(organization['orgDetail'].name, Validators.required),
@@ -80,8 +82,8 @@ export class UpdateOrganizationComponent implements OnInit, OnDestroy {
 
     // this.currentUsername - designed to prevent the form from reporting an
     // error if the username has been updated
-    const initialUsername = this.normalizeUsername(this.user.displayUsername);
-    const displayUsername = this.user.displayUsername;
+    const initialUsername = this.normalizeUsername(this.dispUsername.displayUsername);
+    const displayUsername = this.dispUsername.displayUsername;
     this.currentUsername = this.normalizeUsername(formData.username);
     this.currentDisplayName = formData.username;
     if (initialUsername.length === 0) {

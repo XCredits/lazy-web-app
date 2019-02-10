@@ -180,6 +180,20 @@ function updateDetails(req, res) {
                                   message: 'Updated successfully'
                                 });
                               }
+                              if (response.username === username) {
+                                response.displayUsername = displayUsername;
+                                return response.save()
+                                    .then(() => {
+                                      return res.status(200).send({
+                                        message: 'Details changed successfully'
+                                      });
+                                    })
+                                    .catch(() => {
+                                      return res.status(500).send({
+                                        message: 'Error in saving display username'
+                                      });
+                                    });
+                              }
                               response.current = false;
                               response.forward = threeMonthsFromNow();
                               return response.save()
@@ -321,13 +335,13 @@ function getUsers(req, res) {
                 return isOrgAdmin(userId, organization._id)
                   .then(() => {
                     return UserOrganization
-                      .find({'orgId': organization._id, 'roles': 'POS'})
+                      .find({'orgId': organization._id})
                           .then((userOrgArr) => {
                               const userIds =
                                     userOrgArr.map(orgEle => orgEle.userId);
                               return User.find({'_id': userIds})
                                     .then((users) => {
-                                      return Username.find({'refId': userIds})
+                                      return Username.find({'refId': userIds, 'current': true})
                                           .then((usernames) => {
                                               return res.json({users, usernames});
                                           })

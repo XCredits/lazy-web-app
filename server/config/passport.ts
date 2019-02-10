@@ -36,12 +36,14 @@ passport.use(new LocalStrategy({
   passwordField: 'password',
 },
 function(username, password, done) {
-  Username.findOne({username: username}, function(err1, usernameDocument) {
+  Username.findOne({username: username, 'current': true}, function(err1, usernameDocument) {
     if (err1) {
+      console.log('First');
       return done(err1);
     }
     // Return if username not found in database
     if (!usernameDocument) {
+      console.log('Second');
       return done(null, false, {
         message: 'Username not found',
       });
@@ -52,16 +54,19 @@ function(username, password, done) {
       }
       // Return if password is incorrect
       if (!userAuth.checkPassword(password)) {
+        console.log('Third');
         return done(null, false, {
           message: 'Password is incorrect',
         });
       }
       User1.findOne({'_id': usernameDocument.refId}, function(err3, user) {
         if (err3) {
+          console.log('Fourth');
           return done(err3);
         }
         // Return if user not found in database
         if (!user) {
+          console.log('Fifth');
           return done(null, false, {
             message: 'User not found',
           });

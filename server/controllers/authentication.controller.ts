@@ -67,7 +67,7 @@ import * as zxcvbn from 'zxcvbn';
 module.exports = function(app) {
   app.use(passport.initialize());
   app.post('/api/user/register', register);
-  app.post('/api/username-available', usernameAvailable);
+  app.post('/api/username-available', auth.jwt, usernameAvailable);
   app.post('/api/user/check-password', checkPassword);
   app.post('/api/user/login', login);
   app.get('/api/user/refresh-jwt', auth.jwtRefreshToken, refreshJwt);
@@ -203,6 +203,7 @@ function register(req, res) {
  * @return {Promise}
  */
 function usernameAvailable(req, res) {
+  const userId = req.userId;
   const displayUsername = req.body.username;
   // Validate
   if (typeof displayUsername !== 'string' ||
@@ -224,9 +225,19 @@ function usernameAvailable(req, res) {
     return res.send({available: true});
   }
 
-  return Username.findOne({username: username})
+  return Username.findOne({username: username, current: false})
       .then((existingUser) => {
         if (existingUser) {
+          if (existingUser.refId === userId) {
+            existingUser.current = true;
+            return existingUser.save()
+                .then(() => {
+                  return res.send({available: true});
+                })
+                .catch(() => {
+                  return res.status(500).send({message: 'Error is saving current'});
+                });
+          }
           return res.send({available: false});
         } else {
           return res.send({available: true});
@@ -284,9 +295,10 @@ function login(req, res) {
       return res.status(500).json(err);
     }
     if (!user) {
+      console.log(info);
       auth.clearTokens(res);
       return res.status(401)
-          .send({message: 'Error in finding user: ' + info.message});
+          .send({message: 'Error in finding user:'});
     }
     return createAndSendRefreshAndSessionJwt(usernameDocument, user, req, res);
   })(req, res);
