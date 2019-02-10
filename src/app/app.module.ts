@@ -83,6 +83,7 @@ import { ChangeThemeComponent } from './change-theme/change-theme.component';
 import { ContactsComponent } from './contacts/contacts.component';
 import { AddContactsComponent } from './addcontact/add-contact.component';
 import { ViewContactsComponent } from './view-contacts/view-contacts.component';
+import { ViewFavContactsComponent } from './view-fav-contacts/view-fav-contacts.component';
 import { ConnectionComponent } from './connections/connections.component';
 import { AddConnectionComponent } from './add-connection/add-connections.component';
 import { ConnectionRequestsComponent } from './connection-requests/connection-requests.component';
@@ -116,6 +117,7 @@ import { ViewConnectionsComponent } from './view-connections/view-connections.co
     ChangeThemeComponent,
     ContactsComponent,
     AddContactsComponent,
+    ViewFavContactsComponent,
     ViewContactsComponent,
     ConnectionComponent,
     AddConnectionComponent,
@@ -232,6 +234,10 @@ import { ViewConnectionsComponent } from './view-connections/view-connections.co
           {
             path: 'view',
             component: ViewContactsComponent,
+          },
+          {
+            path: 'fav',
+            component: ViewFavContactsComponent,
           },
           {
             path: 'add',

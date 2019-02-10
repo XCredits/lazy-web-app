@@ -6,7 +6,6 @@ import { UserService, User } from '../user.service';
 import { HttpClient } from '@angular/common/http';
 
 export interface ContactElements {
-  isFav: Boolean;
   position: number;
   givenName: string;
   familyName: number;
@@ -14,11 +13,11 @@ export interface ContactElements {
 }
 
 @Component({
-  selector: 'app-view-contacts',
-  templateUrl: './view-contacts.component.html',
-  styleUrls: ['./view-contacts.component.scss']
+  selector: 'app-view-fav-contacts',
+  templateUrl: './view-fav-contacts.component.html',
+  styleUrls: ['./view-fav-contacts.component.scss']
 })
-export class ViewContactsComponent implements OnInit {
+export class ViewFavContactsComponent implements OnInit {
   form: FormGroup;
   disableButton = true;
   submitSuccess = false;
@@ -26,7 +25,7 @@ export class ViewContactsComponent implements OnInit {
   user: User;
   contactIndex: Number = 0;
   private allContacts = [];
-  displayedColumns: string[] = ['select', 'Favourite', 'Given Name', 'Family Name', 'Email'];
+  displayedColumns: string[] = ['select', 'Given Name', 'Family Name', 'Email'];
   selection = new SelectionModel<ContactElements>(true, []);
   dataSource = new MatTableDataSource<ContactElements>(this.allContacts);
 
@@ -42,7 +41,7 @@ export class ViewContactsComponent implements OnInit {
       email: new FormControl('', [Validators.required, Validators.email]),
     });
 
-    this.http.post('/api/contacts/view', { })
+    this.http.post('/api/contacts/fav', { })
       .subscribe ((data: any) => {
            this.allContacts = data;
            this.dataSource = new MatTableDataSource<ContactElements>(this.allContacts);
