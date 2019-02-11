@@ -93,8 +93,8 @@ function register(req, res) {
   const email = req.body.email;
   const givenName = req.body.givenName;
   const familyName = req.body.familyName;
-  const password = req.body.password;
   const displayUsername = req.body.username;
+  const password = req.body.password;
 
   // Validate
   if (typeof email !== 'string' ||
