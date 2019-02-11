@@ -1,3 +1,5 @@
+import * as mongoose from 'mongoose';
+(<any>mongoose).Promise = Promise;
 import * as validator from 'validator';
 const User = require('../models/user.model');
 const Username = require('../models/username.model');
@@ -80,23 +82,31 @@ function saveDetails(req, res) {
           saveNewUsername = true;
           saveCurrentUsername = true;
         }
-        const promises2 = [user.save()];
-        if (saveCurrentUsername) {
-          promises2.push(currentUsername.save());
-        }
-        if (saveRequestedUsername) {
-          promises2.push(requestedUsername.save());
-        }
-        if (saveNewUsername) {
-          promises2.push(newUsername.save());
-        }
 
-        return Promise.all(promises2)
+        // https://mongoosejs.com/docs/transactions.html
+        let session;
+        mongoose.startSession()
+            .then((_session) => {
+              session = _session;
+              const promises2 = [user.save({ session: session })];
+              if (saveCurrentUsername) {
+                promises2.push(currentUsername.save());
+              }
+              if (saveRequestedUsername) {
+                promises2.push(requestedUsername.save());
+              }
+              if (saveNewUsername) {
+                promises2.push(newUsername.save());
+              }
+              return Promise.all(promises2);
+            })
+            .then(() => session.commitTransaction())
             .then(() => {
               res.send({message: 'Details changed successfully'});
             })
             .catch(() => {
               res.status(500).send({message: 'Error in saving user details'});
+              return session.abortTransaction();
             });
       });
 }
