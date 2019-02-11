@@ -205,6 +205,7 @@ function register(req, res) {
 function usernameAvailable(req, res) {
   const userId = req.userId;
   const displayUsername = req.body.username;
+  const storedUsername = req.body.storedUsername;
   // Validate
   if (typeof displayUsername !== 'string' ||
       !isValidDisplayUsername(displayUsername)) {
@@ -225,25 +226,41 @@ function usernameAvailable(req, res) {
     return res.send({available: true});
   }
 
-  return Username.findOne({username: username, current: false})
+  return Username.findOne({username: username})
       .then((existingUser) => {
         if (existingUser) {
-          if (existingUser.refId === userId) {
-            existingUser.current = true;
-            return existingUser.save()
-                .then(() => {
-                  return res.send({available: true});
+          if (existingUser.refId === userId && existingUser.current === false) {
+            return Username.findOne({displayUsername: storedUsername})
+                .then((oldUsername) => {
+                  oldUsername.current = false;
+                  return oldUsername.save()
+                      .then(() => {
+                        existingUser.current = true;
+                        return existingUser.save()
+                            .then(() => {
+                              return res.send({available: true});
+                            })
+                            .catch(() => {
+                              return res.status(500).send({message: 'Error is saving current'});
+                            });
+                      })
+                      .catch((err) => {
+                        return res.status(500).send({message: 'Error is saving stored username'});
+                      });
                 })
                 .catch(() => {
-                  return res.status(500).send({message: 'Error is saving current'});
+                  return res.status(500).send({message: 'Error is finding stored username'});
                 });
+          } else {
+            return res.send({available: false});
           }
-          return res.send({available: false});
         } else {
+          console.log('False 2');
           return res.send({available: true});
         }
       })
       .catch((err) => {
+        console.log(err);
         res.status(500).send({
             message: 'Error accessing database while checking for existing users'});
       });

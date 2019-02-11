@@ -73,6 +73,7 @@ export class ProfileComponent implements OnInit {
     if (initialUsername !== this.currentUsername) {
       this.http.post('/api/username-available', {
             username: this.currentUsername,
+            storedUsername: this.user.displayUsername,
           })
           .subscribe(data => {
             if (initialUsername !== this.currentUsername || this.currentDisplayName !== displayUsername) {
