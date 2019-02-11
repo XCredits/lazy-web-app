@@ -207,7 +207,7 @@ function usernameAvailable(req, res) {
   const displayUsername = req.body.username;
   const storedUsername = req.body.storedUsername;
   // Validate
-  if (typeof id !== 'string' ||
+  if ((typeof id !== 'string' || typeof id !== 'undefined') ||
       typeof displayUsername !== 'string' ||
       !isValidDisplayUsername(displayUsername)) {
     return res.status(422).json({message: 'Request failed validation'});
@@ -228,16 +228,25 @@ function usernameAvailable(req, res) {
   }
 
   return Username.findOne({username: username})
-      .then((existingUser) => {
-        if (existingUser) {
-          if (existingUser.refId === id && existingUser.current === false) {
+      .then((existingUsername) => {
+        if (existingUsername) {
+          if (existingUsername.refId === id) {
+            // YES
+          } else {
+            // No
+          }
+        } else {
+          // YES
+        }
+
+
             return Username.findOne({displayUsername: storedUsername})
                 .then((oldUsername) => {
                   oldUsername.current = false;
                   return oldUsername.save()
                       .then(() => {
-                        existingUser.current = true;
-                        return existingUser.save()
+                        existingUsername.current = true;
+                        return existingUsername.save()
                             .then(() => {
                               return res.send({available: true});
                             })
