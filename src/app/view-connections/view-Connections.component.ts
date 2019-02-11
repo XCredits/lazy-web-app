@@ -21,7 +21,7 @@ export class ViewConnectionsComponent implements OnInit {
   receiverUserId: string;
   link: string;
   confirmedConnections: { userId: string, givenName: string, familyName: string }[] = [];
-  displayedColumns: string[] = [ 'Given Name', 'Family Name'];
+  displayedColumns: string[] = [ 'Given Name', 'Family Name', 'Action'];
   dataSource = new MatTableDataSource<ConnectionRequestElements>();
 
   constructor(private http: HttpClient, private userService: UserService) { }
@@ -61,6 +61,17 @@ export class ViewConnectionsComponent implements OnInit {
             });
         }
         this.dataSource = new MatTableDataSource<ConnectionRequestElements>(this.confirmedConnections);
+      });
+  };
+
+  deleteConnection = function (friend) {
+    console.log('deleteConnection ' + friend.userId);
+    this.http.post('/api/connection/remove-connection', {
+      'userId': this.user.id,
+      'senderUserId': friend.userId,
+    })
+      .subscribe((data) => {
+        console.log('--------');
       });
   };
 }

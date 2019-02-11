@@ -11,6 +11,7 @@ module.exports = function (app) {
   app.post('/api/connection/action-request', auth.jwt, actionConnectionRequest);
   app.post('/api/connection/get-pending-request-count', auth.jwt, getPendingRequestCount);
   app.post('/api/connection/get-connection-count', auth.jwt, getConnectionCount);
+  app.post('/api/connection/remove-connection', auth.jwt, removeConnection);
 };
 
 
@@ -310,5 +311,51 @@ function getConnectionCount(req, res) {
       })
       .then((result) => {
         res.send({ message: result });
+      });
+}
+
+
+
+/**
+ * remove user connection
+ * @param {*} req request object
+ * @param {*} res response object
+ * @return {*}
+ */
+function removeConnection(req, res) {
+  // Save the login userId
+  const userId = req.userId;
+  return connection.updateOne({
+        connectionId: req.userId,
+        userId: req.body.senderUserId,
+      },
+      {
+        $set:
+        {
+          status: 'disconnected',
+        }
+      })
+      .then(() => {
+          return connection.updateOne({
+                connectionId: req.body.senderUserId,
+                userId: req.userId,
+              },
+              {
+                $set:
+                {
+                  status : 'disconnected',
+                }
+              })
+              .then(() => {
+                  console.log('relation deleted');
+              })
+              .catch(() => {
+                res.status(500)
+                    .send({ message: 'Could not remove connection1.' });
+              });
+      })
+      .catch(() => {
+        res.status(500)
+            .send({ message: 'Could not remove connection2.' });
       });
 }
