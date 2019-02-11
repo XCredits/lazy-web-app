@@ -6,7 +6,7 @@ import { UserService, User } from '../user.service';
 import { HttpClient } from '@angular/common/http';
 
 export interface ContactElements {
-  isFav: Boolean;
+  isFavourite: Boolean;
   position: number;
   givenName: string;
   familyName: number;
@@ -42,15 +42,51 @@ export class ViewContactsComponent implements OnInit {
       email: new FormControl('', [Validators.required, Validators.email]),
     });
 
-    this.http.post('/api/contacts/view', { })
-      .subscribe ((data: any) => {
-           this.allContacts = data;
-           this.dataSource = new MatTableDataSource<ContactElements>(this.allContacts);
-          });
-    }
+    this.userService.userObservable
+      .subscribe(user => {
+        this.user = user;
+      });
+    this.loadContacts();
+  }
 
+
+  loadContacts = function () {
+    this.allContacts = [];
+    this.http.post('/api/contacts/view', { })
+        .subscribe ((data: any) => {
+          this.allContacts = data;
+          this.dataSource = new MatTableDataSource<ContactElements>(this.allContacts);
+          });
+  };
 
   submit = function () { };
+
+  removeContactFav = function (contact) {
+    this.http.post('/api/contacts/add-remove-fav', {
+      'userId': this.user.id,
+      'contactUserId': contact.contactUserId,
+      'action': 'remove',
+    })
+      .subscribe((result) => {
+        if (result.message === 'Contact modified' ) {
+            this.loadContacts();
+        }
+      });
+  };
+
+  addContactFav = function (contact) {
+    this.http.post('/api/contacts/add-remove-fav', {
+      'userId': this.user.id,
+      'contactUserId': contact.contactUserId,
+      'action': 'add',
+    })
+      .subscribe((result) => {
+        if (result.message === 'Contact modified' ) {
+            this.loadContacts();
+        }
+      });
+  };
+
 
   isAllSelected() {
     const numSelected = this.selection.selected.length;

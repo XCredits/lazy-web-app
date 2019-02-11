@@ -6,6 +6,7 @@ module.exports = function(app) {
   app.post('/api/contacts/add', auth.jwt, addContact);
   app.post('/api/contacts/view', auth.jwt, viewContacts);
   app.post('/api/contacts/fav', auth.jwt, viewFavourites);
+  app.post('/api/contacts/add-remove-fav', auth.jwt, addRemoveFavourites);
 };
 
 
@@ -57,7 +58,9 @@ function viewContacts(req, res) {
           return {
             givenName: x.givenName,
             familyName: x.familyName,
-            email: x.email
+            email: x.email,
+            contactUserId: x._id,
+            isFavourite: x.isFavourite,
           };
         });
         return res.send(filteredResult);
@@ -84,7 +87,6 @@ function viewFavourites(req, res) {
             givenName: x.givenName,
             familyName: x.familyName,
             email: x.email,
-            isFavourite: x.isFavourite
           };
         });
         return res.send(filteredResult);
@@ -92,4 +94,42 @@ function viewFavourites(req, res) {
       .catch(() => {
         return res.status(500).send({ message: 'error retrieving users from contacts database' });
       });
+}
+
+
+/** add to favourite list
+ * @param {*} req request object
+ * @param {*} res response object
+ * @returns {*}
+ */
+function addRemoveFavourites(req, res) {
+  console.log(req.userId);
+  console.log(req.body.action);
+  console.log(req.body.contactUserId);
+
+  const userId = req.userId;
+  const contactId = req.body.contactUserId;
+  const action = req.body.action;
+  // Validate
+  if (typeof contactId !== 'string' ) {
+    return res.status(422).json({ message: 'Contact failed validation' });
+  }
+
+  return Contact.findOneAndUpdate({
+    userId: userId,
+    _id: contactId,
+    },
+    {
+      $set:
+      {
+        isFavourite: (action === 'add') ? true : false ,
+      }
+    })
+    .then(() => {
+      return res.send({ message: 'Contact modified' });
+    })
+    .catch(() => {
+      res.status(500)
+        .send({ message: 'Could not modify contact.' });
+    });
 }

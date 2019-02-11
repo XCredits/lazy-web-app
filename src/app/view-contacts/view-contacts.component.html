@@ -23,16 +23,16 @@
   <ng-container matColumnDef="Favourite">
     <th mat-header-cell *matHeaderCellDef> Favourite </th>
     <td mat-cell *matCellDef="let element">
-      <button mat-icon-button>
         <span *ngIf='!element.isFavourite'>
-          <mat-icon >star_border</mat-icon>
-          </span>
-          <span *ngIf='element.isFavourite'>
-            <mat-icon >star</mat-icon>
-            </span>
-            {{element.isFavourite}}
-
-      </button>
+            <button mat-icon-button (click)="addContactFav(element)">
+                <mat-icon >star_border</mat-icon>
+              </button>
+        </span>
+        <span *ngIf='element.isFavourite'>
+            <button mat-icon-button (click)="removeContactFav(element)">
+                <mat-icon >star</mat-icon>
+              </button>
+        </span>
     </td>
   </ng-container>
   <!-- givenName Column -->

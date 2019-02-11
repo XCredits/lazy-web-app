@@ -65,7 +65,6 @@ export class SentConnectionComponent implements OnInit {
   };
 
   deleteConnection = function (friend) {
-    console.log('deleteConnection ' + friend.userId);
     this.http.post('/api/connection/action-request', {
       'userId': this.user.id,
       'senderUserId': friend.userId,
