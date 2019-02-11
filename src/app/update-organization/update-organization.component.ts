@@ -98,7 +98,6 @@ export class UpdateOrganizationComponent implements OnInit, OnDestroy {
     if (initialUsername !== this.currentUsername) {
       this.http.post('/api/username-available', {
             username: this.currentUsername,
-            storedUsername: displayUsername,
             id: this.organization._id,
           })
           .subscribe(data => {
@@ -109,6 +108,7 @@ export class UpdateOrganizationComponent implements OnInit, OnDestroy {
                 this.usernameErrorMessage =
                     'Username is not available. Please choose another.';
               } else {
+                this.disableButton = false;
                 this.form.controls['username'].setErrors(null);
               }
             }
