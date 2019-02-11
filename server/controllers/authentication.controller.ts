@@ -112,7 +112,7 @@ function register(req, res) {
 
   // check that there is not an existing user with this username
   return Username.findOne({username: username})
-      .then((existingUser) => {
+      .then(existingUser => {
         if (existingUser) {
           return res.status(409).send({message: 'Username already taken.'});
         }
@@ -401,22 +401,22 @@ function changePassword(req, res) {
 
   return User.findOne({_id: userId})
       .then(() => {
-          return Auth.findOne({userId: userId})
-              .then((userAuth) => {
-                  // Create new password hash
-                  userAuth.createPasswordHash(password);
-                  return userAuth.save()
-                    .then(() => {
-                        return res.send({message: 'Password successfully changed'});
-                    })
-                    .catch((err) => {
-                        console.log(err);
-                        return res.status(500).send({message: 'Password change failed'});
-                    });
-              })
-              .catch(() => {
-                return res.status(500).send({message: 'Error in accessing auth database'});
-              });
+        return Auth.findOne({userId: userId})
+            .then((userAuth) => {
+              // Create new password hash
+              userAuth.createPasswordHash(password);
+              return userAuth.save()
+                  .then(() => {
+                    return res.send({message: 'Password successfully changed'});
+                  })
+                  .catch((err) => {
+                    console.log(err);
+                    return res.status(500).send({message: 'Password change failed'});
+                  });
+            })
+            .catch(() => {
+              return res.status(500).send({message: 'Error in accessing auth database'});
+            });
       })
       .catch((err) => {
         return res.status(500).send({message: 'UserId not found'});
@@ -443,41 +443,47 @@ function requestResetPassword(req, res) {
       .then((user) => {
         // Success object must be identical, to avoid people discovering
         // emails in the system
-        return Username.findOne({userId: user._id}, function(err, usernameReturn) {
-          if (err) {
-            return;
-          }
-          username = usernameReturn.username;
-          const successObject = {message: 'Email sent if users found in database.'};
-          res.send(successObject); // Note that if errors in sending emails occur, the front end will not see them
-          if (!user) {
-            return;
-          }
-          // The JWT for request password will NOT be set in the cookie
-          // and hence does not require XSRF
-          const jwtObj = {
-            sub: user._id,
-            username: username,
-            isAdmin: user.isAdmin,
-            exp: Math.floor(
-                (Date.now() + Number(process.env.JWT_TEMPORARY_LINK_TOKEN_EXPIRY)) / 1000), // 1 hour
-          };
-          const jwtString = jwt.sign(jwtObj, process.env.JWT_KEY);
-          const resetUrl = process.env.URL_ORIGIN +
-              '/reset-password?username=' + username + // the username here is only display purposes on the front-end
-              '&auth=' + jwtString;
-          // When the user clicks on the link, the app pulls the JWT from the link
-          // and stores it in the component
-          return emailService.sendPasswordReset({
-                givenName: user.givenName,
-                familyName: user.familyName,
-                email: user.email,
+        return Username.findOne({refId: user._id, current: true})
+            .then(usernameReturn => {
+              username = usernameReturn.username;
+              res.send({message: 'Email sent if users found in database.'});
+              // Note that if errors in sending emails occur, the front end will not see them
+              if (!user) {
+                return;
+              }
+              // The JWT for request password will NOT be set in the cookie
+              // and hence does not require XSRF
+              const jwtObj = {
+                sub: user._id,
                 username: username,
-                userId: user._id,
-                resetUrl,
+                isAdmin: user.isAdmin,
+                exp: Math.floor(
+                    (Date.now() + Number(process.env.JWT_TEMPORARY_LINK_TOKEN_EXPIRY)) / 1000), // 1 hour
+              };
+              const jwtString = jwt.sign(jwtObj, process.env.JWT_KEY);
+              const resetUrl = process.env.URL_ORIGIN +
+                  '/reset-password?username=' + username + // the username here is only display purposes on the front-end
+                  '&auth=' + jwtString;
+
+              console.log(resetUrl);
+
+
+              // When the user clicks on the link, the app pulls the JWT from the link
+              // and stores it in the component
+              return emailService.sendPasswordReset({
+                    givenName: user.givenName,
+                    familyName: user.familyName,
+                    email: user.email,
+                    username: username,
+                    userId: user._id,
+                    resetUrl,
+                  })
+                  .catch((error) => {
+                    res.status(500).send({message: 'Could not send email.'});
+                  });
               })
-              .catch((error) => {
-                res.status(500).send({message: 'Could not send email.'});
+              .catch(() => {
+                res.status(500).send({message: 'Error accessing username database.'});
               });
         });
       })
@@ -510,7 +516,11 @@ function forgotUsername(req, res) {
           res.send(successObject); // Note that if errors in send in emails occur, the front end will not see them
           return;
         }
-        return Username.find({userId: users._id})
+        
+        !!! map users
+        !!! $in for userId
+
+        return Username.find({refId: users._id, current: true})
             .then((username) => {
               return emailService.sendUsernameRetrieval({
                 givenName: users[0].givenName, // just use the name of the first account
