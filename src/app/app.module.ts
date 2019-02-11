@@ -86,6 +86,7 @@ import { ViewContactsComponent } from './view-contacts/view-contacts.component';
 import { ViewFavContactsComponent } from './view-fav-contacts/view-fav-contacts.component';
 import { ConnectionComponent } from './connections/connections.component';
 import { AddConnectionComponent } from './add-connection/add-connections.component';
+import { SentConnectionComponent } from './sent-connections/sent-Connections.component';
 import { ConnectionRequestsComponent } from './connection-requests/connection-requests.component';
 import { ViewConnectionsComponent } from './view-connections/view-connections.component';
 
@@ -121,6 +122,7 @@ import { ViewConnectionsComponent } from './view-connections/view-connections.co
     ViewContactsComponent,
     ConnectionComponent,
     AddConnectionComponent,
+    SentConnectionComponent,
     ConnectionRequestsComponent,
     ViewConnectionsComponent,
   ],
@@ -263,6 +265,10 @@ import { ViewConnectionsComponent } from './view-connections/view-connections.co
           {
             path: 'add',
             component: AddConnectionComponent,
+          },
+          {
+            path: 'sent',
+            component: SentConnectionComponent,
           },
           {
             path: 'request',

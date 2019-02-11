@@ -39,10 +39,12 @@ export class ConnectionComponent implements OnInit {
 
     this.navLinks.push('./view');
     this.navLinks.push('./request');
+    this.navLinks.push('./sent');
     this.navLinks.push('./add');
 
     this.pages.push('View');
     this.pages.push('request');
+    this.pages.push('sent');
     this.pages.push('add');
 
     this.loadPageCounters();
