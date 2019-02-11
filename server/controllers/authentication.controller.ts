@@ -67,7 +67,7 @@ import * as zxcvbn from 'zxcvbn';
 module.exports = function(app) {
   app.use(passport.initialize());
   app.post('/api/user/register', register);
-  app.post('/api/username-available', auth.jwt, usernameAvailable);
+  app.post('/api/username-available', usernameAvailable);
   app.post('/api/user/check-password', checkPassword);
   app.post('/api/user/login', login);
   app.get('/api/user/refresh-jwt', auth.jwtRefreshToken, refreshJwt);
@@ -131,7 +131,7 @@ function register(req, res) {
                     usernameDocument.username = username;
                     usernameDocument.displayUsername = displayUsername;
                     usernameDocument.refId = userDetail._id;
-                    usernameDocument.type = 'User';
+                    usernameDocument.type = 'user';
                     usernameDocument.current = true;
                     return usernameDocument.save()
                         .then(() => {

@@ -34,67 +34,70 @@ function saveDetails(req, res) {
     return res.status(422).json({message: 'Request failed validation'});
   }
   const username = normalizeUsername(displayUsername);
-  return User.findOne({_id: userId})
-      .then((user) => {
+
+  const promises = [User.findOne({_id: userId}),
+    Username.findOne({username: username}),
+    Username.findOne({refId: userId, current: true})];
+
+  Promise.all(promises)
+      .then(([user, requestedUsername, currentUsername]) => {
         user.email = email;
         user.givenName = givenName;
         user.familyName = familyName;
-        return user.save()
+        let saveCurrentUsername = false, saveRequestedUsername = false,
+            saveNewUsername = false;
+        let newUsername;
+        if (requestedUsername) {
+          if (requestedUsername.refId !== userId) {
+            return res.status(401).send({message: 'Username belongs to another user'});
+          } else {
+            if (requestedUsername.username === username) {
+              if (requestedUsername.displayUsername !== displayUsername) {
+                requestedUsername.displayUsername = displayUsername;
+
+                saveRequestedUsername = true;
+              }
+            } else {
+              currentUsername.current = false;
+
+              requestedUsername.current = true;
+              requestedUsername.displayUsername = displayUsername;
+
+              saveCurrentUsername = true;
+              saveRequestedUsername = true;
+            }
+          }
+        } else {
+          newUsername = new Username();
+          newUsername.displayUsername = displayUsername;
+          newUsername.username = username;
+          newUsername.current = true;
+          newUsername.refId = userId;
+          newUsername.type = 'user';
+
+          currentUsername.current = false;
+
+          saveNewUsername = true;
+          saveCurrentUsername = true;
+        }
+        const promises2 = [user.save()];
+        if (saveCurrentUsername) {
+          promises2.push(currentUsername.save());
+        }
+        if (saveRequestedUsername) {
+          promises2.push(requestedUsername.save());
+        }
+        if (saveNewUsername) {
+          promises2.push(newUsername.save());
+        }
+
+        return Promise.all(promises2)
             .then(() => {
-              return Username.findOne({refId: userId, current: true})
-                  .then((response) => {
-                    if (response.displayUsername === displayUsername) {
-                      return res.send({message: 'Details changed successfully'});
-                    }
-                    // Changing display only
-                    if (response.username === username) {
-                      response.displayUsername = displayUsername;
-                      return response.save()
-                          .then(() => {
-                            return res.status(200).send({
-                              message: 'Details changed successfully'
-                            });
-                          })
-                          .catch(() => {
-                            return res.status(500).send({
-                              message: 'Error in saving display username'
-                            });
-                          });
-                    } else {
-                      // Changing display AND base username
-                      response.current = false;
-                      return response.save()
-                          .then(() => {
-                            const usernameDocument = new Username();
-                            usernameDocument.displayUsername = displayUsername;
-                            usernameDocument.username = username;
-                            usernameDocument.current = true;
-                            usernameDocument.refId = response.refId;
-                            usernameDocument.type = 'User';
-                            return usernameDocument.save()
-                                .then(() => {
-                                  return res.status(200).send({message: 'Details changed successfully'});
-                                })
-                                .catch((err) => {
-                                  console.log(err);
-                                  return res.status(500).send({message: 'Error in saving username'});
-                                });
-                          })
-                          .catch(() => {
-                            return res.status(500).send({message: 'Error in changing existing username'});
-                          });
-                      }
-                    })
-                    .catch((err) => {
-                      return res.status(500).send({message: 'Error in finding username'});
-                    });
-                  })
-                  .catch(() => {
-                    return res.status(500).send({message: 'Error in saving user details'});
-                  });
-      })
-      .catch((err) => {
-        return res.status(500).send({message: 'UserId not found'});
+              res.send({message: 'Details changed successfully'});
+            })
+            .catch(() => {
+              res.status(500).send({message: 'Error in saving user details'});
+            });
       });
 }
 

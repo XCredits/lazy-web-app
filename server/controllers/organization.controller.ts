@@ -390,7 +390,7 @@ function addUser(req, res) {
     .then(() => {
       return Organization.findOne({'_id' : orgId})
         .then(() => {
-          return Username.findOne({'username': username, 'type': 'User'})
+          return Username.findOne({'username': username, 'type': 'user'})
             .then((response) => {
               return User.findOne({'_id': response.refId})
                   .then((user) => {
