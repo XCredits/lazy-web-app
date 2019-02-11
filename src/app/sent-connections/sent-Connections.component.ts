@@ -71,9 +71,10 @@ export class SentConnectionComponent implements OnInit {
       'senderUserId': friend.userId,
       'action': 'cancel',
     })
-      .subscribe((data) => {
-        console.log(data);
-        this.loadSentRequests();
+      .subscribe((result) => {
+        if (result.message === 'Request cancelled' ) {
+            this.loadSentRequests();
+        }
       });
   };
 }
