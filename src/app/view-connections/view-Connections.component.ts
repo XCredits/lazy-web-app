@@ -38,7 +38,6 @@ export class ViewConnectionsComponent implements OnInit {
       .subscribe(user => {
         this.user = user;
       });
-    this.link = 'https://xcredits.com/';
     this.loadConfirmedRequests();
   }
   onSelect(friends) {
@@ -65,13 +64,11 @@ export class ViewConnectionsComponent implements OnInit {
   };
 
   deleteConnection = function (friend) {
-    console.log('deleteConnection ' + friend.userId);
     this.http.post('/api/connection/remove-connection', {
       'userId': this.user.id,
       'senderUserId': friend.userId,
     })
       .subscribe((data) => {
-        console.log(data);
         this.loadConfirmedRequests();
       });
   };

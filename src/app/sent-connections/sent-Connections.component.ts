@@ -38,7 +38,6 @@ export class SentConnectionComponent implements OnInit {
       .subscribe(user => {
         this.user = user;
       });
-    this.link = 'https://xcredits.com/';
     this.loadSentRequests();
   }
   onSelect(friends) {
