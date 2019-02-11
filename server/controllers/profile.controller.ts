@@ -56,15 +56,13 @@ function saveDetails(req, res) {
                 requestedUsername.displayUsername = displayUsername;
 
                 saveRequestedUsername = true;
+              } else {
+                currentUsername.current = false;
+
+                requestedUsername.current = true;
+                saveCurrentUsername = true;
+                saveRequestedUsername = true;
               }
-            } else {
-              currentUsername.current = false;
-
-              requestedUsername.current = true;
-              requestedUsername.displayUsername = displayUsername;
-
-              saveCurrentUsername = true;
-              saveRequestedUsername = true;
             }
           }
         } else {

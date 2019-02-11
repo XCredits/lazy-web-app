@@ -205,9 +205,8 @@ function register(req, res) {
 function usernameAvailable(req, res) {
   const id = req.body.id;
   const displayUsername = req.body.username;
-  const storedUsername = req.body.storedUsername;
   // Validate
-  if ((typeof id !== 'string' || typeof id !== 'undefined') ||
+  if (typeof id !== 'string' ||
       typeof displayUsername !== 'string' ||
       !isValidDisplayUsername(displayUsername)) {
     return res.status(422).json({message: 'Request failed validation'});
@@ -231,41 +230,12 @@ function usernameAvailable(req, res) {
       .then((existingUsername) => {
         if (existingUsername) {
           if (existingUsername.refId === id) {
-            // YES
-          } else {
-            // No
-          }
-        } else {
-          // YES
-        }
-
-
-            return Username.findOne({displayUsername: storedUsername})
-                .then((oldUsername) => {
-                  oldUsername.current = false;
-                  return oldUsername.save()
-                      .then(() => {
-                        existingUsername.current = true;
-                        return existingUsername.save()
-                            .then(() => {
-                              return res.send({available: true});
-                            })
-                            .catch(() => {
-                              return res.status(500).send({message: 'Error is saving current'});
-                            });
-                      })
-                      .catch(() => {
-                        return res.status(500).send({message: 'Error is saving stored username'});
-                      });
-                })
-                .catch(() => {
-                  return res.status(500).send({message: 'Error is finding stored username'});
-                });
+              return res.send({available: true});
           } else {
             return res.send({available: false});
           }
         } else {
-          return res.send({available: true});
+           return res.send({available: true});
         }
       })
       .catch(() => {
@@ -320,7 +290,6 @@ function login(req, res) {
       return res.status(500).json(err);
     }
     if (!user) {
-      console.log(info);
       auth.clearTokens(res);
       return res.status(401)
           .send({message: 'Error in finding user:'});
@@ -409,8 +378,7 @@ function changePassword(req, res) {
                   .then(() => {
                     return res.send({message: 'Password successfully changed'});
                   })
-                  .catch((err) => {
-                    console.log(err);
+                  .catch(() => {
                     return res.status(500).send({message: 'Password change failed'});
                   });
             })
@@ -418,7 +386,7 @@ function changePassword(req, res) {
               return res.status(500).send({message: 'Error in accessing auth database'});
             });
       })
-      .catch((err) => {
+      .catch(() => {
         return res.status(500).send({message: 'UserId not found'});
       });
 }
@@ -485,11 +453,10 @@ function requestResetPassword(req, res) {
               .catch(() => {
                 res.status(500).send({message: 'Error accessing username database.'});
               });
+        })
+        .catch((err) => {
+          res.status(500).send({message: 'Error accessing user database.'});
         });
-      })
-      .catch((err) => {
-        res.status(500).send({message: 'Error accessing user database.'});
-      });
 }
 
 /**
@@ -516,10 +483,8 @@ function forgotUsername(req, res) {
           res.send(successObject); // Note that if errors in send in emails occur, the front end will not see them
           return;
         }
-        
-        !!! map users
-        !!! $in for userId
-
+        // !!! map users
+        // !!! $in for userId
         return Username.find({refId: users._id, current: true})
             .then((username) => {
               return emailService.sendUsernameRetrieval({

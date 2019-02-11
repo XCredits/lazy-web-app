@@ -206,6 +206,6 @@ export class UpdateOrganizationComponent implements OnInit, OnDestroy {
   };
 
     ngOnDestroy() {
-      console.log('Test');
+
     }
 }
