@@ -226,16 +226,19 @@ import { ViewConnectionsComponent } from './view-connections/view-connections.co
         path: 'contacts',
         component: ContactsComponent,
         data: { title: 'Contacts' },
+        canActivate: [AuthGuard],
         children:
         [
           {
             path: '',
             redirectTo: 'contacts',
-            pathMatch: 'full'
+            pathMatch: 'full',
+            canActivate: [AuthGuard],
           },
           {
             path: 'view',
             component: ViewContactsComponent,
+            canActivate: [AuthGuard],
           },
           {
             path: 'fav',
@@ -251,16 +254,19 @@ import { ViewConnectionsComponent } from './view-connections/view-connections.co
         path: 'connections',
         component: ConnectionComponent,
         data: { title: 'Connections' },
+        canActivate: [AuthGuard],
         children:
         [
           {
             path: '',
             redirectTo: 'view',
-            pathMatch: 'full'
+            pathMatch: 'full',
+            canActivate: [AuthGuard],
           },
           {
             path: 'view',
             component: ViewConnectionsComponent,
+            canActivate: [AuthGuard],
           },
           {
             path: 'add',
