@@ -67,7 +67,7 @@ import * as zxcvbn from 'zxcvbn';
 module.exports = function(app) {
   app.use(passport.initialize());
   app.post('/api/user/register', register);
-  app.post('/api/username-available', auth.jwt, usernameAvailable);
+  app.post('/api/username-available', usernameAvailable);
   app.post('/api/user/check-password', checkPassword);
   app.post('/api/user/login', login);
   app.get('/api/user/refresh-jwt', auth.jwtRefreshToken, refreshJwt);
@@ -93,8 +93,8 @@ function register(req, res) {
   const email = req.body.email;
   const givenName = req.body.givenName;
   const familyName = req.body.familyName;
-  const password = req.body.password;
   const displayUsername = req.body.username;
+  const password = req.body.password;
 
   // Validate
   if (typeof email !== 'string' ||
@@ -111,8 +111,8 @@ function register(req, res) {
   const username = normalizeUsername(displayUsername);
 
   // check that there is not an existing user with this username
-  return Username.findOne({displayUsername: displayUsername})
-      .then((existingUser) => {
+  return Username.findOne({username: username})
+      .then(existingUser => {
         if (existingUser) {
           return res.status(409).send({message: 'Username already taken.'});
         }
@@ -131,7 +131,7 @@ function register(req, res) {
                     usernameDocument.username = username;
                     usernameDocument.displayUsername = displayUsername;
                     usernameDocument.refId = userDetail._id;
-                    usernameDocument.type = 'User';
+                    usernameDocument.type = 'user';
                     usernameDocument.current = true;
                     return usernameDocument.save()
                         .then(() => {
@@ -207,7 +207,7 @@ function usernameAvailable(req, res) {
   const displayUsername = req.body.username;
   const storedUsername = req.body.storedUsername;
   // Validate
-  if (typeof id !== 'string' ||
+  if ((typeof id !== 'string' || typeof id !== 'undefined') ||
       typeof displayUsername !== 'string' ||
       !isValidDisplayUsername(displayUsername)) {
     return res.status(422).json({message: 'Request failed validation'});
@@ -228,16 +228,25 @@ function usernameAvailable(req, res) {
   }
 
   return Username.findOne({username: username})
-      .then((existingUser) => {
-        if (existingUser) {
-          if (existingUser.refId === id && existingUser.current === false) {
+      .then((existingUsername) => {
+        if (existingUsername) {
+          if (existingUsername.refId === id) {
+            // YES
+          } else {
+            // No
+          }
+        } else {
+          // YES
+        }
+
+
             return Username.findOne({displayUsername: storedUsername})
                 .then((oldUsername) => {
                   oldUsername.current = false;
                   return oldUsername.save()
                       .then(() => {
-                        existingUser.current = true;
-                        return existingUser.save()
+                        existingUsername.current = true;
+                        return existingUsername.save()
                             .then(() => {
                               return res.send({available: true});
                             })
@@ -392,22 +401,22 @@ function changePassword(req, res) {
 
   return User.findOne({_id: userId})
       .then(() => {
-          return Auth.findOne({userId: userId})
-              .then((userAuth) => {
-                  // Create new password hash
-                  userAuth.createPasswordHash(password);
-                  return userAuth.save()
-                    .then(() => {
-                        return res.send({message: 'Password successfully changed'});
-                    })
-                    .catch((err) => {
-                        console.log(err);
-                        return res.status(500).send({message: 'Password change failed'});
-                    });
-              })
-              .catch(() => {
-                return res.status(500).send({message: 'Error in accessing auth database'});
-              });
+        return Auth.findOne({userId: userId})
+            .then((userAuth) => {
+              // Create new password hash
+              userAuth.createPasswordHash(password);
+              return userAuth.save()
+                  .then(() => {
+                    return res.send({message: 'Password successfully changed'});
+                  })
+                  .catch((err) => {
+                    console.log(err);
+                    return res.status(500).send({message: 'Password change failed'});
+                  });
+            })
+            .catch(() => {
+              return res.status(500).send({message: 'Error in accessing auth database'});
+            });
       })
       .catch((err) => {
         return res.status(500).send({message: 'UserId not found'});
@@ -434,41 +443,47 @@ function requestResetPassword(req, res) {
       .then((user) => {
         // Success object must be identical, to avoid people discovering
         // emails in the system
-        return Username.findOne({userId: user._id}, function(err, usernameReturn) {
-          if (err) {
-            return;
-          }
-          username = usernameReturn.username;
-          const successObject = {message: 'Email sent if users found in database.'};
-          res.send(successObject); // Note that if errors in sending emails occur, the front end will not see them
-          if (!user) {
-            return;
-          }
-          // The JWT for request password will NOT be set in the cookie
-          // and hence does not require XSRF
-          const jwtObj = {
-            sub: user._id,
-            username: username,
-            isAdmin: user.isAdmin,
-            exp: Math.floor(
-                (Date.now() + Number(process.env.JWT_TEMPORARY_LINK_TOKEN_EXPIRY)) / 1000), // 1 hour
-          };
-          const jwtString = jwt.sign(jwtObj, process.env.JWT_KEY);
-          const resetUrl = process.env.URL_ORIGIN +
-              '/reset-password?username=' + username + // the username here is only display purposes on the front-end
-              '&auth=' + jwtString;
-          // When the user clicks on the link, the app pulls the JWT from the link
-          // and stores it in the component
-          return emailService.sendPasswordReset({
-                givenName: user.givenName,
-                familyName: user.familyName,
-                email: user.email,
+        return Username.findOne({refId: user._id, current: true})
+            .then(usernameReturn => {
+              username = usernameReturn.username;
+              res.send({message: 'Email sent if users found in database.'});
+              // Note that if errors in sending emails occur, the front end will not see them
+              if (!user) {
+                return;
+              }
+              // The JWT for request password will NOT be set in the cookie
+              // and hence does not require XSRF
+              const jwtObj = {
+                sub: user._id,
                 username: username,
-                userId: user._id,
-                resetUrl,
+                isAdmin: user.isAdmin,
+                exp: Math.floor(
+                    (Date.now() + Number(process.env.JWT_TEMPORARY_LINK_TOKEN_EXPIRY)) / 1000), // 1 hour
+              };
+              const jwtString = jwt.sign(jwtObj, process.env.JWT_KEY);
+              const resetUrl = process.env.URL_ORIGIN +
+                  '/reset-password?username=' + username + // the username here is only display purposes on the front-end
+                  '&auth=' + jwtString;
+
+              console.log(resetUrl);
+
+
+              // When the user clicks on the link, the app pulls the JWT from the link
+              // and stores it in the component
+              return emailService.sendPasswordReset({
+                    givenName: user.givenName,
+                    familyName: user.familyName,
+                    email: user.email,
+                    username: username,
+                    userId: user._id,
+                    resetUrl,
+                  })
+                  .catch((error) => {
+                    res.status(500).send({message: 'Could not send email.'});
+                  });
               })
-              .catch((error) => {
-                res.status(500).send({message: 'Could not send email.'});
+              .catch(() => {
+                res.status(500).send({message: 'Error accessing username database.'});
               });
         });
       })
@@ -501,7 +516,11 @@ function forgotUsername(req, res) {
           res.send(successObject); // Note that if errors in send in emails occur, the front end will not see them
           return;
         }
-        return Username.find({userId: users._id})
+        
+        !!! map users
+        !!! $in for userId
+
+        return Username.find({refId: users._id, current: true})
             .then((username) => {
               return emailService.sendUsernameRetrieval({
                 givenName: users[0].givenName, // just use the name of the first account
