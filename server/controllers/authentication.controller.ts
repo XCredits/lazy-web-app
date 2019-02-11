@@ -111,7 +111,7 @@ function register(req, res) {
   const username = normalizeUsername(displayUsername);
 
   // check that there is not an existing user with this username
-  return Username.findOne({displayUsername: displayUsername})
+  return Username.findOne({username: username})
       .then((existingUser) => {
         if (existingUser) {
           return res.status(409).send({message: 'Username already taken.'});
