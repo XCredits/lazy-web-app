@@ -132,7 +132,9 @@ function getPendingRequests(req, res) {
  * @return {*}
  */
 function getConnections(req, res) {
-  return connection.find({ userId: req.userId,
+  return connection.find(
+      {
+        userId: req.userId,
         status: { $eq: 'connected' },
       })
       .then((result) => {
