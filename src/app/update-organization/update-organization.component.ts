@@ -51,14 +51,13 @@ export class UpdateOrganizationComponent implements OnInit, OnDestroy {
       })
       .subscribe(organization => {
           this.organization = organization['orgDetail'];
-          this.orgUsername = organization['response'].username;
-          this.dispUsername = organization['response'];
+          this.orgUsername = organization['response'];
           this.logo = organization['orgDetail'].logo;
           this.form = new FormGroup ({
             name: new FormControl(organization['orgDetail'].name, Validators.required),
             website: new FormControl(organization['orgDetail'].website),
             phoneNumber: new FormControl(organization['orgDetail'].phoneNumber),
-            username: new FormControl(organization['response'].displayUsername, Validators.required),
+            username: new FormControl(this.orgUsername['displayUsername'], Validators.required),
         });
         this.ready = true;
         this.form.valueChanges.subscribe(changes => this.checkUsername(changes));
@@ -82,8 +81,8 @@ export class UpdateOrganizationComponent implements OnInit, OnDestroy {
 
     // this.currentUsername - designed to prevent the form from reporting an
     // error if the username has been updated
-    const initialUsername = this.normalizeUsername(this.dispUsername.displayUsername);
-    const displayUsername = this.dispUsername.displayUsername;
+    const displayUsername = this.orgUsername.displayUsername;
+    const initialUsername = this.normalizeUsername(displayUsername);
     this.currentUsername = this.normalizeUsername(formData.username);
     this.currentDisplayName = formData.username;
     if (initialUsername.length === 0) {
@@ -99,7 +98,8 @@ export class UpdateOrganizationComponent implements OnInit, OnDestroy {
     if (initialUsername !== this.currentUsername) {
       this.http.post('/api/username-available', {
             username: this.currentUsername,
-            storedUsername: this.dispUsername.displayUsername,
+            storedUsername: displayUsername,
+            id: this.organization._id,
           })
           .subscribe(data => {
             if (initialUsername !== this.currentUsername || this.currentDisplayName !== displayUsername) {
@@ -128,7 +128,7 @@ export class UpdateOrganizationComponent implements OnInit, OnDestroy {
   }
 
   handleImageUpload(imageUrl: string) {
-    this.organizationService.updateOrgDetails(this.orgUsername);
+    this.organizationService.updateOrgDetails(this.orgUsername['username']);
     this.snackBar.open('Image Uploaded Successfully', 'Dismiss', {
       duration: 5000,
       verticalPosition: 'top',

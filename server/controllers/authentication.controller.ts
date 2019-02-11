@@ -203,11 +203,12 @@ function register(req, res) {
  * @return {Promise}
  */
 function usernameAvailable(req, res) {
-  const userId = req.userId;
+  const id = req.body.id;
   const displayUsername = req.body.username;
   const storedUsername = req.body.storedUsername;
   // Validate
-  if (typeof displayUsername !== 'string' ||
+  if (typeof id !== 'string' ||
+      typeof displayUsername !== 'string' ||
       !isValidDisplayUsername(displayUsername)) {
     return res.status(422).json({message: 'Request failed validation'});
   }
@@ -229,7 +230,7 @@ function usernameAvailable(req, res) {
   return Username.findOne({username: username})
       .then((existingUser) => {
         if (existingUser) {
-          if (existingUser.refId === userId && existingUser.current === false) {
+          if (existingUser.refId === id && existingUser.current === false) {
             return Username.findOne({displayUsername: storedUsername})
                 .then((oldUsername) => {
                   oldUsername.current = false;
@@ -244,7 +245,7 @@ function usernameAvailable(req, res) {
                               return res.status(500).send({message: 'Error is saving current'});
                             });
                       })
-                      .catch((err) => {
+                      .catch(() => {
                         return res.status(500).send({message: 'Error is saving stored username'});
                       });
                 })
@@ -255,12 +256,10 @@ function usernameAvailable(req, res) {
             return res.send({available: false});
           }
         } else {
-          console.log('False 2');
           return res.send({available: true});
         }
       })
-      .catch((err) => {
-        console.log(err);
+      .catch(() => {
         res.status(500).send({
             message: 'Error accessing database while checking for existing users'});
       });
