@@ -90,13 +90,13 @@ function saveDetails(req, res) {
               session = _session;
               const promises2 = [user.save({ session: session })];
               if (saveCurrentUsername) {
-                promises2.push(currentUsername.save());
+                promises2.push(currentUsername.save({ session: session }));
               }
               if (saveRequestedUsername) {
-                promises2.push(requestedUsername.save());
+                promises2.push(requestedUsername.save({ session: session }));
               }
               if (saveNewUsername) {
-                promises2.push(newUsername.save());
+                promises2.push(newUsername.save({ session: session }));
               }
               return Promise.all(promises2);
             })
