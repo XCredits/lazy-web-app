@@ -83,7 +83,8 @@ function viewFavourites(req, res) {
           return {
             givenName: x.givenName,
             familyName: x.familyName,
-            email: x.email
+            email: x.email,
+            isFavourite: x.isFavourite
           };
         });
         return res.send(filteredResult);
