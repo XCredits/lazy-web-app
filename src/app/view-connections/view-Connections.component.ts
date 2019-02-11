@@ -71,7 +71,8 @@ export class ViewConnectionsComponent implements OnInit {
       'senderUserId': friend.userId,
     })
       .subscribe((data) => {
-        console.log('--------');
+        console.log(data);
+        this.loadConfirmedRequests();
       });
   };
 }

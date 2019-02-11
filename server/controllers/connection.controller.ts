@@ -132,7 +132,9 @@ function getPendingRequests(req, res) {
  * @return {*}
  */
 function getConnections(req, res) {
-  return connection.find({ userId: req.userId })
+  return connection.find({ userId: req.userId,
+        status: { $eq: 'connected' },
+      })
       .then((result) => {
         const senderIdArr = result.map((e => e.connectionId));
         return User.find({ '_id': { '$in': senderIdArr } })
@@ -325,37 +327,57 @@ function getConnectionCount(req, res) {
 function removeConnection(req, res) {
   // Save the login userId
   const userId = req.userId;
-  return connection.updateOne({
+  console.log('userId' + userId);
+  console.log('userId' + req.body.senderUserId);
+  return connection.findOneAndUpdate({
         connectionId: req.userId,
         userId: req.body.senderUserId,
       },
       {
-        $set:
-        {
-          status: 'disconnected',
-        }
+        status: 'disconnected',
       })
-      .then(() => {
-          return connection.updateOne({
+      .then((result) => {
+        console.log('---');
+        console.log(result.connectionRequestRef);
+          return connection.findOneAndUpdate({
                 connectionId: req.body.senderUserId,
                 userId: req.userId,
               },
               {
-                $set:
-                {
-                  status : 'disconnected',
-                }
+                status : 'disconnected',
               })
-              .then(() => {
-                  console.log('relation deleted');
+              .then((returnedRes) => {
+                  console.log(result.connectionRequestRef);
+                  deleteConnectedConnection(result.connectionRequestRef);
               })
               .catch(() => {
                 res.status(500)
-                    .send({ message: 'Could not remove connection1.' });
+                    .send({ message: 'Could not remove connection.' });
               });
       })
       .catch(() => {
         res.status(500)
-            .send({ message: 'Could not remove connection2.' });
+            .send({ message: 'Could not remove connection.' });
       });
+
+  function deleteConnectedConnection(connectionReqId) {
+    return connectionRequest.findOneAndUpdate({
+          _id: connectionReqId,
+        },
+        {
+          $set:
+          {
+            active: false,
+            currentStatus: 'disconnected',
+            updateTimestamp: new Date().getTime(),
+          }
+        })
+        .then(() => {
+          return res.send({ message: 'Request rejected' });
+        })
+        .catch(() => {
+          res.status(500)
+              .send({ message: 'Could not reject connection request.' });
+        });
+  }
 }
