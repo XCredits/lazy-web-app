@@ -37,10 +37,10 @@ function addRequest(req, res) {
       .then((receivingUser) => {
         // Check if they have connection
         return connectionRequest.findOne({
-          senderUserId: userId,
-          receiverUserId: receivingUser._id,
-          active: { $eq: true },
-        })
+              senderUserId: userId,
+              receiverUserId: receivingUser._id,
+              active: { $eq: true },
+            })
             .then((resultConnection) => {
               if (resultConnection === null) {
                 // Making new connection
@@ -121,6 +121,7 @@ function getPendingRequests(req, res) {
           res.status(500).send({ message: 'error retrieving pending requests' });
         });
   }
+
   return checkExpiredRequests()
       .then(findPendingConnections);
 }
