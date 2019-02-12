@@ -415,34 +415,34 @@ function requestResetPassword(req, res) {
       .then(usernameReturn => {
         return User.findOne({'_id': usernameReturn.refId})
             .then((user) => {
-                res.send({message: 'Email sent if users found in database.'});
-                // Note that if errors in sending emails occur, the front end will not see them
-                // The JWT for request password will NOT be set in the cookie
-                // and hence does not require XSRF
-                const jwtObj = {
-                  sub: user._id,
-                  username: username,
-                  isAdmin: user.isAdmin,
-                  exp: Math.floor(
-                      (Date.now() + Number(process.env.JWT_TEMPORARY_LINK_TOKEN_EXPIRY)) / 1000), // 1 hour
-                };
-                const jwtString = jwt.sign(jwtObj, process.env.JWT_KEY);
-                const resetUrl = process.env.URL_ORIGIN +
-                    '/reset-password?username=' + username + // the username here is only display purposes on the front-end
-                    '&auth=' + jwtString;
-                // When the user clicks on the link, the app pulls the JWT from the link
-                // and stores it in the component
-                return emailService.sendPasswordReset({
-                      givenName: user.givenName,
-                      familyName: user.familyName,
-                      email: user.email,
-                      username: username,
-                      userId: user._id,
-                      resetUrl,
-                    })
-                    .catch(() => {
-                      console.log('Could not send email.');
-                    });
+              res.send({message: 'Email sent if users found in database.'});
+              // Note that if errors in sending emails occur, the front end will not see them
+              // The JWT for request password will NOT be set in the cookie
+              // and hence does not require XSRF
+              const jwtObj = {
+                sub: user._id,
+                username: username,
+                isAdmin: user.isAdmin,
+                exp: Math.floor(
+                    (Date.now() + Number(process.env.JWT_TEMPORARY_LINK_TOKEN_EXPIRY)) / 1000), // 1 hour
+              };
+              const jwtString = jwt.sign(jwtObj, process.env.JWT_KEY);
+              const resetUrl = process.env.URL_ORIGIN +
+                  '/reset-password?username=' + username + // the username here is only display purposes on the front-end
+                  '&auth=' + jwtString;
+              // When the user clicks on the link, the app pulls the JWT from the link
+              // and stores it in the component
+              return emailService.sendPasswordReset({
+                    givenName: user.givenName,
+                    familyName: user.familyName,
+                    email: user.email,
+                    username: username,
+                    userId: user._id,
+                    resetUrl,
+                  })
+                  .catch(() => {
+                    console.log('Could not send email.');
+                  });
             })
             .catch(() => {
               res.send({message: 'Email sent if users found in database.'});
