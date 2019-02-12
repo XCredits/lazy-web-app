@@ -61,9 +61,9 @@ function createOrg(req, res) {
           organization.website = website;
           organization.phoneNumber = phoneNumber;
           organization.userCount = 1;
-          const userOrg = new UserOrganization();
           return organization.save()
               .then(() => {
+                  const userOrg = new UserOrganization();
                   userOrg.userId = userId;
                   userOrg.orgId = organization._id;
                   userOrg.roles = ['admin'];
