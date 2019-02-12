@@ -400,7 +400,7 @@ function addUser(req, res) {
   isOrgAdmin(userId, orgId)
     .then(() => {
       return Organization.findOne({'_id' : orgId})
-        .then(() => {
+        .then((org) => {
           return Username.findOne({'username': username, 'type': 'user'})
             .then((response) => {
               return User.findOne({'_id': response.refId})
@@ -414,7 +414,7 @@ function addUser(req, res) {
                           const userOrg = new UserOrganization();
                           userOrg.userId = userToAdd._id;
                           userOrg.orgId = orgId;
-                          userOrg.roles = ['POS'];
+                          userOrg.roles = [org.defaultRole];
                           return userOrg.save()
                             .then(() => {
                                 Organization.update({'_id': orgId}, {$inc: { userCount: 1 }})
@@ -462,13 +462,13 @@ function deleteOrg(req, res) {
   const orgId = req.body.id;
   if (typeof userId !== 'string' ||
       typeof orgId !== 'string') {
-        return res.status(500).send({message: 'Request validation failed'});
-      }
+    return res.status(500).send({message: 'Request validation failed'});
+  }
   isOrgAdmin(userId, orgId)
     .then(() => {
         return UserOrganization.deleteMany({'orgId': orgId})
             .then(() => {
-                return Organization.deleteMany({'_id': orgId})
+                return Organization.deleteOne({'_id': orgId})
                     .then(() => {
                       return res.status(200).send({
                         message: 'Organization deleted successfully'
