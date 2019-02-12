@@ -302,7 +302,8 @@ function getDetails(req, res) {
       !isValidDisplayUsername(displayUsername)) {
     return res.status(500).send({message: 'Request validation failed'});
   }
-  return Username.findOne({'displayUsername': displayUsername})
+  const username = normalizeUsername(displayUsername);
+  return Username.findOne({username: username})
     .then((response) => {
         isOrgAdmin(userId, response.refId) // TODO: UserOrganization.findOne
             .then(() => {
@@ -334,8 +335,9 @@ function getUsers(req, res) {
       typeof displayUsername !== 'string' ||
       !isValidDisplayUsername(displayUsername)) {
     return res.status(500).send({message: 'Request validation failed'});
-    }
-  return Username.findOne({'displayUsername': displayUsername})
+  }
+  const username = normalizeUsername(displayUsername);
+  return Username.findOne({username: username})
       .then((response) => {
           return Organization.findOne({'_id': response.refId})
             .then((organization) => {
