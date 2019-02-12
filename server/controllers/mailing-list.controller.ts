@@ -56,7 +56,7 @@ function joinMailingList(req, res) {
             });
       })
       .catch((error) => {
-        console.log(error.message);
+        console.log('Error in saving mailing list user.');
         return res.status(500).json({message: error.message});
       });
 }
