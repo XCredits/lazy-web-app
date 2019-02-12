@@ -111,16 +111,14 @@ function userOrgSummary(req, res) {
   if (typeof userId !== 'string') {
     return res.status(500).send({message: 'Request validation failed'});
   }
-  let userOrg;
   return UserOrganization.find({'userId': userId})
       .then((userOrgArr) => {
         const orgIds = userOrgArr.map(orgEle => orgEle.orgId);
-        userOrg = userOrgArr;
         return Username.find({ 'refId': { '$in': orgIds}})
             .then((orgUsername) => {
               return Organization.find({ '_id': { '$in': orgIds}})
                 .then((orgDetails) => {
-                    return res.json({orgDetails, userOrg, orgUsername});
+                    return res.json({orgDetails, userOrgArr, orgUsername});
                 })
                 .catch(() => {
                   return res.status(500).send({

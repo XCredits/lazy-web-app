@@ -24,7 +24,7 @@ export class OrganizationComponent implements OnInit, OnDestroy {
           Object.values(response.orgUsername).forEach(org => {
             this.username[org['refId']] = org['displayUsername'];
           });
-          Object.values(response.userOrg).forEach(org => {
+          Object.values(response.userOrgArr).forEach(org => {
             this.userRoles[org['orgId']] = org['roles'];
           });
         });
