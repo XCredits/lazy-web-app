@@ -309,7 +309,7 @@ function getDetails(req, res) {
             .then(() => {
                 return Organization.findOne({_id: response.refId})
                     .then((orgDetail) => {
-                      return res.json({orgDetail, response});
+                      return res.send({orgDetail, response});
                     })
                     .catch(() => {
                       return res.status(500).send({
