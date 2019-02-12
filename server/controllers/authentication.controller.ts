@@ -47,6 +47,7 @@ const passwordSettings = {
 
 
 import * as validator from 'validator';
+const Contact = require('../models/contact.model');
 const User = require('../models/user.model');
 const Username = require('../models/username.model');
 const Auth = require('../models/auth.model');
@@ -56,10 +57,8 @@ const emailService = require('../services/email.service');
 const Session = require('../models/session.model');
 import * as jwt from 'jsonwebtoken';
 const auth = require('./jwt-auth.controller');
-const {isValidDisplayUsername, normalizeUsername} =
-    require('./utils.controller');
+import { isValidDisplayUsername, normalizeUsername } from './utils.controller';
 import * as passport from 'passport';
-// const crypto = require('crypto');
 import * as crypto from 'crypto';
 require('../config/passport');
 import * as zxcvbn from 'zxcvbn';
@@ -80,6 +79,7 @@ module.exports = function(app) {
       auth.jwtTemporaryLinkToken, changePassword);
   app.post('/api/user/forgot-username', forgotUsername);
   app.post('/api/user/logout', auth.jwtRefreshToken, logout);
+
 };
 
 /**
@@ -88,6 +88,8 @@ module.exports = function(app) {
  * @param {*} res response object
  * @return {*}
  */
+
+
 function register(req, res) {
   // Extract req.body
   const email = req.body.email;
@@ -195,6 +197,7 @@ function register(req, res) {
             message: 'Error accessing database while checking for existing users'});
       });
 }
+
 
 /**
  * Determines if username available

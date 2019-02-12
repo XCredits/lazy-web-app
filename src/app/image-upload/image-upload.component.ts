@@ -23,9 +23,9 @@ export class ImageUploadComponent implements OnChanges {
   @Output() imageUploaded = new EventEmitter();
   @Output() imageError = new EventEmitter();
   @Output() imageUploadUrl = new EventEmitter();
-  @Output() croppingCanceled = new EventEmitter();
   @Input() imageUploadRoute;
   @Input() id;
+  @Output() croppingCancelled = new EventEmitter();
 
   selectedFile: FileSnippet;
   imageChangedEvent: any;
@@ -71,7 +71,7 @@ export class ImageUploadComponent implements OnChanges {
 
   cancelCropping() {
     this.imageChangedEvent = null;
-    this.croppingCanceled.emit();
+    this.croppingCancelled.emit();
     this.modalReference.close();
   }
 

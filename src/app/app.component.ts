@@ -96,6 +96,18 @@ export class AppComponent implements OnInit {
       title: 'Admin',
       isAdminRoute: true,
     },
+    {
+      routerLink: '/contacts',
+      icon: 'import_contacts',
+      title: 'Contacts',
+      isLoggedInRoute: true,
+    },
+    {
+      routerLink: '/connections',
+      icon: 'group',
+      title: 'Connections',
+      isLoggedInRoute: true,
+    }
   ];
 
 

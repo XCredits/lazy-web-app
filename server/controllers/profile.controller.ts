@@ -2,8 +2,7 @@ import * as validator from 'validator';
 const User = require('../models/user.model');
 const Username = require('../models/username.model');
 const auth = require('./jwt-auth.controller');
-const {isValidDisplayUsername, normalizeUsername} =
-    require('./utils.controller');
+import { isValidDisplayUsername, normalizeUsername } from './utils.controller';
 
 import {uploadSingleImage} from '../services/image-upload';
 
@@ -124,7 +123,7 @@ function profileImageUpload(req, res) {
           user.profileImage = req.file.fileLocation;
           return user.save()
               .then(() => {
-                return res.status(200).send({message: 'Image Uploaded Successfully'});
+                return res.send({message: 'Image Uploaded Successfully'});
               })
               .catch(() => {
                 return res.status(500).send({message: 'Error in uploading image'});

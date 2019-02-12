@@ -18,6 +18,7 @@ import { AngularFontAwesomeModule } from 'angular-font-awesome';
 
 // Material modules
 import {
+  MatBadgeModule,
   MatAutocompleteModule,
   MatButtonModule,
   MatButtonToggleModule,
@@ -62,7 +63,6 @@ import { HelpComponent } from './help/help.component';
 import { SettingsComponent } from './settings/settings.component';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import { FeedComponent } from './feed/feed.component';
-import { ContactsComponent } from './contacts/contacts.component';
 import { AboutComponent } from './about/about.component';
 import { LoginComponent } from './login/login.component';
 import { ForgotPasswordComponent } from './forgot-password/forgot-password.component';
@@ -87,6 +87,15 @@ import { CreateOrganizationComponent } from './create-organization/create-organi
 import { UpdateOrganizationComponent } from './update-organization/update-organization.component';
 import { AddUserComponent } from './add-user/add-user.component';
 import { CreateProductComponent } from './create-product/create-product.component';
+import { ContactsComponent } from './contacts/contacts.component';
+import { AddContactsComponent } from './addcontact/add-contact.component';
+import { ViewContactsComponent } from './view-contacts/view-contacts.component';
+import { ViewFavContactsComponent } from './view-fav-contacts/view-fav-contacts.component';
+import { ConnectionComponent } from './connections/connections.component';
+import { AddConnectionComponent } from './add-connection/add-connections.component';
+import { SentConnectionComponent } from './sent-connections/sent-Connections.component';
+import { ConnectionRequestsComponent } from './connection-requests/connection-requests.component';
+import { ViewConnectionsComponent } from './view-connections/view-connections.component';
 
 @NgModule({
   declarations: [
@@ -96,7 +105,6 @@ import { CreateProductComponent } from './create-product/create-product.componen
     SettingsComponent,
     PageNotFoundComponent,
     FeedComponent,
-    ContactsComponent,
     AboutComponent,
     LoginComponent,
     ForgotPasswordComponent,
@@ -115,6 +123,15 @@ import { CreateProductComponent } from './create-product/create-product.componen
     PrivacyComponent,
     FooterComponent,
     ChangeThemeComponent,
+    ContactsComponent,
+    AddContactsComponent,
+    ViewFavContactsComponent,
+    ViewContactsComponent,
+    ConnectionComponent,
+    AddConnectionComponent,
+    SentConnectionComponent,
+    ConnectionRequestsComponent,
+    ViewConnectionsComponent,
     OrganizationComponent,
     CreateOrganizationComponent,
     UpdateOrganizationComponent,
@@ -248,6 +265,63 @@ import { CreateProductComponent } from './create-product/create-product.componen
         data: { title: 'Privacy' },
       },
       {
+        path: 'contacts',
+        component: ContactsComponent,
+        data: { title: 'Contacts' },
+        canActivate: [AuthGuard],
+        children:
+        [
+          {
+            path: '',
+            redirectTo: 'view',
+            pathMatch: 'full',
+          },
+          {
+            path: 'view',
+            component: ViewContactsComponent,
+          },
+          {
+            path: 'fav',
+            component: ViewFavContactsComponent,
+          },
+          {
+            path: 'add',
+            component: AddContactsComponent,
+          }
+        ]
+      },
+      {
+        path: 'connections',
+        component: ConnectionComponent,
+        data: { title: 'Connections' },
+        canActivate: [AuthGuard],
+        children:
+        [
+          {
+            path: '',
+            redirectTo: 'view',
+            pathMatch: 'full',
+          },
+          {
+            path: 'view',
+            component: ViewConnectionsComponent,
+            canActivate: [AuthGuard],
+          },
+          {
+            path: 'add',
+            component: AddConnectionComponent,
+          },
+          {
+            path: 'sent',
+            component: SentConnectionComponent,
+          },
+          {
+            path: 'request',
+            component: ConnectionRequestsComponent
+          }
+         ]
+      },
+      {
         path: 'unauthorized',
         component: UnauthorizedComponent,
         data: { title: 'Unauthorized' },
@@ -271,6 +345,7 @@ import { CreateProductComponent } from './create-product/create-product.componen
     AngularFontAwesomeModule,
 
     // Material modules
+    MatBadgeModule,
     MatAutocompleteModule,
     MatButtonModule,
     MatButtonToggleModule,
