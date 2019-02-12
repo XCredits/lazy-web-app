@@ -304,7 +304,7 @@ function getDetails(req, res) {
   }
   return Username.findOne({'displayUsername': displayUsername})
     .then((response) => {
-        isOrgAdmin(userId, response.refId)
+        isOrgAdmin(userId, response.refId) // TODO: UserOrganization.findOne
             .then(() => {
                 return Organization.findOne({_id: response.refId})
                     .then((orgDetail) => {
