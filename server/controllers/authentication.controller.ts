@@ -209,8 +209,7 @@ function usernameAvailable(req, res) {
   const id = req.body.id;
   const displayUsername = req.body.username;
   // Validate
-  if (typeof id !== 'string' ||
-      typeof displayUsername !== 'string' ||
+  if (typeof displayUsername !== 'string' ||
       !isValidDisplayUsername(displayUsername)) {
     return res.status(422).json({message: 'Request failed validation'});
   }
