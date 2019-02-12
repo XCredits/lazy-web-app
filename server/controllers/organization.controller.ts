@@ -162,7 +162,9 @@ function updateDetails(req, res) {
 
   Promise.all(promises)
       .then(([isAdmin, organization, requestedUsername, currentUsername]) => {
-        if (isAdmin) {
+        if (!isAdmin) {
+          return res.status(401).send({message: 'Unauthorized access'});
+        } else {
           organization.name = name;
           organization.website = website;
           organization.phoneNumber = phoneNumber;
@@ -226,10 +228,8 @@ function updateDetails(req, res) {
                   message: 'Error in saving organization details'
                 });
               });
-            } else {
-              res.status(401).send({message: 'Unauthorized access'});
-            }
-        });
+      }
+    });
 }
 
 function imageUpload(req, res) {
