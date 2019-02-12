@@ -2,6 +2,7 @@ import { isValidDisplayUsername, normalizeUsername } from './utils.controller';
 const connectionRequest = require('../models/connection-request.model');
 const connection = require('../models/connection.model');
 const User = require('../models/user.model');
+const Username = require('../models/username.model');
 const auth = require('./jwt-auth.controller');
 
 module.exports = function (app) {
@@ -34,47 +35,53 @@ function addRequest(req, res) {
   }
   username = normalizeUsername(username);
   // Check if the user exist
-  return User.findOne({ username })
-      .then((receivingUser) => {
-        // Check if they have connection
-        return connectionRequest.findOne({
-              senderUserId: userId,
-              receiverUserId: receivingUser._id,
-              active: { $eq: true },
+  return Username.findOne({username})
+      .then((resultUser) => {
+        return User.findOne({ _id: resultUser.refId })
+            .then((receivingUser) => {
+              // Check if they have connection
+              return connectionRequest.findOne({
+                    senderUserId: userId,
+                    receiverUserId: receivingUser._id,
+                    active: { $eq: true },
+                  })
+                  .then((resultConnection) => {
+                    if (resultConnection === null) {
+                      // Making new connection
+                      const connectionReq = new connectionRequest();
+                      connectionReq.senderUserId = userId;
+                      connectionReq.receiverUserId = receivingUser._id;
+                      connectionReq.permissions = { category: 'default' };
+                      connectionReq.active = true;
+                      connectionReq.snoozed = false;
+                      connectionReq.timeout = Number( process.env.CONNECTION_TIMEOUT);
+                      connectionReq.sendTimestamp = new Date().getTime();
+                      connectionReq.updateTimestamp = new Date().getTime();
+                      return connectionReq.save()
+                          .then(() => {
+                            return res.send({ message: 'Success' });
+                          })
+                          .catch((error) => {
+                            console.log(error);
+                            return res.status(500)
+                              .json({ message: 'Could not save connection request.' });
+                          });
+                    } else {
+                      return res.send({ message: 'Pending' });
+                    }
+                  })
+                  .catch(() => {
+                    return res.status(500)
+                        .send('Problem finding connection requests.');
+                  });
             })
-            .then((resultConnection) => {
-              if (resultConnection === null) {
-                // Making new connection
-                const connectionReq = new connectionRequest();
-                connectionReq.senderUserId = userId;
-                connectionReq.receiverUserId = receivingUser._id;
-                connectionReq.permissions = { category: 'default' };
-                connectionReq.active = true;
-                connectionReq.snoozed = false;
-                connectionReq.timeout = process.env.CONNECTION_TIMEOUT;
-                connectionReq.sendTimestamp = new Date().getTime();
-                connectionReq.updateTimestamp = new Date().getTime();
-                return connectionReq.save()
-                    .then(() => {
-                      return res.send({ message: 'Success' });
-                    })
-                    .catch((error) => {
-                      console.log(error);
-                      return res.status(500)
-                        .json({ message: 'Could not save connection request.' });
-                    });
-              } else {
-                return res.send({ message: 'Pending' });
-              }
-            })
-            .catch(() => {
-              return res.status(500)
-                  .send('Problem finding connection requests.');
-            });
-      })
-      .catch((err) => {
+        .catch((err) => {
+          return res.send({ message: 'User not found' });
+      });
+    }).catch((err) => {
         return res.send({ message: 'User not found' });
       });
+
 }
 
 
