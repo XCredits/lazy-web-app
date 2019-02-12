@@ -37,15 +37,6 @@ function isOrgAdmin(userId, orgId) {
       });
 }
 
-function threeMonthsFromNow() {
-  const date = new Date();
-  const targetMonth = date.getMonth() + 3;
-  date.setMonth(targetMonth);
-  if (date.getMonth() !== targetMonth % 12) {
-    date.setDate(0); // last day of previous month if month ends with 29,30,31
-  }
-  return date;
-}
 
 function createOrg(req, res) {
   const { name, website, phoneNumber } = req.body;
