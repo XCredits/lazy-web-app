@@ -115,7 +115,7 @@ export class ConnectionRequestsComponent implements OnInit {
       'senderUserId': friend.userId,
     })
       .subscribe((returnedResult) => {
-        if (returnedResult.message === 'request accepted') {
+        if (returnedResult.message === 'Request accepted') {
            // Remove the request from the pendingConnections array
            for ( let i = 0 ; i <= this.pendingConnections.length - 1; i++) {
             if ( this.pendingConnections[i].userId === friend.userId) {

@@ -51,7 +51,7 @@ function addRequest(req, res) {
                 connectionReq.permissions = { category: 'default' };
                 connectionReq.active = true;
                 connectionReq.snoozed = false;
-                connectionReq.timeout = new Date().getTime() + 10 * (1000 * 60 * 60 * 24); // days
+                connectionReq.timeout = process.env.CONNECTION_TIMEOUT;
                 connectionReq.sendTimestamp = new Date().getTime();
                 connectionReq.updateTimestamp = new Date().getTime();
                 return connectionReq.save()
@@ -59,6 +59,7 @@ function addRequest(req, res) {
                       return res.send({ message: 'Success' });
                     })
                     .catch((error) => {
+                      console.log(error);
                       return res.status(500)
                         .json({ message: 'Could not save connection request.' });
                     });
