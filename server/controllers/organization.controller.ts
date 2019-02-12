@@ -122,8 +122,8 @@ function userOrgSummary(req, res) {
                   })
                   .catch(() => {
                     return res.status(500).send({
-                            message: 'Error in finding organization'
-                      });
+                      message: 'Error in finding organization'
+                    });
                   });
             })
             .catch(() => {
