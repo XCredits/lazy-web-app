@@ -114,25 +114,25 @@ function userOrgSummary(req, res) {
   let userOrg;
   return UserOrganization.find({'userId': userId})
       .then((userOrgArr) => {
-          const orgIds = userOrgArr.map(orgEle => orgEle.orgId);
-          userOrg = userOrgArr;
-          return Username.find({ 'refId': { '$in': orgIds}})
-              .then((orgUsername) => {
-                  return Organization.find({ '_id': { '$in': orgIds}})
-                    .then((orgDetails) => {
-                        return res.json({orgDetails, userOrg, orgUsername});
-                    })
-                    .catch(() => {
-                      return res.status(500).send({
-                             message: 'Error in finding organization'
-                        });
-                    });
-              })
-              .catch(() => {
+        const orgIds = userOrgArr.map(orgEle => orgEle.orgId);
+        userOrg = userOrgArr;
+        return Username.find({ 'refId': { '$in': orgIds}})
+            .then((orgUsername) => {
+              return Organization.find({ '_id': { '$in': orgIds}})
+                .then((orgDetails) => {
+                    return res.json({orgDetails, userOrg, orgUsername});
+                })
+                .catch(() => {
                   return res.status(500).send({
-                    message: 'Error in accessing username database'
-                  });
+                          message: 'Error in finding organization'
+                    });
+                });
+            })
+            .catch(() => {
+              return res.status(500).send({
+                message: 'Error in accessing username database'
               });
+            });
       })
       .catch(() => {
         return res.status(500).send({message: 'Error in finding userId'});
@@ -280,7 +280,7 @@ function getDetails(req, res) {
   if (typeof userId !== 'string' ||
       typeof displayUsername !== 'string' ||
       !isValidDisplayUsername(displayUsername)) {
-        return res.status(500).send({message: 'Request validation failed'});
+    return res.status(500).send({message: 'Request validation failed'});
   }
   return Username.findOne({'displayUsername': displayUsername})
     .then((response) => {
