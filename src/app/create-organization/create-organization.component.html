@@ -1,7 +1,7 @@
 <div class="simple-form-aligner">
   <mat-card class="simple-form-card">
     <form [formGroup]="form" (ngSubmit)="submit(form.value)">
-      <mat-card-title>	Create Organization </mat-card-title>
+      <mat-card-title> Create Organization </mat-card-title>
       <mat-card-content>
         <div class="form-group">
           <mat-form-field class="simple-form-field-100">
@@ -19,26 +19,15 @@
             <mat-error>{{usernameErrorMessage}}</mat-error>
           </mat-form-field>
           <section>
-            <button
-                [disabled]='disableButton'
-                class="simple-form-button"
-                color="primary"
-                mat-raised-button
-                type="submit"
-                value="submit">
+            <button [disabled]='disableButton' class="simple-form-button" color="primary" mat-raised-button
+              type="submit" value="submit">
               Create
             </button>
-            <span 
-            *ngIf='formErrorMessage'
-            class="text-error-color">
-            {{formErrorMessage}}
+            <span *ngIf='formErrorMessage' class="text-error-color">
+              {{formErrorMessage}}
             </span>
-            <mat-progress-spinner
-                *ngIf="waiting"
-                color="primary"
-                mode="indeterminate"
-                class="simple-form-spinner"
-                [diameter]=22>
+            <mat-progress-spinner *ngIf="waiting" color="primary" mode="indeterminate" class="simple-form-spinner"
+              [diameter]=22>
             </mat-progress-spinner>
           </section>
         </div>
