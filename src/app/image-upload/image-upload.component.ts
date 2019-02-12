@@ -21,7 +21,7 @@ export class ImageUploadComponent {
 
   @Output() imageUploaded = new EventEmitter();
   @Output() imageError = new EventEmitter();
-  @Output() croppingCanceled = new EventEmitter();
+  @Output() croppingCancelled = new EventEmitter();
 
   selectedFile: FileSnippet;
   imageChangedEvent: any;
@@ -58,7 +58,7 @@ export class ImageUploadComponent {
 
   cancelCropping() {
     this.imageChangedEvent = null;
-    this.croppingCanceled.emit();
+    this.croppingCancelled.emit();
     this.modalReference.close();
   }
 

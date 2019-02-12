@@ -6,15 +6,15 @@ import { UserService } from '../user.service';
 import { AnalyticsService } from '../analytics.service';
 
 @Component({
-  selector: 'app-mailing-list',
-  templateUrl: './mailing-list.component.html',
-  styleUrls: ['./mailing-list.component.scss']
+  selector: 'app-add-contact',
+  templateUrl: './add-contact.component.html',
+  styleUrls: ['./add-contact.component.scss']
 })
-export class MailingListComponent implements OnInit {
+export class AddContactsComponent implements OnInit {
   form: FormGroup;
   waiting = false;
   formErrorMessage: string;
-  submitSuccess: string;
+  submitSuccess: boolean;
 
   constructor(
     private http: HttpClient,
@@ -25,10 +25,12 @@ export class MailingListComponent implements OnInit {
 
   ngOnInit() {
     this.form = new FormGroup ({
-    givenName: new FormControl(''),
-    familyName: new FormControl(''),
-    email: new FormControl('', [Validators.required, Validators.email]),
+      givenName: new FormControl(''),
+      familyName: new FormControl(''),
+      email: new FormControl('', [Validators.required, Validators.email]),
     });
+   // this.form.valueChanges.subscribe(formData => this.checkUsername(formData));
+
   }
 
   submit = function (formData) {
@@ -39,25 +41,18 @@ export class MailingListComponent implements OnInit {
     this.formErrorMessage = undefined;
     this.submitSuccess = false;
     this.waiting = true;
-  
-    this.http.post('/api/join-mailing-list', {
-          'givenName': formData.givenName,
-          'familyName': formData.familyName,
-          'email': formData.email
-        })
-        .subscribe(data => {
+    this.http.post('/api/contacts/add', {
+      'givenName': formData.givenName,
+      'familyName': formData.familyName,
+      'email': formData.email
+    })
+      .subscribe(data => {
           this.waiting = false;
           this.submitSuccess = true;
-          // this.snackBar.open('Successfully subscribed to the mailing list', 'Dismiss', {
-          //    duration: 5000,
-          //    verticalPosition: 'top',
-          //    horizontalPosition: 'right',
-          //  });
-          // this.analytics.mailingList();
         },
         errorResponse => {
-          this.waiting = false;
-          this.formErrorMessage = 'There was a problem submitting the form..';
+            this.waiting = false;
+            this.formErrorMessage = 'There was a problem submitting the form.';
         });
   };
 }
