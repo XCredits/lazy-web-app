@@ -73,7 +73,7 @@ function createOrg(req, res) {
                           usernameDocument.username = username;
                           usernameDocument.displayUsername = displayUsername;
                           usernameDocument.refId = organization._id;
-                          usernameDocument.type = 'organization';
+                          usernameDocument.type = 'org';
                           usernameDocument.current = true;
                           return usernameDocument.save()
                               .then(() => {
@@ -198,7 +198,7 @@ function updateDetails(req, res) {
               newUsername.username = username;
               newUsername.current = true;
               newUsername.refId = orgId;
-              newUsername.type = 'organization';
+              newUsername.type = 'org';
 
               currentUsername.current = false;
 
