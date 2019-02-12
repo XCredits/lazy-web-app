@@ -1,6 +1,6 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ViewConnectionsComponent } from './view-Connections.component';
+import { ViewConnectionsComponent } from './view-connections.component';
 
 describe('ViewConnectionsComponent', () => {
   let component: ViewConnectionsComponent;
