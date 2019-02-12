@@ -51,7 +51,7 @@ function addRequest(req, res) {
                 connectionReq.permissions = { category: 'default' };
                 connectionReq.active = true;
                 connectionReq.snoozed = false;
-                connectionReq.timeout = process.env.CONNECTION_TIMEOUT;
+                connectionReq.timeout = Number(process.env.CONNECTION_TIMEOUT);
                 connectionReq.sendTimestamp = new Date().getTime();
                 connectionReq.updateTimestamp = new Date().getTime();
                 return connectionReq.save()
