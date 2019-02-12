@@ -183,7 +183,9 @@ function updateDetails(req, res) {
           if (requestedUsername.username !== currentUsername.username) {
             if (requestedUsername) {
               if (requestedUsername.refId !== orgId) {
-                return res.status(401).send({message: 'Username belongs to another organization'});
+                return res.status(401).send({
+                  message: 'Username belongs to another organization'
+                });
               } else {
                 if (requestedUsername.username === username) {
                   if (requestedUsername.displayUsername !== displayUsername) {
@@ -229,7 +231,9 @@ function updateDetails(req, res) {
                 res.send({message: 'Details changed successfully'});
               })
               .catch(() => {
-                res.status(500).send({message: 'Error in saving organization details'});
+                res.status(500).send({
+                  message: 'Error in saving organization details'
+                });
               });
             } else {
               res.status(401).send({message: 'Unauthorized access'});
