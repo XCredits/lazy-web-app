@@ -36,7 +36,7 @@ passport.use(new LocalStrategy({
   passwordField: 'password',
 },
 function(username, password, done) {
-  Username.findOne({username: username, 'current': true, 'type': 'user'}, function(err1, usernameDocument) {
+  Username.findOne({username: username, current: true, type: 'user'}, function(err1, usernameDocument) {
     if (err1) {
       return done(err1);
     }
@@ -46,7 +46,7 @@ function(username, password, done) {
         message: 'Username not found',
       });
     }
-    Auth.findOne({'userId': usernameDocument.refId}, function(err2, userAuth) {
+    Auth.findOne({userId: usernameDocument.refId}, function(err2, userAuth) {
       if (err2) {
         return done(err2);
       }
@@ -56,7 +56,7 @@ function(username, password, done) {
           message: 'Password is incorrect',
         });
       }
-      User1.findOne({'_id': usernameDocument.refId}, function(err3, user) {
+      User1.findOne({_id: usernameDocument.refId}, function(err3, user) {
         if (err3) {
           return done(err3);
         }
