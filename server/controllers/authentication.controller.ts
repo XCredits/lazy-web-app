@@ -409,8 +409,8 @@ function requestResetPassword(req, res) {
     return res.status(422).json({message: 'Request failed validation'});
   }
   let username;
-        // Success object must be identical, to avoid people discovering
-        // emails in the system
+  // Success object must be identical, to avoid people discovering
+  // emails in the system
   return Username.findOne({displayUsername: displayUsername})
       .then(usernameReturn => {
         username = usernameReturn.username;
