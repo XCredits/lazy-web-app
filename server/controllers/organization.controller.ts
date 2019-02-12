@@ -180,36 +180,38 @@ function updateDetails(req, res) {
             saveNewUsername = false;
           let newUsername;
 
-          if (requestedUsername) {
-            if (requestedUsername.refId !== orgId) {
-              return res.status(401).send({message: 'Username belongs to another organization'});
-            } else {
-              if (requestedUsername.username === username) {
-                if (requestedUsername.displayUsername !== displayUsername) {
-                  requestedUsername.displayUsername = displayUsername;
+          if (requestedUsername.username !== currentUsername.username) {
+            if (requestedUsername) {
+              if (requestedUsername.refId !== orgId) {
+                return res.status(401).send({message: 'Username belongs to another organization'});
+              } else {
+                if (requestedUsername.username === username) {
+                  if (requestedUsername.displayUsername !== displayUsername) {
+                    requestedUsername.displayUsername = displayUsername;
 
-                  saveRequestedUsername = true;
-                } else {
-                  currentUsername.current = false;
+                    saveRequestedUsername = true;
+                  } else {
+                    currentUsername.current = false;
 
-                  requestedUsername.current = true;
-                  saveCurrentUsername = true;
-                  saveRequestedUsername = true;
+                    requestedUsername.current = true;
+                    saveCurrentUsername = true;
+                    saveRequestedUsername = true;
+                  }
                 }
               }
+            } else {
+              newUsername = new Username();
+              newUsername.displayUsername = displayUsername;
+              newUsername.username = username;
+              newUsername.current = true;
+              newUsername.refId = orgId;
+              newUsername.type = 'organization';
+
+              currentUsername.current = false;
+
+              saveNewUsername = true;
+              saveCurrentUsername = true;
             }
-          } else {
-            newUsername = new Username();
-            newUsername.displayUsername = displayUsername;
-            newUsername.username = username;
-            newUsername.current = true;
-            newUsername.refId = orgId;
-            newUsername.type = 'organization';
-
-            currentUsername.current = false;
-
-            saveNewUsername = true;
-            saveCurrentUsername = true;
           }
           const promises2 = [organization.save()];
           if (saveCurrentUsername) {
