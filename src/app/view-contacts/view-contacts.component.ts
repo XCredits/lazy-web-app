@@ -26,7 +26,7 @@ export class ViewContactsComponent implements OnInit {
   user: User;
   contactIndex: Number = 0;
   private allContacts = [];
-  displayedColumns: string[] = ['select', 'Favourite', 'Given Name', 'Family Name', 'Email'];
+  displayedColumns: string[] = ['select', 'Favourite', 'Given Name', 'Family Name', 'Email', 'Action'];
   selection = new SelectionModel<ContactElements>(true, []);
   dataSource = new MatTableDataSource<ContactElements>(this.allContacts);
 
@@ -60,6 +60,19 @@ export class ViewContactsComponent implements OnInit {
   };
 
   submit = function () { };
+
+  deleteContact = function (contact) {
+    this.http.post('/api/contacts/remove', {
+      'userId': this.user.id,
+      'contactUserId': contact.contactUserId,
+    })
+      .subscribe((result) => {
+        if (result.message === 'Contact deleted' ) {
+            this.loadContacts();
+        }
+      });
+  };
+
 
   removeContactFav = function (contact) {
     this.http.post('/api/contacts/add-remove-fav', {

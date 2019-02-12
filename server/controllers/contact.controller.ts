@@ -4,6 +4,7 @@ const auth = require('./jwt-auth.controller');
 
 module.exports = function(app) {
   app.post('/api/contacts/add', auth.jwt, addContact);
+  app.post('/api/contacts/remove', auth.jwt, removeContact);
   app.post('/api/contacts/view', auth.jwt, viewContacts);
   app.post('/api/contacts/fav', auth.jwt, viewFavourites);
   app.post('/api/contacts/add-remove-fav', auth.jwt, addRemoveFavourites);
@@ -40,6 +41,31 @@ function addContact(req, res) {
       })
       .catch((error) => {
         return res.status(500).send('Problem finding contacts.');
+      });
+}
+
+
+/**
+ * join a contact list
+ * @param {*} req request object
+ * @param {*} res response object
+ * @return {*}
+ */
+function removeContact(req, res) {
+  const userId = req.userId;
+  const contactUserId = req.body.contactUserId;
+  // Validate
+  if (typeof userId !== 'string' ||
+      typeof contactUserId !== 'string' ) {
+    return res.status(422).json({ message: 'Contact failed validation' });
+  }
+
+  return Contact.deleteOne( {_id: contactUserId } )
+      .then(() => {
+        return res.send({ message: 'Contact deleted' });
+      })
+      .catch((error) => {
+        return res.status(500).send('Problem deleting contacts.');
       });
 }
 
@@ -103,10 +129,6 @@ function viewFavourites(req, res) {
  * @returns {*}
  */
 function addRemoveFavourites(req, res) {
-  console.log(req.userId);
-  console.log(req.body.action);
-  console.log(req.body.contactUserId);
-
   const userId = req.userId;
   const contactId = req.body.contactUserId;
   const action = req.body.action;
