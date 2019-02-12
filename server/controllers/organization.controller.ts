@@ -52,8 +52,8 @@ function createOrg(req, res) {
   }
   const username = normalizeUsername(displayUsername);
   return Username.findOne({username: username})
-      .then((usernameExist) => {
-          if (usernameExist) {
+      .then((usernameExists) => {
+          if (usernameExists) {
               return res.status(409).send({message: 'Username already taken.'});
           }
           const organization = new Organization();
