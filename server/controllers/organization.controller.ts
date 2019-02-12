@@ -388,12 +388,14 @@ function getUsers(req, res) {
 function addUser(req, res) {
   const userId = req.userId;
   const orgId = req.body.orgId;
-  const username = req.body.username;
+  const displayUsername = req.body.username;
   if (typeof userId !== 'string' ||
       typeof orgId !== 'string' ||
-      typeof username !== 'string') {
-        return res.status(500).send({message: 'Request validation failed'});
-      }
+      typeof displayUsername !== 'string' ||
+      !isValidDisplayUsername(displayUsername)) {
+    return res.status(500).send({message: 'Request validation failed'});
+  }
+  const username = normalizeUsername(displayUsername);
   let userToAdd;
   isOrgAdmin(userId, orgId)
     .then(() => {
@@ -407,7 +409,7 @@ function addUser(req, res) {
                     return UserOrganization.findOne({'userId': userToAdd._id, 'orgId': orgId})
                       .then((existingUser) => {
                           if (existingUser) {
-                            return res.status(500).send({message: 'User already exist in this organization'});
+                            return res.status(500).send({message: 'User already exists in this organization'});
                           }
                           const userOrg = new UserOrganization();
                           userOrg.userId = userToAdd._id;
