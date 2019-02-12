@@ -36,7 +36,7 @@ export class AddConnectionComponent implements OnInit {
     console.log('you clicked on ' + friends);
   }
 
-  func1 = function() {
+  resetForm = function() {
     this.requestFromMessage = undefined;
     this.form = new FormGroup({
       username: new FormControl(''),

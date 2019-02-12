@@ -124,14 +124,6 @@ export class ConnectionRequestsComponent implements OnInit {
           }
           this.dataSource = [];
           this.dataSource = new MatTableDataSource<ConnectionRequestElements>(this.pendingConnections);
-
-          // Reload pending connection requests
-           // this.loadPendingRequests();
-
-          // Navigate to parent if there is no more connection requests
-          if (this.pendingConnections.length === 0) {
-              // this.router.navigateByUrl('/connections');
-            }
           }
         },
         errorResponse => {
