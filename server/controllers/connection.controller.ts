@@ -1,5 +1,4 @@
 import { isValidDisplayUsername, normalizeUsername } from './utils.controller';
-import { pureFunctionV } from '@angular/core/src/render3';
 const connectionRequest = require('../models/connection-request.model');
 const connection = require('../models/connection.model');
 const User = require('../models/user.model');
