@@ -408,12 +408,11 @@ function requestResetPassword(req, res) {
     ) {
     return res.status(422).json({message: 'Request failed validation'});
   }
-  let username;
+  const username = normalizeUsername(displayUsername);
   // Success object must be identical, to avoid people discovering
   // emails in the system
-  return Username.findOne({displayUsername: displayUsername})
+  return Username.findOne({username: username})
       .then(usernameReturn => {
-        username = usernameReturn.username;
         return User.findOne({'_id': usernameReturn.refId})
             .then((user) => {
                 // res.send({message: 'Email sent if users found in database.'});

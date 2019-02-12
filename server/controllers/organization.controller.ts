@@ -60,7 +60,7 @@ function createOrg(req, res) {
     return res.status(500).send({message: 'Request validation failed'});
   }
   const username = normalizeUsername(displayUsername);
-  return Username.findOne({displayUsername: displayUsername})
+  return Username.findOne({username: username})
       .then((usernameExist) => {
           if (usernameExist) {
               return res.status(409).send({message: 'Username already taken.'});
