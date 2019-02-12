@@ -486,11 +486,11 @@ function removeUser(req, res) {
       }
   isOrgAdmin(userId, orgId)
     .then(() => {
-        User.findOne({'_id': userToBeDeleted})
+        return User.findOne({'_id': userToBeDeleted})
             .then(() => {
-                UserOrganization.deleteOne({'userId': userToBeDeleted, 'orgId': orgId})
+              return UserOrganization.deleteOne({'userId': userToBeDeleted, 'orgId': orgId})
                   .then(() => {
-                      Organization.update({'_id': orgId}, {$inc: { userCount: -1 }})
+                    return Organization.update({'_id': orgId}, {$inc: { userCount: -1 }})
                         .then(() => {
                           return res.status(200).send({
                             message: 'User removed successfully'
