@@ -231,14 +231,12 @@ import { ViewConnectionsComponent } from './view-connections/view-connections.co
         [
           {
             path: '',
-            redirectTo: 'contacts',
+            redirectTo: 'view',
             pathMatch: 'full',
-            canActivate: [AuthGuard],
           },
           {
             path: 'view',
             component: ViewContactsComponent,
-            canActivate: [AuthGuard],
           },
           {
             path: 'fav',
@@ -261,7 +259,6 @@ import { ViewConnectionsComponent } from './view-connections/view-connections.co
             path: '',
             redirectTo: 'view',
             pathMatch: 'full',
-            canActivate: [AuthGuard],
           },
           {
             path: 'view',
