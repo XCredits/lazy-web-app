@@ -37,6 +37,28 @@ function isOrgAdmin(userId, orgId) {
       });
 }
 
+function getRoles(userId, orgId) {
+  return UserOrganization.findOne({'userId': userId, 'orgId': orgId})
+      .then((userOrg) => {
+        return function(role) {
+          if (userOrg.roles.indexOf(role) === -1) {
+            return false;
+          } else {
+            return true;
+          }
+        };
+      })
+      .catch((error) => {
+        throw new Error('User not found in organization.');
+      });
+}
+// getRoles(userId, orgId)
+//     .then(rolesFunction => {
+//       if (rolesFunction('admin')) {
+
+//       }
+//     })
+
 
 function createOrg(req, res) {
   const { name, website, phoneNumber } = req.body;
