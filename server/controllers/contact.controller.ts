@@ -136,7 +136,7 @@ function viewContacts(req, res) {
         return res.send(filteredResult);
       })
       .catch(() => {
-        return res.status(500).send({ message: 'error retrieving users from contacts database' });
+        return res.status(500).send({ message: 'Error retrieving users from contacts database' });
       });
 }
 
@@ -162,7 +162,7 @@ function viewFavourites(req, res) {
         return res.send(filteredResult);
       })
       .catch(() => {
-        return res.status(500).send({ message: 'error retrieving users from contacts database' });
+        return res.status(500).send({ message: 'Error retrieving users from contacts database' });
       });
 }
 

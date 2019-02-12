@@ -28,7 +28,8 @@ function addRequest(req, res) {
   let username = req.body.username;
   // Validate
   if (typeof username !== 'string' ||
-    !isValidDisplayUsername(username)) {
+    !isValidDisplayUsername(username)
+    ) {
     return res.status(422).json({ message: 'Request failed validation' });
   }
   username = normalizeUsername(username);
@@ -55,23 +56,23 @@ function addRequest(req, res) {
                 connectionReq.updateTimestamp = new Date().getTime();
                 return connectionReq.save()
                     .then(() => {
-                      return res.send({ message: 'success' });
+                      return res.send({ message: 'Success' });
                     })
                     .catch((error) => {
                       return res.status(500)
-                        .json({ message: 'could not save connection request.' });
+                        .json({ message: 'Could not save connection request.' });
                     });
               } else {
-                return res.send({ message: 'pending' });
+                return res.send({ message: 'Pending' });
               }
             })
             .catch(() => {
               return res.status(500)
-                  .send('problem finding connection requests.');
+                  .send('Problem finding connection requests.');
             });
       })
       .catch((err) => {
-        return res.send({ message: 'user not found' });
+        return res.send({ message: 'User not found' });
       });
 }
 
@@ -89,11 +90,14 @@ function getPendingRequests(req, res) {
       receiverUserId: req.userId,
       active: { $eq: true },
       timeout: { $lt: new Date().getTime() },
-    },
+      },
       {
         active: false,
         currentStatus: 'expired'
-      });
+      })
+      .catch((err) => {
+          res.status(500).send({ message: 'Error retrieving pending requests' });
+        });
   }
 
   function findPendingConnections() {
@@ -106,19 +110,22 @@ function getPendingRequests(req, res) {
           const senderIdArr = result.map((e => e.senderUserId));
           return User.find({ '_id': { '$in': senderIdArr } })
               .then((filteredResults) => {
-                const resultsFiltered = filteredResults.map((x) => {
-                  return {
-                    username: x.username,
-                    givenName: x.givenName,
-                    familyName: x.familyName,
-                    userId: x._id,
-                  };
+                  const resultsFiltered = filteredResults.map((x) => {
+                    return {
+                      username: x.username,
+                      givenName: x.givenName,
+                      familyName: x.familyName,
+                      userId: x._id,
+                    };
+                  });
+                  res.send(resultsFiltered);
+                })
+                .catch((err) => {
+                  res.status(500).send({ message: 'Error retrieving pending requests' });
                 });
-                res.send(resultsFiltered);
-              });
         })
         .catch((err) => {
-          res.status(500).send({ message: 'error retrieving pending requests' });
+          res.status(500).send({ message: 'Error retrieving pending requests' });
         });
   }
 
@@ -152,11 +159,14 @@ function getConnections(req, res) {
                 };
               });
               res.send(resultsFiltered);
+            })
+            .catch((err) => {
+              res.status(500).send({ message: 'Error retrieving confirmed connections' });
             });
       })
       .catch((err) => {
         res.status(500)
-            .send({ message: 'error retrieving confirmed connections' });
+            .send({ message: 'Error retrieving confirmed connections' });
       });
 }
 
@@ -223,7 +233,10 @@ function actionConnectionRequest(req, res) {
                   _connection2.connectionRequestRef = result._id;
                   return _connection2.save()
                       .then(() => {
-                        res.send({ message: 'request accepted' });
+                        res.send({ message: 'Request accepted' });
+                      })
+                      .catch((err) => {
+                        res.status(500).send({ message: 'Could not save connection requests.' });
                       });
                 })
                 .catch(() => {
@@ -286,7 +299,7 @@ function actionConnectionRequest(req, res) {
 
 
 /**
- * request user connection based on status { Pending }
+ * get pending request count
  * @param {*} req request object
  * @param {*} res response object
  * @return {*}
@@ -295,16 +308,19 @@ function getPendingRequestCount(req, res) {
   // Save the login userId
   const userId = req.userId;
   return connectionRequest.count({
-        receiverUserId: req.userId,
+        receiverUserId: userId,
         active: { $eq: true }
       })
       .then((result) => {
         res.send({ message: result });
+      })
+      .catch((err) => {
+        res.status(500).send({ message: 'Error retrieving pending requests count.' });
       });
 }
 
 /**
- * request user connection based on status { Pending }
+ * count connection
  * @param {*} req request object
  * @param {*} res response object
  * @return {*}
@@ -317,17 +333,19 @@ function getConnectionCount(req, res) {
       })
       .then((result) => {
         res.send({ message: result });
+      })
+      .catch((err) => {
+        res.status(500).send({ message: 'Error retrieving connection count.' });
       });
 }
 
 /**
- * request user sent requests
+ * find all requests sent
  * @param {*} req request object
  * @param {*} res response object
  * @return {*}
  */
 function getSentRequests(req, res) {
-
   return connectionRequest.find({
         senderUserId: req.userId,
         active: { $eq: true },
@@ -345,10 +363,13 @@ function getSentRequests(req, res) {
                 };
               });
               res.send(resultsFiltered);
+            })
+            .catch((err) => {
+              res.status(500).send({ message: 'Error retrieving pending requests.' });
             });
       })
       .catch((err) => {
-        res.status(500).send({ message: 'error retrieving pending requests' });
+        res.status(500).send({ message: 'Error retrieving pending requests' });
       });
 }
 
@@ -362,8 +383,6 @@ function getSentRequests(req, res) {
 function removeConnection(req, res) {
   // Save the login userId
   const userId = req.userId;
-  console.log('userId' + userId);
-  console.log('userId' + req.body.senderUserId);
   return connection.findOneAndUpdate({
         connectionId: req.userId,
         userId: req.body.senderUserId,
@@ -372,8 +391,6 @@ function removeConnection(req, res) {
         status: 'disconnected',
       })
       .then((result) => {
-        console.log('---');
-        console.log(result.connectionRequestRef);
         return connection.findOneAndUpdate({
               connectionId: req.body.senderUserId,
               userId: req.userId,
