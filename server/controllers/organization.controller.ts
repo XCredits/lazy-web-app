@@ -480,8 +480,8 @@ function removeUser(req, res) {
   const userToBeDeleted = req.body.userId;
   const orgId = req.body.orgId;
   if (typeof userId !== 'string' ||
-      typeof userId !== 'string' ||
-      typeof userId !== 'string') {
+      typeof userToBeDeleted !== 'string' ||
+      typeof orgId !== 'string') {
         return res.status(500).send({message: 'Request validation failed'});
       }
   isOrgAdmin(userId, orgId)
