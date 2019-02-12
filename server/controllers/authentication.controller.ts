@@ -415,7 +415,7 @@ function requestResetPassword(req, res) {
       .then(usernameReturn => {
         return User.findOne({'_id': usernameReturn.refId})
             .then((user) => {
-                // res.send({message: 'Email sent if users found in database.'});
+                res.send({message: 'Email sent if users found in database.'});
                 // Note that if errors in sending emails occur, the front end will not see them
                 // The JWT for request password will NOT be set in the cookie
                 // and hence does not require XSRF
@@ -430,10 +430,6 @@ function requestResetPassword(req, res) {
                 const resetUrl = process.env.URL_ORIGIN +
                     '/reset-password?username=' + username + // the username here is only display purposes on the front-end
                     '&auth=' + jwtString;
-
-                console.log(resetUrl);
-
-
                 // When the user clicks on the link, the app pulls the JWT from the link
                 // and stores it in the component
                 return emailService.sendPasswordReset({
@@ -444,15 +440,12 @@ function requestResetPassword(req, res) {
                       userId: user._id,
                       resetUrl,
                     })
-                    .then(() => {
-                      res.status(200).send({message: 'Email sent if users found in database.'});
-                    })
                     .catch(() => {
-                      res.status(500).send({message: 'Could not send email.'});
+                      console.log('Could not send email.');
                     });
             })
             .catch(() => {
-              res.status(500).send({message: 'Error accessing user database.'});
+              res.send({message: 'Email sent if users found in database.'});
             });
         })
         .catch(() => {
