@@ -117,14 +117,14 @@ function userOrgSummary(req, res) {
         return Username.find({ 'refId': { '$in': orgIds}})
             .then((orgUsername) => {
               return Organization.find({ '_id': { '$in': orgIds}})
-                .then((orgDetails) => {
-                    return res.json({orgDetails, userOrgArr, orgUsername});
-                })
-                .catch(() => {
-                  return res.status(500).send({
-                          message: 'Error in finding organization'
-                    });
-                });
+                  .then((orgDetails) => {
+                      return res.json({orgDetails, userOrgArr, orgUsername});
+                  })
+                  .catch(() => {
+                    return res.status(500).send({
+                            message: 'Error in finding organization'
+                      });
+                  });
             })
             .catch(() => {
               return res.status(500).send({
