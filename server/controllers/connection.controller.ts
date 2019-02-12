@@ -67,7 +67,7 @@ function addRequest(req, res) {
             })
             .catch(() => {
               return res.status(500)
-                .send('problem finding connection requests.');
+                  .send('problem finding connection requests.');
             });
       })
       .catch((err) => {
