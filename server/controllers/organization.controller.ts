@@ -348,9 +348,9 @@ function getUsers(req, res) {
                           .then((userOrgArr) => {
                               const userIds =
                                     userOrgArr.map(orgEle => orgEle.userId);
-                              return User.find({'_id': userIds})
+                              return User.find({'_id': {$in: userIds}})
                                     .then((users) => {
-                                      return Username.find({'refId': userIds, 'current': true})
+                                      return Username.find({'refId': {$in: userIds}, 'current': true})
                                           .then((usernames) => {
                                               return res.json({users, usernames});
                                           })
