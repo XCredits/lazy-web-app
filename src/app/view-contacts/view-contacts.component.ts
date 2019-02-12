@@ -7,6 +7,7 @@ import { HttpClient } from '@angular/common/http';
 
 export interface ContactElements {
   isFavourite: Boolean;
+  isEditMode: Boolean;
   position: number;
   givenName: string;
   familyName: number;
@@ -24,7 +25,7 @@ export class ViewContactsComponent implements OnInit {
   submitSuccess = false;
   formErrorMessage: string;
   user: User;
-  contactIndex: Number = 0;
+  contactEditId: string;
   private allContacts = [];
   displayedColumns: string[] = ['select', 'Favourite', 'Given Name', 'Family Name', 'Email', 'Action'];
   selection = new SelectionModel<ContactElements>(true, []);
@@ -63,7 +64,6 @@ export class ViewContactsComponent implements OnInit {
 
   deleteContact = function (contact) {
     this.http.post('/api/contacts/remove', {
-      'userId': this.user.id,
       'contactUserId': contact.contactUserId,
     })
       .subscribe((result) => {
@@ -73,10 +73,36 @@ export class ViewContactsComponent implements OnInit {
       });
   };
 
+  editContact = function (contact) {
+    this.isEditMode = true;
+    this.contactEditId = contact.contactUserId;
+    this.form = new FormGroup({
+      givenName: new FormControl(contact.givenName),
+      familyName: new FormControl(contact.familyName),
+      email: new FormControl(contact.email, [Validators.required, Validators.email]),
+    });
+
+  };
+
+  updateContact = function (contact) {
+    this.http.post('/api/contacts/update', {
+      'contactUserId': this.contactEditId,
+      'givenName': contact.givenName,
+      'familyName': contact.familyName,
+      'email': contact.email,
+    })
+      .subscribe((result) => {
+        if (result.message === 'Contact updated' ) {
+          this.isEditMode = false;
+          this.loadContacts();
+        }
+      });
+  };
+
+
 
   removeContactFav = function (contact) {
     this.http.post('/api/contacts/add-remove-fav', {
-      'userId': this.user.id,
       'contactUserId': contact.contactUserId,
       'action': 'remove',
     })
@@ -89,7 +115,6 @@ export class ViewContactsComponent implements OnInit {
 
   addContactFav = function (contact) {
     this.http.post('/api/contacts/add-remove-fav', {
-      'userId': this.user.id,
       'contactUserId': contact.contactUserId,
       'action': 'add',
     })
