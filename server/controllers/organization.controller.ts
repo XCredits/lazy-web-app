@@ -228,8 +228,8 @@ function updateDetails(req, res) {
                   message: 'Error in saving organization details'
                 });
               });
-      }
-    });
+        }
+      });
 }
 
 function imageUpload(req, res) {
