@@ -221,7 +221,7 @@ import { ViewConnectionsComponent } from './view-connections/view-connections.co
       {
         path: 'about',
         component: AboutComponent,
-        data: { title: 'About1' },
+        data: { title: 'About' },
       },
       {
         path: 'login',
