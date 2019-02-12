@@ -44,6 +44,7 @@ export class ViewConnectionsComponent implements OnInit {
     console.log('you clicked on ' + friends);
   }
 
+
   loadConfirmedRequests = function () {
     this.confirmedConnections = [];
     this.http.post('/api/connection/get-connections', {
