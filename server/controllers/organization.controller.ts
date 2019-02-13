@@ -175,13 +175,13 @@ function updateDetails(req, res) {
   }
   const username = normalizeUsername(displayUsername);
 
-  const promises = [isOrgAdmin(userId, orgId),
+  const promises = [getRoles(userId, orgId),
         Organization.findOne({_id: orgId}),
         Username.findOne({username: username}),
         Username.findOne({refId: orgId, current: true})];
   Promise.all(promises)
-      .then(([isAdmin, organization, requestedUsername, currentUsername]) => {
-        if (!isAdmin) {
+      .then(([rolesFunction, organization, requestedUsername, currentUsername]) => {
+        if (!rolesFunction('admin')) {
           return res.status(401).send({message: 'Unauthorized access'});
         } else {
           organization.name = name;
@@ -265,8 +265,9 @@ function imageUpload(req, res) {
       typeof orgId !== 'string') {
     return res.status(500).send({message: 'Request validation failed'});
   }
-  isOrgAdmin(userId, orgId)
-      .then(() => {
+  return getRoles(userId, orgId)
+      .then((rolesFunction) => {
+        if (rolesFunction('admin')) {
           return uploadSingleImage(req, res, function(err) {
               if (err) {
                 return res.status(422).send({
@@ -294,10 +295,10 @@ function imageUpload(req, res) {
                     });
                   });
           });
-      })
-      .catch(() => {
-        return res.status(404).send({message: 'Unauthorized access'});
-      });
+        } else {
+            return res.status(404).send({message: 'Unauthorized access'});
+          }
+        });
 }
 
 function getDetails(req, res) {
