@@ -10,5 +10,6 @@ const UserOrganizationSchema = new Schema({
 
 UserOrganizationSchema.index({userId: 1});
 UserOrganizationSchema.index({orgId: 1});
+UserOrganizationSchema.index({userId: 1, orgId: 1});
 
 module.exports = mongoose.model('UserOrganization', UserOrganizationSchema);

@@ -37,15 +37,28 @@ function isOrgAdmin(userId, orgId) {
       });
 }
 
-function threeMonthsFromNow() {
-  const date = new Date();
-  const targetMonth = date.getMonth() + 3;
-  date.setMonth(targetMonth);
-  if (date.getMonth() !== targetMonth % 12) {
-    date.setDate(0); // last day of previous month if month ends with 29,30,31
-  }
-  return date;
+function getRoles(userId, orgId) {
+  return UserOrganization.findOne({'userId': userId, 'orgId': orgId})
+      .then((userOrg) => {
+        return function(role) {
+          if (userOrg.roles.indexOf(role) === -1) {
+            return false;
+          } else {
+            return true;
+          }
+        };
+      })
+      .catch((error) => {
+        throw new Error('User not found in organization.');
+      });
 }
+// getRoles(userId, orgId)
+//     .then(rolesFunction => {
+//       if (rolesFunction('admin')) {
+
+//       }
+//     })
+
 
 function createOrg(req, res) {
   const { name, website, phoneNumber } = req.body;
@@ -60,9 +73,9 @@ function createOrg(req, res) {
     return res.status(500).send({message: 'Request validation failed'});
   }
   const username = normalizeUsername(displayUsername);
-  return Username.findOne({displayUsername: displayUsername})
-      .then((usernameExist) => {
-          if (usernameExist) {
+  return Username.findOne({username: username})
+      .then((usernameExists) => {
+          if (usernameExists) {
               return res.status(409).send({message: 'Username already taken.'});
           }
           const organization = new Organization();
@@ -70,9 +83,9 @@ function createOrg(req, res) {
           organization.website = website;
           organization.phoneNumber = phoneNumber;
           organization.userCount = 1;
-          const userOrg = new UserOrganization();
           return organization.save()
               .then(() => {
+                  const userOrg = new UserOrganization();
                   userOrg.userId = userId;
                   userOrg.orgId = organization._id;
                   userOrg.roles = ['admin'];
@@ -82,7 +95,7 @@ function createOrg(req, res) {
                           usernameDocument.username = username;
                           usernameDocument.displayUsername = displayUsername;
                           usernameDocument.refId = organization._id;
-                          usernameDocument.type = 'organization';
+                          usernameDocument.type = 'org';
                           usernameDocument.current = true;
                           return usernameDocument.save()
                               .then(() => {
@@ -120,28 +133,26 @@ function userOrgSummary(req, res) {
   if (typeof userId !== 'string') {
     return res.status(500).send({message: 'Request validation failed'});
   }
-  let userOrg;
   return UserOrganization.find({'userId': userId})
       .then((userOrgArr) => {
-          const orgIds = userOrgArr.map(orgEle => orgEle.orgId);
-          userOrg = userOrgArr;
-          return Username.find({ 'refId': { '$in': orgIds}})
-              .then((orgUsername) => {
-                  return Organization.find({ '_id': { '$in': orgIds}})
-                    .then((orgDetails) => {
-                        return res.send({orgDetails, userOrg, orgUsername});
-                    })
-                    .catch(() => {
-                      return res.status(500).send({
-                             message: 'Error in finding organization'
-                        });
+        const orgIds = userOrgArr.map(orgEle => orgEle.orgId);
+        return Username.find({ 'refId': { '$in': orgIds}})
+            .then((orgUsername) => {
+              return Organization.find({ '_id': { '$in': orgIds}})
+                  .then((orgDetails) => {
+                      return res.json({orgDetails, userOrgArr, orgUsername});
+                  })
+                  .catch(() => {
+                    return res.status(500).send({
+                      message: 'Error in finding organization'
                     });
-              })
-              .catch(() => {
-                  return res.status(500).send({
-                    message: 'Error in accessing username database'
                   });
+            })
+            .catch(() => {
+              return res.status(500).send({
+                message: 'Error in accessing username database'
               });
+            });
       })
       .catch(() => {
         return res.status(500).send({message: 'Error in finding userId'});
@@ -170,8 +181,9 @@ function updateDetails(req, res) {
         Username.findOne({refId: orgId, current: true})];
   Promise.all(promises)
       .then(([isAdmin, organization, requestedUsername, currentUsername]) => {
-        if (isAdmin) {
-          console.log('Inside');
+        if (!isAdmin) {
+          return res.status(401).send({message: 'Unauthorized access'});
+        } else {
           organization.name = name;
           organization.website = website;
           organization.phoneNumber = phoneNumber;
@@ -241,10 +253,7 @@ function updateDetails(req, res) {
               res.status(500).send({
                 message: 'Error in saving organization details'
               });
-            });
-          } else {
-            res.status(401).send({message: 'Unauthorized access'});
-          }
+        }
       });
 }
 
@@ -296,11 +305,12 @@ function getDetails(req, res) {
   if (typeof userId !== 'string' ||
       typeof displayUsername !== 'string' ||
       !isValidDisplayUsername(displayUsername)) {
-        return res.status(500).send({message: 'Request validation failed'});
+    return res.status(500).send({message: 'Request validation failed'});
   }
-  return Username.findOne({'displayUsername': displayUsername})
+  const username = normalizeUsername(displayUsername);
+  return Username.findOne({username: username})
     .then((response) => {
-        isOrgAdmin(userId, response.refId)
+        isOrgAdmin(userId, response.refId) // TODO: UserOrganization.findOne
             .then(() => {
                 return Organization.findOne({_id: response.refId})
                     .then((orgDetail) => {
@@ -327,30 +337,44 @@ function getUsers(req, res) {
   const userId = req.userId;
   const displayUsername = req.body.username;
   if (typeof userId !== 'string' ||
-    typeof displayUsername !== 'string' ||
-    !isValidDisplayUsername(displayUsername)) {
-    return res.status(500).send({ message: 'Request validation failed' });
+      typeof displayUsername !== 'string' ||
+      !isValidDisplayUsername(displayUsername)) {
+    return res.status(500).send({message: 'Request validation failed'});
   }
-  return Username.findOne({ 'displayUsername': displayUsername })
-    .then((response) => {
-      return Organization.findOne({ '_id': response.refId })
-        .then((organization) => {
-          return isOrgAdmin(userId, organization._id)
-            .then(() => {
-              return UserOrganization
-                .find({ 'orgId': organization._id })
-                .then((userOrgArr) => {
-                  const userIds =
-                    userOrgArr.map(orgEle => orgEle.userId);
-                  return User.find({ '_id': userIds })
-                    .then((users) => {
-                      return Username.find({ 'refId': userIds, 'current': true })
-                        .then((usernames) => {
-                          return res.json({ users, usernames });
-                        })
-                        .catch(() => {
-                          return res.status(500).send({
-                            message: 'Error in accessing username database'
+  const username = normalizeUsername(displayUsername);
+  return Username.findOne({username: username})
+      .then((response) => {
+          return Organization.findOne({'_id': response.refId})
+            .then((organization) => {
+                return isOrgAdmin(userId, organization._id)
+                  .then(() => {
+                    return UserOrganization
+                      .find({'orgId': organization._id})
+                          .then((userOrgArr) => {
+                              const userIds =
+                                    userOrgArr.map(orgEle => orgEle.userId);
+                              return User.find({'_id': {$in: userIds}})
+                                    .then((users) => {
+                                      return Username.find({'refId': {$in: userIds}, 'current': true})
+                                          .then((usernames) => {
+                                              return res.json({users, usernames});
+                                          })
+                                          .catch(() => {
+                                            return res.status(500).send({
+                                              message: 'Error in accessing username database'
+                                            });
+                                          });
+                                    })
+                                    .catch(() => {
+                                      return res.status(500).send({
+                                        message: 'Error in finding users'
+                                      });
+                                    });
+                          })
+                          .catch(() => {
+                            return res.status(500).send({
+                              message: 'Error in finding userIds'
+                            });
                           });
                         });
                     })
@@ -382,17 +406,19 @@ function getUsers(req, res) {
 function addUser(req, res) {
   const userId = req.userId;
   const orgId = req.body.orgId;
-  const username = req.body.username;
+  const displayUsername = req.body.username;
   if (typeof userId !== 'string' ||
       typeof orgId !== 'string' ||
-      typeof username !== 'string') {
-        return res.status(500).send({message: 'Request validation failed'});
-      }
+      typeof displayUsername !== 'string' ||
+      !isValidDisplayUsername(displayUsername)) {
+    return res.status(500).send({message: 'Request validation failed'});
+  }
+  const username = normalizeUsername(displayUsername);
   let userToAdd;
   isOrgAdmin(userId, orgId)
     .then(() => {
       return Organization.findOne({'_id' : orgId})
-        .then(() => {
+        .then((org) => {
           return Username.findOne({'username': username, 'type': 'user'})
             .then((response) => {
               return User.findOne({'_id': response.refId})
@@ -401,12 +427,12 @@ function addUser(req, res) {
                     return UserOrganization.findOne({'userId': userToAdd._id, 'orgId': orgId})
                       .then((existingUser) => {
                           if (existingUser) {
-                            return res.status(500).send({message: 'User already exist in this organization'});
+                            return res.status(500).send({message: 'User already exists in this organization'});
                           }
                           const userOrg = new UserOrganization();
                           userOrg.userId = userToAdd._id;
                           userOrg.orgId = orgId;
-                          userOrg.roles = ['POS'];
+                          userOrg.roles = [org.defaultRole];
                           return userOrg.save()
                             .then(() => {
                                 Organization.update({'_id': orgId}, {$inc: { userCount: 1 }})
@@ -454,13 +480,13 @@ function deleteOrg(req, res) {
   const orgId = req.body.id;
   if (typeof userId !== 'string' ||
       typeof orgId !== 'string') {
-        return res.status(500).send({message: 'Request validation failed'});
-      }
+    return res.status(500).send({message: 'Request validation failed'});
+  }
   isOrgAdmin(userId, orgId)
     .then(() => {
         return UserOrganization.deleteMany({'orgId': orgId})
             .then(() => {
-                return Organization.deleteMany({'_id': orgId})
+                return Organization.deleteOne({'_id': orgId})
                     .then(() => {
                       return res.status(200).send({
                         message: 'Organization deleted successfully'

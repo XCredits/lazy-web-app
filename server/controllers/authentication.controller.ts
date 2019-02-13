@@ -408,52 +408,44 @@ function requestResetPassword(req, res) {
     ) {
     return res.status(422).json({message: 'Request failed validation'});
   }
-  let username;
-        // Success object must be identical, to avoid people discovering
-        // emails in the system
-  return Username.findOne({displayUsername: displayUsername})
+  const username = normalizeUsername(displayUsername);
+  // Success object must be identical, to avoid people discovering
+  // emails in the system
+  return Username.findOne({username: username})
       .then(usernameReturn => {
-        username = usernameReturn.username;
         return User.findOne({'_id': usernameReturn.refId})
             .then((user) => {
-                // res.send({message: 'Email sent if users found in database.'});
-                // Note that if errors in sending emails occur, the front end will not see them
-                // The JWT for request password will NOT be set in the cookie
-                // and hence does not require XSRF
-                const jwtObj = {
-                  sub: user._id,
-                  username: username,
-                  isAdmin: user.isAdmin,
-                  exp: Math.floor(
-                      (Date.now() + Number(process.env.JWT_TEMPORARY_LINK_TOKEN_EXPIRY)) / 1000), // 1 hour
-                };
-                const jwtString = jwt.sign(jwtObj, process.env.JWT_KEY);
-                const resetUrl = process.env.URL_ORIGIN +
-                    '/reset-password?username=' + username + // the username here is only display purposes on the front-end
-                    '&auth=' + jwtString;
-
-                console.log(resetUrl);
-
-
-                // When the user clicks on the link, the app pulls the JWT from the link
-                // and stores it in the component
-                return emailService.sendPasswordReset({
-                      givenName: user.givenName,
-                      familyName: user.familyName,
-                      email: user.email,
-                      username: username,
-                      userId: user._id,
-                      resetUrl,
-                    })
-                    .then(() => {
-                      res.status(200).send({message: 'Email sent if users found in database.'});
-                    })
-                    .catch(() => {
-                      res.status(500).send({message: 'Could not send email.'});
-                    });
+              res.send({message: 'Email sent if users found in database.'});
+              // Note that if errors in sending emails occur, the front end will not see them
+              // The JWT for request password will NOT be set in the cookie
+              // and hence does not require XSRF
+              const jwtObj = {
+                sub: user._id,
+                username: username,
+                isAdmin: user.isAdmin,
+                exp: Math.floor(
+                    (Date.now() + Number(process.env.JWT_TEMPORARY_LINK_TOKEN_EXPIRY)) / 1000), // 1 hour
+              };
+              const jwtString = jwt.sign(jwtObj, process.env.JWT_KEY);
+              const resetUrl = process.env.URL_ORIGIN +
+                  '/reset-password?username=' + username + // the username here is only display purposes on the front-end
+                  '&auth=' + jwtString;
+              // When the user clicks on the link, the app pulls the JWT from the link
+              // and stores it in the component
+              return emailService.sendPasswordReset({
+                    givenName: user.givenName,
+                    familyName: user.familyName,
+                    email: user.email,
+                    username: username,
+                    userId: user._id,
+                    resetUrl,
+                  })
+                  .catch(() => {
+                    console.log('Could not send email.');
+                  });
             })
             .catch(() => {
-              res.status(500).send({message: 'Error accessing user database.'});
+              res.send({message: 'Email sent if users found in database.'});
             });
         })
         .catch(() => {
@@ -563,7 +555,7 @@ function createAndSendRefreshAndSessionJwt(usernameDocument, user, req, res) {
         // XSRF token to the X-XSRF-TOKEN header.
         // Read more: https://stormpath.com/blog/angular-xsrf
         res.cookie('XSRF-TOKEN', xsrf, {
-          maxAge: 20 * 365 * 24 * 60 * 60 * 1000, // 20 year expiry
+          maxAge: Number(process.env.XSRF_EXPIRY),
         });
         const token = setJwtCookie({
             res,
@@ -615,7 +607,7 @@ function setJwtCookie({res, userId, username, isAdmin, xsrf, sessionId}) {
   // Set the cookie
   res.cookie('JWT', jwtString, {
       httpOnly: true,
-      maxAge: process.env.JWT_EXPIRY,
+      maxAge: Number(process.env.JWT_EXPIRY),
     });
   return {jwtString, jwtObj};
 }
