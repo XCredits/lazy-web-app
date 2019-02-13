@@ -49,7 +49,10 @@
             {{successMessage}}
           </span>
           <span *ngFor="let user_name of usernames" class="displayUsers">
-            <img mat-card-sm-image class="userImage" [src]="users[user_name.refId]" alt='Profile Image'>
+            <img mat-card-sm-image *ngIf="users[user_name.refId]" class="userImage" [src]="users[user_name.refId]"
+              alt='Profile Image'>
+            <img mat-card-sm-image *ngIf="!users[user_name.refId]" class="userImage"
+              src='assets/img/default-profile-photo.png' alt='Profile Image'>
             <span class="username">{{user_name.username}}</span>
             <label (click)="userDialog(user_name.refId, deleteUser)">
               <mat-icon class="removeIcon" matSuffix>block</mat-icon>
