@@ -3,7 +3,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { UserService, User } from '../user.service';
-import { FormGroup, FormControl, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-connections',
@@ -11,9 +10,7 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
   styleUrls: ['./connections.component.scss']
 })
 export class ConnectionComponent implements OnInit {
-  form: FormGroup;
   user: User;
-  link: string;
   pendingConnectionsCounter: string;
   confirmedConnectionsCounter: string;
   ConfirmedConnectionsCounter: string;
@@ -25,24 +22,13 @@ export class ConnectionComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.form = new FormGroup({
-      username: new FormControl(''),
-      givenName: new FormControl(''),
-      familyName: new FormControl(''),
-      email: new FormControl(''),
-    });
-
-    this.userService.userObservable
-        .subscribe(user => {
-          this.user = user;
-        });
 
     this.navLinks.push('./view');
     this.navLinks.push('./request');
     this.navLinks.push('./sent');
     this.navLinks.push('./add');
 
-    this.pages.push('View');
+    this.pages.push('view');
     this.pages.push('request');
     this.pages.push('sent');
     this.pages.push('add');

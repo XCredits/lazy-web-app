@@ -162,11 +162,6 @@ import { ViewConnectionsComponent } from './view-connections/view-connections.co
         data: { title: 'Feed' },
       },
       {
-        path: 'contacts',
-        component: ContactsComponent,
-        data: { title: 'Contacts' },
-      },
-      {
         path: 'help',
         component: HelpComponent,
         data: { title: 'Help' },
