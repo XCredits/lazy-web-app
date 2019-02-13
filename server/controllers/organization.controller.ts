@@ -253,8 +253,9 @@ function updateDetails(req, res) {
               res.status(500).send({
                 message: 'Error in saving organization details'
               });
+            });
         }
-      });
+    });
 }
 
 function imageUpload(req, res) {
@@ -373,34 +374,23 @@ function getUsers(req, res) {
                           })
                           .catch(() => {
                             return res.status(500).send({
-                              message: 'Error in finding userIds'
+                              message: 'Error in accessing user organization'
                             });
                           });
-                        });
-                    })
-                    .catch(() => {
-                      return res.status(500).send({
-                        message: 'Error in finding users'
-                      });
+                  })
+                  .catch(() => {
+                    return res.status(500).send({
+                      message: 'Unauthorized access'
                     });
-                })
-                .catch(() => {
-                  return res.status(500).send({
-                    message: 'Error in finding userIds'
                   });
-                });
             })
             .catch(() => {
-              return res.status(500).send({ message: 'Unauthorized access' });
+              return res.status(500).send({ message: 'Organization not found' });
             });
-        })
-        .catch(() => {
-          return res.status(500).send({ message: 'Organization not found' });
-        });
-    })
-    .catch(() => {
-      return res.status(500).send({ message: 'Organization username is invalid' });
-    });
+      })
+      .catch(() => {
+        return res.status(500).send({ message: 'Organization username is invalid' });
+      });
 }
 
 function addUser(req, res) {
