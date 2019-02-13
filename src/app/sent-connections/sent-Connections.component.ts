@@ -2,7 +2,6 @@ import {MatTableDataSource} from '@angular/material';
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { UserService, User } from '../user.service';
-import { FormGroup, FormControl } from '@angular/forms';
 
 
 export interface ConnectionRequestElements {
@@ -16,7 +15,6 @@ export interface ConnectionRequestElements {
   styleUrls: ['./sent-connections.component.scss']
 })
 export class SentConnectionComponent implements OnInit {
-  form: FormGroup;
   user: User;
   receiverUserId: string;
   link: string;
@@ -27,21 +25,11 @@ export class SentConnectionComponent implements OnInit {
   constructor(private http: HttpClient, private userService: UserService) { }
 
   ngOnInit() {
-    this.form = new FormGroup({
-      username: new FormControl(''),
-      givenName: new FormControl(''),
-      familyName: new FormControl(''),
-      email: new FormControl(''),
-    });
-
     this.userService.userObservable
       .subscribe(user => {
         this.user = user;
       });
     this.loadSentRequests();
-  }
-  onSelect(friends) {
-    console.log('you clicked on ' + friends);
   }
 
   loadSentRequests = function () {

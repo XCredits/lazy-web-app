@@ -39,7 +39,7 @@ function addRequest(req, res) {
   // Check if the user exist
   return Username.findOne({username})
       .then((resultUser) => {
-        return User.findOne({ _id: resultUser.refId })
+        return User.findOne({ $and: [{ _id: resultUser.refId }, {_id: {$ne: userId} } ]})
             .then((receivingUser) => {
               return connection.findOne({
                     $or:

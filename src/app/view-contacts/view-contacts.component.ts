@@ -27,7 +27,7 @@ export class ViewContactsComponent implements OnInit {
   user: User;
   contactEditId: string;
   private allContacts = [];
-  displayedColumns: string[] = ['select', 'Favorite', 'Given Name', 'Family Name', 'Email', 'Action'];
+  displayedColumns: string[] = ['select', 'Given Name', 'Family Name', 'Email', 'Action'];
   selection = new SelectionModel<ContactElements>(true, []);
   dataSource = new MatTableDataSource<ContactElements>(this.allContacts);
 
