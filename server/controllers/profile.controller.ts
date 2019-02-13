@@ -44,43 +44,49 @@ function saveDetails(req, res) {
         user.email = email;
         user.givenName = givenName;
         user.familyName = familyName;
-        let saveCurrentUsername = false, saveRequestedUsername = false,
+        let saveUser = false, saveCurrentUsername = false, saveRequestedUsername = false,
             saveNewUsername = false;
         let newUsername;
-        if (requestedUsername.username !== currentUsername.username) {
-          if (requestedUsername) {
+
+        if (requestedUsername) {
+          if (requestedUsername.username !== currentUsername.username) {
             if (requestedUsername.refId !== userId) {
               return res.status(401).send({message: 'Username belongs to another user'});
             } else {
-              if (requestedUsername.username === username) {
-                if (requestedUsername.displayUsername !== displayUsername) {
-                  requestedUsername.displayUsername = displayUsername;
+                if (requestedUsername.username === username) {
+                  if (requestedUsername.displayUsername !== displayUsername) {
+                    requestedUsername.displayUsername = displayUsername;
 
-                  saveRequestedUsername = true;
-                } else {
-                  currentUsername.current = false;
+                    saveRequestedUsername = true;
+                  } else {
+                    currentUsername.current = false;
 
-                  requestedUsername.current = true;
-                  saveCurrentUsername = true;
-                  saveRequestedUsername = true;
+                    requestedUsername.current = true;
+                    saveCurrentUsername = true;
+                    saveRequestedUsername = true;
+                  }
                 }
               }
-            }
           } else {
-            newUsername = new Username();
-            newUsername.displayUsername = displayUsername;
-            newUsername.username = username;
-            newUsername.current = true;
-            newUsername.refId = userId;
-            newUsername.type = 'user';
-
-            currentUsername.current = false;
-
-            saveNewUsername = true;
-            saveCurrentUsername = true;
+            saveUser = true;
           }
+        } else {
+          newUsername = new Username();
+          newUsername.displayUsername = displayUsername;
+          newUsername.username = username;
+          newUsername.current = true;
+          newUsername.refId = userId;
+          newUsername.type = 'user';
+
+          currentUsername.current = false;
+
+          saveNewUsername = true;
+          saveCurrentUsername = true;
         }
-        const promises2 = [user.save()];
+        const promises2 = [];
+        if (saveUser) {
+          promises2.push(user.save());
+        }
         if (saveCurrentUsername) {
           promises2.push(currentUsername.save());
         }
@@ -100,7 +106,6 @@ function saveDetails(req, res) {
             });
       });
 }
-
 
 /**
  * Upload Profile Image

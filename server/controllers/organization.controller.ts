@@ -129,7 +129,7 @@ function userOrgSummary(req, res) {
               .then((orgUsername) => {
                   return Organization.find({ '_id': { '$in': orgIds}})
                     .then((orgDetails) => {
-                        return res.json({orgDetails, userOrg, orgUsername});
+                        return res.send({orgDetails, userOrg, orgUsername});
                     })
                     .catch(() => {
                       return res.status(500).send({
@@ -168,77 +168,84 @@ function updateDetails(req, res) {
         Organization.findOne({_id: orgId}),
         Username.findOne({username: username}),
         Username.findOne({refId: orgId, current: true})];
-
   Promise.all(promises)
       .then(([isAdmin, organization, requestedUsername, currentUsername]) => {
         if (isAdmin) {
+          console.log('Inside');
           organization.name = name;
           organization.website = website;
           organization.phoneNumber = phoneNumber;
 
-          let saveCurrentUsername = false, saveRequestedUsername = false,
+          let saveOrganization = true, saveCurrentUsername = false, saveRequestedUsername = false,
             saveNewUsername = false;
           let newUsername;
 
-          if (requestedUsername.username !== currentUsername.username) {
-            if (requestedUsername) {
+          if (requestedUsername) {
+            if (requestedUsername.username !== currentUsername.username) {
               if (requestedUsername.refId !== orgId) {
                 return res.status(401).send({
                   message: 'Username belongs to another organization'
                 });
               } else {
-                if (requestedUsername.username === username) {
-                  if (requestedUsername.displayUsername !== displayUsername) {
-                    requestedUsername.displayUsername = displayUsername;
+                  if (requestedUsername.username === username) {
+                    if (requestedUsername.displayUsername !== displayUsername) {
+                      requestedUsername.displayUsername = displayUsername;
 
-                    saveRequestedUsername = true;
-                  } else {
-                    currentUsername.current = false;
+                      saveRequestedUsername = true;
+                    } else {
+                      currentUsername.current = false;
 
-                    requestedUsername.current = true;
-                    saveCurrentUsername = true;
-                    saveRequestedUsername = true;
+                      requestedUsername.current = true;
+                      saveCurrentUsername = true;
+                      saveRequestedUsername = true;
+                    }
                   }
                 }
-              }
-            } else {
-              newUsername = new Username();
-              newUsername.displayUsername = displayUsername;
-              newUsername.username = username;
-              newUsername.current = true;
-              newUsername.refId = orgId;
-              newUsername.type = 'organization';
-
-              currentUsername.current = false;
-
-              saveNewUsername = true;
-              saveCurrentUsername = true;
-            }
-          }
-          const promises2 = [organization.save()];
-          if (saveCurrentUsername) {
-            promises2.push(currentUsername.save());
-          }
-          if (saveRequestedUsername) {
-            promises2.push(requestedUsername.save());
-          }
-          if (saveNewUsername) {
-            promises2.push(newUsername.save());
+          } else {
+            saveOrganization = true;
           }
 
-          return Promise.all(promises2)
-              .then(() => {
-                res.send({message: 'Details changed successfully'});
-              })
-              .catch(() => {
-                res.status(500).send({
-                  message: 'Error in saving organization details'
-                });
+        } else {
+          newUsername = new Username();
+          newUsername.displayUsername = displayUsername;
+          newUsername.username = username;
+          newUsername.current = true;
+          newUsername.refId = orgId;
+          newUsername.type = 'organization';
+
+          currentUsername.current = false;
+
+          saveNewUsername = true;
+          saveCurrentUsername = true;
+        }
+
+        const promises2 = [];
+        if (saveOrganization) {
+          promises2.push(organization.save());
+        }
+        if (saveCurrentUsername) {
+          promises2.push(currentUsername.save());
+        }
+        if (saveRequestedUsername) {
+          promises2.push(requestedUsername.save());
+        }
+        if (saveNewUsername) {
+          promises2.push(newUsername.save());
+        }
+
+        return Promise.all(promises2)
+            .then(() => {
+              res.send({message: 'Details changed successfully'});
+            })
+            .catch(() => {
+              res.status(500).send({
+                message: 'Error in saving organization details'
               });
-            } else {
-              res.status(401).send({message: 'Unauthorized access'});
-            }
-        });
+            });
+          } else {
+            res.status(401).send({message: 'Unauthorized access'});
+          }
+      });
 }
 
 function imageUpload(req, res) {
@@ -297,7 +304,7 @@ function getDetails(req, res) {
             .then(() => {
                 return Organization.findOne({_id: response.refId})
                     .then((orgDetail) => {
-                      return res.json({orgDetail, response});
+                      return res.send({orgDetail, response});
                     })
                     .catch(() => {
                       return res.status(500).send({
@@ -320,56 +327,56 @@ function getUsers(req, res) {
   const userId = req.userId;
   const displayUsername = req.body.username;
   if (typeof userId !== 'string' ||
-      typeof displayUsername !== 'string' ||
-      !isValidDisplayUsername(displayUsername)) {
-    return res.status(500).send({message: 'Request validation failed'});
-    }
-  return Username.findOne({'displayUsername': displayUsername})
-      .then((response) => {
-          return Organization.findOne({'_id': response.refId})
-            .then((organization) => {
-                return isOrgAdmin(userId, organization._id)
-                  .then(() => {
-                    return UserOrganization
-                      .find({'orgId': organization._id})
-                          .then((userOrgArr) => {
-                              const userIds =
-                                    userOrgArr.map(orgEle => orgEle.userId);
-                              return User.find({'_id': userIds})
-                                    .then((users) => {
-                                      return Username.find({'refId': userIds, 'current': true})
-                                          .then((usernames) => {
-                                              return res.json({users, usernames});
-                                          })
-                                          .catch(() => {
-                                            return res.status(500).send({
-                                              message: 'Error in accessing username database'
-                                            });
-                                          });
-                                    })
-                                    .catch(() => {
-                                      return res.status(500).send({
-                                        message: 'Error in finding users'
-                                      });
-                                    });
-                          })
-                          .catch(() => {
-                            return res.status(500).send({
-                              message: 'Error in finding userIds'
-                            });
+    typeof displayUsername !== 'string' ||
+    !isValidDisplayUsername(displayUsername)) {
+    return res.status(500).send({ message: 'Request validation failed' });
+  }
+  return Username.findOne({ 'displayUsername': displayUsername })
+    .then((response) => {
+      return Organization.findOne({ '_id': response.refId })
+        .then((organization) => {
+          return isOrgAdmin(userId, organization._id)
+            .then(() => {
+              return UserOrganization
+                .find({ 'orgId': organization._id })
+                .then((userOrgArr) => {
+                  const userIds =
+                    userOrgArr.map(orgEle => orgEle.userId);
+                  return User.find({ '_id': userIds })
+                    .then((users) => {
+                      return Username.find({ 'refId': userIds, 'current': true })
+                        .then((usernames) => {
+                          return res.json({ users, usernames });
+                        })
+                        .catch(() => {
+                          return res.status(500).send({
+                            message: 'Error in accessing username database'
                           });
-                  })
-                  .catch(() => {
-                    return res.status(500).send({message: 'Unauthorized access'});
+                        });
+                    })
+                    .catch(() => {
+                      return res.status(500).send({
+                        message: 'Error in finding users'
+                      });
+                    });
+                })
+                .catch(() => {
+                  return res.status(500).send({
+                    message: 'Error in finding userIds'
                   });
+                });
             })
             .catch(() => {
-              return res.status(500).send({message: 'Organization not found'});
+              return res.status(500).send({ message: 'Unauthorized access' });
             });
-      })
-      .catch(() => {
-        return res.status(500).send({message: 'Organization username is invalid'});
-      });
+        })
+        .catch(() => {
+          return res.status(500).send({ message: 'Organization not found' });
+        });
+    })
+    .catch(() => {
+      return res.status(500).send({ message: 'Organization username is invalid' });
+    });
 }
 
 function addUser(req, res) {
