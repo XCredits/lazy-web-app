@@ -7,8 +7,8 @@ module.exports = function(app) {
   app.post('/api/contacts/remove', auth.jwt, removeContact);
   app.post('/api/contacts/update', auth.jwt, updateContact);
   app.post('/api/contacts/view', auth.jwt, viewContacts);
-  app.post('/api/contacts/fav', auth.jwt, viewFavourites);
-  app.post('/api/contacts/add-remove-fav', auth.jwt, addRemoveFavourites);
+  app.post('/api/contacts/fav', auth.jwt, viewFavorites);
+  app.post('/api/contacts/add-remove-fav', auth.jwt, addRemoveFavorites);
 };
 
 
@@ -35,7 +35,7 @@ function addContact(req, res) {
     email,
     givenName,
     familyName,
-    isFavourite: false,
+    isFavorite: false,
   });
   return contact.save()
       .then((result) => {
@@ -130,7 +130,7 @@ function viewContacts(req, res) {
             familyName: x.familyName,
             email: x.email,
             contactUserId: x._id,
-            isFavourite: x.isFavourite,
+            isFavorite: x.isFavorite,
           };
         });
         return res.send(filteredResult);
@@ -148,9 +148,9 @@ function viewContacts(req, res) {
  * @param {*} res response object
  * @returns {*}
  */
-function viewFavourites(req, res) {
+function viewFavorites(req, res) {
   const userId = req.userId;
-  Contact.find({ userId, isFavourite: true })
+  Contact.find({ userId, isFavorite: true })
       .then((result) => {
         const filteredResult = result.map((x) => {
           return {
@@ -167,12 +167,12 @@ function viewFavourites(req, res) {
 }
 
 
-/** add to favourite list
+/** add to favorite list
  * @param {*} req request object
  * @param {*} res response object
  * @returns {*}
  */
-function addRemoveFavourites(req, res) {
+function addRemoveFavorites(req, res) {
   const userId = req.userId;
   const contactId = req.body.contactUserId;
   const action = req.body.action;
@@ -188,7 +188,7 @@ function addRemoveFavourites(req, res) {
     {
       $set:
       {
-        isFavourite: (action === 'add') ? true : false ,
+        isFavorite: (action === 'add') ? true : false ,
       }
     })
     .then(() => {

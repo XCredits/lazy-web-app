@@ -6,7 +6,7 @@ import { UserService, User } from '../user.service';
 import { HttpClient } from '@angular/common/http';
 
 export interface ContactElements {
-  isFavourite: Boolean;
+  isFavorite: Boolean;
   isEditMode: Boolean;
   position: number;
   givenName: string;
@@ -27,7 +27,7 @@ export class ViewContactsComponent implements OnInit {
   user: User;
   contactEditId: string;
   private allContacts = [];
-  displayedColumns: string[] = ['select', 'Favourite', 'Given Name', 'Family Name', 'Email', 'Action'];
+  displayedColumns: string[] = ['select', 'Favorite', 'Given Name', 'Family Name', 'Email', 'Action'];
   selection = new SelectionModel<ContactElements>(true, []);
   dataSource = new MatTableDataSource<ContactElements>(this.allContacts);
 
