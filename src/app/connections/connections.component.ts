@@ -36,12 +36,6 @@ export class ConnectionComponent implements OnInit {
     this.loadPageCounters();
   }
 
-
-  onSelect(friends) {
-    console.log('you clicked on ' + friends);
-  }
-
-
   loadPageCounters = function () {
     this.http.post('/api/connection/get-pending-request-count', {})
         .subscribe((returnedResult: any) => {

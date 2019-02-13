@@ -2,7 +2,6 @@ import {MatTableDataSource} from '@angular/material';
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { UserService, User } from '../user.service';
-import { FormGroup, FormControl } from '@angular/forms';
 
 
 export interface ConnectionRequestElements {
@@ -16,7 +15,6 @@ export interface ConnectionRequestElements {
   styleUrls: ['./view-connections.component.scss']
 })
 export class ViewConnectionsComponent implements OnInit {
-  form: FormGroup;
   user: User;
   receiverUserId: string;
   link: string;
@@ -27,13 +25,6 @@ export class ViewConnectionsComponent implements OnInit {
   constructor(private http: HttpClient, private userService: UserService) { }
 
   ngOnInit() {
-    this.form = new FormGroup({
-      username: new FormControl(''),
-      givenName: new FormControl(''),
-      familyName: new FormControl(''),
-      email: new FormControl(''),
-    });
-
     this.userService.userObservable
       .subscribe(user => {
         this.user = user;
@@ -69,7 +60,7 @@ export class ViewConnectionsComponent implements OnInit {
       'userId': this.user.id,
       'senderUserId': friend.userId,
     })
-      .subscribe((data) => {
+      .subscribe(() => {
         this.loadConfirmedRequests();
       });
   };

@@ -21,9 +21,6 @@ export class AddConnectionComponent implements OnInit {
   ngOnInit() {
     this.form = new FormGroup({
       username: new FormControl(''),
-      givenName: new FormControl(''),
-      familyName: new FormControl(''),
-      email: new FormControl(''),
     });
 
     this.userService.userObservable
@@ -32,17 +29,11 @@ export class AddConnectionComponent implements OnInit {
       });
 
   }
-  onSelect(friends) {
-    console.log('you clicked on ' + friends);
-  }
 
   resetForm = function() {
     this.requestFromMessage = undefined;
     this.form = new FormGroup({
       username: new FormControl(''),
-      givenName: new FormControl(''),
-      familyName: new FormControl(''),
-      email: new FormControl(''),
     });
 
 
