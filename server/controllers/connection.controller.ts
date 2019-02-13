@@ -1,4 +1,6 @@
 import { isValidDisplayUsername, normalizeUsername } from './utils.controller';
+import { Connection } from 'mongoose';
+import { RSA_NO_PADDING } from 'constants';
 const connectionRequest = require('../models/connection-request.model');
 const connection = require('../models/connection.model');
 const User = require('../models/user.model');
@@ -39,48 +41,66 @@ function addRequest(req, res) {
       .then((resultUser) => {
         return User.findOne({ _id: resultUser.refId })
             .then((receivingUser) => {
-              // Check if they have connection
-              return connectionRequest.findOne({
-                    senderUserId: userId,
-                    receiverUserId: receivingUser._id,
-                    active: { $eq: true },
-                  })
-                  .then((resultConnection) => {
-                    if (resultConnection === null) {
-                      // Making new connection
-                      const connectionReq = new connectionRequest();
-                      connectionReq.senderUserId = userId;
-                      connectionReq.receiverUserId = receivingUser._id;
-                      connectionReq.permissions = { category: 'default' };
-                      connectionReq.active = true;
-                      connectionReq.snoozed = false;
-                      connectionReq.timeout = Number( process.env.CONNECTION_TIMEOUT);
-                      connectionReq.sendTimestamp = new Date().getTime();
-                      connectionReq.updateTimestamp = new Date().getTime();
-                      return connectionReq.save()
-                          .then(() => {
-                            return res.send({ message: 'Success' });
-                          })
-                          .catch((error) => {
-                            console.log(error);
-                            return res.status(500)
-                              .json({ message: 'Could not save connection request.' });
-                          });
-                    } else {
-                      return res.send({ message: 'Pending' });
-                    }
-                  })
-                  .catch(() => {
-                    return res.status(500)
-                        .send('Problem finding connection requests.');
-                  });
-            })
-        .catch((err) => {
-          return res.send({ message: 'User not found' });
-      });
-    }).catch((err) => {
-        return res.send({ message: 'User not found' });
-      });
+              return connection.findOne({
+                    $or:
+                      [
+                         { userId: userId, connectionId: receivingUser._id, status: 'connected' },
+                         { connectionId: userId, userId: receivingUser._id, status: 'connected' },
+                      ]
+              })
+              .then((result) => {
+                if ( result === null ) {
+                  return connectionRequest.findOne({
+                        senderUserId: userId,
+                        receiverUserId: receivingUser._id,
+                        active: { $eq: true },
+                      })
+                      .then((resultConnection) => {
+                        if (resultConnection === null) {
+                            // Making new connection
+                            const connectionReq = new connectionRequest();
+                            connectionReq.senderUserId = userId;
+                            connectionReq.receiverUserId = receivingUser._id;
+                            connectionReq.permissions = { category: 'default' };
+                            connectionReq.active = true;
+                            connectionReq.snoozed = false;
+                            connectionReq.timeout = Number( process.env.CONNECTION_TIMEOUT);
+                            connectionReq.sendTimestamp = new Date().getTime();
+                            connectionReq.updateTimestamp = new Date().getTime();
+                            return connectionReq.save()
+                              .then(() => {
+                                return res.send({ message: 'Success' });
+                              })
+                              .catch((error) => {
+                                console.log(error);
+                                return res.status(500)
+                                  .json({ message: 'Could not save connection request.' });
+                              });
+                          } else {
+                            return res.send({ message: 'Pending' });
+                          }
+                      })
+                      .catch(() => {
+                        return res.status(500)
+                            .send('Problem finding connection requests.');
+                      });
+                  } else {
+                      return res.send({ message: 'Connected' });
+                  }
+              })
+              .catch(() => {
+                return res.status(500)
+                    .send('Problem finding connection requests.');
+                });
+              }).catch(() => {
+                return res.status(500)
+                    .send('Problem finding connection requests.');
+                });
+        })
+        .catch(() => {
+          return res.status(500)
+              .send('Problem finding connection requests.');
+          });
 
 }
 

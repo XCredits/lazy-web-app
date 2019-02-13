@@ -305,7 +305,6 @@ import { ViewConnectionsComponent } from './view-connections/view-connections.co
           {
             path: 'view',
             component: ViewConnectionsComponent,
-            canActivate: [AuthGuard],
           },
           {
             path: 'add',
