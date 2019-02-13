@@ -1,7 +1,6 @@
 import {SelectionModel} from '@angular/cdk/collections';
 import {MatTableDataSource} from '@angular/material';
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { UserService, User } from '../user.service';
 import { HttpClient } from '@angular/common/http';
 
@@ -18,7 +17,6 @@ export interface ContactElements {
   styleUrls: ['./view-fav-contacts.component.scss']
 })
 export class ViewFavContactsComponent implements OnInit {
-  form: FormGroup;
   disableButton = true;
   submitSuccess = false;
   formErrorMessage: string;
@@ -35,12 +33,6 @@ export class ViewFavContactsComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.form = new FormGroup({
-      givenName: new FormControl(''),
-      familyName: new FormControl(''),
-      email: new FormControl('', [Validators.required, Validators.email]),
-    });
-
     this.http.post('/api/contacts/fav', { })
       .subscribe ((data: any) => {
            this.allContacts = data;

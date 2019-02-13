@@ -1,9 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { MatSnackBar } from '@angular/material';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { UserService } from '../user.service';
-import { AnalyticsService } from '../analytics.service';
 
 @Component({
   selector: 'app-add-contact',
@@ -19,8 +17,6 @@ export class AddContactsComponent implements OnInit {
   constructor(
     private http: HttpClient,
     private userService: UserService,
-    private snackBar: MatSnackBar,
-    private analytics: AnalyticsService
   ) { }
 
   ngOnInit() {

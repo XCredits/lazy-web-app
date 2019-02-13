@@ -37,16 +37,6 @@ export class ViewContactsComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.form = new FormGroup({
-      givenName: new FormControl(''),
-      familyName: new FormControl(''),
-      email: new FormControl('', [Validators.required, Validators.email]),
-    });
-
-    this.userService.userObservable
-      .subscribe(user => {
-        this.user = user;
-      });
     this.loadContacts();
   }
 
