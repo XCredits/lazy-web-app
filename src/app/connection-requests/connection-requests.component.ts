@@ -1,6 +1,3 @@
-// Use card
-// Position:fixed, to the right below the menu bar
-import {SelectionModel} from '@angular/cdk/collections';
 import {MatTableDataSource} from '@angular/material';
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';

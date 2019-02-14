@@ -1,8 +1,6 @@
 import { isValidDisplayUsername, normalizeUsername } from './utils.controller';
-import { Connection } from 'mongoose';
-import { RSA_NO_PADDING } from 'constants';
-const connectionRequest = require('../models/connection-request.model');
-const connection = require('../models/connection.model');
+const ConnectionRequest = require('../models/connection-request.model');
+const Connection = require('../models/connection.model');
 const User = require('../models/user.model');
 const Username = require('../models/username.model');
 const auth = require('./jwt-auth.controller');
@@ -42,7 +40,7 @@ function addRequest(req, res) {
         if (userId === receivingUserId) {
           res.status(500).send('Cannot add yourself as a connection.');
         }
-        return connection.findOne({
+        return Connection.findOne({
               userId: userId,
               connectionId: receivingUserId,
               status: 'connected'
@@ -51,7 +49,7 @@ function addRequest(req, res) {
               if ( resultConnection !== null ) {
                 return res.status(500).send({message: 'Already connected'});
               }
-              return connectionRequest.findOne({
+              return ConnectionRequest.findOne({
                     senderUserId: userId,
                     receiverUserId: receivingUserId,
                     active: { $eq: true },
@@ -61,7 +59,7 @@ function addRequest(req, res) {
                       return res.status(500).send({message: 'Already connected'});
                     }
                     // Making new connection
-                    const connectionReq = new connectionRequest();
+                    const connectionReq = new ConnectionRequest();
                     connectionReq.senderUserId = userId;
                     connectionReq.receiverUserId = receivingUserId;
                     connectionReq.permissions = ['default'];
@@ -101,7 +99,7 @@ function addRequest(req, res) {
 function getPendingRequests(req, res) {
   // Check pending for snooze
   function checkExpiredRequests() {
-    return connectionRequest.updateMany({
+    return ConnectionRequest.updateMany({
       receiverUserId: req.userId,
       active: { $eq: true },
       timeout: { $lt: Date.now() },
@@ -116,7 +114,7 @@ function getPendingRequests(req, res) {
   }
 
   function findPendingConnections() {
-    return connectionRequest.find({
+    return ConnectionRequest.find({
           receiverUserId: req.userId,
           active: { $eq: true },
           snoozed: { $eq: false },
@@ -156,7 +154,7 @@ function getPendingRequests(req, res) {
  * @return {*}
  */
 function getConnections(req, res) {
-  return connection.find(
+  return Connection.find(
       {
         userId: req.userId,
         status: { $eq: 'connected' },
@@ -218,7 +216,7 @@ function actionConnectionRequest(req, res) {
   }
 
   function acceptConnectionRequest() {
-      return connectionRequest.findOneAndUpdate({
+      return ConnectionRequest.findOneAndUpdate({
             senderUserId: senderUserId,
             receiverUserId: userId,
             active: { $eq: true }
@@ -232,7 +230,7 @@ function actionConnectionRequest(req, res) {
             }
           })
           .then((result) => {
-            const _connection1 = new connection();
+            const _connection1 = new Connection();
             _connection1.userId = userId;
             _connection1.connectionId = senderUserId;
             _connection1.status = 'connected';
@@ -240,7 +238,7 @@ function actionConnectionRequest(req, res) {
             _connection1.connectionRequestRef = result._id;
             return _connection1.save()
                 .then(() => {
-                  const _connection2 = new connection();
+                  const _connection2 = new Connection();
                   _connection2.connectionId = userId;
                   _connection2.userId = senderUserId;
                   _connection2.status = 'connected';
@@ -265,7 +263,7 @@ function actionConnectionRequest(req, res) {
   }
 
   function cancelConnectionRequest() { // res, userId, senderUserId
-    return connectionRequest.findOneAndUpdate({
+    return ConnectionRequest.findOneAndUpdate({
           receiverUserId: senderUserId,
           senderUserId: userId,
           active: { $eq: true }
@@ -288,7 +286,7 @@ function actionConnectionRequest(req, res) {
   }
 
   function rejectConnectionRequest() {
-    return connectionRequest.findOneAndUpdate({
+    return ConnectionRequest.findOneAndUpdate({
           senderUserId: senderUserId,
           receiverUserId: userId,
           active: { $eq: true }
@@ -322,9 +320,9 @@ function actionConnectionRequest(req, res) {
 function getPendingRequestCount(req, res) {
   // Save the login userId
   const userId = req.userId;
-  return connectionRequest.count({
+  return ConnectionRequest.count({
         receiverUserId: userId,
-        active: { $eq: true }
+        active: { $eq: true },
       })
       .then((result) => {
         res.send({ message: result });
@@ -343,8 +341,9 @@ function getPendingRequestCount(req, res) {
 function getConnectionCount(req, res) {
   // Save the login userId
   const userId = req.userId;
-  return connection.count({
+  return Connection.count({
         userId: req.userId,
+        status: 'connected',
       })
       .then((result) => {
         res.send({ message: result });
@@ -361,7 +360,7 @@ function getConnectionCount(req, res) {
  * @return {*}
  */
 function getSentRequests(req, res) {
-  return connectionRequest.find({
+  return ConnectionRequest.find({
         senderUserId: req.userId,
         active: { $eq: true },
       })
@@ -398,7 +397,7 @@ function getSentRequests(req, res) {
 function removeConnection(req, res) {
   // Save the login userId
   const userId = req.userId;
-  return connection.findOneAndUpdate({
+  return Connection.findOneAndUpdate({
         connectionId: req.userId,
         userId: req.body.senderUserId,
       },
@@ -406,7 +405,7 @@ function removeConnection(req, res) {
         status: 'disconnected',
       })
       .then((result) => {
-        return connection.findOneAndUpdate({
+        return Connection.findOneAndUpdate({
               connectionId: req.body.senderUserId,
               userId: req.userId,
             },
@@ -414,7 +413,7 @@ function removeConnection(req, res) {
               status: 'disconnected',
             })
             .then((returnedRes) => {
-              deleteConnectedConnection(result.connectionRequestRef);
+              return res.send({ message: 'Connection removed' });
             })
             .catch(() => {
               res.status(500)
@@ -425,25 +424,4 @@ function removeConnection(req, res) {
         res.status(500)
           .send({ message: 'Could not remove connection.' });
       });
-
-  function deleteConnectedConnection(connectionReqId) {
-    return connectionRequest.findOneAndUpdate({
-          _id: connectionReqId,
-        },
-        {
-          $set:
-          {
-            active: false,
-            currentStatus: 'disconnected',
-            updateTimestamp: Date.now(),
-          }
-        })
-        .then(() => {
-          return res.send({ message: 'Request rejected' });
-        })
-        .catch(() => {
-          res.status(500)
-              .send({ message: 'Could not reject connection request.' });
-        });
-  }
 }
