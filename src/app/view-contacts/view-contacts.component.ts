@@ -99,9 +99,13 @@ export class ViewContactsComponent implements OnInit {
     })
       .subscribe((result) => {
         if (result.message === 'Contact modified' ) {
-            this.loadContacts();
-        }
-      });
+           for ( let i = 0 ; i <= this.allContacts.length - 1; i++) {
+            if ( this.allContacts[i].contactUserId === contact.contactUserId) {
+                  this.allContacts[i].isFavorite = false;
+              }
+            }
+          }
+        });
   };
 
   addContactFav = function (contact) {
@@ -111,9 +115,13 @@ export class ViewContactsComponent implements OnInit {
     })
       .subscribe((result) => {
         if (result.message === 'Contact modified' ) {
-            this.loadContacts();
-        }
-      });
+           for ( let i = 0 ; i <= this.allContacts.length - 1; i++) {
+            if ( this.allContacts[i].contactUserId === contact.contactUserId) {
+                  this.allContacts[i].isFavorite = true;
+              }
+            }
+          }
+        });
   };
 
 
