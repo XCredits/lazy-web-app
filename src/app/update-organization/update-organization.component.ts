@@ -173,6 +173,8 @@ export class UpdateOrganizationComponent implements OnInit, OnDestroy {
     this.http.post('/api/organization/remove-user', {
       'userId': this.userToBeDeleted,
       'orgId': this.organization._id,
+      'orgUsername': this.orgUsername['username'],
+      'orgName': this.organization.name,
     })
     .subscribe(() => {
       const userIndex = this.usernames.findIndex((user) => user['refId'] === this.userToBeDeleted);
