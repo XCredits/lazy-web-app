@@ -53,10 +53,10 @@ export class ViewConnectionsComponent implements OnInit {
       });
   };
 
-  deleteConnection = function (friend) {
+  deleteConnection = function (connection) {
     this.http.post('/api/connection/remove-connection', {
       'userId': this.user.id,
-      'senderUserId': friend.userId,
+      'senderUserId': connection.userId,
     })
       .subscribe(() => {
         this.loadConfirmedRequests();

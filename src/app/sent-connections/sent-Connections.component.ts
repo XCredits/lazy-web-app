@@ -51,10 +51,10 @@ export class SentConnectionComponent implements OnInit {
       });
   };
 
-  deleteConnection = function (friend) {
+  deleteConnection = function (connectionRequest) {
     this.http.post('/api/connection/action-request', {
       'userId': this.user.id,
-      'senderUserId': friend.userId,
+      'senderUserId': connectionRequest.userId,
       'action': 'cancel',
     })
       .subscribe((result) => {
