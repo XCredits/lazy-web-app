@@ -24,12 +24,12 @@ function saveDetails(req, res) {
   const familyName = req.body.familyName;
   const displayUsername = req.body.username;
   if (typeof email !== 'string' ||
-    typeof userId !== 'string' ||
-    typeof givenName !== 'string' ||
-    typeof familyName !== 'string' ||
-    typeof displayUsername !== 'string' ||
-    !isValidDisplayUsername(displayUsername) ||
-    !validator.isEmail(email)) {
+      typeof userId !== 'string' ||
+      typeof givenName !== 'string' ||
+      typeof familyName !== 'string' ||
+      typeof displayUsername !== 'string' ||
+      !isValidDisplayUsername(displayUsername) ||
+      !validator.isEmail(email)) {
     return res.status(422).json({ message: 'Request failed validation' });
   }
   const username = normalizeUsername(displayUsername);
