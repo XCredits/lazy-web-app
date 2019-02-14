@@ -18,7 +18,6 @@ module.exports = function (app) {
   app.post('/api/connection/remove-connection', auth.jwt, removeConnection);
 };
 
-
 /**
  * join a connection list
  * @param {*} req request object
@@ -28,79 +27,68 @@ module.exports = function (app) {
 function addRequest(req, res) {
   // Save the login userId
   const userId = req.userId;
-  let username = req.body.username;
+  const displayUsername = req.body.username;
   // Validate
-  if (typeof username !== 'string' ||
-    !isValidDisplayUsername(username)
-    ) {
+  if (typeof displayUsername !== 'string' ||
+      !isValidDisplayUsername(displayUsername)
+      ) {
     return res.status(422).json({ message: 'Request failed validation' });
   }
-  username = normalizeUsername(username);
+  const username = normalizeUsername(displayUsername);
   // Check if the user exist
-  return Username.findOne({username})
-      .then((resultUser) => {
-        return User.findOne({ $and: [{ _id: resultUser.refId }, {_id: {$ne: userId} } ]})
-            .then((receivingUser) => {
-              return connection.findOne({
-                    $or:
-                      [
-                         { userId: userId, connectionId: receivingUser._id, status: 'connected' },
-                         { connectionId: userId, userId: receivingUser._id, status: 'connected' },
-                      ]
-              })
-              .then((result) => {
-                if ( result === null ) {
-                  return connectionRequest.findOne({
-                        senderUserId: userId,
-                        receiverUserId: receivingUser._id,
-                        active: { $eq: true },
-                      })
-                      .then((resultConnection) => {
-                        if (resultConnection === null) {
-                            // Making new connection
-                            const connectionReq = new connectionRequest();
-                            connectionReq.senderUserId = userId;
-                            connectionReq.receiverUserId = receivingUser._id;
-                            connectionReq.permissions = { category: 'default' };
-                            connectionReq.active = true;
-                            connectionReq.snoozed = false;
-                            connectionReq.timeout = Number( process.env.CONNECTION_TIMEOUT);
-                            connectionReq.sendTimestamp = new Date().getTime();
-                            connectionReq.updateTimestamp = new Date().getTime();
-                            return connectionReq.save()
-                              .then(() => {
-                                return res.send({ message: 'Success' });
-                              })
-                              .catch((error) => {
-                                return res.status(500)
-                                  .json({ message: 'Could not save connection request.' });
-                              });
-                          } else {
-                            return res.send({ message: 'Pending' });
-                          }
-                      })
-                      .catch(() => {
-                        return res.status(500)
-                            .send('Problem finding connection requests.');
-                      });
-                  } else {
-                      return res.send({ message: 'Connected' });
-                  }
-              })
-              .catch(() => {
-                return res.status(500)
-                    .send('Problem finding connection requests.');
-                });
-              }).catch(() => {
-                return res.status(500)
-                    .send('Problem finding connection requests.');
-                });
+  return Username.findOne({username, type: 'user'})
+      .then((resultUsername) => {
+        const receivingUserId = resultUsername.refId;
+        if (userId === receivingUserId) {
+          res.status(500).send('Cannot add yourself as a connection.');
+        }
+        return connection.findOne({
+              userId: userId,
+              connectionId: receivingUserId,
+              status: 'connected'
+            })
+            .then((resultConnection) => {
+              if ( resultConnection !== null ) {
+                return res.status(500).send({message: 'Already connected'});
+              }
+              return connectionRequest.findOne({
+                    senderUserId: userId,
+                    receiverUserId: receivingUserId,
+                    active: { $eq: true },
+                  })
+                  .then((resultConnectionRequest) => {
+                    if ( resultConnectionRequest !== null ) {
+                      return res.status(500).send({message: 'Already connected'});
+                    }
+                    // Making new connection
+                    const connectionReq = new connectionRequest();
+                    connectionReq.senderUserId = userId;
+                    connectionReq.receiverUserId = receivingUserId;
+                    connectionReq.permissions = ['default'];
+                    connectionReq.active = true;
+                    connectionReq.snoozed = false;
+                    connectionReq.timeout = Number( process.env.CONNECTION_TIMEOUT);
+                    connectionReq.sendTimestamp = Date.now();
+                    connectionReq.updateTimestamp = Date.now();
+                    return connectionReq.save()
+                        .then(() => {
+                          return res.send({ message: 'Success' });
+                        })
+                        .catch((error) => {
+                          return res.status(500)
+                              .json({ message: 'Could not save connection request.' });
+                        });
+                  })
+                  .catch(() => {
+                    return res.status(500)
+                        .send('Problem finding connection requests.');
+                  });
+            });
         })
         .catch(() => {
           return res.status(500)
-              .send('Problem finding connection requests.');
-          });
-
+              .send('Problem finding connections.');
+        });
 }
 
 
@@ -116,7 +104,7 @@ function getPendingRequests(req, res) {
     return connectionRequest.updateMany({
       receiverUserId: req.userId,
       active: { $eq: true },
-      timeout: { $lt: new Date().getTime() },
+      timeout: { $lt: Date.now() },
       },
       {
         active: false,
@@ -240,7 +228,7 @@ function actionConnectionRequest(req, res) {
             {
               active: false,
               currentStatus: 'accepted',
-              updateTimestamp: new Date().getTime(),
+              updateTimestamp: Date.now(),
             }
           })
           .then((result) => {
@@ -248,7 +236,7 @@ function actionConnectionRequest(req, res) {
             _connection1.userId = userId;
             _connection1.connectionId = senderUserId;
             _connection1.status = 'connected';
-            _connection1.permissions = { category: 'default' };
+            _connection1.permissions = ['default'];
             _connection1.connectionRequestRef = result._id;
             return _connection1.save()
                 .then(() => {
@@ -256,7 +244,7 @@ function actionConnectionRequest(req, res) {
                   _connection2.connectionId = userId;
                   _connection2.userId = senderUserId;
                   _connection2.status = 'connected';
-                  _connection2.permissions = { category: 'default' };
+                  _connection2.permissions = ['default'];
                   _connection2.connectionRequestRef = result._id;
                   return _connection2.save()
                       .then(() => {
@@ -287,7 +275,7 @@ function actionConnectionRequest(req, res) {
           {
             active: false,
             currentStatus: 'cancelled',
-            updateTimestamp: new Date().getTime(),
+            updateTimestamp: Date.now(),
           }
         })
         .then(() => {
@@ -310,7 +298,7 @@ function actionConnectionRequest(req, res) {
           {
             active: false,
             currentStatus: 'rejected',
-            updateTimestamp: new Date().getTime(),
+            updateTimestamp: Date.now(),
           }
         })
         .then(() => {
@@ -447,7 +435,7 @@ function removeConnection(req, res) {
           {
             active: false,
             currentStatus: 'disconnected',
-            updateTimestamp: new Date().getTime(),
+            updateTimestamp: Date.now(),
           }
         })
         .then(() => {

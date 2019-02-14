@@ -56,7 +56,7 @@ export class AddConnectionComponent implements OnInit {
           case 'User not found':
             this.requestFromMessage = 'Sorry, this user cannot be found';
             break;
-          case 'Connected':
+          case 'Already connected':
             this.requestFromMessage = 'You are already connected';
             break;
           default:
