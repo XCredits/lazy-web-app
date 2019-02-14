@@ -15,24 +15,16 @@ export class ConnectionComponent implements OnInit {
   confirmedConnectionsCounter: string;
   ConfirmedConnectionsCounter: string;
   navLinks = [];
-  pages = [];
   constructor(
     private http: HttpClient,
     private userService: UserService,
   ) { }
 
   ngOnInit() {
-
     this.navLinks.push('./view');
     this.navLinks.push('./request');
     this.navLinks.push('./sent');
     this.navLinks.push('./add');
-
-    this.pages.push('view');
-    this.pages.push('request');
-    this.pages.push('sent');
-    this.pages.push('add');
-
     this.loadPageCounters();
   }
 
