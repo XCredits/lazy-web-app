@@ -45,7 +45,7 @@ export class ViewContactsComponent implements OnInit {
         .subscribe ((data: any) => {
           this.allContacts = data;
           this.dataSource = new MatTableDataSource<ContactElements>(this.allContacts);
-          });
+        });
   };
 
   submit = function () { };
