@@ -3,6 +3,7 @@ const UserOrganization = require('../models/user-organization.model');
 const auth = require('./jwt-auth.controller');
 const User = require('../models/user.model');
 const Username = require('../models/username.model');
+const UserOrgHistory = require('../models/userOrganization-history.model');
 const { isValidDisplayUsername, normalizeUsername } = require('./utils.controller');
 
 import { uploadSingleImage } from '../services/image-upload';
@@ -30,7 +31,7 @@ function getRoles(userId, orgId) {
         }
       };
     })
-    .catch((error) => {
+    .catch(() => {
       throw new Error('User not found in organization.');
     });
 }
@@ -125,7 +126,7 @@ function userOrgSummary(req, res) {
               Object.keys(userOrgArr).map((i) => {
                 userRoles[userOrgArr[i]['orgId']] = userOrgArr[i]['roles'];
               });
-              return res.json({orgDetails, userRoles, usernames});
+              return res.json({ orgDetails, userRoles, usernames });
             })
             .catch(() => {
               return res.status(500).send({
@@ -423,16 +424,39 @@ function addUser(req, res) {
                         userOrg.orgId = orgId;
                         userOrg.roles = [org.defaultRole];
                         return userOrg.save()
-                          .then(() => {
-                            Organization.update({ '_id': orgId }, { $inc: { userCount: 1 } })
-                              .then(() => {
-                                return res.status(200).send({
-                                  message: 'User count increased successfully'
-                                });
+                          .then((userOrganization) => {
+                            return Username.findOne({ refId: orgId, current: true })
+                              .then((returnUsername) => {
+                                const userOrgHistory = new UserOrgHistory();
+                                userOrgHistory.timestamp = Date.now();
+                                userOrgHistory.action = 'User added to organization';
+                                const organization = userOrganization.toObject();
+                                organization.orgName = org.name;
+                                organization.orgUsername = returnUsername.username;
+                                userOrgHistory.state = organization;
+                                return userOrgHistory.save()
+                                  .then(() => {
+                                    return Organization.update({ '_id': orgId }, { $inc: { userCount: 1 } })
+                                      .then(() => {
+                                        return res.status(200).send({
+                                          message: 'User count increased successfully'
+                                        });
+                                      })
+                                      .catch(() => {
+                                        return res.status(500).send({
+                                          message: 'Error in increasing user count'
+                                        });
+                                      });
+                                  })
+                                  .catch(() => {
+                                    return res.status(500).send({
+                                      message: 'Error in saving user organization history'
+                                    });
+                                  });
                               })
                               .catch(() => {
                                 return res.status(500).send({
-                                  message: 'Error in increasing user count'
+                                  message: 'Error in accessing username database for organization'
                                 });
                               });
                           })
@@ -507,8 +531,13 @@ function removeUser(req, res) {
   const userId = req.userId;
   const userToBeDeleted = req.body.userId;
   const orgId = req.body.orgId;
+  const orgUsername = req.body.orgUsername;
+  const orgName = req.body.orgName;
+  console.log(orgName, orgUsername);
   if (typeof userId !== 'string' ||
+    typeof orgName !== 'string' ||
     typeof userToBeDeleted !== 'string' ||
+    typeof orgUsername !== 'string' ||
     typeof orgId !== 'string') {
     return res.status(500).send({ message: 'Request validation failed' });
   }
@@ -517,23 +546,46 @@ function removeUser(req, res) {
       if (rolesFunction('admin')) {
         return User.findOne({ '_id': userToBeDeleted })
           .then(() => {
-            return UserOrganization.deleteOne({ 'userId': userToBeDeleted, 'orgId': orgId })
-              .then(() => {
-                return Organization.update({ '_id': orgId }, { $inc: { userCount: -1 } })
+            return UserOrganization.findOne({ 'userId': userToBeDeleted, 'orgId': orgId })
+              .then((userOrg) => {
+                const userOrgHistory = new UserOrgHistory();
+                userOrgHistory.timestamp = Date.now();
+                userOrgHistory.action = 'User removed from organization';
+                const organization = userOrg.toObject();
+                organization.orgName = orgName;
+                organization.orgUsername = orgUsername;
+                userOrgHistory.state = organization;
+                return userOrgHistory.save()
                   .then(() => {
-                    return res.status(200).send({
-                      message: 'User removed successfully'
-                    });
+                    return UserOrganization.deleteOne({ 'userId': userToBeDeleted, 'orgId': orgId })
+                      .then(() => {
+                        return Organization.update({ '_id': orgId }, { $inc: { userCount: -1 } })
+                          .then(() => {
+                            return res.status(200).send({
+                              message: 'User removed successfully'
+                            });
+                          })
+                          .catch(() => {
+                            return res.status(500).send({
+                              message: 'Error in decreasing user count'
+                            });
+                          });
+                      })
+                      .catch(() => {
+                        return res.status(500).send({
+                          message: 'User not found in organization'
+                        });
+                      });
                   })
                   .catch(() => {
                     return res.status(500).send({
-                      message: 'Error in decreasing user count'
+                      message: 'Error in saving user organization history'
                     });
                   });
               })
               .catch(() => {
                 return res.status(500).send({
-                  message: 'User not found in organization'
+                  message: 'User not found 2 in organization'
                 });
               });
           })

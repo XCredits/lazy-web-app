@@ -23,7 +23,6 @@ export class OrganizationComponent implements OnInit, OnDestroy {
           this.organization = response['orgDetails'];
           this.username = response.usernames;
           this.userRoles = response.userRoles;
-
         });
   }
 
