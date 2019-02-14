@@ -23,8 +23,6 @@ export class AddContactsComponent implements OnInit {
       familyName: new FormControl(''),
       email: new FormControl('', [Validators.required, Validators.email]),
     });
-   // this.form.valueChanges.subscribe(formData => this.checkUsername(formData));
-
   }
 
   submit = function (formData) {

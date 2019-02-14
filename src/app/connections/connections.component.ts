@@ -2,7 +2,6 @@
 // Position:fixed, to the right below the menu bar
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { User } from '../user.service';
 
 @Component({
   selector: 'app-connections',
@@ -10,7 +9,6 @@ import { User } from '../user.service';
   styleUrls: ['./connections.component.scss']
 })
 export class ConnectionComponent implements OnInit {
-  user: User;
   pendingConnectionsCounter: string;
   confirmedConnectionsCounter: string;
   ConfirmedConnectionsCounter: string;

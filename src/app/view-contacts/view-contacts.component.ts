@@ -1,8 +1,7 @@
 import {SelectionModel} from '@angular/cdk/collections';
 import {MatTableDataSource} from '@angular/material';
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { UserService, User } from '../user.service';
 import { HttpClient } from '@angular/common/http';
 
 export interface ContactElements {
@@ -24,7 +23,6 @@ export class ViewContactsComponent implements OnInit {
   disableButton = true;
   submitSuccess = false;
   formErrorMessage: string;
-  user: User;
   contactId: string;
   private allContacts = [];
   displayedColumns: string[] = ['select', 'Given Name', 'Family Name', 'Email', 'Action'];
@@ -33,7 +31,6 @@ export class ViewContactsComponent implements OnInit {
 
   constructor(
     private http: HttpClient,
-    private userService: UserService,
   ) { }
 
   ngOnInit() {
