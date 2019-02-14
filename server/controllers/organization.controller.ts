@@ -105,7 +105,7 @@ function createOrg(req, res) {
       });
 }
 
-// Get all organization  details of logged in user
+// Get all organization details of logged in user
 function userOrgSummary(req, res) {
   const userId = req.userId;
   if (typeof userId !== 'string') {
@@ -499,23 +499,40 @@ function deleteOrg(req, res) {
   return getRoles(userId, orgId)
       .then((rolesFunction) => {
         if (rolesFunction('admin')) {
-          return UserOrganization.deleteMany({ 'orgId': orgId })
-              .then(() => {
-                return Organization.deleteOne({ '_id': orgId })
+          return Username.findOne({refId: orgId, current: true})
+              .then((response) => {
+                response.current = false;
+                return response.save()
                     .then(() => {
-                      return res.status(200).send({
-                        message: 'Organization deleted successfully'
-                      });
+                      return UserOrganization.deleteMany({ 'orgId': orgId })
+                          .then(() => {
+                            return Organization.deleteOne({ '_id': orgId })
+                                .then(() => {
+                                  return res.status(200).send({
+                                    message: 'Organization deleted successfully'
+                                  });
+                                })
+                                .catch(() => {
+                                  return res.status(500).send({
+                                    message: 'Error in deleting organization'
+                                  });
+                                });
+                          })
+                          .catch(() => {
+                            return res.status(500).send({
+                              message: 'Error in deleting UserOrganization'
+                            });
+                          });
                     })
                     .catch(() => {
                       return res.status(500).send({
-                        message: 'Error in deleting organization'
+                        message: 'Error in saving organization username'
                       });
                     });
               })
               .catch(() => {
                 return res.status(500).send({
-                  message: 'Error in deleting UserOrganization'
+                  message: 'Error in accessing organization username'
                 });
               });
         }

@@ -477,7 +477,7 @@ function forgotUsername(req, res) {
           res.send(successObject); // Note that if errors in send in emails occur, the front end will not see them
           return;
         }
-        const userIds = users.map(userEle => userEle.userId);
+        const userIds = users.map(userEle => userEle._id);
         return Username.find({refId: userIds, current: true})
             .then((username) => {
               return emailService.sendUsernameRetrieval({

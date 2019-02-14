@@ -169,7 +169,7 @@ export class UpdateOrganizationComponent implements OnInit, OnDestroy {
     this.modalReference = this.dialogService.open(modal, this.options);
   }
 
-  delUser() {
+  removeUser() {
     this.http.post('/api/organization/remove-user', {
       'userId': this.userToBeDeleted,
       'orgId': this.organization._id,
