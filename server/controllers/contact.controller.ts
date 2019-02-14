@@ -122,14 +122,14 @@ function removeContact(req, res) {
  */
 function viewContacts(req, res) {
   const userId = req.userId;
-  Contact.find({ userId })
+  Contact.find({ userId }).sort( {givenName: 1} )
       .then((result) => {
         const filteredResult = result.map((x) => {
           return {
+            contactUserId: x._id,
             givenName: x.givenName,
             familyName: x.familyName,
             email: x.email,
-            contactUserId: x._id,
             isFavorite: x.isFavorite,
           };
         });
@@ -182,8 +182,8 @@ function addRemoveFavorites(req, res) {
   }
 
   return Contact.findOneAndUpdate({
-    userId: userId,
     _id: contactId,
+    userId: userId,
     },
     {
       $set:

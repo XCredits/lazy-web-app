@@ -42,6 +42,7 @@ export class ViewContactsComponent implements OnInit {
 
 
   loadContacts = function () {
+    this.dataSource = [];
     this.allContacts = [];
     this.http.post('/api/contacts/view', { })
         .subscribe ((data: any) => {
