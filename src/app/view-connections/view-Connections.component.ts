@@ -1,7 +1,6 @@
 import {MatTableDataSource} from '@angular/material';
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { UserService, User } from '../user.service';
 
 
 export interface ConnectionRequestElements {
@@ -15,30 +14,21 @@ export interface ConnectionRequestElements {
   styleUrls: ['./view-connections.component.scss']
 })
 export class ViewConnectionsComponent implements OnInit {
-  user: User;
   receiverUserId: string;
   link: string;
   confirmedConnections: { userId: string, givenName: string, familyName: string }[] = [];
   displayedColumns: string[] = [ 'Given Name', 'Family Name', 'Action'];
   dataSource = new MatTableDataSource<ConnectionRequestElements>();
 
-  constructor(private http: HttpClient, private userService: UserService) { }
+  constructor(private http: HttpClient) { }
 
   ngOnInit() {
-    this.userService.userObservable
-      .subscribe(user => {
-        this.user = user;
-      });
     this.loadConfirmedRequests();
   }
 
-
-
   loadConfirmedRequests = function () {
     this.confirmedConnections = [];
-    this.http.post('/api/connection/get-connections', {
-      'userId': this.user.id,
-    })
+    this.http.post('/api/connection/get-connections')
       .subscribe((data) => {
         let num = 0;
         for (num = 0; num < data.length; num++) {
@@ -55,7 +45,6 @@ export class ViewConnectionsComponent implements OnInit {
 
   deleteConnection = function (connection) {
     this.http.post('/api/connection/remove-connection', {
-      'userId': this.user.id,
       'senderUserId': connection.userId,
     })
       .subscribe(() => {

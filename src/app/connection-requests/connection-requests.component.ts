@@ -1,7 +1,6 @@
 import {MatTableDataSource} from '@angular/material';
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { UserService, User } from '../user.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ConnectionComponent } from '../connections/connections.component';
@@ -20,7 +19,6 @@ export interface ConnectionRequestElements {
 })
 export class ConnectionRequestsComponent implements OnInit {
   form: FormGroup;
-  user: User;
   receiverUserId: string;
   link: string;
   formErrorMessage: string;
@@ -31,7 +29,6 @@ export class ConnectionRequestsComponent implements OnInit {
 
   constructor(
     private http: HttpClient,
-    private userService: UserService,
     private router: Router,
     private connectionRoute: ConnectionComponent,
     ) { }
@@ -46,10 +43,6 @@ export class ConnectionRequestsComponent implements OnInit {
       email: new FormControl(''),
     });
 
-    this.userService.userObservable
-      .subscribe(user => {
-        this.user = user;
-      });
     this.loadPendingRequests();
   }
 
@@ -85,9 +78,7 @@ export class ConnectionRequestsComponent implements OnInit {
     this.formErrorMessage = undefined;
     this.userErrorId = undefined;
     this.pendingConnections = [];
-    this.http.post('/api/connection/get-pending-requests', {
-      'userId': this.user.id,
-    })
+    this.http.post('/api/connection/get-pending-requests')
       .subscribe((data) => {
         let num = 0;
         for (num = 0; num < data.length; num++) {
