@@ -21,12 +21,9 @@ export class OrganizationComponent implements OnInit, OnDestroy {
     this.http.post<Organization>('/api/organization/user-org-summary', {})
         .subscribe((response: any)  =>  {
           this.organization = response['orgDetails'];
-          Object.values(response.orgUsername).forEach(org => {
-            this.username[org['refId']] = org['displayUsername'];
-          });
-          Object.values(response.userOrgArr).forEach(org => {
-            this.userRoles[org['orgId']] = org['roles'];
-          });
+          this.username = response.usernames;
+          this.userRoles = response.userRoles;
+
         });
   }
 
