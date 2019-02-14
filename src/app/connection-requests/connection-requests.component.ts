@@ -2,7 +2,6 @@ import {MatTableDataSource} from '@angular/material';
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
 import { ConnectionComponent } from '../connections/connections.component';
 
 
@@ -29,9 +28,8 @@ export class ConnectionRequestsComponent implements OnInit {
 
   constructor(
     private http: HttpClient,
-    private router: Router,
     private connectionRoute: ConnectionComponent,
-    ) { }
+  ) { }
 
   ngOnInit() {
     this.formErrorMessage = undefined;
