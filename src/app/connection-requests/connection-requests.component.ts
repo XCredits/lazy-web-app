@@ -104,18 +104,18 @@ export class ConnectionRequestsComponent implements OnInit {
 
 
 
-  approveUserConnection = function (friend) {
+  approveUserConnection = function (connectionRequest) {
     this.formErrorMessage = undefined;
     this.userErrorId = undefined;
     this.http.post('/api/connection/action-request', {
       'action': 'accept',
-      'senderUserId': friend.userId,
+      'senderUserId': connectionRequest.userId,
     })
       .subscribe((returnedResult) => {
         if (returnedResult.message === 'Request accepted') {
            // Remove the request from the pendingConnections array
            for ( let i = 0 ; i <= this.pendingConnections.length - 1; i++) {
-            if ( this.pendingConnections[i].userId === friend.userId) {
+            if ( this.pendingConnections[i].userId === connectionRequest.userId) {
               this.pendingConnections.splice(this.pendingConnections.indexOf(this.pendingConnections[i]), 1);
             }
           }
@@ -125,7 +125,7 @@ export class ConnectionRequestsComponent implements OnInit {
         },
         errorResponse => {
           this.formErrorMessage = 'There was a problem accepting this request.';
-          this.userErrorId = friend.userId;
+          this.userErrorId = connectionRequest.userId;
         });
         // Update notification counter in parent.
         this.connectionRoute.loadPageCounters();
