@@ -25,7 +25,7 @@ export class ViewContactsComponent implements OnInit {
   submitSuccess = false;
   formErrorMessage: string;
   user: User;
-  contactEditId: string;
+  contactId: string;
   private allContacts = [];
   displayedColumns: string[] = ['select', 'Given Name', 'Family Name', 'Email', 'Action'];
   selection = new SelectionModel<ContactElements>(true, []);
@@ -55,7 +55,7 @@ export class ViewContactsComponent implements OnInit {
 
   deleteContact = function (contact) {
     this.http.post('/api/contacts/remove', {
-      'contactUserId': contact.contactUserId,
+      'contactId': contact.contactId,
     })
       .subscribe((result) => {
         if (result.message === 'Contact deleted' ) {
@@ -66,7 +66,7 @@ export class ViewContactsComponent implements OnInit {
 
   editContact = function (contact) {
     this.isEditMode = true;
-    this.contactEditId = contact.contactUserId;
+    this.contactId = contact.contactId;
     this.form = new FormGroup({
       givenName: new FormControl(contact.givenName),
       familyName: new FormControl(contact.familyName),
@@ -77,7 +77,7 @@ export class ViewContactsComponent implements OnInit {
 
   updateContact = function (contact) {
     this.http.post('/api/contacts/update', {
-      'contactUserId': this.contactEditId,
+      'contactId': this.contactId,
       'givenName': contact.givenName,
       'familyName': contact.familyName,
       'email': contact.email,
@@ -94,13 +94,13 @@ export class ViewContactsComponent implements OnInit {
 
   removeContactFav = function (contact) {
     this.http.post('/api/contacts/add-remove-fav', {
-      'contactUserId': contact.contactUserId,
+      'contactId': contact.contactId,
       'action': 'remove',
     })
       .subscribe((result) => {
         if (result.message === 'Contact modified' ) {
            for ( let i = 0 ; i <= this.allContacts.length - 1; i++) {
-            if ( this.allContacts[i].contactUserId === contact.contactUserId) {
+            if ( this.allContacts[i].contactId === contact.contactId) {
                   this.allContacts[i].isFavorite = false;
               }
             }
@@ -110,13 +110,13 @@ export class ViewContactsComponent implements OnInit {
 
   addContactFav = function (contact) {
     this.http.post('/api/contacts/add-remove-fav', {
-      'contactUserId': contact.contactUserId,
+      'contactId': contact.contactId,
       'action': 'add',
     })
       .subscribe((result) => {
         if (result.message === 'Contact modified' ) {
            for ( let i = 0 ; i <= this.allContacts.length - 1; i++) {
-            if ( this.allContacts[i].contactUserId === contact.contactUserId) {
+            if ( this.allContacts[i].contactId === contact.contactId) {
                   this.allContacts[i].isFavorite = true;
               }
             }

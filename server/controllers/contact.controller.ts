@@ -59,9 +59,10 @@ function updateContact(req, res) {
   const email = req.body.email;
   const givenName = req.body.givenName;
   const familyName = req.body.familyName;
-  const contactUserId = req.body.contactUserId;
+  const contactId = req.body.contactId;
   // Validate
-  if (typeof givenName !== 'string' ||
+  if (typeof contactId !== 'string' ||
+      typeof givenName !== 'string' ||
       typeof familyName !== 'string' ||
       !validator.isEmail(email) ) {
     return res.status(422).json({ message: 'Request failed validation' });
@@ -69,7 +70,7 @@ function updateContact(req, res) {
 
   return Contact.findOneAndUpdate({
     userId: userId,
-    _id: contactUserId,
+    _id: contactId,
     },
     {
       $set:
@@ -97,14 +98,15 @@ function updateContact(req, res) {
  */
 function removeContact(req, res) {
   const userId = req.userId;
-  const contactUserId = req.body.contactUserId;
+  const contactId = req.body.contactId;
   // Validate
-  if (typeof userId !== 'string' ||
-      typeof contactUserId !== 'string' ) {
+  if (typeof contactId !== 'string' ||
+      typeof userId !== 'string' ||
+      typeof contactId !== 'string' ) {
     return res.status(422).json({ message: 'Contact failed validation' });
   }
 
-  return Contact.deleteOne( {_id: contactUserId } )
+  return Contact.deleteOne( {_id: contactId } )
       .then(() => {
         return res.send({ message: 'Contact deleted' });
       })
@@ -126,7 +128,7 @@ function viewContacts(req, res) {
       .then((result) => {
         const filteredResult = result.map((x) => {
           return {
-            contactUserId: x._id,
+            contactId: x._id,
             givenName: x.givenName,
             familyName: x.familyName,
             email: x.email,
@@ -174,10 +176,11 @@ function viewFavorites(req, res) {
  */
 function addRemoveFavorites(req, res) {
   const userId = req.userId;
-  const contactId = req.body.contactUserId;
+  const contactId = req.body.contactId;
   const action = req.body.action;
   // Validate
-  if (typeof contactId !== 'string' ) {
+  if (typeof contactId !== 'string' ||
+      typeof action !== 'string' ) {
     return res.status(422).json({ message: 'Contact failed validation' });
   }
 
@@ -188,7 +191,7 @@ function addRemoveFavorites(req, res) {
     {
       $set:
       {
-        isFavorite: (action === 'add') ? true : false ,
+        isFavorite: (action === 'add'),
       }
     })
     .then(() => {
