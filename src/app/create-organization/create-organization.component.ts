@@ -74,13 +74,6 @@ export class CreateOrganizationComponent implements OnInit {
     }, 1000);
   };
 
-  normalizeUsername(username) {
-    return username
-        .split('.').join('')
-        .split('_').join('')
-        .split('-').join('')
-        .toLowerCase();
-  }
 
   submit = function(formData) {
     if (this.form.invalid) {

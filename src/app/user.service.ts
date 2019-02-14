@@ -59,6 +59,14 @@ export class UserService {
     }
   }
 
+  normalizeUsername(username) {
+    return username
+        .split('.').join('')
+        .split('_').join('')
+        .split('-').join('')
+        .toLowerCase();
+  }
+
   /**
   * External facing method for authentication routes to use
   */

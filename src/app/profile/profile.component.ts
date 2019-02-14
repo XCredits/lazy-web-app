@@ -56,9 +56,9 @@ export class ProfileComponent implements OnInit {
 
     // this.currentUsername - designed to prevent the form from reporting an
     // error if the username has been updated
-    const initialUsername = this.normalizeUsername(this.user.displayUsername);
+    const initialUsername = this.userService.normalizeUsername(this.user.displayUsername);
     const displayUsername = this.user.displayUsername;
-    this.currentUsername = this.normalizeUsername(formData.username);
+    this.currentUsername = this.userService.normalizeUsername(formData.username);
     this.currentDisplayName = formData.username;
     if (initialUsername.length === 0) {
       this.form.controls['username'].setErrors({'incorrect': true});
@@ -125,11 +125,11 @@ export class ProfileComponent implements OnInit {
     this.disableButton = true;
     this.submitSuccess = false;
     this.formErrorMessage = undefined;
-    const tempUsername = this.normalizeUsername(currentValue.username);
+    const tempUsername = this.userService.normalizeUsername(currentValue.username);
     const tempDisplayName = this.user.displayUsername;
     fields.forEach(element => {
       if (this.user[element] !== currentValue[element]
-          || tempUsername !== this.normalizeUsername(this.user.displayUsername)
+          || tempUsername !== this.userService.normalizeUsername(this.user.displayUsername)
           || tempDisplayName !== currentValue.username) {
         this.disableButton = false;
         return;
