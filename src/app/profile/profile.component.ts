@@ -126,11 +126,11 @@ export class ProfileComponent implements OnInit {
     this.submitSuccess = false;
     this.formErrorMessage = undefined;
     const tempUsername = this.userService.normalizeUsername(currentValue.username);
-    const tempDisplayName = this.user.displayUsername;
+    const tempDisplayUsername = this.user.displayUsername;
     fields.forEach(element => {
       if (this.user[element] !== currentValue[element]
           || tempUsername !== this.userService.normalizeUsername(this.user.displayUsername)
-          || tempDisplayName !== currentValue.username) {
+          || tempDisplayUsername !== currentValue.username) {
         this.disableButton = false;
         return;
       }
