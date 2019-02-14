@@ -31,9 +31,7 @@ export class ViewConnectionsComponent implements OnInit {
       });
     this.loadConfirmedRequests();
   }
-  onSelect(friends) {
-    console.log('you clicked on ' + friends);
-  }
+
 
 
   loadConfirmedRequests = function () {

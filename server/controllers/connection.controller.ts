@@ -72,7 +72,6 @@ function addRequest(req, res) {
                                 return res.send({ message: 'Success' });
                               })
                               .catch((error) => {
-                                console.log(error);
                                 return res.status(500)
                                   .json({ message: 'Could not save connection request.' });
                               });
@@ -427,7 +426,6 @@ function removeConnection(req, res) {
               status: 'disconnected',
             })
             .then((returnedRes) => {
-              console.log(result.connectionRequestRef);
               deleteConnectedConnection(result.connectionRequestRef);
             })
             .catch(() => {
