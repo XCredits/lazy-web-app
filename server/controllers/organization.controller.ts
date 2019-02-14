@@ -117,7 +117,15 @@ function userOrgSummary(req, res) {
         .then((orgUsername) => {
           return Organization.find({ '_id': { '$in': orgIds } })
             .then((orgDetails) => {
-              return res.json({ orgDetails, userOrgArr, orgUsername });
+              const usernames = {};
+              const userRoles = {};
+              Object.keys(orgUsername).map((i) => {
+                usernames[orgUsername[i]['refId']] = orgUsername[i]['displayUsername'];
+              });
+              Object.keys(userOrgArr).map((i) => {
+                userRoles[userOrgArr[i]['orgId']] = userOrgArr[i]['roles'];
+              });
+              return res.json({orgDetails, userRoles, usernames});
             })
             .catch(() => {
               return res.status(500).send({
@@ -342,7 +350,11 @@ function getUsers(req, res) {
                       .then((users) => {
                         return Username.find({ refId: { $in: userIds }, current: true })
                           .then((usernames) => {
-                            return res.json({ users, usernames });
+                            const userProfileImage = {};
+                            Object.keys(users).map((k) => {
+                              userProfileImage[users[k]['_id']] = users[k]['profileImage'];
+                            });
+                            return res.json({ userProfileImage, usernames });
                           })
                           .catch(() => {
                             return res.status(500).send({

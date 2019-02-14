@@ -23,7 +23,7 @@ export class UpdateOrganizationComponent implements OnInit, OnDestroy {
   sub: any;
   ready = false;
   modalReference = null;
-  users: Array<string> = [];
+  users: any;
   usernames: Array<string> = [];
   userToBeDeleted: any;
   usernameErrorMessage: string;
@@ -67,9 +67,7 @@ export class UpdateOrganizationComponent implements OnInit, OnDestroy {
       })
       .subscribe(response => {
         this.usernames = response.usernames;
-        Object.values(response.users).forEach(user => {
-          this.users[user['_id']] = user['profileImage'];
-        });
+        this.users = response.userProfileImage;
       });
     });
   }
