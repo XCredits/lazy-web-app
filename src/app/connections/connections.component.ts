@@ -2,7 +2,7 @@
 // Position:fixed, to the right below the menu bar
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { UserService, User } from '../user.service';
+import { User } from '../user.service';
 
 @Component({
   selector: 'app-connections',
@@ -17,7 +17,6 @@ export class ConnectionComponent implements OnInit {
   navLinks = [];
   constructor(
     private http: HttpClient,
-    private userService: UserService,
   ) { }
 
   ngOnInit() {

@@ -53,19 +53,19 @@ export class ConnectionRequestsComponent implements OnInit {
     this.loadPendingRequests();
   }
 
-  ignoreUserConnection = function (friend) {
+  ignoreUserConnection = function (connectionRequest) {
     this.formErrorMessage = undefined;
     this.userErrorId = undefined;
 
     this.http.post('/api/connection/action-request', {
       'action': 'reject',
-      'senderUserId': friend.userId,
+      'senderUserId': connectionRequest.userId,
     })
       .subscribe((returnedResult) => {
         if (returnedResult.message === 'Request rejected') {
           // Remove the request from the pendingConnections array
           for ( let i = 0 ; i <= this.pendingConnections.length - 1; i++) {
-            if ( this.pendingConnections[i].userId === friend.userId) {
+            if ( this.pendingConnections[i].userId === connectionRequest.userId) {
               this.pendingConnections.splice(this.pendingConnections.indexOf(this.pendingConnections[i]), 1);
             }
           }
@@ -76,7 +76,7 @@ export class ConnectionRequestsComponent implements OnInit {
         },
           errorResponse => {
             this.formErrorMessage = 'There was a problem ignoring this request.';
-            this.userErrorId = friend.userId;
+            this.userErrorId = connectionRequest.userId;
           });
   };
 
