@@ -18,6 +18,7 @@ module.exports = function (app) {
   app.post('/api/organization/delete', auth.jwt, deleteOrg);
   app.post('/api/organization/remove-user', auth.jwt, removeUser);
   app.post('/api/organization/get-users', auth.jwt, getUsers);
+  app.post('/api/organization/user-by-username', auth.jwt, getUserByUsername);
 };
 
 function getRoles(userId, orgId) {
@@ -428,6 +429,8 @@ function addUser(req, res) {
                                             .then((returnUsername) => {
                                               const userOrgHistory = new UserOrgHistory();
                                               userOrgHistory.timestamp = Date.now();
+                                              userOrgHistory.userId = userToAdd._id;
+                                              userOrgHistory.orgId = orgId;
                                               userOrgHistory.action = 'User added to organization';
                                               const organization = userOrganization.toObject();
                                               organization.orgName = org.name;
@@ -564,6 +567,8 @@ function removeUser(req, res) {
                 return UserOrganization.findOne({ 'userId': userToBeDeleted, 'orgId': orgId })
                     .then((userOrg) => {
                       const userOrgHistory = new UserOrgHistory();
+                      userOrgHistory.userId = userToBeDeleted;
+                      userOrgHistory.orgId = orgId;
                       userOrgHistory.timestamp = Date.now();
                       userOrgHistory.action = 'User removed from organization';
                       const organization = userOrg.toObject();
@@ -600,18 +605,39 @@ function removeUser(req, res) {
                     })
                     .catch(() => {
                       return res.status(500).send({
-                        message: 'User not found 2 in organization'
-                      });
+                        message: 'User not found 2 in organization'});
                     });
               })
               .catch(() => {
-                return res.status(500).send({
-                  message: 'User not found'
-                });
+                return res.status(500).send({message: 'User not found'});
               });
         }
       })
       .catch(() => {
         return res.status(404).send({ message: 'Unauthorized access' });
       });
+}
+
+function getUserByUsername(req, res) {
+  const userId = req.body.userId;
+  const displayUsername = req.body.username;
+
+  if (!userId && displayUsername) {
+    const username = normalizeUsername(displayUsername);
+    return Username.findOne({username: username, current: true})
+        .then((returnUsername) => {
+          return res.send(returnUsername);
+        })
+        .catch(() => {
+          return res.status(500).send({message: 'Username not found'});
+        });
+  } else if (userId && !displayUsername) {
+      return User.findOne({_id: userId})
+          .then((returnUser) => {
+            return res.send(returnUser);
+          })
+          .catch(() => {
+            return res.status(500).send({message: 'User not found'});
+          });
+  }
 }

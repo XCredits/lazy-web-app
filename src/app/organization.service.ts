@@ -33,7 +33,7 @@ export class OrganizationService implements OnDestroy {
         })
         .subscribe((organization) => {
             this._setOrganization(organization['orgDetail']);
-        });
+        }).unsubscribe();
       }
 
     ngOnDestroy() {

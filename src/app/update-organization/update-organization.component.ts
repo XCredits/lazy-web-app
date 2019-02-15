@@ -13,7 +13,7 @@ import { UserService } from '../user.service';
   templateUrl: './update-organization.component.html',
   styleUrls: ['./update-organization.component.scss']
 })
-export class UpdateOrganizationComponent implements OnInit, OnDestroy {
+export class UpdateOrganizationComponent implements OnInit {
   form: FormGroup;
   organization: Organization;
   formErrorMessage: string;
@@ -28,8 +28,7 @@ export class UpdateOrganizationComponent implements OnInit, OnDestroy {
   userToBeDeleted: any;
   usernameErrorMessage: string;
   selectedRatio = 4 / 3;
-  orgUsername: string;
-  dispUsername: string;
+  orgUsername: any;
   options: any = {
     size: 'dialog-centered',
     panelClass: 'custom-modalbox'
@@ -44,20 +43,20 @@ export class UpdateOrganizationComponent implements OnInit, OnDestroy {
     this.organizationService.orgObservable
         .subscribe((organization) => {
           this.logo = organization.logo;
-        });
+        }).unsubscribe();
     this.sub = this.route.params.subscribe(params => {
       this.http.post<any>('/api/organization/get-details', {
           'username': params.orgUsername
       })
       .subscribe(organization => {
-          this.organization = organization['orgDetail'];
-          this.orgUsername = organization['response'];
-          this.logo = organization['orgDetail'].logo;
+          this.organization = organization.orgDetail;
+          this.orgUsername = organization.response;
+          this.logo = organization.orgDetail.logo;
           this.form = new FormGroup ({
-            name: new FormControl(organization['orgDetail'].name, Validators.required),
-            website: new FormControl(organization['orgDetail'].website),
-            phoneNumber: new FormControl(organization['orgDetail'].phoneNumber),
-            username: new FormControl(this.orgUsername['displayUsername'], Validators.required),
+            name: new FormControl(organization.orgDetail.name, Validators.required),
+            website: new FormControl(organization.orgDetail.website),
+            phoneNumber: new FormControl(organization.orgDetail.phoneNumber),
+            username: new FormControl(this.orgUsername.displayUsername, Validators.required),
         });
         this.ready = true;
         this.form.valueChanges.subscribe(changes => this.checkUsername(changes));
@@ -173,7 +172,7 @@ export class UpdateOrganizationComponent implements OnInit, OnDestroy {
     this.http.post('/api/organization/remove-user', {
       'userId': this.userToBeDeleted,
       'orgId': this.organization._id,
-      'orgUsername': this.orgUsername['username'],
+      'orgUsername': this.orgUsername.username,
       'orgName': this.organization.name,
     })
     .subscribe(() => {
@@ -204,8 +203,4 @@ export class UpdateOrganizationComponent implements OnInit, OnDestroy {
       this.formErrorMessage = errorResponse.error.message;
     });
   };
-
-    ngOnDestroy() {
-
-    }
 }
