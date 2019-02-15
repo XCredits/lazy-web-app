@@ -5,6 +5,7 @@ const Schema = mongoose.Schema;
 const OrganizationSchema = new Schema({
   name: {type: String, required: true},
   website: {type: String},
+  timeCreated: {type: Date, default: Date.now},
   logo: {type: String},
   phoneNumber: {type: String},
   userCount: {type: Number},
@@ -18,6 +19,7 @@ OrganizationSchema.methods.frontendData = function() {
     name: this.name,
     website: this.website,
     logo: this.logo,
+    timeCreated: this.timeCreated,
     phoneNumber: this.phoneNumber,
     userCount: this.userCount,
   };

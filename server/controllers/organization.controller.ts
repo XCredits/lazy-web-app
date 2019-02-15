@@ -3,7 +3,7 @@ const UserOrganization = require('../models/user-organization.model');
 const auth = require('./jwt-auth.controller');
 const User = require('../models/user.model');
 const Username = require('../models/username.model');
-const UserOrgHistory = require('../models/userOrganization-history.model');
+const UserOrgHistory = require('../models/user-organization-history.model');
 const { isValidDisplayUsername, normalizeUsername } = require('./utils.controller');
 
 import { uploadSingleImage } from '../services/image-upload';
@@ -18,6 +18,7 @@ module.exports = function (app) {
   app.post('/api/organization/delete', auth.jwt, deleteOrg);
   app.post('/api/organization/remove-user', auth.jwt, removeUser);
   app.post('/api/organization/get-users', auth.jwt, getUsers);
+  app.post('/api/organization/user-by-username', auth.jwt, getUserByUsername);
 };
 
 function getRoles(userId, orgId) {
@@ -105,7 +106,7 @@ function createOrg(req, res) {
       });
 }
 
-// Get all organization  details of logged in user
+// Get all organization details of logged in user
 function userOrgSummary(req, res) {
   const userId = req.userId;
   if (typeof userId !== 'string') {
@@ -428,6 +429,8 @@ function addUser(req, res) {
                                             .then((returnUsername) => {
                                               const userOrgHistory = new UserOrgHistory();
                                               userOrgHistory.timestamp = Date.now();
+                                              userOrgHistory.userId = userToAdd._id;
+                                              userOrgHistory.orgId = orgId;
                                               userOrgHistory.action = 'User added to organization';
                                               const organization = userOrganization.toObject();
                                               organization.orgName = org.name;
@@ -499,23 +502,40 @@ function deleteOrg(req, res) {
   return getRoles(userId, orgId)
       .then((rolesFunction) => {
         if (rolesFunction('admin')) {
-          return UserOrganization.deleteMany({ 'orgId': orgId })
-              .then(() => {
-                return Organization.deleteOne({ '_id': orgId })
+          return Username.findOne({refId: orgId, current: true})
+              .then((response) => {
+                response.current = false;
+                return response.save()
                     .then(() => {
-                      return res.status(200).send({
-                        message: 'Organization deleted successfully'
-                      });
+                      return UserOrganization.deleteMany({ 'orgId': orgId })
+                          .then(() => {
+                            return Organization.deleteOne({ '_id': orgId })
+                                .then(() => {
+                                  return res.status(200).send({
+                                    message: 'Organization deleted successfully'
+                                  });
+                                })
+                                .catch(() => {
+                                  return res.status(500).send({
+                                    message: 'Error in deleting organization'
+                                  });
+                                });
+                          })
+                          .catch(() => {
+                            return res.status(500).send({
+                              message: 'Error in deleting UserOrganization'
+                            });
+                          });
                     })
                     .catch(() => {
                       return res.status(500).send({
-                        message: 'Error in deleting organization'
+                        message: 'Error in saving organization username'
                       });
                     });
               })
               .catch(() => {
                 return res.status(500).send({
-                  message: 'Error in deleting UserOrganization'
+                  message: 'Error in accessing organization username'
                 });
               });
         }
@@ -547,6 +567,8 @@ function removeUser(req, res) {
                 return UserOrganization.findOne({ 'userId': userToBeDeleted, 'orgId': orgId })
                     .then((userOrg) => {
                       const userOrgHistory = new UserOrgHistory();
+                      userOrgHistory.userId = userToBeDeleted;
+                      userOrgHistory.orgId = orgId;
                       userOrgHistory.timestamp = Date.now();
                       userOrgHistory.action = 'User removed from organization';
                       const organization = userOrg.toObject();
@@ -583,18 +605,31 @@ function removeUser(req, res) {
                     })
                     .catch(() => {
                       return res.status(500).send({
-                        message: 'User not found 2 in organization'
-                      });
+                        message: 'User not found 2 in organization'});
                     });
               })
               .catch(() => {
-                return res.status(500).send({
-                  message: 'User not found'
-                });
+                return res.status(500).send({message: 'User not found'});
               });
         }
       })
       .catch(() => {
         return res.status(404).send({ message: 'Unauthorized access' });
+      });
+}
+
+function getUserByUsername(req, res) {
+  const displayUsername = req.body.username;
+  if (typeof displayUsername !== 'string' ||
+      !isValidDisplayUsername(displayUsername)) {
+    return res.status(500).send({ message: 'Request validation failed' });
+  }
+  const username = normalizeUsername(displayUsername);
+  return Username.findOne({username: username, current: true})
+      .then((returnUser) => {
+        return res.send(returnUser);
+      })
+      .catch(() => {
+        return res.status(500).send({message: 'Username not found'});
       });
 }

@@ -10,9 +10,9 @@ const contactController =
     require('./controllers/contact.controller');
 const connectionController =
     require('./controllers/connection.controller');
-
 const organizationController =
     require('./controllers/organization.controller');
+
 module.exports = function(app) {
   mailingListController(app);
   authenticationController(app);

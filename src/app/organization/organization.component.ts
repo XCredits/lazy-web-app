@@ -3,12 +3,13 @@ import { HttpClient } from '@angular/common/http';
 import { Organization } from '../organization.service';
 import { Router } from '@angular/router';
 
+
 @Component({
   selector: 'app-organization',
   templateUrl: './organization.component.html',
   styleUrls: ['./organization.component.scss']
 })
-export class OrganizationComponent implements OnInit, OnDestroy {
+export class OrganizationComponent implements OnInit {
 
   organization: Organization;
   userRoles: Array<string> =  [];
@@ -30,12 +31,8 @@ export class OrganizationComponent implements OnInit, OnDestroy {
     this.router.navigate(['/organization/' + orgUsername + '/update']);
   }
 
-  addUser(orgUsername) {
+  addUserToOrg(orgUsername) {
     this.router.navigate(['/organization/' + orgUsername + '/add-user']);
-  }
-
-  ngOnDestroy() {
-    console.log('Destroyed');
   }
 }
 

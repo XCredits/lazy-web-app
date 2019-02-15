@@ -13,7 +13,7 @@ import { UserService } from '../user.service';
   templateUrl: './update-organization.component.html',
   styleUrls: ['./update-organization.component.scss']
 })
-export class UpdateOrganizationComponent implements OnInit, OnDestroy {
+export class UpdateOrganizationComponent implements OnInit {
   form: FormGroup;
   organization: Organization;
   formErrorMessage: string;
@@ -28,8 +28,7 @@ export class UpdateOrganizationComponent implements OnInit, OnDestroy {
   userToBeDeleted: any;
   usernameErrorMessage: string;
   selectedRatio = 4 / 3;
-  orgUsername: string;
-  dispUsername: string;
+  orgUsername: any;
   options: any = {
     size: 'dialog-centered',
     panelClass: 'custom-modalbox'
@@ -50,14 +49,14 @@ export class UpdateOrganizationComponent implements OnInit, OnDestroy {
           'username': params.orgUsername
       })
       .subscribe(organization => {
-          this.organization = organization['orgDetail'];
-          this.orgUsername = organization['response'];
-          this.logo = organization['orgDetail'].logo;
+          this.organization = organization.orgDetail;
+          this.orgUsername = organization.response;
+          this.logo = organization.orgDetail.logo;
           this.form = new FormGroup ({
-            name: new FormControl(organization['orgDetail'].name, Validators.required),
-            website: new FormControl(organization['orgDetail'].website),
-            phoneNumber: new FormControl(organization['orgDetail'].phoneNumber),
-            username: new FormControl(this.orgUsername['displayUsername'], Validators.required),
+            name: new FormControl(organization.orgDetail.name, Validators.required),
+            website: new FormControl(organization.orgDetail.website),
+            phoneNumber: new FormControl(organization.orgDetail.phoneNumber),
+            username: new FormControl(this.orgUsername.displayUsername, Validators.required),
         });
         this.ready = true;
         this.form.valueChanges.subscribe(changes => this.checkUsername(changes));
@@ -126,7 +125,7 @@ export class UpdateOrganizationComponent implements OnInit, OnDestroy {
   }
 
   handleImageUpload(imageUrl: string) {
-    this.organizationService.updateOrgDetails(this.orgUsername['username']);
+    this.organizationService.updateOrgDetails(this.orgUsername.username);
     this.snackBar.open('Image Uploaded Successfully', 'Dismiss', {
       duration: 5000,
       verticalPosition: 'top',
@@ -169,11 +168,11 @@ export class UpdateOrganizationComponent implements OnInit, OnDestroy {
     this.modalReference = this.dialogService.open(modal, this.options);
   }
 
-  delUser() {
+  removeUser() {
     this.http.post('/api/organization/remove-user', {
       'userId': this.userToBeDeleted,
       'orgId': this.organization._id,
-      'orgUsername': this.orgUsername['username'],
+      'orgUsername': this.orgUsername.username,
       'orgName': this.organization.name,
     })
     .subscribe(() => {
@@ -204,8 +203,4 @@ export class UpdateOrganizationComponent implements OnInit, OnDestroy {
       this.formErrorMessage = errorResponse.error.message;
     });
   };
-
-    ngOnDestroy() {
-
-    }
 }

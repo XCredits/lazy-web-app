@@ -12,7 +12,7 @@ import { AnalyticsService } from './analytics.service';
 import { AuthGuard } from './auth.guard';
 import { AdminGuard } from './admin.guard';
 import { OrganizationService } from './organization.service';
-
+import { UserUsernameService } from './user-username.service';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AngularFontAwesomeModule } from 'angular-font-awesome';
 
@@ -377,7 +377,7 @@ import { ConnectionsViewComponent } from './connections/connections-view/connect
     ServiceWorkerModule.register('/ngsw-worker.js',
         {enabled: environment.production})
   ],
-  providers: [UserService, SettingsService, StatsService, AnalyticsService, OrganizationService],
+  providers: [UserService, SettingsService, StatsService, AnalyticsService, OrganizationService, UserUsernameService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
