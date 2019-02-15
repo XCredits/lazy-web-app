@@ -3,11 +3,11 @@ import { HttpClient } from '@angular/common/http';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 
 @Component({
-  selector: 'app-add-contact',
-  templateUrl: './add-contact.component.html',
-  styleUrls: ['./add-contact.component.scss']
+  selector: 'app-contacts-add',
+  templateUrl: './contacts-add.component.html',
+  styleUrls: ['./contacts-add.component.scss']
 })
-export class AddContactsComponent implements OnInit {
+export class ContactsAddComponent implements OnInit {
   form: FormGroup;
   waiting = false;
   formErrorMessage: string;

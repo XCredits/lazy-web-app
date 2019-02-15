@@ -88,9 +88,9 @@ import { UpdateOrganizationComponent } from './update-organization/update-organi
 import { AddUserComponent } from './add-user/add-user.component';
 import { CreateProductComponent } from './create-product/create-product.component';
 import { ContactsComponent } from './contacts/contacts.component';
-import { AddContactsComponent } from './addcontact/add-contact.component';
-import { ViewContactsComponent } from './view-contacts/view-contacts.component';
-import { ViewFavContactsComponent } from './view-fav-contacts/view-fav-contacts.component';
+import { ContactsAddComponent } from './contacts/contacts-add/contacts-add.component';
+import { ContactsViewComponent } from './contacts/contacts-view/contacts-view.component';
+import { ContactsFavComponent } from './contacts/contacts-fav/contacts-fav.component';
 import { ConnectionComponent } from './connections/connections.component';
 import { ConnectionsAddComponent } from './connections/connections-add/connections-add.component';
 import { ConnectionsSentComponent } from './connections/connections-sent/connections-sent.component';
@@ -124,9 +124,9 @@ import { ConnectionsViewComponent } from './connections/connections-view/connect
     FooterComponent,
     ChangeThemeComponent,
     ContactsComponent,
-    AddContactsComponent,
-    ViewFavContactsComponent,
-    ViewContactsComponent,
+    ContactsAddComponent,
+    ContactsFavComponent,
+    ContactsViewComponent,
     ConnectionComponent,
     ConnectionsAddComponent,
     ConnectionsSentComponent,
@@ -273,15 +273,15 @@ import { ConnectionsViewComponent } from './connections/connections-view/connect
           },
           {
             path: 'view',
-            component: ViewContactsComponent,
+            component: ContactsViewComponent,
           },
           {
             path: 'fav',
-            component: ViewFavContactsComponent,
+            component: ContactsFavComponent,
           },
           {
             path: 'add',
-            component: AddContactsComponent,
+            component: ContactsAddComponent,
           }
         ]
       },

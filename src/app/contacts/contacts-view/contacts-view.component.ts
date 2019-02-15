@@ -14,11 +14,11 @@ export interface ContactElements {
 }
 
 @Component({
-  selector: 'app-view-contacts',
-  templateUrl: './view-contacts.component.html',
-  styleUrls: ['./view-contacts.component.scss']
+  selector: 'app-contacts-view',
+  templateUrl: './contacts-view.component.html',
+  styleUrls: ['./contacts-view.component.scss']
 })
-export class ViewContactsComponent implements OnInit {
+export class ContactsViewComponent implements OnInit {
   form: FormGroup;
   disableButton = true;
   submitSuccess = false;
