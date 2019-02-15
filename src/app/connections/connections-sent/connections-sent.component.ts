@@ -1,7 +1,7 @@
 import {MatTableDataSource} from '@angular/material';
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { UserService, User } from '../user.service';
+import { UserService, User } from '../../user.service';
 
 
 export interface ConnectionRequestElements {
@@ -10,11 +10,11 @@ export interface ConnectionRequestElements {
 }
 
 @Component({
-  selector: 'app-view-connections',
-  templateUrl: './view-connections.component.html',
-  styleUrls: ['./view-connections.component.scss']
+  selector: 'app-connections-sent',
+  templateUrl: './connections-sent.component.html',
+  styleUrls: ['./connections-sent.component.scss']
 })
-export class ViewConnectionsComponent implements OnInit {
+export class ConnectionsSentComponent implements OnInit {
   user: User;
   receiverUserId: string;
   link: string;
@@ -29,16 +29,12 @@ export class ViewConnectionsComponent implements OnInit {
       .subscribe(user => {
         this.user = user;
       });
-    this.loadConfirmedRequests();
-  }
-  onSelect(friends) {
-    console.log('you clicked on ' + friends);
+    this.loadSentRequests();
   }
 
-
-  loadConfirmedRequests = function () {
+  loadSentRequests = function () {
     this.confirmedConnections = [];
-    this.http.post('/api/connection/get-connections', {
+    this.http.post('/api/connection/get-sent-request', {
       'userId': this.user.id,
     })
       .subscribe((data) => {
@@ -55,13 +51,16 @@ export class ViewConnectionsComponent implements OnInit {
       });
   };
 
-  deleteConnection = function (friend) {
-    this.http.post('/api/connection/remove-connection', {
+  deleteConnection = function (connectionRequest) {
+    this.http.post('/api/connection/action-request', {
       'userId': this.user.id,
-      'senderUserId': friend.userId,
+      'senderUserId': connectionRequest.userId,
+      'action': 'cancel',
     })
-      .subscribe(() => {
-        this.loadConfirmedRequests();
+      .subscribe((result) => {
+        if (result.message === 'Request cancelled' ) {
+            this.loadSentRequests();
+        }
       });
   };
 }

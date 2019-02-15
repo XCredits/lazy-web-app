@@ -479,12 +479,12 @@ function forgotUsername(req, res) {
         }
         const userIds = users.map(userEle => userEle._id);
         return Username.find({refId: userIds, current: true})
-            .then((username) => {
+            .then((usernameArr) => {
               return emailService.sendUsernameRetrieval({
                 givenName: users[0].givenName, // just use the name of the first account
                 familyName: users[0].familyName,
                 email: email,
-                usernameArr: username,
+                usernameArr: usernameArr,
               })
               .then(() => {
                 res.send(successObject); // Note that if errors in send in emails occur, the front end will not see them

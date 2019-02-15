@@ -1,8 +1,7 @@
 import {SelectionModel} from '@angular/cdk/collections';
 import {MatTableDataSource} from '@angular/material';
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { UserService, User } from '../user.service';
 import { HttpClient } from '@angular/common/http';
 
 export interface ContactElements {
@@ -15,17 +14,16 @@ export interface ContactElements {
 }
 
 @Component({
-  selector: 'app-view-contacts',
-  templateUrl: './view-contacts.component.html',
-  styleUrls: ['./view-contacts.component.scss']
+  selector: 'app-contacts-view',
+  templateUrl: './contacts-view.component.html',
+  styleUrls: ['./contacts-view.component.scss']
 })
-export class ViewContactsComponent implements OnInit {
+export class ContactsViewComponent implements OnInit {
   form: FormGroup;
   disableButton = true;
   submitSuccess = false;
   formErrorMessage: string;
-  user: User;
-  contactEditId: string;
+  contactId: string;
   private allContacts = [];
   displayedColumns: string[] = ['select', 'Given Name', 'Family Name', 'Email', 'Action'];
   selection = new SelectionModel<ContactElements>(true, []);
@@ -33,7 +31,6 @@ export class ViewContactsComponent implements OnInit {
 
   constructor(
     private http: HttpClient,
-    private userService: UserService,
   ) { }
 
   ngOnInit() {
@@ -48,14 +45,14 @@ export class ViewContactsComponent implements OnInit {
         .subscribe ((data: any) => {
           this.allContacts = data;
           this.dataSource = new MatTableDataSource<ContactElements>(this.allContacts);
-          });
+        });
   };
 
   submit = function () { };
 
   deleteContact = function (contact) {
     this.http.post('/api/contacts/remove', {
-      'contactUserId': contact.contactUserId,
+      'contactId': contact.contactId,
     })
       .subscribe((result) => {
         if (result.message === 'Contact deleted' ) {
@@ -66,7 +63,7 @@ export class ViewContactsComponent implements OnInit {
 
   editContact = function (contact) {
     this.isEditMode = true;
-    this.contactEditId = contact.contactUserId;
+    this.contactId = contact.contactId;
     this.form = new FormGroup({
       givenName: new FormControl(contact.givenName),
       familyName: new FormControl(contact.familyName),
@@ -77,7 +74,7 @@ export class ViewContactsComponent implements OnInit {
 
   updateContact = function (contact) {
     this.http.post('/api/contacts/update', {
-      'contactUserId': this.contactEditId,
+      'contactId': this.contactId,
       'givenName': contact.givenName,
       'familyName': contact.familyName,
       'email': contact.email,
@@ -94,26 +91,34 @@ export class ViewContactsComponent implements OnInit {
 
   removeContactFav = function (contact) {
     this.http.post('/api/contacts/add-remove-fav', {
-      'contactUserId': contact.contactUserId,
+      'contactId': contact.contactId,
       'action': 'remove',
     })
       .subscribe((result) => {
         if (result.message === 'Contact modified' ) {
-            this.loadContacts();
-        }
-      });
+           for ( let i = 0 ; i <= this.allContacts.length - 1; i++) {
+            if ( this.allContacts[i].contactId === contact.contactId) {
+                  this.allContacts[i].isFavorite = false;
+              }
+            }
+          }
+        });
   };
 
   addContactFav = function (contact) {
     this.http.post('/api/contacts/add-remove-fav', {
-      'contactUserId': contact.contactUserId,
+      'contactId': contact.contactId,
       'action': 'add',
     })
       .subscribe((result) => {
         if (result.message === 'Contact modified' ) {
-            this.loadContacts();
-        }
-      });
+           for ( let i = 0 ; i <= this.allContacts.length - 1; i++) {
+            if ( this.allContacts[i].contactId === contact.contactId) {
+                  this.allContacts[i].isFavorite = true;
+              }
+            }
+          }
+        });
   };
 
 

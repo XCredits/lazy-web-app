@@ -6,7 +6,7 @@ const ConnectionSchema = new Schema({
   userId: { type: String },
   connectionId: { type: String },
   status: { type: String },
-  permissions: { type: Object },
+  permissions: { type: Array },
   connectionRequestRef: { type: String },
   connectionTimestamp: { type: Number },
 }

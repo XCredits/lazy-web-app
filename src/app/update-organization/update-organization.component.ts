@@ -79,8 +79,8 @@ export class UpdateOrganizationComponent implements OnInit {
     // this.currentUsername - designed to prevent the form from reporting an
     // error if the username has been updated
     const displayUsername = this.orgUsername.displayUsername;
-    const initialUsername = this.normalizeUsername(displayUsername);
-    this.currentUsername = this.normalizeUsername(formData.username);
+    const initialUsername = this.userService.normalizeUsername(displayUsername);
+    this.currentUsername = this.userService.normalizeUsername(formData.username);
     this.currentDisplayName = formData.username;
     if (initialUsername.length === 0) {
       this.form.controls['username'].setErrors({'incorrect': true});

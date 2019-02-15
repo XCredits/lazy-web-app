@@ -1,7 +1,7 @@
 import {SelectionModel} from '@angular/cdk/collections';
 import {MatTableDataSource} from '@angular/material';
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { UserService, User } from '../user.service';
+import { UserService, User } from '../../user.service';
 import { HttpClient } from '@angular/common/http';
 
 export interface ContactElements {
@@ -12,11 +12,11 @@ export interface ContactElements {
 }
 
 @Component({
-  selector: 'app-view-fav-contacts',
-  templateUrl: './view-fav-contacts.component.html',
-  styleUrls: ['./view-fav-contacts.component.scss']
+  selector: 'app-contacts-fav',
+  templateUrl: './contacts-fav.component.html',
+  styleUrls: ['./contacts-fav.component.scss']
 })
-export class ViewFavContactsComponent implements OnInit {
+export class ContactsFavComponent implements OnInit {
   disableButton = true;
   submitSuccess = false;
   formErrorMessage: string;

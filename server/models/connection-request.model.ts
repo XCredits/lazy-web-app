@@ -6,7 +6,7 @@ const ConnectionRequestSchema = new Schema({
   senderUserId: { type: String },
   receiverUserId: { type: String },
   sendTimestamp: { type: Number },
-  permissions: { type: Object },
+  permissions: { type: Array },
   timeout: {type: Number },
   active: { type: Boolean },
   updateTimestamp: {type: Number },

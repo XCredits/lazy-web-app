@@ -1,13 +1,8 @@
-// Use card
-// Position:fixed, to the right below the menu bar
-import {SelectionModel} from '@angular/cdk/collections';
 import {MatTableDataSource} from '@angular/material';
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { UserService, User } from '../user.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
-import { ConnectionComponent } from '../connections/connections.component';
+import { ConnectionComponent } from '../connections.component';
 
 
 export interface ConnectionRequestElements {
@@ -17,13 +12,12 @@ export interface ConnectionRequestElements {
 
 
 @Component({
-  selector: 'app-connection-requests',
-  templateUrl: './connection-requests.component.html',
-  styleUrls: ['./connection-requests.component.scss']
+  selector: 'app-connections-request',
+  templateUrl: './connections-request.component.html',
+  styleUrls: ['./connections-request.component.scss']
 })
-export class ConnectionRequestsComponent implements OnInit {
+export class ConnectionsRequestComponent implements OnInit {
   form: FormGroup;
-  user: User;
   receiverUserId: string;
   link: string;
   formErrorMessage: string;
@@ -34,10 +28,8 @@ export class ConnectionRequestsComponent implements OnInit {
 
   constructor(
     private http: HttpClient,
-    private userService: UserService,
-    private router: Router,
     private connectionRoute: ConnectionComponent,
-    ) { }
+  ) { }
 
   ngOnInit() {
     this.formErrorMessage = undefined;
@@ -49,26 +41,22 @@ export class ConnectionRequestsComponent implements OnInit {
       email: new FormControl(''),
     });
 
-    this.userService.userObservable
-      .subscribe(user => {
-        this.user = user;
-      });
     this.loadPendingRequests();
   }
 
-  ignoreUserConnection = function (friend) {
+  ignoreUserConnection = function (connectionRequest) {
     this.formErrorMessage = undefined;
     this.userErrorId = undefined;
 
     this.http.post('/api/connection/action-request', {
       'action': 'reject',
-      'senderUserId': friend.userId,
+      'senderUserId': connectionRequest.userId,
     })
       .subscribe((returnedResult) => {
         if (returnedResult.message === 'Request rejected') {
           // Remove the request from the pendingConnections array
           for ( let i = 0 ; i <= this.pendingConnections.length - 1; i++) {
-            if ( this.pendingConnections[i].userId === friend.userId) {
+            if ( this.pendingConnections[i].userId === connectionRequest.userId) {
               this.pendingConnections.splice(this.pendingConnections.indexOf(this.pendingConnections[i]), 1);
             }
           }
@@ -79,7 +67,7 @@ export class ConnectionRequestsComponent implements OnInit {
         },
           errorResponse => {
             this.formErrorMessage = 'There was a problem ignoring this request.';
-            this.userErrorId = friend.userId;
+            this.userErrorId = connectionRequest.userId;
           });
   };
 
@@ -88,9 +76,7 @@ export class ConnectionRequestsComponent implements OnInit {
     this.formErrorMessage = undefined;
     this.userErrorId = undefined;
     this.pendingConnections = [];
-    this.http.post('/api/connection/get-pending-requests', {
-      'userId': this.user.id,
-    })
+    this.http.post('/api/connection/get-pending-requests')
       .subscribe((data) => {
         let num = 0;
         for (num = 0; num < data.length; num++) {
@@ -107,18 +93,18 @@ export class ConnectionRequestsComponent implements OnInit {
 
 
 
-  approveUserConnection = function (friend) {
+  approveUserConnection = function (connectionRequest) {
     this.formErrorMessage = undefined;
     this.userErrorId = undefined;
     this.http.post('/api/connection/action-request', {
       'action': 'accept',
-      'senderUserId': friend.userId,
+      'senderUserId': connectionRequest.userId,
     })
       .subscribe((returnedResult) => {
         if (returnedResult.message === 'Request accepted') {
            // Remove the request from the pendingConnections array
            for ( let i = 0 ; i <= this.pendingConnections.length - 1; i++) {
-            if ( this.pendingConnections[i].userId === friend.userId) {
+            if ( this.pendingConnections[i].userId === connectionRequest.userId) {
               this.pendingConnections.splice(this.pendingConnections.indexOf(this.pendingConnections[i]), 1);
             }
           }
@@ -128,7 +114,7 @@ export class ConnectionRequestsComponent implements OnInit {
         },
         errorResponse => {
           this.formErrorMessage = 'There was a problem accepting this request.';
-          this.userErrorId = friend.userId;
+          this.userErrorId = connectionRequest.userId;
         });
         // Update notification counter in parent.
         this.connectionRoute.loadPageCounters();

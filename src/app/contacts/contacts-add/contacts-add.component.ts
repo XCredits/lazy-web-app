@@ -1,14 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { UserService } from '../user.service';
 
 @Component({
-  selector: 'app-add-contact',
-  templateUrl: './add-contact.component.html',
-  styleUrls: ['./add-contact.component.scss']
+  selector: 'app-contacts-add',
+  templateUrl: './contacts-add.component.html',
+  styleUrls: ['./contacts-add.component.scss']
 })
-export class AddContactsComponent implements OnInit {
+export class ContactsAddComponent implements OnInit {
   form: FormGroup;
   waiting = false;
   formErrorMessage: string;
@@ -16,7 +15,6 @@ export class AddContactsComponent implements OnInit {
 
   constructor(
     private http: HttpClient,
-    private userService: UserService,
   ) { }
 
   ngOnInit() {
@@ -25,8 +23,6 @@ export class AddContactsComponent implements OnInit {
       familyName: new FormControl(''),
       email: new FormControl('', [Validators.required, Validators.email]),
     });
-   // this.form.valueChanges.subscribe(formData => this.checkUsername(formData));
-
   }
 
   submit = function (formData) {
