@@ -86,7 +86,6 @@ import { OrganizationComponent } from './organization/organization.component';
 import { CreateOrganizationComponent } from './create-organization/create-organization.component';
 import { UpdateOrganizationComponent } from './update-organization/update-organization.component';
 import { AddUserComponent } from './add-user/add-user.component';
-import { CreateProductComponent } from './create-product/create-product.component';
 import { ContactsComponent } from './contacts/contacts.component';
 import { ContactsAddComponent } from './contacts/contacts-add/contacts-add.component';
 import { ContactsViewComponent } from './contacts/contacts-view/contacts-view.component';
@@ -136,7 +135,6 @@ import { ConnectionsViewComponent } from './connections/connections-view/connect
     CreateOrganizationComponent,
     UpdateOrganizationComponent,
     AddUserComponent,
-    CreateProductComponent,
   ],
   imports: [
     BrowserModule,
@@ -199,12 +197,6 @@ import { ConnectionsViewComponent } from './connections/connections-view/connect
         path: 'organization/:orgUsername/add-user',
         component: AddUserComponent,
         data: { title: 'Add User' },
-        canActivate: [AuthGuard],
-      },
-      {
-        path: 'create-product',
-        component: CreateProductComponent,
-        data: { title: 'Create Product' },
         canActivate: [AuthGuard],
       },
       {
