@@ -92,10 +92,10 @@ import { AddContactsComponent } from './addcontact/add-contact.component';
 import { ViewContactsComponent } from './view-contacts/view-contacts.component';
 import { ViewFavContactsComponent } from './view-fav-contacts/view-fav-contacts.component';
 import { ConnectionComponent } from './connections/connections.component';
-import { AddConnectionComponent } from './add-connection/add-connections.component';
-import { SentConnectionComponent } from './sent-connections/sent-Connections.component';
-import { ConnectionRequestsComponent } from './connection-requests/connection-requests.component';
-import { ViewConnectionsComponent } from './view-connections/view-connections.component';
+import { ConnectionsAddComponent } from './connections/connections-add/connections-add.component';
+import { ConnectionsSentComponent } from './connections/connections-sent/connections-sent.component';
+import { ConnectionsRequestComponent } from './connections/connections-request/connections-request.component';
+import { ConnectionsViewComponent } from './connections/connections-view/connections-view.component';
 
 @NgModule({
   declarations: [
@@ -128,10 +128,10 @@ import { ViewConnectionsComponent } from './view-connections/view-connections.co
     ViewFavContactsComponent,
     ViewContactsComponent,
     ConnectionComponent,
-    AddConnectionComponent,
-    SentConnectionComponent,
-    ConnectionRequestsComponent,
-    ViewConnectionsComponent,
+    ConnectionsAddComponent,
+    ConnectionsSentComponent,
+    ConnectionsRequestComponent,
+    ConnectionsViewComponent,
     OrganizationComponent,
     CreateOrganizationComponent,
     UpdateOrganizationComponent,
@@ -299,19 +299,19 @@ import { ViewConnectionsComponent } from './view-connections/view-connections.co
           },
           {
             path: 'view',
-            component: ViewConnectionsComponent,
+            component: ConnectionsViewComponent,
           },
           {
             path: 'add',
-            component: AddConnectionComponent,
+            component: ConnectionsAddComponent,
           },
           {
             path: 'sent',
-            component: SentConnectionComponent,
+            component: ConnectionsSentComponent,
           },
           {
             path: 'request',
-            component: ConnectionRequestsComponent
+            component: ConnectionsRequestComponent
           }
          ]
       },

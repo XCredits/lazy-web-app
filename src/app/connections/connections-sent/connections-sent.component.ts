@@ -1,6 +1,7 @@
 import {MatTableDataSource} from '@angular/material';
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
+import { UserService, User } from '../../user.service';
 
 
 export interface ConnectionRequestElements {
@@ -9,26 +10,33 @@ export interface ConnectionRequestElements {
 }
 
 @Component({
-  selector: 'app-view-connections',
-  templateUrl: './view-connections.component.html',
-  styleUrls: ['./view-connections.component.scss']
+  selector: 'app-connections-sent',
+  templateUrl: './connections-sent.component.html',
+  styleUrls: ['./connections-sent.component.scss']
 })
-export class ViewConnectionsComponent implements OnInit {
+export class ConnectionsSentComponent implements OnInit {
+  user: User;
   receiverUserId: string;
   link: string;
   confirmedConnections: { userId: string, givenName: string, familyName: string }[] = [];
   displayedColumns: string[] = [ 'Given Name', 'Family Name', 'Action'];
   dataSource = new MatTableDataSource<ConnectionRequestElements>();
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private userService: UserService) { }
 
   ngOnInit() {
-    this.loadConfirmedRequests();
+    this.userService.userObservable
+      .subscribe(user => {
+        this.user = user;
+      });
+    this.loadSentRequests();
   }
 
-  loadConfirmedRequests = function () {
+  loadSentRequests = function () {
     this.confirmedConnections = [];
-    this.http.post('/api/connection/get-connections')
+    this.http.post('/api/connection/get-sent-request', {
+      'userId': this.user.id,
+    })
       .subscribe((data) => {
         let num = 0;
         for (num = 0; num < data.length; num++) {
@@ -43,12 +51,16 @@ export class ViewConnectionsComponent implements OnInit {
       });
   };
 
-  deleteConnection = function (connection) {
-    this.http.post('/api/connection/remove-connection', {
-      'senderUserId': connection.userId,
+  deleteConnection = function (connectionRequest) {
+    this.http.post('/api/connection/action-request', {
+      'userId': this.user.id,
+      'senderUserId': connectionRequest.userId,
+      'action': 'cancel',
     })
-      .subscribe(() => {
-        this.loadConfirmedRequests();
+      .subscribe((result) => {
+        if (result.message === 'Request cancelled' ) {
+            this.loadSentRequests();
+        }
       });
   };
 }

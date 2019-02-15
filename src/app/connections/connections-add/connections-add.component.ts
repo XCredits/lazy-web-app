@@ -1,14 +1,14 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { UserService, User } from '../user.service';
+import { UserService, User } from '../../user.service';
 import { FormGroup, FormControl } from '@angular/forms';
 
 @Component({
-  selector: 'app-add-connections',
-  templateUrl: './add-connections.component.html',
-  styleUrls: ['./add-connections.component.scss']
+  selector: 'app-connections-add',
+  templateUrl: './connections-add.component.html',
+  styleUrls: ['./connections-add.component.scss']
 })
-export class AddConnectionComponent implements OnInit {
+export class ConnectionsAddComponent implements OnInit {
   form: FormGroup;
   user: User;
   receiverUserId: string;

@@ -2,7 +2,7 @@ import {MatTableDataSource} from '@angular/material';
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { ConnectionComponent } from '../connections/connections.component';
+import { ConnectionComponent } from '../connections.component';
 
 
 export interface ConnectionRequestElements {
@@ -12,11 +12,11 @@ export interface ConnectionRequestElements {
 
 
 @Component({
-  selector: 'app-connection-requests',
-  templateUrl: './connection-requests.component.html',
-  styleUrls: ['./connection-requests.component.scss']
+  selector: 'app-connections-request',
+  templateUrl: './connections-request.component.html',
+  styleUrls: ['./connections-request.component.scss']
 })
-export class ConnectionRequestsComponent implements OnInit {
+export class ConnectionsRequestComponent implements OnInit {
   form: FormGroup;
   receiverUserId: string;
   link: string;
