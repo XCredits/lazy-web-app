@@ -38,7 +38,7 @@ function addRequest(req, res) {
       .then((resultUsername) => {
         const receivingUserId = resultUsername.refId;
         if (userId === receivingUserId) {
-          res.status(500).send('Cannot add yourself as a connection.');
+          res.status(500).send('Cannot add yourself as a connection' );
         }
         return Connection.findOne({
               userId: userId,
@@ -47,7 +47,7 @@ function addRequest(req, res) {
             })
             .then((resultConnection) => {
               if ( resultConnection !== null ) {
-                return res.status(500).send({message: 'Already connected'});
+                return res.status(500).send({ message: 'Already connected' });
               }
               return ConnectionRequest.findOne({
                     senderUserId: userId,
@@ -56,7 +56,7 @@ function addRequest(req, res) {
                   })
                   .then((resultConnectionRequest) => {
                     if ( resultConnectionRequest !== null ) {
-                      return res.status(500).send({message: 'Already connected'});
+                      return res.status(500).send({ message: 'Already connected' });
                     }
                     // Making new connection
                     const connectionReq = new ConnectionRequest();
@@ -74,18 +74,18 @@ function addRequest(req, res) {
                         })
                         .catch((error) => {
                           return res.status(500)
-                              .json({ message: 'Could not save connection request.' });
+                              .json({ message: 'Could not save connection request' });
                         });
                   })
                   .catch(() => {
                     return res.status(500)
-                        .send('Problem finding connection requests.');
+                        .send( 'Problem finding connection requests' );
                   });
             });
         })
         .catch(() => {
           return res.status(500)
-              .send('Problem finding connections.');
+              .send( 'Problem finding connections' );
         });
 }
 
@@ -211,7 +211,7 @@ function actionConnectionRequest(req, res) {
       rejectConnectionRequest();
       break;
     default:
-      res.status(422).send({ message: 'Could not action connection request.' });
+      res.status(422).send({ message: 'Could not action connection request' });
       break;
   }
 
@@ -249,16 +249,16 @@ function actionConnectionRequest(req, res) {
                         res.send({ message: 'Request accepted' });
                       })
                       .catch((err) => {
-                        res.status(500).send({ message: 'Could not save connection requests.' });
+                        res.status(500).send({ message: 'Could not save connection requests' });
                       });
                 })
                 .catch(() => {
                   return res.status(500)
-                      .send({ message: 'Could not save connection request.' });
+                      .send({ message: 'Could not save connection request' });
                 });
           })
           .catch(() => {
-            res.status(500).send({ message: 'Could not save connection request.' });
+            res.status(500).send({ message: 'Could not save connection request' });
           });
   }
 
@@ -281,7 +281,7 @@ function actionConnectionRequest(req, res) {
         })
         .catch(() => {
           res.status(500)
-              .send({ message: 'Could not cancel connection request.' });
+              .send({ message: 'Could not cancel connection request' });
         });
   }
 
@@ -304,7 +304,7 @@ function actionConnectionRequest(req, res) {
         })
         .catch(() => {
           res.status(500)
-              .send({ message: 'Could not reject connection request.' });
+              .send({ message: 'Could not reject connection request' });
         });
   }
 }
@@ -328,7 +328,7 @@ function getPendingRequestCount(req, res) {
         res.send({ message: result });
       })
       .catch((err) => {
-        res.status(500).send({ message: 'Error retrieving pending requests count.' });
+        res.status(500).send({ message: 'Error retrieving pending requests count' });
       });
 }
 
@@ -349,7 +349,7 @@ function getConnectionCount(req, res) {
         res.send({ message: result });
       })
       .catch((err) => {
-        res.status(500).send({ message: 'Error retrieving connection count.' });
+        res.status(500).send({ message: 'Error retrieving connection count' });
       });
 }
 
@@ -379,7 +379,7 @@ function getSentRequests(req, res) {
               res.send(resultsFiltered);
             })
             .catch((err) => {
-              res.status(500).send({ message: 'Error retrieving pending requests.' });
+              res.status(500).send({ message: 'Error retrieving pending requests' });
             });
       })
       .catch((err) => {
@@ -417,11 +417,11 @@ function removeConnection(req, res) {
             })
             .catch(() => {
               res.status(500)
-                  .send({ message: 'Could not remove connection.' });
+                  .send({ message: 'Could not remove connection' });
             });
       })
       .catch(() => {
         res.status(500)
-          .send({ message: 'Could not remove connection.' });
+          .send({ message: 'Could not remove connection' });
       });
 }
