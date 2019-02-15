@@ -43,7 +43,7 @@ export class UpdateOrganizationComponent implements OnInit {
     this.organizationService.orgObservable
         .subscribe((organization) => {
           this.logo = organization.logo;
-        }).unsubscribe();
+        });
     this.sub = this.route.params.subscribe(params => {
       this.http.post<any>('/api/organization/get-details', {
           'username': params.orgUsername
@@ -125,7 +125,7 @@ export class UpdateOrganizationComponent implements OnInit {
   }
 
   handleImageUpload(imageUrl: string) {
-    this.organizationService.updateOrgDetails(this.orgUsername['username']);
+    this.organizationService.updateOrgDetails(this.orgUsername.username);
     this.snackBar.open('Image Uploaded Successfully', 'Dismiss', {
       duration: 5000,
       verticalPosition: 'top',

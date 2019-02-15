@@ -3,7 +3,7 @@ const UserOrganization = require('../models/user-organization.model');
 const auth = require('./jwt-auth.controller');
 const User = require('../models/user.model');
 const Username = require('../models/username.model');
-const UserOrgHistory = require('../models/userOrganization-history.model');
+const UserOrgHistory = require('../models/user-organization-history.model');
 const { isValidDisplayUsername, normalizeUsername } = require('./utils.controller');
 
 import { uploadSingleImage } from '../services/image-upload';
@@ -619,25 +619,17 @@ function removeUser(req, res) {
 }
 
 function getUserByUsername(req, res) {
-  const userId = req.body.userId;
   const displayUsername = req.body.username;
-
-  if (!userId && displayUsername) {
-    const username = normalizeUsername(displayUsername);
-    return Username.findOne({username: username, current: true})
-        .then((returnUsername) => {
-          return res.send(returnUsername);
-        })
-        .catch(() => {
-          return res.status(500).send({message: 'Username not found'});
-        });
-  } else if (userId && !displayUsername) {
-      return User.findOne({_id: userId})
-          .then((returnUser) => {
-            return res.send(returnUser);
-          })
-          .catch(() => {
-            return res.status(500).send({message: 'User not found'});
-          });
+  if (typeof displayUsername !== 'string' ||
+      !isValidDisplayUsername(displayUsername)) {
+    return res.status(500).send({ message: 'Request validation failed' });
   }
+  const username = normalizeUsername(displayUsername);
+  return Username.findOne({username: username, current: true})
+      .then((returnUser) => {
+        return res.send(returnUser);
+      })
+      .catch(() => {
+        return res.status(500).send({message: 'Username not found'});
+      });
 }
