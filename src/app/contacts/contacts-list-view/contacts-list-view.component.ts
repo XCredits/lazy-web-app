@@ -3,14 +3,11 @@ import {MatTableDataSource} from '@angular/material';
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
-import { listLazyRoutes } from '@angular/compiler/src/aot/lazy_routes';
 import { ContactsComponent } from '../contacts.component';
+import { connectableObservableDescriptor } from 'rxjs/internal/observable/ConnectableObservable';
+import { Router } from '@angular/router';
 
 export interface ContactElements {
-  position: number;
-  givenName: string;
-  familyName: number;
-  email: number;
   listName: string;
 }
 
@@ -18,83 +15,75 @@ export interface List {
   value: string;
 }
 @Component({
-  selector: 'app-contacts-view',
-  templateUrl: './contacts-view.component.html',
-  styleUrls: ['./contacts-view.component.scss']
+  selector: 'app-contacts-list-view',
+  templateUrl: './contacts-list-view.component.html',
+  styleUrls: ['./contacts-list-view.component.scss']
 })
-export class ContactsViewComponent implements OnInit {
+export class ContactsListViewComponent implements OnInit {
   form: FormGroup;
   disableButton = true;
   submitSuccess = false;
   formErrorMessage: string;
   contactId: string;
   private allContacts = [];
-  displayedColumns: string[] = ['select', 'givenName', 'familyName', 'email', 'listName', 'Action'];
+  displayedColumns: string[] = ['select', 'listName', 'Action'];
   selection = new SelectionModel<ContactElements>(true, []);
   dataSource = new MatTableDataSource<ContactElements>(this.allContacts);
   listAddMessage: string;
   isEditMode: boolean;
   isViewAll: boolean;
-  str: string;
+  list: List[] = [
+    {value: 'Steak'},
+    {value: 'Pizza'},
+    {value: 'Tacos'}
+  ];
+  lists: { listId: string, listName: string, numberOfContacts: number }[] = [];
+
   constructor(
     private http: HttpClient,
     private connectionRoute: ContactsComponent,
+    private router: Router,
   ) { }
 
   ngOnInit() {
     this.listAddMessage = undefined;
     this.isEditMode = false;
     this.isViewAll = true;
-    this.loadContacts();
 
-
-
+    this.loadLists();
   }
-  applyFilter(filterValue: string) {
-    this.dataSource.filter = filterValue.trim().toLowerCase();
-  }
-  loadContacts = function () {
+
+
+  loadLists = function () {
     this.dataSource = [];
-    this.allContacts = [];
-    this.http.post('/api/contacts/view', { })
+    this.lists = [];
+    this.http.post('/api/contacts-list/view', { })
         .subscribe ((data: any) => {
-          this.allContacts = data;
-          this.newContacts = data;
+          this.lists = data;
+          for (const counter of this.lists) {
+              counter.numberOfContacts = 0;
+          }
           this.dataSource = new MatTableDataSource<ContactElements>(this.allContacts);
-          this.loadContactsLists();
+          this.loadContactsRelations();
         });
   };
-
-
-  loadContactsLists = function () {
-    this.http.post('/api/contacts-list/view', {})
-      .subscribe((data: any) => {
-        this.lists = data;
-        this.loadContactsRelations();
-      });
-  };
-
-
 
   loadContactsRelations = function () {
     this.http.post('/api/contacts/viewall', {})
     .subscribe((data: any) => {
 
       this.listsConnections = data;
-
-
-      for (const index of this.newContacts) {
-        for (const relation of this.listsConnections) {
-          if ( relation['contactId'] === index ['contactId']) {
-            const fm = this.lists.find(el => el.listId === relation['listId']);
-            index.listName = fm.listName;
+      for (let i = 0 ; i < this.lists.length ; i++) {
+        for (const j of this.listsConnections) {
+          if ( j.listId === this.lists[i].listId ) {
+             this.lists[i].numberOfContacts ++;
           }
         }
+
       }
     });
 
   };
-
 
   deleteContact = function (contact) {
     this.http.post('/api/contacts/remove', {
@@ -102,27 +91,23 @@ export class ContactsViewComponent implements OnInit {
     })
       .subscribe((result) => {
         if (result.message === 'Contact deleted' ) {
-            this.loadContacts();
+            this.loadLists();
         }
       });
   };
 
-  openAddContactForm = function () {
+  openAddListForm = function () {
+    console.log('edit is true');
     this.isEditMode = true;
     this.isViewAll = false;
-
     this.form = new FormGroup({
-      givenName: new FormControl(''),
-      familyName: new FormControl(''),
-      email: new FormControl('', [Validators.required, Validators.email]),
-      contactList: new FormControl(''),
+      listName: new FormControl(''),
     });
   };
 
 
 
   editContact = function (contact) {
-    console.log(contact);
     this.isEditMode = true;
     this.isViewAll = false;
     this.contactId = contact.contactId;
@@ -130,7 +115,6 @@ export class ContactsViewComponent implements OnInit {
       givenName: new FormControl(contact.givenName),
       familyName: new FormControl(contact.familyName),
       email: new FormControl(contact.email, [Validators.required, Validators.email]),
-      contactList: new FormControl([this.contactId]),
     });
 
   };
@@ -145,20 +129,16 @@ export class ContactsViewComponent implements OnInit {
       .subscribe((result) => {
         if (result.message === 'Contact updated' ) {
           this.isEditMode = false;
-          this.loadContacts();
+          this.loadLists();
         }
       });
   };
 
-  submit = function () { };
 
-  addContact = function (newContact) {
 
-    this.http.post('/api/contacts/add', {
-      'givenName': newContact.givenName,
-      'familyName': newContact.familyName,
-      'email': newContact.email,
-      'contactListId': newContact.contactList.listId,
+  addList = function (form) {
+    this.http.post('/api/contacts-list/add', {
+      'listName': form.listName,
     })
       .subscribe((result) => {
         this.isEditMode = false;
@@ -179,14 +159,14 @@ export class ContactsViewComponent implements OnInit {
         });
   };
 
-
   resetForm = function() {
     this.listAddMessage = undefined;
     this.isEditMode = false;
     this.isViewAll = true;
-    this.loadContacts();
+    this.loadLists();
 
   };
+
 
   ignoreSaveContact = function() {
     this.listAddMessage = undefined;
@@ -194,6 +174,15 @@ export class ContactsViewComponent implements OnInit {
     this.isViewAll = true;
   };
 
+
+  submit = function () {
+  };
+
+
+  onSelect(list) {
+    this.router.navigate(['/contacts/lists/' + list.listId]);
+
+  }
 
 
   isAllSelected() {

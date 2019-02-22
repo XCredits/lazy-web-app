@@ -88,13 +88,14 @@ import { UpdateOrganizationComponent } from './update-organization/update-organi
 import { AddUserComponent } from './add-user/add-user.component';
 import { CreateProductComponent } from './create-product/create-product.component';
 import { ContactsComponent } from './contacts/contacts.component';
-import { ContactsAddComponent } from './contacts/contacts-add/contacts-add.component';
+import { ContactsListViewComponent } from './contacts/contacts-list-view/contacts-list-view.component';
+import { ContactsListDetailsComponent } from './contacts/contacts-list-details/contacts-list-details.component';
 import { ContactsViewComponent } from './contacts/contacts-view/contacts-view.component';
-import { ContactsFavComponent } from './contacts/contacts-fav/contacts-fav.component';
 import { ConnectionComponent } from './connections/connections.component';
 import { ConnectionsAddComponent } from './connections/connections-add/connections-add.component';
 import { ConnectionsSentComponent } from './connections/connections-sent/connections-sent.component';
 import { ConnectionsRequestComponent } from './connections/connections-request/connections-request.component';
+import { ConnectionsRequestDetailsComponent } from './connections/connections-request-details/connections-request-details.component';
 import { ConnectionsViewComponent } from './connections/connections-view/connections-view.component';
 
 @NgModule({
@@ -124,19 +125,20 @@ import { ConnectionsViewComponent } from './connections/connections-view/connect
     FooterComponent,
     ChangeThemeComponent,
     ContactsComponent,
-    ContactsAddComponent,
-    ContactsFavComponent,
+    ContactsListViewComponent,
     ContactsViewComponent,
     ConnectionComponent,
     ConnectionsAddComponent,
     ConnectionsSentComponent,
     ConnectionsRequestComponent,
+    ConnectionsRequestDetailsComponent,
     ConnectionsViewComponent,
     OrganizationComponent,
     CreateOrganizationComponent,
     UpdateOrganizationComponent,
     AddUserComponent,
     CreateProductComponent,
+    ContactsListDetailsComponent,
   ],
   imports: [
     BrowserModule,
@@ -276,12 +278,15 @@ import { ConnectionsViewComponent } from './connections/connections-view/connect
             component: ContactsViewComponent,
           },
           {
-            path: 'fav',
-            component: ContactsFavComponent,
+            path: 'lists',
+            component: ContactsListViewComponent,
           },
           {
-            path: 'add',
-            component: ContactsAddComponent,
+            path: 'lists/:listId',
+            component: ContactsListDetailsComponent,
+            data: { title: 'list details' },
+            canActivate: [AuthGuard],
+
           }
         ]
       },
@@ -312,6 +317,13 @@ import { ConnectionsViewComponent } from './connections/connections-view/connect
           {
             path: 'request',
             component: ConnectionsRequestComponent
+          },
+          {
+            path: 'request/:requestUserId',
+            component: ConnectionsRequestDetailsComponent,
+            data: { title: 'Request details' },
+            canActivate: [AuthGuard],
+
           }
          ]
       },
