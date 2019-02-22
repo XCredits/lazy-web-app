@@ -90,7 +90,9 @@ import { CreateProductComponent } from './create-product/create-product.componen
 import { ContactsComponent } from './contacts/contacts.component';
 import { ContactsListViewComponent } from './contacts/contacts-list-view/contacts-list-view.component';
 import { ContactsListDetailsComponent } from './contacts/contacts-list-details/contacts-list-details.component';
+import { ContactsListAddComponent } from './contacts/contacts-list-add/contacts-list-add.component';
 import { ContactsViewComponent } from './contacts/contacts-view/contacts-view.component';
+import { ContactsAddComponent } from './contacts/contacts-add/contacts-add.component';
 import { ConnectionComponent } from './connections/connections.component';
 import { ConnectionsAddComponent } from './connections/connections-add/connections-add.component';
 import { ConnectionsSentComponent } from './connections/connections-sent/connections-sent.component';
@@ -127,6 +129,7 @@ import { ConnectionsViewComponent } from './connections/connections-view/connect
     ContactsComponent,
     ContactsListViewComponent,
     ContactsViewComponent,
+    ContactsAddComponent,
     ConnectionComponent,
     ConnectionsAddComponent,
     ConnectionsSentComponent,
@@ -139,6 +142,7 @@ import { ConnectionsViewComponent } from './connections/connections-view/connect
     AddUserComponent,
     CreateProductComponent,
     ContactsListDetailsComponent,
+    ContactsListAddComponent,
   ],
   imports: [
     BrowserModule,
@@ -278,8 +282,16 @@ import { ConnectionsViewComponent } from './connections/connections-view/connect
             component: ContactsViewComponent,
           },
           {
+            path: 'add',
+            component: ContactsAddComponent,
+          },
+          {
             path: 'lists',
             component: ContactsListViewComponent,
+          },
+          {
+            path: 'lists/add',
+            component: ContactsListAddComponent,
           },
           {
             path: 'lists/:listId',

@@ -9,7 +9,7 @@
 </div>
 <div *ngIf='isViewAll'>
     <button color="primary" class="simple-form-button pull-right" mat-raised-button
-      (click)="openAddListForm(element)">
+      routerLink='./add'>
       +
     </button>
     <div *ngIf='lists.length > 0'>
