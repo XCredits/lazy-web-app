@@ -4,9 +4,14 @@ import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { ContactsComponent } from '../contacts.component';
-import { connectableObservableDescriptor } from 'rxjs/internal/observable/ConnectableObservable';
 import { Router } from '@angular/router';
 
+export interface ListDetails {
+  listId: string;
+  listName: string;
+  numberOfContacts: number;
+
+}
 export interface ContactElements {
   listName: string;
 }
@@ -24,7 +29,7 @@ export class ContactsListViewComponent implements OnInit {
   disableButton = true;
   submitSuccess = false;
   formErrorMessage: string;
-  contactId: string;
+  listId: string;
   private allContacts = [];
   displayedColumns: string[] = ['select', 'listName', 'Action'];
   selection = new SelectionModel<ContactElements>(true, []);
@@ -32,12 +37,14 @@ export class ContactsListViewComponent implements OnInit {
   listAddMessage: string;
   isEditMode: boolean;
   isViewAll: boolean;
+  isUpdateMode: boolean;
   list: List[] = [
     {value: 'Steak'},
     {value: 'Pizza'},
     {value: 'Tacos'}
   ];
   lists: { listId: string, listName: string, numberOfContacts: number }[] = [];
+  listDetail: ListDetails;
 
   constructor(
     private http: HttpClient,
@@ -85,19 +92,26 @@ export class ContactsListViewComponent implements OnInit {
 
   };
 
-  deleteContact = function (contact) {
-    this.http.post('/api/contacts/remove', {
-      'contactId': contact.contactId,
+  deleteList = function () {
+
+    this.http.post('/api/contacts-list/remove', {
+      'listId': this.listDetail.listId,
     })
       .subscribe((result) => {
-        if (result.message === 'Contact deleted' ) {
-            this.loadLists();
+        if (result.message === 'List deleted' ) {
+            this.resetForm();
         }
       });
   };
 
+  openDeleteList = function (list) {
+    console.log(list);
+    this.listDetail = list;
+    this.listId = list.contactId;
+    this.isDelete = true;
+    this.isViewAll = false;
+  };
   openAddListForm = function () {
-    console.log('edit is true');
     this.isEditMode = true;
     this.isViewAll = false;
     this.form = new FormGroup({
@@ -107,19 +121,20 @@ export class ContactsListViewComponent implements OnInit {
 
 
 
-  editContact = function (contact) {
-    this.isEditMode = true;
+  editListForm = function (list) {
+    this.isUpdateMode = true;
     this.isViewAll = false;
-    this.contactId = contact.contactId;
+    this.listDetail = list;
     this.form = new FormGroup({
-      givenName: new FormControl(contact.givenName),
-      familyName: new FormControl(contact.familyName),
-      email: new FormControl(contact.email, [Validators.required, Validators.email]),
+      listName: new FormControl(this.listDetail.listId),
     });
-
+    console.log(this.listDetail);
   };
 
-  updateContact = function (contact) {
+  updateList = function (contact) {
+    console.log(contact);
+    console.log(this.ListDetails);
+    return;
     this.http.post('/api/contacts/update', {
       'contactId': this.contactId,
       'givenName': contact.givenName,
@@ -163,6 +178,9 @@ export class ContactsListViewComponent implements OnInit {
     this.listAddMessage = undefined;
     this.isEditMode = false;
     this.isViewAll = true;
+    this.isDelete = false;
+    this.isUpdateMode = false;
+
     this.loadLists();
 
   };
@@ -172,6 +190,8 @@ export class ContactsListViewComponent implements OnInit {
     this.listAddMessage = undefined;
     this.isEditMode = false;
     this.isViewAll = true;
+    this.isUpdateMode = false;
+
   };
 
 

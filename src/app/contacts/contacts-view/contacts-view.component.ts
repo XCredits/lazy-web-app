@@ -36,6 +36,9 @@ export class ContactsViewComponent implements OnInit {
   isEditMode: boolean;
   isViewAll: boolean;
   str: string;
+  selected: string;
+  isDelete: boolean;
+
   constructor(
     private http: HttpClient,
     private connectionRoute: ContactsComponent,
@@ -45,6 +48,7 @@ export class ContactsViewComponent implements OnInit {
     this.listAddMessage = undefined;
     this.isEditMode = false;
     this.isViewAll = true;
+    this.isDelete = false;
     this.loadContacts();
 
 
@@ -95,14 +99,23 @@ export class ContactsViewComponent implements OnInit {
 
   };
 
+  openDeleteList = function (contact) {
+    console.log(contact.contactId);
+    this.contactId = contact.contactId;
 
-  deleteContact = function (contact) {
+    this.isDelete = true;
+    this.isViewAll = false;
+  };
+
+  deleteContact = function () {
+
+
     this.http.post('/api/contacts/remove', {
-      'contactId': contact.contactId,
+      'contactId': this.contactId,
     })
       .subscribe((result) => {
         if (result.message === 'Contact deleted' ) {
-            this.loadContacts();
+            this.resetForm();
         }
       });
   };
@@ -120,18 +133,18 @@ export class ContactsViewComponent implements OnInit {
   };
 
 
-
   editContact = function (contact) {
     console.log(contact);
     this.isEditMode = true;
     this.isViewAll = false;
     this.contactId = contact.contactId;
     this.form = new FormGroup({
-      givenName: new FormControl(contact.givenName),
+      givenName: new FormControl(contact.listName),
       familyName: new FormControl(contact.familyName),
       email: new FormControl(contact.email, [Validators.required, Validators.email]),
-      contactList: new FormControl([this.contactId]),
+      contactList: new FormControl([contact.listName]),
     });
+
 
   };
 
@@ -143,9 +156,10 @@ export class ContactsViewComponent implements OnInit {
       'email': contact.email,
     })
       .subscribe((result) => {
+        console.log(result);
         if (result.message === 'Contact updated' ) {
-          this.isEditMode = false;
-          this.loadContacts();
+          console.log('----');
+          this.resetForm();
         }
       });
   };
@@ -184,6 +198,7 @@ export class ContactsViewComponent implements OnInit {
     this.listAddMessage = undefined;
     this.isEditMode = false;
     this.isViewAll = true;
+    this.isDelete = false;
     this.loadContacts();
 
   };

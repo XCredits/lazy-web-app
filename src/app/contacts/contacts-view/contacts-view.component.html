@@ -11,7 +11,7 @@
 
 <div *ngIf='isViewAll'>
     <button color="primary" class="simple-form-button pull-right" mat-raised-button
-      (click)="openAddContactForm(element)">
+        routerLink='/contacts/add'>
       +
     </button>
     <mat-form-field>
@@ -60,7 +60,7 @@
         <td mat-cell *matCellDef="let element">
           <button mat-icon-button (click)="editContact(element)">
             <mat-icon>create</mat-icon>
-          </button> <button mat-icon-button (click)="deleteContact(element)">
+          </button> <button mat-icon-button (click)="openDeleteContact(element)">
             <mat-icon>delete</mat-icon>
           </button>
         </td>
@@ -73,22 +73,23 @@
   </div>
 </div>
 
-
-<ng-template #modal>
-    <mat-dialog-content>
-      <div>
-        Are you sure you want to delete this contact?
-      </div>
-    </mat-dialog-content>
-    <mat-dialog-actions align='end'>
-      <button (click)="cancel()" mat-raised-button color='warn'>Cancel
-      </button>
-      <button (click)="deleteOrg()" mat-raised-button cdkFocusInitial color='primary'>Yes
-      </button>
-    </mat-dialog-actions>
-  </ng-template>
-
-
+<div *ngIf='isDelete' align='center'>
+  <mat-card>
+    <mat-card-title> Are you sure you want to delete this contact? </mat-card-title>
+    <div >
+    <button routerLink='/contacts/view' class="simple-form-button pull-center" color="Basic" mat-raised-button
+      (click)="resetForm()"> 
+      Cancel
+    </button>
+    &nbsp;
+    &nbsp;
+    <button routerLink='/contacts/view' class="simple-form-button pull-center" color="primary" mat-raised-button
+      (click)="deleteContact()"> 
+      Delete
+    </button>
+    </div>
+  </mat-card>
+</div>
 
  
 <div class="simple-form-aligner" *ngIf='isEditMode'>
