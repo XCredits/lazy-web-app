@@ -300,6 +300,31 @@ function removeList(req, res) {
 
 function updateList(req, res) {
 
+  const userId = req.userId;
+  const listId = req.body.listId;
+  const UpdatedListName = req.body.UpdatedListName;
+  // Validate
+  if (typeof listId !== 'string' ||
+      typeof UpdatedListName !== 'string' ) {
+    return res.status(422).json({ message: 'Request failed validation' });
+  }
+
+  return ContactList.findOneAndUpdate({
+    _id: listId,
+    },
+    {
+      $set:
+      {
+        listName: UpdatedListName,
+      }
+    })
+    .then(() => {
+      return res.send({ message: 'List updated' });
+    })
+    .catch(() => {
+      res.status(500)
+        .send({ message: 'Could not update List.' });
+    });
 }
 
 

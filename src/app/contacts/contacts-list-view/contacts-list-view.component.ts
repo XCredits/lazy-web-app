@@ -3,7 +3,6 @@ import {MatTableDataSource} from '@angular/material';
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
-import { ContactsComponent } from '../contacts.component';
 import { Router } from '@angular/router';
 
 export interface ListDetails {
@@ -12,13 +11,8 @@ export interface ListDetails {
   numberOfContacts: number;
 
 }
-export interface ContactElements {
-  listName: string;
-}
 
-export interface List {
-  value: string;
-}
+
 @Component({
   selector: 'app-contacts-list-view',
   templateUrl: './contacts-list-view.component.html',
@@ -27,28 +21,18 @@ export interface List {
 export class ContactsListViewComponent implements OnInit {
   form: FormGroup;
   disableButton = true;
-  submitSuccess = false;
-  formErrorMessage: string;
-  listId: string;
-  private allContacts = [];
   displayedColumns: string[] = ['select', 'listName', 'Action'];
-  selection = new SelectionModel<ContactElements>(true, []);
-  dataSource = new MatTableDataSource<ContactElements>(this.allContacts);
+  selection = new SelectionModel<string>(true, []);
+  dataSource = new MatTableDataSource<string>();
   listAddMessage: string;
   isEditMode: boolean;
   isViewAll: boolean;
   isUpdateMode: boolean;
-  list: List[] = [
-    {value: 'Steak'},
-    {value: 'Pizza'},
-    {value: 'Tacos'}
-  ];
   lists: { listId: string, listName: string, numberOfContacts: number }[] = [];
-  listDetail: ListDetails;
+  listDetails: ListDetails;
 
   constructor(
     private http: HttpClient,
-    private connectionRoute: ContactsComponent,
     private router: Router,
   ) { }
 
@@ -70,7 +54,7 @@ export class ContactsListViewComponent implements OnInit {
           for (const counter of this.lists) {
               counter.numberOfContacts = 0;
           }
-          this.dataSource = new MatTableDataSource<ContactElements>(this.allContacts);
+          this.dataSource = new MatTableDataSource<string>(this.allContacts);
           this.loadContactsRelations();
         });
   };
@@ -86,16 +70,14 @@ export class ContactsListViewComponent implements OnInit {
              this.lists[i].numberOfContacts ++;
           }
         }
-
       }
     });
 
   };
 
   deleteList = function () {
-
     this.http.post('/api/contacts-list/remove', {
-      'listId': this.listDetail.listId,
+      'listId': this.listDetails.listId,
     })
       .subscribe((result) => {
         if (result.message === 'List deleted' ) {
@@ -105,12 +87,13 @@ export class ContactsListViewComponent implements OnInit {
   };
 
   openDeleteList = function (list) {
-    console.log(list);
-    this.listDetail = list;
+    this.listDetails = list;
     this.listId = list.contactId;
     this.isDelete = true;
     this.isViewAll = false;
   };
+
+
   openAddListForm = function () {
     this.isEditMode = true;
     this.isViewAll = false;
@@ -124,27 +107,23 @@ export class ContactsListViewComponent implements OnInit {
   editListForm = function (list) {
     this.isUpdateMode = true;
     this.isViewAll = false;
-    this.listDetail = list;
+    this.listDetails = list;
     this.form = new FormGroup({
-      listName: new FormControl(this.listDetail.listId),
+      listName: new FormControl(list.listName),
     });
-    console.log(this.listDetail);
   };
 
   updateList = function (contact) {
-    console.log(contact);
-    console.log(this.ListDetails);
-    return;
-    this.http.post('/api/contacts/update', {
-      'contactId': this.contactId,
-      'givenName': contact.givenName,
-      'familyName': contact.familyName,
-      'email': contact.email,
+    this.http.post('/api/contacts-list/update', {
+      'listId': this.listDetails.listId,
+      'UpdatedListName': contact.listName,
     })
       .subscribe((result) => {
-        if (result.message === 'Contact updated' ) {
+        if (result.message === 'List updated' ) {
+          this.isViewAll = false;
           this.isEditMode = false;
-          this.loadLists();
+          this.isUpdateMode = false;
+          this.listAddMessage = 'List updated';
         }
       });
   };
@@ -180,18 +159,7 @@ export class ContactsListViewComponent implements OnInit {
     this.isViewAll = true;
     this.isDelete = false;
     this.isUpdateMode = false;
-
     this.loadLists();
-
-  };
-
-
-  ignoreSaveContact = function() {
-    this.listAddMessage = undefined;
-    this.isEditMode = false;
-    this.isViewAll = true;
-    this.isUpdateMode = false;
-
   };
 
 
