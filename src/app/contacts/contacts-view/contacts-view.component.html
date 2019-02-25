@@ -1,5 +1,5 @@
 <div *ngIf='!isEditMode'>
-  <div class="container" *ngIf='allContacts.length === 0'>
+  <div class="container" *ngIf='contactsArr.length === 0'>
     <mat-card>
       <div class="col-md-8 offset-md-2">
         <p> You dont have contacts </p>
@@ -14,11 +14,11 @@
         routerLink='/contacts/add'>
       +
     </button>
-    <mat-form-field>
+    <mat-form-field  *ngIf='contactsArr.length > 0'>
         <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Search">
       </mat-form-field>
       
-    <div *ngIf='allContacts.length > 0' >
+    <div *ngIf='contactsArr.length > 0' >
     <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
       <!-- Checkbox Column -->
       <ng-container matColumnDef="select">
@@ -75,7 +75,7 @@
 
 <div *ngIf='isDelete' align='center'>
   <mat-card>
-    <mat-card-title> Are you sure you want to delete this contact? </mat-card-title>
+    <mat-card-title> Are you sure you want to delete the contact of {{deleteContactName}}? </mat-card-title>
     <div >
     <button routerLink='/contacts/view' class="simple-form-button pull-center" color="Basic" mat-raised-button
       (click)="resetForm()"> 
@@ -94,7 +94,7 @@
  
 <div class="simple-form-aligner" *ngIf='isEditMode'>
   <mat-card class="simple-form-card">
-    <mat-card-title>Create contact </mat-card-title>
+    <mat-card-title>Edit contact </mat-card-title>
     <mat-card-content>
       <form [formGroup]="form" (ngSubmit)="submit(form.value)">
         <div class="form-group">
@@ -122,8 +122,8 @@
           <br>
           <div style="text-align: center">
             <button [disabled]="waiting" class="simple-form-button" color="primary" mat-raised-button type="submit"
-              value="submit" (click)="addContact(form.value)">
-              Create
+              value="submit" (click)="updateContact(form.value)">
+              Update
             </button>
             &nbsp;
             &nbsp;

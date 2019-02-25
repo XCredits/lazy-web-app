@@ -76,7 +76,7 @@ export class ContactsListViewComponent implements OnInit {
   };
 
   loadContactsRelations = function () {
-    this.http.post('/api/contacts/viewall', {})
+    this.http.post('/api/contacts/view-contacts-with-lists', {})
     .subscribe((data: any) => {
 
       this.listsConnections = data;

@@ -12,7 +12,7 @@ module.exports = function(app) {
   app.post('/api/contacts/remove', auth.jwt, removeContact);
   app.post('/api/contacts/update', auth.jwt, updateContact);
   app.post('/api/contacts/view', auth.jwt, viewContacts);
-  app.post('/api/contacts/viewall', auth.jwt, returnAllContactsLists);
+  app.post('/api/contacts/view-contacts-with-lists', auth.jwt, returnAllContactsWithLists);
   app.post('/api/contacts/view-list-contacts', auth.jwt, returnListContacts);
 
   app.post('/api/contacts-list/view', auth.jwt, viewLists);
@@ -311,7 +311,7 @@ function updateList(req, res) {
  * @param {*} res response object
  * @returns {*}
  */
-function returnAllContactsLists(req, res) {
+function returnAllContactsWithLists(req, res) {
     const userId = req.userId;
     return Contact.find({ userId })
       .then((result) => {

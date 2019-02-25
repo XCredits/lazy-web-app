@@ -1,9 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import {SelectionModel} from '@angular/cdk/collections';
-import {MatTableDataSource} from '@angular/material';
 import { HttpClient } from '@angular/common/http';
-
-
 
 export interface ContactElements {
   position: number;
@@ -21,18 +17,11 @@ export interface ContactElements {
 
 
 export class ContactsComponent implements OnInit {
-  newContacts: { userId: string, givenName: string, familyName: string, email: string, listName: string }[] = [];
-  lists: { listId: string, listName: string }[] = [];
-  listsConnections: { contactId: string, listId: string }[] = [];
-  allContacts = [];
   navLinks = [];
-  constructor(
-    private http: HttpClient,
-    ) { }
+  constructor( private http: HttpClient, ) { }
 
   ngOnInit() {
     this.navLinks.push('./view');
     this.navLinks.push('./lists');
-
   }
 }

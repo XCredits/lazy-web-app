@@ -3,8 +3,6 @@ import {MatTableDataSource} from '@angular/material';
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
-import { listLazyRoutes } from '@angular/compiler/src/aot/lazy_routes';
-import { ContactsComponent } from '../contacts.component';
 
 export interface ContactElements {
   position: number;
@@ -28,44 +26,40 @@ export class ContactsViewComponent implements OnInit {
   submitSuccess = false;
   formErrorMessage: string;
   contactId: string;
-  private allContacts = [];
+  contactsArr = [];
   displayedColumns: string[] = ['select', 'givenName', 'familyName', 'email', 'listName', 'Action'];
   selection = new SelectionModel<ContactElements>(true, []);
-  dataSource = new MatTableDataSource<ContactElements>(this.allContacts);
-  listAddMessage: string;
+  dataSource = new MatTableDataSource<ContactElements>(this.contactsArr);
   isEditMode: boolean;
   isViewAll: boolean;
-  str: string;
   selected: string;
   isDelete: boolean;
+  deleteContactName: string;
 
   constructor(
-    private http: HttpClient,
-    private connectionRoute: ContactsComponent,
-  ) { }
+    private http: HttpClient, ) { }
 
   ngOnInit() {
-    this.listAddMessage = undefined;
     this.isEditMode = false;
     this.isViewAll = true;
     this.isDelete = false;
     this.loadContacts();
-
-
-
   }
+
+
   applyFilter(filterValue: string) {
     this.dataSource.filter = filterValue.trim().toLowerCase();
   }
+
+
   loadContacts = function () {
     this.dataSource = [];
-    this.allContacts = [];
+    this.contactsArr = [];
     this.http.post('/api/contacts/view', { })
         .subscribe ((data: any) => {
-          this.allContacts = data;
-          this.newContacts = data;
-          this.dataSource = new MatTableDataSource<ContactElements>(this.allContacts);
-          this.loadContactsLists();
+            this.contactsArr = data;
+            this.dataSource = new MatTableDataSource<ContactElements>(this.contactsArr);
+            this.loadContactsLists();
         });
   };
 
@@ -73,49 +67,45 @@ export class ContactsViewComponent implements OnInit {
   loadContactsLists = function () {
     this.http.post('/api/contacts-list/view', {})
       .subscribe((data: any) => {
-        this.lists = data;
-        this.loadContactsRelations();
+          this.lists = data;
+          this.loadContactsRelations();
       });
   };
 
-
-
   loadContactsRelations = function () {
-    this.http.post('/api/contacts/viewall', {})
+    this.http.post('api/contacts/view-contacts-with-lists', {})
     .subscribe((data: any) => {
-
-      this.listsConnections = data;
-
-
-      for (const index of this.newContacts) {
-        for (const relation of this.listsConnections) {
-          if ( relation['contactId'] === index ['contactId']) {
-            const fm = this.lists.find(el => el.listId === relation['listId']);
-            index.listName = fm.listName;
-          }
+        this.listsConnections = data;
+        for (const index of this.contactsArr) {
+            for (const relation of this.listsConnections) {
+                if ( relation['contactId'] === index ['contactId']) {
+                    const fm = this.lists.find(el => el.listId === relation['listId']);
+                    index.listName = fm.listName;
+                }
+            }
         }
-      }
-    });
+      });
 
   };
 
-  openDeleteList = function (contact) {
-    console.log(contact.contactId);
+  openDeleteContact = function (contact) {
     this.contactId = contact.contactId;
-
     this.isDelete = true;
     this.isViewAll = false;
+    this.deleteContactName = contact.givenName + ' ' + contact.familyName;
   };
 
   deleteContact = function () {
-
-
     this.http.post('/api/contacts/remove', {
       'contactId': this.contactId,
     })
       .subscribe((result) => {
         if (result.message === 'Contact deleted' ) {
-            this.resetForm();
+            this.isViewAll = false;
+            this.isEditMode = false;
+            this.isDelete = false;
+            this.listAddMessage = 'Contact deleted';
+
         }
       });
   };
@@ -158,41 +148,14 @@ export class ContactsViewComponent implements OnInit {
       .subscribe((result) => {
         console.log(result);
         if (result.message === 'Contact updated' ) {
-          console.log('----');
-          this.resetForm();
+          this.listAddMessage = 'Contact updated';
+          this.isViewAll = false;
+          this.isEditMode = false;
         }
       });
   };
 
   submit = function () { };
-
-  addContact = function (newContact) {
-
-    this.http.post('/api/contacts/add', {
-      'givenName': newContact.givenName,
-      'familyName': newContact.familyName,
-      'email': newContact.email,
-      'contactListId': newContact.contactList.listId,
-    })
-      .subscribe((result) => {
-        this.isEditMode = false;
-        switch (result.message) {
-              case 'Success':
-                this.listAddMessage = 'List created successfully.';
-              break;
-              case 'List already exist.':
-                this.listAddMessage = 'List already exist, choose another name';
-              break;
-              case 'Problem finding a list.':
-              case 'Problem creating a list.':
-                this.listAddMessage = 'List cannot be created created.';
-              break;
-              default:
-                this.listAddMessage = 'Something went wrong, please try again later.';
-            }
-        });
-  };
-
 
   resetForm = function() {
     this.listAddMessage = undefined;
@@ -203,24 +166,17 @@ export class ContactsViewComponent implements OnInit {
 
   };
 
-  ignoreSaveContact = function() {
-    this.listAddMessage = undefined;
-    this.isEditMode = false;
-    this.isViewAll = true;
-  };
-
-
 
   isAllSelected() {
-    const numSelected = this.selection.selected.length;
+    /*const numSelected = this.selection.selected.length;
     const numRows = this.dataSource.data.length;
-    return numSelected === numRows;
+    return numSelected === numRows;*/
   }
 
   masterToggle() {
-    this.isAllSelected() ?
+    /*this.isAllSelected() ?
       this.selection.clear() :
-      this.dataSource.data.forEach(row => this.selection.select(row));
+      this.dataSource.data.forEach(row => this.selection.select(row));*/
   }
 
 
