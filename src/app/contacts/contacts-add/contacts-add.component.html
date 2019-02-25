@@ -1,5 +1,5 @@
 
-<div class="simple-form-aligner" *ngIf = 'isEditMode' >
+<div class="simple-form-aligner" *ngIf='isEditMode'>
     <mat-card class="simple-form-card">
       <mat-card-title>Create contact </mat-card-title>
       <mat-card-content>
@@ -49,9 +49,9 @@
   </div>
   
   
-<div *ngIf='listAddMessage !== undefined'>
+<div *ngIf='contactAddMessage !== undefined'>
     <div *ngIf='!isEditMode'>
-      <mat-card-title> {{listAddMessage}}</mat-card-title>
+      <mat-card-title> {{contactAddMessage}}</mat-card-title>
       <button routerLink='/contacts/view' class="simple-form-button" color="primary" mat-raised-button
         >
         Ok

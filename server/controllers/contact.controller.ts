@@ -83,8 +83,8 @@ function addContact(req, res) {
 function updateContact(req, res) {
   const userId = req.userId;
   const email = req.body.email;
-  const givenName = req.body.givenName;
-  const familyName = req.body.familyName;
+  let givenName = req.body.givenName;
+  let familyName = req.body.familyName;
   const contactId = req.body.contactId;
   // Validate
   if (typeof contactId !== 'string' ||
@@ -93,6 +93,9 @@ function updateContact(req, res) {
       !validator.isEmail(email) ) {
     return res.status(422).json({ message: 'Request failed validation' });
   }
+
+  givenName = normalizeContact(givenName);
+  familyName = normalizeContact(familyName);
 
   return Contact.findOneAndUpdate({
     userId: userId,
@@ -236,13 +239,12 @@ function getListsCount(req, res) {
  */
 function addList(req, res) {
   const userId = req.userId;
-  let listName = req.body.listName;
+  const listName = req.body.listName;
   // Validate
   if (typeof listName !== 'string' ) {
     return res.status(422).json({ message: 'Request failed validation' });
   }
 
-  listName = normalizeContact(listName);
   return ContactList.findOne({refId: userId , listName: listName })
       .then((resultListName) => {
         if ( resultListName !== null) {
