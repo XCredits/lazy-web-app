@@ -172,18 +172,18 @@ export class ContactsListViewComponent implements OnInit {
 
   }
 
-
   isAllSelected() {
     const numSelected = this.selection.selected.length;
-    const numRows = this.dataSource.data.length;
+    const numRows = this.lists.length;
     return numSelected === numRows;
   }
 
   masterToggle() {
-    this.isAllSelected() ?
+      this.isAllSelected() ?
       this.selection.clear() :
-      this.dataSource.data.forEach(row => this.selection.select(row));
+      this.lists.forEach(row => this.selection.select(row));
   }
+
 
 
 }

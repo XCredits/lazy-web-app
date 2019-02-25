@@ -3,6 +3,7 @@ import {MatTableDataSource} from '@angular/material';
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
+import { MatDialog } from '@angular/material';
 
 export interface ContactElements {
   position: number;
@@ -35,9 +36,11 @@ export class ContactsViewComponent implements OnInit {
   selected: string;
   isDelete: boolean;
   deleteContactName: string;
+  modalReference = null;
 
   constructor(
-    private http: HttpClient, ) { }
+    private http: HttpClient,
+    private dialogService: MatDialog, ) { }
 
   ngOnInit() {
     this.isEditMode = false;
@@ -90,9 +93,8 @@ export class ContactsViewComponent implements OnInit {
 
   openDeleteContact = function (contact) {
     this.contactId = contact.contactId;
-    this.isDelete = true;
-    this.isViewAll = false;
     this.deleteContactName = contact.givenName + ' ' + contact.familyName;
+    console.log(contact);
   };
 
   deleteContact = function () {
@@ -101,10 +103,8 @@ export class ContactsViewComponent implements OnInit {
     })
       .subscribe((result) => {
         if (result.message === 'Contact deleted' ) {
-            this.isViewAll = false;
-            this.isEditMode = false;
-            this.isDelete = false;
-            this.listAddMessage = 'Contact deleted';
+            this.loadContacts();
+            this.resetForm();
 
         }
       });
@@ -113,7 +113,6 @@ export class ContactsViewComponent implements OnInit {
   openAddContactForm = function () {
     this.isEditMode = true;
     this.isViewAll = false;
-
     this.form = new FormGroup({
       givenName: new FormControl(''),
       familyName: new FormControl(''),
@@ -124,7 +123,6 @@ export class ContactsViewComponent implements OnInit {
 
 
   editContact = function (contact) {
-    console.log(contact);
     this.isEditMode = true;
     this.isViewAll = false;
     this.contactId = contact.contactId;
@@ -146,7 +144,6 @@ export class ContactsViewComponent implements OnInit {
       'email': contact.email,
     })
       .subscribe((result) => {
-        console.log(result);
         if (result.message === 'Contact updated' ) {
           this.listAddMessage = 'Contact updated';
           this.isViewAll = false;
@@ -162,21 +159,25 @@ export class ContactsViewComponent implements OnInit {
     this.isEditMode = false;
     this.isViewAll = true;
     this.isDelete = false;
-    this.loadContacts();
+    this.modalReference.close();
+
 
   };
 
+  contactDeleteDialog(modal) {
+    this.modalReference = this.dialogService.open(modal);
+  }
 
   isAllSelected() {
-    /*const numSelected = this.selection.selected.length;
+    const numSelected = this.selection.selected.length;
     const numRows = this.dataSource.data.length;
-    return numSelected === numRows;*/
+    return numSelected === numRows;
   }
 
   masterToggle() {
-    /*this.isAllSelected() ?
+      this.isAllSelected() ?
       this.selection.clear() :
-      this.dataSource.data.forEach(row => this.selection.select(row));*/
+      this.dataSource.data.forEach(row => this.selection.select(row));
   }
 
 

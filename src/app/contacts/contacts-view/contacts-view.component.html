@@ -60,7 +60,7 @@
         <td mat-cell *matCellDef="let element">
           <button mat-icon-button (click)="editContact(element)">
             <mat-icon>create</mat-icon>
-          </button> <button mat-icon-button (click)="openDeleteContact(element)">
+          </button> <button mat-icon-button (click)="contactDeleteDialog(modal)" (click)="openDeleteContact(element)">
             <mat-icon>delete</mat-icon>
           </button>
         </td>
@@ -74,7 +74,7 @@
 </div>
 
 <div *ngIf='isDelete' align='center'>
-  <mat-card>
+        <mat-card>
     <mat-card-title> Are you sure you want to delete the contact of {{deleteContactName}}? </mat-card-title>
     <div >
     <button routerLink='/contacts/view' class="simple-form-button pull-center" color="Basic" mat-raised-button
@@ -151,3 +151,18 @@
     </button>
   </div>
 </div>
+
+
+<ng-template #modal>
+    <mat-dialog-content>
+      <div>
+          Are you sure you want to delete the contact of <br> {{deleteContactName}}?
+      </div>
+    </mat-dialog-content>
+    <mat-dialog-actions align='end'>
+      <button (click)="resetForm()" mat-raised-button color='warn'>Cancel
+      </button>
+      <button (click)="deleteContact()" mat-raised-button cdkFocusInitial color='primary'>Yes
+      </button>
+    </mat-dialog-actions>
+  </ng-template>
