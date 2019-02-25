@@ -4,6 +4,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { MatDialog } from '@angular/material';
 
 export interface ListDetails {
   listId: string;
@@ -21,7 +22,7 @@ export interface ListDetails {
 export class ContactsListViewComponent implements OnInit {
   form: FormGroup;
   disableButton = true;
-  displayedColumns: string[] = ['select', 'listName', 'Action'];
+  displayedColumns: string[] = ['select', 'listName', 'NoOfContacts', 'Action'];
   selection = new SelectionModel<string>(true, []);
   dataSource = new MatTableDataSource<string>();
   listAddMessage: string;
@@ -30,10 +31,12 @@ export class ContactsListViewComponent implements OnInit {
   isUpdateMode: boolean;
   lists: { listId: string, listName: string, numberOfContacts: number }[] = [];
   listDetails: ListDetails;
+  modalReference = null;
 
   constructor(
     private http: HttpClient,
     private router: Router,
+    private dialogService: MatDialog,
   ) { }
 
   ngOnInit() {
@@ -76,7 +79,13 @@ export class ContactsListViewComponent implements OnInit {
   };
 
   deleteList = function () {
-    this.http.post('/api/contacts-list/remove', {
+    for (let i = 0 ; i < this.lists.length ; i++) {
+        if ( this.listDetails.listId === this.lists[i].listId ) {
+          this.lists.splice(i, 1);
+        }
+      }
+
+      this.http.post('/api/contacts-list/remove', {
       'listId': this.listDetails.listId,
     })
       .subscribe((result) => {
@@ -89,8 +98,8 @@ export class ContactsListViewComponent implements OnInit {
   openDeleteList = function (list) {
     this.listDetails = list;
     this.listId = list.contactId;
-    this.isDelete = true;
-    this.isViewAll = false;
+    // this.isDelete = true;
+    // this.isViewAll = false;
   };
 
 
@@ -159,7 +168,9 @@ export class ContactsListViewComponent implements OnInit {
     this.isViewAll = true;
     this.isDelete = false;
     this.isUpdateMode = false;
+    this.modalReference.close();
     this.loadLists();
+
   };
 
 
@@ -170,6 +181,10 @@ export class ContactsListViewComponent implements OnInit {
   onSelect(list) {
     this.router.navigate(['/contacts/lists/' + list.listId]);
 
+  }
+
+  listDeleteDialog(modal) {
+    this.modalReference = this.dialogService.open(modal);
   }
 
   isAllSelected() {

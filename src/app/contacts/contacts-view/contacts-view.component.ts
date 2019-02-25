@@ -105,7 +105,6 @@ export class ContactsViewComponent implements OnInit {
         if (result.message === 'Contact deleted' ) {
             this.loadContacts();
             this.resetForm();
-
         }
       });
   };

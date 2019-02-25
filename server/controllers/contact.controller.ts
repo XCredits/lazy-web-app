@@ -1,6 +1,5 @@
 import * as validator from 'validator';
 import { normalizeContact } from './utils.controller';
-import { resource } from 'selenium-webdriver/http';
 
 const Contact = require('../models/contact.model');
 const ContactList = require('../models/contact-list.model');
