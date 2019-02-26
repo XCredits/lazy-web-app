@@ -4,6 +4,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { MatDialog } from '@angular/material';
+import { Router } from '@angular/router';
 
 export interface ContactElements {
   position: number;
@@ -40,7 +41,8 @@ export class ContactsViewComponent implements OnInit {
 
   constructor(
     private http: HttpClient,
-    private dialogService: MatDialog, ) { }
+    private dialogService: MatDialog,
+    private router: Router, ) { }
 
   ngOnInit() {
     this.isEditMode = false;
@@ -58,7 +60,7 @@ export class ContactsViewComponent implements OnInit {
   loadContacts = function () {
     this.dataSource = [];
     this.contactsArr = [];
-    this.http.post('/api/contacts/view', { })
+    this.http.post('/api/contacts/view-contacts', { })
         .subscribe ((data: any) => {
             this.contactsArr = data;
             this.dataSource = new MatTableDataSource<ContactElements>(this.contactsArr);
@@ -68,7 +70,7 @@ export class ContactsViewComponent implements OnInit {
 
 
   loadContactsLists = function () {
-    this.http.post('/api/contacts-list/view', {})
+    this.http.post('/api/contacts-list/view-lists', {})
       .subscribe((data: any) => {
           this.lists = data;
           this.loadContactsRelations();
@@ -76,7 +78,7 @@ export class ContactsViewComponent implements OnInit {
   };
 
   loadContactsRelations = function () {
-    this.http.post('api/contacts/view-contacts-with-lists', {})
+    this.http.post('api/contacts/get-contacts-with-lists', {})
     .subscribe((data: any) => {
         this.listsConnections = data;
         for (const index of this.contactsArr) {
@@ -97,7 +99,7 @@ export class ContactsViewComponent implements OnInit {
   };
 
   deleteContact = function () {
-    this.http.post('/api/contacts/remove', {
+    this.http.post('/api/contacts/delete-contact', {
       'contactId': this.contactId,
     })
       .subscribe((result) => {
@@ -135,15 +137,15 @@ export class ContactsViewComponent implements OnInit {
   };
 
   updateContact = function (contact) {
-    this.http.post('/api/contacts/update', {
+    this.http.post('/api/contacts/update-contact', {
       'contactId': this.contactId,
       'givenName': contact.givenName,
       'familyName': contact.familyName,
       'email': contact.email,
     })
       .subscribe((result) => {
-        if (result.message === 'Contact updated' ) {
-          this.listAddMessage = 'Contact updated';
+        if (result.message === 'Contact updated.' ) {
+          this.listAddMessage = 'Contact updated.';
           this.isViewAll = false;
           this.isEditMode = false;
         }
@@ -176,5 +178,10 @@ export class ContactsViewComponent implements OnInit {
       this.dataSource.data.forEach(row => this.selection.select(row));
   }
 
+
+  onSelect(contact) {
+    this.router.navigate(['/contacts/view/' + contact.contactId]);
+
+  }
 
 }

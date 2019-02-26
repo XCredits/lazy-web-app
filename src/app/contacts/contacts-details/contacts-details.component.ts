@@ -13,11 +13,11 @@ export interface ContactElements {
 }
 
 @Component({
-  selector: 'app-contacts-list-details',
-  templateUrl: './contacts-list-details.component.html',
-  styleUrls: ['./contacts-list-details.component.scss']
+  selector: 'app-contacts-details',
+  templateUrl: './contacts-details.component.html',
+  styleUrls: ['./contacts-details.component.scss']
 })
-export class ContactsListDetailsComponent implements OnInit {
+export class ContactDetailsComponent implements OnInit {
   receiverUserId: string;
   link: string;
   displayedColumns: string[] = ['select', 'givenName', 'familyName', 'email'];
@@ -31,7 +31,7 @@ export class ContactsListDetailsComponent implements OnInit {
 
   ngOnInit() {
     this.listIdURL = this.route.snapshot.paramMap.get('contactId');
-    // this.loadListContact();
+    this.loadListContact();
   }
 
   loadListContact = function () {

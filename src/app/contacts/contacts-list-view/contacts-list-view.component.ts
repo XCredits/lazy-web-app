@@ -51,7 +51,7 @@ export class ContactsListViewComponent implements OnInit {
   loadLists = function () {
     this.dataSource = [];
     this.lists = [];
-    this.http.post('/api/contacts-list/view', { })
+    this.http.post('/api/contacts-list/view-lists', { })
         .subscribe ((data: any) => {
           this.lists = data;
           for (const counter of this.lists) {
@@ -63,7 +63,7 @@ export class ContactsListViewComponent implements OnInit {
   };
 
   loadContactsRelations = function () {
-    this.http.post('/api/contacts/view-contacts-with-lists', {})
+    this.http.post('/api/contacts/get-contacts-with-lists', {})
     .subscribe((data: any) => {
 
       this.listsConnections = data;
@@ -85,11 +85,11 @@ export class ContactsListViewComponent implements OnInit {
         }
       }
 
-      this.http.post('/api/contacts-list/remove', {
+      this.http.post('/api/contacts-list/remove-list', {
             'listId': this.listDetails.listId,
           })
           .subscribe((result) => {
-              if (result.message === 'List deleted' ) {
+              if (result.message === 'List deleted.' ) {
                   this.resetForm();
             }
         });
@@ -123,16 +123,16 @@ export class ContactsListViewComponent implements OnInit {
   };
 
   updateList = function (contact) {
-    this.http.post('/api/contacts-list/update', {
+    this.http.post('/api/contacts-list/update-list', {
       'listId': this.listDetails.listId,
       'UpdatedListName': contact.listName,
     })
       .subscribe((result) => {
-        if (result.message === 'List updated' ) {
+        if (result.message === 'List updated.' ) {
           this.isViewAll = false;
           this.isEditMode = false;
           this.isUpdateMode = false;
-          this.listAddMessage = 'List updated';
+          this.listAddMessage = 'List updated.';
         }
       });
   };

@@ -22,7 +22,6 @@ export class ContactsAddComponent implements OnInit {
   ngOnInit() {
     this.contactAddMessage = undefined;
     this.isEditMode = true;
-
     this.form = new FormGroup({
       givenName: new FormControl(''),
       familyName: new FormControl(''),
@@ -36,7 +35,7 @@ export class ContactsAddComponent implements OnInit {
 
 
   loadContactsLists = function () {
-    this.http.post('/api/contacts-list/view', {})
+    this.http.post('/api/contacts-list/view-lists', {})
       .subscribe((data: any) => {
         this.lists = data;
       });
@@ -44,7 +43,7 @@ export class ContactsAddComponent implements OnInit {
 
   addContact = function (newContact) {
 
-    this.http.post('/api/contacts/add', {
+    this.http.post('/api/contacts/add-contact', {
       'givenName': newContact.givenName,
       'familyName': newContact.familyName,
       'email': newContact.email,
@@ -53,7 +52,7 @@ export class ContactsAddComponent implements OnInit {
       .subscribe((result) => {
         this.isEditMode = false;
         switch (result.message) {
-              case 'Success':
+              case 'Success.':
                 this.contactAddMessage = 'Contact created successfully.';
               break;
               case 'Problem finding a list.':

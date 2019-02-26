@@ -31,13 +31,13 @@ export class ContactsListAddComponent implements OnInit {
       this.formErrorMessage = 'Please type a valid list name.';
        return;
     }
-    this.http.post('/api/contacts-list/add', {
+    this.http.post('/api/contacts-list/add-list', {
       'listName': form.listName,
     })
       .subscribe((result) => {
         this.isEditMode = false;
         switch (result.message) {
-              case 'Success':
+              case 'Success.':
                 this.listAddMessage = 'List created successfully.';
               break;
               case 'List already exist.':

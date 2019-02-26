@@ -93,6 +93,7 @@ import { ContactsListDetailsComponent } from './contacts/contacts-list-details/c
 import { ContactsListAddComponent } from './contacts/contacts-list-add/contacts-list-add.component';
 import { ContactsViewComponent } from './contacts/contacts-view/contacts-view.component';
 import { ContactsAddComponent } from './contacts/contacts-add/contacts-add.component';
+import { ContactDetailsComponent } from './contacts/contacts-details/contacts-details.component';
 import { ConnectionComponent } from './connections/connections.component';
 import { ConnectionsAddComponent } from './connections/connections-add/connections-add.component';
 import { ConnectionsSentComponent } from './connections/connections-sent/connections-sent.component';
@@ -130,6 +131,7 @@ import { ConnectionsViewComponent } from './connections/connections-view/connect
     ContactsListViewComponent,
     ContactsViewComponent,
     ContactsAddComponent,
+    ContactDetailsComponent,
     ConnectionComponent,
     ConnectionsAddComponent,
     ConnectionsSentComponent,
@@ -286,6 +288,11 @@ import { ConnectionsViewComponent } from './connections/connections-view/connect
             component: ContactsAddComponent,
           },
           {
+            path: 'view/:contactId',
+            component: ContactDetailsComponent,
+            data: { title: 'Contact details' },
+          },
+          {
             path: 'lists',
             component: ContactsListViewComponent,
           },
@@ -296,7 +303,7 @@ import { ConnectionsViewComponent } from './connections/connections-view/connect
           {
             path: 'lists/:listId',
             component: ContactsListDetailsComponent,
-            data: { title: 'list details' },
+            data: { title: 'List details' },
             canActivate: [AuthGuard],
 
           }
