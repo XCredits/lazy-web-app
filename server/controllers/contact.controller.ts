@@ -14,7 +14,6 @@ module.exports = function(app) {
   app.post('/api/contacts/view-list-contacts', auth.jwt, returnListContacts);
   app.post('/api/contacts-list/view', auth.jwt, viewLists);
   app.post('/api/contacts-list/add', auth.jwt, addList);
-  app.post('/api/contacts-list/get-lists-count', auth.jwt, getListsCount);
   app.post('/api/contacts-list/remove', auth.jwt, removeList);
   app.post('/api/contacts-list/update', auth.jwt, updateList);
 };
@@ -195,33 +194,6 @@ function viewLists(req, res) {
         return res.status(500).send({ message: 'Error retrieving list form database.' });
       });
 }
-
-
-
-
-/**
- * returns all lists count
- * @param {*} req request object
- * @param {*} res response object
- * @returns {*}
- */
-function getListsCount(req, res) {
-  const userId = req.userId;
-  ContactList.find({ refId: userId }).sort( {name: 1} )
-      .then((result) => {
-        const filteredResult = result.map((x) => {
-          return {
-            listId: x._id,
-            listName: x.listName,
-          };
-        });
-        return res.send(filteredResult);
-      })
-      .catch(() => {
-        return res.status(500).send({ message: 'Error retrieving list form database.' });
-      });
-}
-
 
 
 
