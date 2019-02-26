@@ -94,7 +94,6 @@ export class ContactsViewComponent implements OnInit {
   openDeleteContact = function (contact) {
     this.contactId = contact.contactId;
     this.deleteContactName = contact.givenName + ' ' + contact.familyName;
-    console.log(contact);
   };
 
   deleteContact = function () {
@@ -126,7 +125,7 @@ export class ContactsViewComponent implements OnInit {
     this.isViewAll = false;
     this.contactId = contact.contactId;
     this.form = new FormGroup({
-      givenName: new FormControl(contact.listName),
+      givenName: new FormControl(contact.givenName),
       familyName: new FormControl(contact.familyName),
       email: new FormControl(contact.email, [Validators.required, Validators.email]),
       contactList: new FormControl([contact.listName]),
@@ -159,8 +158,6 @@ export class ContactsViewComponent implements OnInit {
     this.isViewAll = true;
     this.isDelete = false;
     this.modalReference.close();
-
-
   };
 
   contactDeleteDialog(modal) {

@@ -86,13 +86,13 @@ export class ContactsListViewComponent implements OnInit {
       }
 
       this.http.post('/api/contacts-list/remove', {
-      'listId': this.listDetails.listId,
-    })
-      .subscribe((result) => {
-        if (result.message === 'List deleted' ) {
-            this.resetForm();
-        }
-      });
+            'listId': this.listDetails.listId,
+          })
+          .subscribe((result) => {
+              if (result.message === 'List deleted' ) {
+                  this.resetForm();
+            }
+        });
   };
 
   openDeleteList = function (list) {
@@ -107,7 +107,7 @@ export class ContactsListViewComponent implements OnInit {
     this.isEditMode = true;
     this.isViewAll = false;
     this.form = new FormGroup({
-      listName: new FormControl(''),
+      listName: new FormControl('', ),
     });
   };
 
@@ -118,7 +118,7 @@ export class ContactsListViewComponent implements OnInit {
     this.isViewAll = false;
     this.listDetails = list;
     this.form = new FormGroup({
-      listName: new FormControl(list.listName),
+      listName: new FormControl(list.listName, ),
     });
   };
 
@@ -138,30 +138,6 @@ export class ContactsListViewComponent implements OnInit {
   };
 
 
-
-  addList = function (form) {
-    this.http.post('/api/contacts-list/add', {
-      'listName': form.listName,
-    })
-      .subscribe((result) => {
-        this.isEditMode = false;
-        switch (result.message) {
-              case 'Success':
-                this.listAddMessage = 'List created successfully.';
-              break;
-              case 'List already exist.':
-                this.listAddMessage = 'List already exist, choose another name';
-              break;
-              case 'Problem finding a list.':
-              case 'Problem creating a list.':
-                this.listAddMessage = 'List cannot be created created.';
-              break;
-              default:
-                this.listAddMessage = 'Something went wrong, please try again later.';
-            }
-        });
-  };
-
   resetForm = function() {
     this.listAddMessage = undefined;
     this.isEditMode = false;
@@ -170,7 +146,6 @@ export class ContactsListViewComponent implements OnInit {
     this.isUpdateMode = false;
     this.modalReference.close();
     this.loadLists();
-
   };
 
 
@@ -196,7 +171,7 @@ export class ContactsListViewComponent implements OnInit {
   masterToggle() {
       this.isAllSelected() ?
       this.selection.clear() :
-      this.lists.forEach(row => this.selection.select(row));
+      this.lists.forEach(row => this.selection.select(row.listId));
   }
 
 

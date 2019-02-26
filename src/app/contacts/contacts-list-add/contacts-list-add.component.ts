@@ -25,8 +25,12 @@ export class ContactsListAddComponent implements OnInit {
     });
   }
 
-
   addList = function (form) {
+
+    if ( form.listName.length === 0 || this.hasWhiteSpace(form.listName) ) {
+      this.formErrorMessage = 'Please type a valid list name.';
+       return;
+    }
     this.http.post('/api/contacts-list/add', {
       'listName': form.listName,
     })
@@ -52,4 +56,8 @@ export class ContactsListAddComponent implements OnInit {
   submit = function () {
   };
 
+
+  hasWhiteSpace(listName) {
+    return listName.indexOf(' ') >= 0;
+  }
 }
