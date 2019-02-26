@@ -30,8 +30,8 @@ export class ContactsListDetailsComponent implements OnInit {
     private route: ActivatedRoute, ) { }
 
   ngOnInit() {
-    this.listIdURL = this.route.snapshot.paramMap.get('contactId');
-    // this.loadListContact();
+    this.listIdURL = this.route.snapshot.paramMap.get('listId');
+    this.loadListContact();
   }
 
   loadListContact = function () {
