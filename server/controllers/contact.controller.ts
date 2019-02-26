@@ -1,6 +1,5 @@
 import * as validator from 'validator';
 import { normalizeContact } from './utils.controller';
-
 const Contact = require('../models/contact.model');
 const ContactList = require('../models/contact-list.model');
 const ContactListContact = require('../models/contact-list-contact.model');
@@ -127,11 +126,8 @@ function updateContact(req, res) {
 function removeContact(req, res) {
   const userId = req.userId;
   const contactId = req.body.contactId;
-  console.log(userId);
-  console.log(contactId);
   // Validate
-  if (typeof contactId !== 'string' ||
-      typeof userId !== 'string' ) {
+  if (typeof contactId !== 'string') {
         return res.status(422).json({ message: 'Contact failed validation' });
   }
 
@@ -264,7 +260,6 @@ function addList(req, res) {
               });
           }
         }).catch((error) => {
-              console.log(error);
               return res.status(500).send('Problem finding a list.');
           });
 }
@@ -285,8 +280,7 @@ function removeList(req, res) {
         return Contact.deleteMany ({ _id: contactId})
         .then (() => {
           return ContactListContact.deleteMany({ listId: listId })
-          .then((reus) => {
-            console.log(reus);
+          .then(() => {
                 return ContactList.deleteOne({ _id: listId })
                   .then(() => {
                     return res.send({ message: 'List deleted' });
@@ -353,12 +347,10 @@ function returnAllContactsWithLists(req, res) {
                   return res.send(filteredResult);
               })
               .catch((error) => {
-                  console.log(error);
                   return res.status(500).send({ message: 'Error retrieving users from contacts database' });
               });
         })
         .catch((error) => {
-          console.log(error);
           return res.status(500).send({ message: 'Error retrieving users from contacts database' });
         });
   }
@@ -378,14 +370,14 @@ function returnListContacts(req, res) {
         const contactId = result.map ((x => x.contactId));
         return Contact.find({'_id': { '$in': contactId}})
             .then(( filteredResult) => {
-              const resultFilterd = filteredResult.map ((x) => {
+              const resultFiltered = filteredResult.map ((x) => {
                 return {
                   givenName: x.givenName,
                   familyName: x.familyName,
                   email: x.email,
                 };
               });
-              res.send(resultFilterd);
+              res.send(resultFiltered);
             })
             .catch((error) => {
               res.status(500).send({ message: 'Error retrieving pending requests 1' });
