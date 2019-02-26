@@ -12,7 +12,6 @@ module.exports = function(app) {
   app.post('/api/contacts/view', auth.jwt, viewContacts);
   app.post('/api/contacts/view-contacts-with-lists', auth.jwt, returnAllContactsWithLists);
   app.post('/api/contacts/view-list-contacts', auth.jwt, returnListContacts);
-
   app.post('/api/contacts-list/view', auth.jwt, viewLists);
   app.post('/api/contacts-list/add', auth.jwt, addList);
   app.post('/api/contacts-list/get-lists-count', auth.jwt, getListsCount);
