@@ -29,6 +29,12 @@ export class ContactDetailsComponent implements OnInit {
     private route: ActivatedRoute, ) { }
 
   ngOnInit() {
+    this.contactDetails = {
+      givenName : '',
+      familyName : '',
+      email: '',
+      userId: '',
+    };
     this.contactIdURL = this.route.snapshot.paramMap.get('contactId');
     this.loadContactDetails();
   }
@@ -38,7 +44,6 @@ export class ContactDetailsComponent implements OnInit {
       'contactId': this.contactIdURL,
     })
       .subscribe((result) => {
-        console.log(result);
         this.contactDetails = result;
       });
   };
