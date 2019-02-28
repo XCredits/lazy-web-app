@@ -189,6 +189,7 @@ function getContactDetails(req, res) {
   Contact.findOne({ _id: contactId })
     .then(resultContact => {
       const resultsFiltered = {
+        _id: resultContact._id,
         userId: resultContact.userId,
         givenName: resultContact.givenName,
         familyName: resultContact.familyName,

@@ -3,12 +3,15 @@ import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import {SelectionModel} from '@angular/cdk/collections';
+import { MatDialog } from '@angular/material';
+import { Router } from '@angular/router';
 
 export interface ContactElements {
+  _id: string;
+  userId: string;
   givenName: string;
   familyName: string;
   email: string;
-  userId: string;
 }
 
 @Component({
@@ -21,19 +24,23 @@ export class ContactDetailsComponent implements OnInit {
   link: string;
   displayedColumns: string[] = ['select', 'givenName', 'familyName', 'email'];
   selection = new SelectionModel<ContactElements>(true, []);
-  listContact: { userId: string, givenName: string, familyName: string, email: string }[] = [];
-  dataSource = new MatTableDataSource<ContactElements>(this.listContact);
   contactDetails: ContactElements;
   contactIdURL: string;
+  modalReference = null;
+  contactId: string;
   constructor(private http: HttpClient,
-    private route: ActivatedRoute, ) { }
+    private route: ActivatedRoute,
+    private dialogService: MatDialog,
+    private router: Router, ) { }
+
 
   ngOnInit() {
     this.contactDetails = {
+      _id: '',
+      userId: '',
       givenName : '',
       familyName : '',
       email: '',
-      userId: '',
     };
     this.contactIdURL = this.route.snapshot.paramMap.get('contactId');
     this.loadContactDetails();
@@ -46,6 +53,38 @@ export class ContactDetailsComponent implements OnInit {
       .subscribe((result) => {
         this.contactDetails = result;
       });
+  };
+
+
+
+  contactDeleteDialog(modal) {
+    this.modalReference = this.dialogService.open(modal);
+  }
+
+
+
+  openDeleteContact = function () {
+    this.contactId = this.contactDetails.contactId;
+    this.deleteContactName = this.contactDetails.givenName + ' ' + this.contactDetails.familyName;
+  };
+
+  deleteContact = function () {
+    console.log(this.contactDetails);
+    this.http.post('/api/contacts/delete-contact', {
+      'contactId': this.contactDetails._id,
+    })
+      .subscribe((result) => {
+        if (result.message === 'Contact deleted.' ) {
+          this.modalReference.close();
+          this.router.navigate(['/contacts/view']);
+
+        }
+      });
+  };
+
+
+  resetForm = function() {
+    this.modalReference.close();
   };
 
 
