@@ -1,21 +1,19 @@
-<mat-card style="margin: 2px;" *ngFor="let contacts of contactsArr">
+<mat-card style="margin: 2px;" *ngFor="let contact of contactsArr">
   <mat-card-header>
-    <img mat-card-avatar src="/assets/img/profile-demo.jpg">
+    <img mat-card-avatar src="/assets/img/profile-demo.jpg" >
     <div class="major-points">
-      <div class="name">
-        {{contacts.givenName}}
+      <div class="name"  (click)="onSelect(contact)">
+        {{contact.givenName}}
         &nbsp;
-        {{contacts.familyName}}
+        {{contact.familyName}}
       </div>
-
-
-      <div class="email">
-        {{contacts.email}}
+      <div class="email"  (click)="onSelect(contact)">
+        {{contact.email}}
       </div>
       <div class="controls">
         <div></div>
 
-        <button mat-icon-button (click)="editContact(contact)">
+        <button mat-icon-button >
           <mat-icon>create</mat-icon>
         </button> <button mat-icon-button (click)="contactDeleteDialog(modal)" (click)="openDeleteContact(element)">
           <mat-icon>delete</mat-icon>

@@ -10,6 +10,7 @@ module.exports = function(app) {
   app.post('/api/contacts/delete-contact', auth.jwt, removeContact);
   app.post('/api/contacts/update-contact', auth.jwt, updateContact);
   app.post('/api/contacts/view-contacts', auth.jwt, getContacts);
+  app.post('/api/contacts/view-contact-details', auth.jwt, getContactDetails);
   app.post('/api/contacts/get-contacts-with-lists', auth.jwt, returnContactsWithLists);
   app.post('/api/contacts/view-list-contacts', auth.jwt, returnContactsWithContactLists);
   app.post('/api/contacts-list/view-lists', auth.jwt, getLists);
@@ -171,7 +172,34 @@ function getContacts(req, res) {
 }
 
 
+/**
+ * returns contact details
+ * @param {*} req request object
+ * @param {*} res response object
+ * @returns {*}
+ */
+function getContactDetails(req, res) {
+  const userId = req.userId;
+  const contactId = req.body.contactId;
+  // Validate
+  if (typeof contactId !== 'string') {
+    return res.status(422).json({ message: 'Contact failed validation.' });
+  }
 
+  Contact.findOne({ _id: contactId })
+    .then(resultContact => {
+      const resultsFiltered = {
+        userId: resultContact.userId,
+        givenName: resultContact.givenName,
+        familyName: resultContact.familyName,
+        email: resultContact.email,
+      };
+    res.send(resultsFiltered);
+    })
+    .catch((error) => {
+      return res.status(500).send({ message: 'Error retrieving user from contacts database.' });
+    });
+}
 /**
  * returns all lists
  * @param {*} req request object

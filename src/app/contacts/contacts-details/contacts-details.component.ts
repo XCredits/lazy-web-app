@@ -2,14 +2,13 @@ import {MatTableDataSource} from '@angular/material';
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Router } from '@angular/router';
-import { EmailValidator } from '@angular/forms';
 import {SelectionModel} from '@angular/cdk/collections';
 
 export interface ContactElements {
   givenName: string;
   familyName: string;
   email: string;
+  userId: string;
 }
 
 @Component({
@@ -24,36 +23,25 @@ export class ContactDetailsComponent implements OnInit {
   selection = new SelectionModel<ContactElements>(true, []);
   listContact: { userId: string, givenName: string, familyName: string, email: string }[] = [];
   dataSource = new MatTableDataSource<ContactElements>(this.listContact);
-
-  listIdURL: string;
+  contactDetails: ContactElements;
+  contactIdURL: string;
   constructor(private http: HttpClient,
     private route: ActivatedRoute, ) { }
 
   ngOnInit() {
-    this.listIdURL = this.route.snapshot.paramMap.get('contactId');
-    this.loadListContact();
+    this.contactIdURL = this.route.snapshot.paramMap.get('contactId');
+    this.loadContactDetails();
   }
 
-  loadListContact = function () {
-    this.http.post('/api/contacts/view-list-contacts', {
-      'listId': this.listIdURL,
+  loadContactDetails = function () {
+    this.http.post('/api/contacts/view-contact-details', {
+      'contactId': this.contactIdURL,
     })
       .subscribe((result) => {
-        this.listContact = result;
+        console.log(result);
+        this.contactDetails = result;
       });
   };
-
-  isAllSelected() {
-    const numSelected = this.selection.selected.length;
-    const numRows = this.dataSource.data.length;
-    return numSelected === numRows;
-  }
-
-  masterToggle() {
-    this.isAllSelected() ?
-      this.selection.clear() :
-      this.dataSource.data.forEach(row => this.selection.select(row));
-  }
 
 
 }

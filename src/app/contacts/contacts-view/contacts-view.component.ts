@@ -62,6 +62,7 @@ export class ContactsViewComponent implements OnInit {
     this.contactsArr = [];
     this.http.post('/api/contacts/view-contacts', { })
         .subscribe ((data: any) => {
+          console.log(data);
             this.contactsArr = data;
             this.dataSource = new MatTableDataSource<ContactElements>(this.contactsArr);
             this.loadContactsLists();
@@ -72,6 +73,7 @@ export class ContactsViewComponent implements OnInit {
   loadContactsLists = function () {
     this.http.post('/api/contacts-list/view-lists', {})
       .subscribe((data: any) => {
+          console.log(data);
           this.lists = data;
           this.loadContactsRelations();
       });
@@ -80,6 +82,7 @@ export class ContactsViewComponent implements OnInit {
   loadContactsRelations = function () {
     this.http.post('api/contacts/get-contacts-with-lists', {})
     .subscribe((data: any) => {
+      console.log(data);
         this.listsConnections = data;
         for (const index of this.contactsArr) {
             for (const relation of this.listsConnections) {
