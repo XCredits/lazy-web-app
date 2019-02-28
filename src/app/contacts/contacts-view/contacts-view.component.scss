@@ -2,11 +2,7 @@ table {
   width: 100%;
 }
 
-
- 
-
-
-.major-points {
+.contactStyle {
   width: 100%;
   display: flex;
   flex-wrap: wrap;
@@ -16,6 +12,10 @@ table {
   width: 180px;
   flex-grow: 1;
  }
+ .email {
+  width: 180px;
+  flex-grow: 1;
+ } 
  .email {
   width: 180px;
   flex-grow: 1;

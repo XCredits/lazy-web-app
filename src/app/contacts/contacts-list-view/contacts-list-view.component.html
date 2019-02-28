@@ -1,4 +1,35 @@
 <div *ngIf='!isEditMode'>
+    <button color="primary" class="simple-form-button pull-right" mat-raised-button routerLink='/contacts/add'>
+      +
+    </button>
+    <br>
+    <br>
+    <mat-card style="margin: 2px;" *ngFor="let list of lists">
+  <mat-card-header>
+    <div class="ListStyle">
+      <div class="listName"  (click)="onSelect(list)">
+        {{list.listName}}
+      </div>
+      <div class="contactsNumber"  (click)="onSelect(list)">
+          {{list.numberOfContacts}}
+        </div>
+      <div class="controls">
+        <button mat-icon-button (click)="editContact(list)" >
+          <mat-icon>create</mat-icon>
+        </button> <button mat-icon-button (click)="contactDeleteDialog(modal)" (click)="openDeleteContact(list)">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </div>
+    </div>
+  </mat-card-header>
+</mat-card>
+</div>
+<br>
+
+
+
+
+<div *ngIf='!isEditMode'>
   <div class="container" *ngIf='lists.length === 0'>
     <mat-card>
       <div class="col-md-8 offset-md-2">

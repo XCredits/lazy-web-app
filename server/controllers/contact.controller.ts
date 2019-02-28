@@ -58,7 +58,7 @@ function addContact(req, res) {
       });
       return contactListContact.save()
         .then((contactListResult) => {
-            return res.send({ message: 'Success.' });
+            return res.send({ message: 'Success.' , contactId: contactListResult.contactId });
           })
           .catch((error) => {
             return res.status(500).send('Problem creating contacts list.');

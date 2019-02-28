@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
 
 
 @Component({
@@ -17,7 +18,7 @@ export class ContactsAddComponent implements OnInit {
 
   constructor(
     private http: HttpClient,
-  ) { }
+    private router: Router, ) { }
 
   ngOnInit() {
     this.contactAddMessage = undefined;
@@ -53,7 +54,7 @@ export class ContactsAddComponent implements OnInit {
         this.isEditMode = false;
         switch (result.message) {
               case 'Success.':
-                this.contactAddMessage = 'Contact created successfully.';
+                this.router.navigate(['/contacts/view/' + result.contactId]);
               break;
               case 'Problem finding a list.':
               case 'Problem creating a list.':
