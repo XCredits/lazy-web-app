@@ -32,10 +32,9 @@ export class ContactsViewComponent implements OnInit {
   displayedColumns: string[] = ['select', 'givenName', 'familyName', 'email', 'listName', 'Action'];
   selection = new SelectionModel<ContactElements>(true, []);
   dataSource = new MatTableDataSource<ContactElements>(this.contactsArr);
-  isEditMode: boolean;
   isViewAll: boolean;
+  isEditContact: boolean;
   selected: string;
-  isDelete: boolean;
   deleteContactName: string;
   modalReference = null;
 
@@ -45,9 +44,7 @@ export class ContactsViewComponent implements OnInit {
     private router: Router, ) { }
 
   ngOnInit() {
-    this.isEditMode = false;
     this.isViewAll = true;
-    this.isDelete = false;
     this.loadContacts();
   }
 
@@ -111,7 +108,6 @@ export class ContactsViewComponent implements OnInit {
   };
 
   openAddContactForm = function () {
-    this.isEditMode = true;
     this.isViewAll = false;
     this.form = new FormGroup({
       givenName: new FormControl(''),
@@ -123,8 +119,8 @@ export class ContactsViewComponent implements OnInit {
 
 
   editContact = function (contact) {
-    this.isEditMode = true;
     this.isViewAll = false;
+    this.isEditContact = true;
     this.contactId = contact.contactId;
     this.form = new FormGroup({
       givenName: new FormControl(contact.givenName),
@@ -132,8 +128,6 @@ export class ContactsViewComponent implements OnInit {
       email: new FormControl(contact.email, [Validators.required, Validators.email]),
       contactList: new FormControl([contact.listName]),
     });
-
-
   };
 
   updateContact = function (contact) {
@@ -147,7 +141,6 @@ export class ContactsViewComponent implements OnInit {
         if (result.message === 'Contact updated.' ) {
           this.listAddMessage = 'Contact updated.';
           this.isViewAll = false;
-          this.isEditMode = false;
         }
       });
   };
@@ -156,9 +149,8 @@ export class ContactsViewComponent implements OnInit {
 
   resetForm = function() {
     this.listAddMessage = undefined;
-    this.isEditMode = false;
     this.isViewAll = true;
-    this.isDelete = false;
+    this.isEditContact = false;
     this.modalReference.close();
   };
 

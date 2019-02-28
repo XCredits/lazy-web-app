@@ -290,7 +290,6 @@ import { ConnectionsViewComponent } from './connections/connections-view/connect
           {
             path: 'view/:contactId',
             component: ContactDetailsComponent,
-            data: { title: 'Contact details' },
           },
           {
             path: 'lists',
@@ -303,7 +302,6 @@ import { ConnectionsViewComponent } from './connections/connections-view/connect
           {
             path: 'lists/:listId',
             component: ContactsListDetailsComponent,
-            data: { title: 'List details' },
             canActivate: [AuthGuard],
 
           }
@@ -335,7 +333,7 @@ import { ConnectionsViewComponent } from './connections/connections-view/connect
           },
           {
             path: 'request',
-            component: ConnectionsRequestComponent
+            component: ConnectionsRequestComponent,
           },
           {
             path: 'request/:requestUserId',

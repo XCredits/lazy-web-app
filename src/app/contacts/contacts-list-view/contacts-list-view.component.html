@@ -1,5 +1,5 @@
-<div *ngIf='!isEditMode'>
-    <button color="primary" class="simple-form-button pull-right" mat-raised-button routerLink='/contacts/add'>
+<div *ngIf='isViewAll'>
+    <button color="primary" class="simple-form-button pull-right" mat-raised-button routerLink='/contacts/lists/add'>
       +
     </button>
     <br>
@@ -14,10 +14,11 @@
           {{list.numberOfContacts}}
         </div>
       <div class="controls">
-        <button mat-icon-button (click)="editContact(list)" >
-          <mat-icon>create</mat-icon>
-        </button> <button mat-icon-button (click)="contactDeleteDialog(modal)" (click)="openDeleteContact(list)">
-          <mat-icon>delete</mat-icon>
+          <button mat-icon-button (click)="editListForm(list)">
+              <mat-icon>create</mat-icon>
+        </button> 
+        <button mat-icon-button (click)="openDeleteList(list)" (click)="listDeleteDialog(model)">
+            <mat-icon>delete</mat-icon>
         </button>
       </div>
     </div>
@@ -26,107 +27,7 @@
 </div>
 <br>
 
-
-
-
-<div *ngIf='!isEditMode'>
-  <div class="container" *ngIf='lists.length === 0'>
-    <mat-card>
-      <div class="col-md-8 offset-md-2">
-        <p> You dont have lists </p>
-      </div>
-    </mat-card>
-  </div>
-</div>
-<div *ngIf='isViewAll'>
-  <button color="primary" class="simple-form-button pull-right" mat-raised-button routerLink='./add'>
-    +
-  </button>
-  <div *ngIf='lists.length > 0'>
-    <table mat-table [dataSource]="lists" class="mat-elevation-z8">
-      <!-- Checkbox Column -->
-      <ng-container matColumnDef="select">
-        <th mat-header-cell *matHeaderCellDef>
-          <mat-checkbox (change)="$event ? masterToggle() : null" [checked]="selection.hasValue() && isAllSelected()"
-            [indeterminate]="selection.hasValue() && !isAllSelected()">
-          </mat-checkbox>
-        </th>
-        <td mat-cell *matCellDef="let row">
-          <mat-checkbox (click)="$event.stopPropagation()" (change)="$event ? selection.toggle(row) : null"
-            [checked]="selection.isSelected(row)">
-          </mat-checkbox>
-        </td>
-      </ng-container>
-
-      <!-- givenName Column -->
-      <ng-container matColumnDef="listName">
-        <th mat-header-cell *matHeaderCellDef> List name</th>
-        <td mat-cell *matCellDef="let list" (click)="onSelect(list)"> {{list.listName}}
-        </td>
-      </ng-container>
-
-      <!-- givenName Column -->
-      <ng-container matColumnDef="NoOfContacts">
-        <th mat-header-cell *matHeaderCellDef> No. Of Contacts</th>
-        <td mat-cell *matCellDef="let list" (click)="onSelect(list)"> {{list.numberOfContacts}}
-        </td>
-      </ng-container>
-
-      <ng-container matColumnDef="Action">
-        <th mat-header-cell *matHeaderCellDef> Action </th>
-        <td mat-cell *matCellDef="let list">
-          <button mat-icon-button (click)="editListForm(list)">
-            <mat-icon>create</mat-icon>
-          </button>
-          <button mat-icon-button (click)="openDeleteList(list)" (click)="listDeleteDialog(model)">
-            <mat-icon>delete</mat-icon>
-          </button>
-
-        </td>
-      </ng-container>
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns;" (click)="selection.toggle(row)">
-      </tr>
-    </table>
-    <br>
-
-  </div>
-</div>
-
-
-<div class="simple-form-aligner" *ngIf='isEditMode'>
-  <mat-card class="simple-form-card">
-    <mat-card-title>Create list </mat-card-title>
-    <mat-card-content>
-      <form [formGroup]="form" (ngSubmit)="submit(form.value)">
-        <div class="form-group">
-          <mat-form-field class="simple-form-field-50">
-            <input matInput placeholder="List name" name="listName" formControlName="listName">
-          </mat-form-field>
-          <br>
-          <div style="text-align: center">
-            <button [disabled]="waiting" class="simple-form-button" color="primary" mat-raised-button type="submit"
-              value="submit" (click)="addList(form)">
-              Create
-            </button>
-
-
-            &nbsp;
-            &nbsp;
-            <button [disabled]="waiting" class="simple-form-button" color="Basic" mat-raised-button type="submit"
-              value="submit" (click)="resetForm()">
-              Cancel
-            </button>
-          </div>
-          <mat-progress-spinner *ngIf="waiting" color="primary" mode="indeterminate" class="simple-form-spinner"
-            [diameter]=22>
-          </mat-progress-spinner>
-        </div>
-      </form>
-    </mat-card-content>
-  </mat-card>
-</div>
-
+ 
 
 <div class="simple-form-aligner" *ngIf='isUpdateMode'>
   <mat-card class="simple-form-card">
@@ -159,17 +60,7 @@
   </mat-card>
 </div>
 
-<div *ngIf='listAddMessage !== undefined'>
-  <div *ngIf='!isEditMode'>
-    <mat-card>
-      <mat-card-title> {{listAddMessage}}</mat-card-title>
-      <button routerLink='/contacts/view' class="simple-form-button" color="primary" mat-raised-button
-        (click)="resetForm()">
-        Ok
-      </button>
-    </mat-card>
-  </div>
-</div>
+
 
 <ng-template #model>
   <mat-dialog-content>

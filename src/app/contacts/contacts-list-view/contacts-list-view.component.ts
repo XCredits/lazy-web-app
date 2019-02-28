@@ -129,10 +129,14 @@ export class ContactsListViewComponent implements OnInit {
     })
       .subscribe((result) => {
         if (result.message === 'List updated.' ) {
-          this.isViewAll = false;
+          this.isViewAll = true;
           this.isEditMode = false;
           this.isUpdateMode = false;
           this.listAddMessage = 'List updated.';
+          this.loadLists();
+          this.router.navigate(['/contacts/lists']);
+
+
         }
       });
   };
@@ -145,7 +149,6 @@ export class ContactsListViewComponent implements OnInit {
     this.isDelete = false;
     this.isUpdateMode = false;
     this.modalReference.close();
-    this.loadLists();
   };
 
 

@@ -2,8 +2,6 @@ import {MatTableDataSource} from '@angular/material';
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Router } from '@angular/router';
-import { EmailValidator } from '@angular/forms';
 import {SelectionModel} from '@angular/cdk/collections';
 
 export interface ContactElements {
@@ -32,6 +30,7 @@ export class ContactsListDetailsComponent implements OnInit {
   ngOnInit() {
     this.listIdURL = this.route.snapshot.paramMap.get('listId');
     this.loadListContact();
+
   }
 
   loadListContact = function () {
