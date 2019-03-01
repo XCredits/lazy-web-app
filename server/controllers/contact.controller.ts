@@ -131,17 +131,17 @@ function removeContact(req, res) {
 
   return ContactListContact.delete( {userId: userId, contactId: contactId } )
       .then(() => {
-        return Contact.deleteOne( {_id: contactId, userId: userId} )
-          .then(() => {
-            return res.send({ message: 'Contact deleted.' });
-          })
-          .catch((error) => {
-            return res.status(500).send('Problem removing contacts.');
-          });
-      })
-      .catch((error) => {
-        return res.status(500).send('Problem removing contacts.');
-      });
+          return Contact.deleteOne( {_id: contactId, userId: userId} )
+            .then(() => {
+              return res.send({ message: 'Contact deleted.' });
+            })
+            .catch((error) => {
+              return res.status(500).send('Problem removing contacts.');
+            });
+        })
+        .catch((error) => {
+          return res.status(500).send('Problem removing contacts.');
+        });
 }
 
 
