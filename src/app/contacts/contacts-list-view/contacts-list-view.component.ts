@@ -123,7 +123,7 @@ export class ContactsListViewComponent implements OnInit {
   updateList = function (contact) {
     this.http.post('/api/contacts-list/update-list', {
       'listId': this.listDetails.listId,
-      'UpdatedListName': contact.listName,
+      'updatedListName': contact.listName,
     })
       .subscribe((result) => {
         if (result.message === 'List updated.' ) {

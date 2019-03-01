@@ -11,7 +11,7 @@ module.exports = function(app) {
   app.post('/api/contacts/update-contact', auth.jwt, updateContact);
   app.post('/api/contacts/view-contacts', auth.jwt, getContacts);
   app.post('/api/contacts/view-contact-details', auth.jwt, getContactDetails);
-  app.post('/api/contacts/get-contacts-with-lists', auth.jwt, returnContactsWithLists);
+  app.post('/api/contacts/get-contacts-with-lists', auth.jwt, getContactsWithLists);
   app.post('/api/contacts/view-list-contacts', auth.jwt, returnContactsWithContactLists);
   app.post('/api/contacts-list/view-lists', auth.jwt, getLists);
   app.post('/api/contacts-list/add-list', auth.jwt, addList);
@@ -129,19 +129,19 @@ function removeContact(req, res) {
     return res.status(422).json({ message: 'Contact failed validation.' });
   }
 
-  return ContactListContact.deleteOne( {contactId: contactId } )
-  .then(() => {
-    return Contact.deleteOne( {_id: contactId } )
+  return ContactListContact.delete( {userId: userId, contactId: contactId } )
       .then(() => {
-        return res.send({ message: 'Contact deleted.' });
+        return Contact.deleteOne( {_id: contactId, userId: userId} )
+          .then(() => {
+            return res.send({ message: 'Contact deleted.' });
+          })
+          .catch((error) => {
+            return res.status(500).send('Problem removing contacts.');
+          });
       })
       .catch((error) => {
         return res.status(500).send('Problem removing contacts.');
       });
-  })
-  .catch((error) => {
-    return res.status(500).send('Problem removing contacts.');
-  });
 }
 
 
@@ -185,11 +185,10 @@ function getContactDetails(req, res) {
     return res.status(422).json({ message: 'Contact failed validation.' });
   }
 
-  Contact.findOne({ _id: contactId })
+  Contact.findOne({ _id: contactId, userId: userId  })
     .then(resultContact => {
       const resultsFiltered = {
-        _id: resultContact._id,
-        userId: resultContact.userId,
+        id: resultContact._id,
         givenName: resultContact.givenName,
         familyName: resultContact.familyName,
         email: resultContact.email,
@@ -212,7 +211,7 @@ function getLists(req, res) {
     .then((result) => {
       const filteredResult = result.map((x) => {
         return {
-          listId: x._id,
+          id: x._id,
           listName: x.listName,
         };
       });
@@ -246,8 +245,8 @@ function addList(req, res) {
         }
       } else {
         const contactList = new ContactList({
-          listName: listName,
           refId: userId,
+          listName: listName,
         });
         return contactList.save()
           .then((result) => {
@@ -272,14 +271,14 @@ function removeList(req, res) {
     return res.status(422).json({ message: 'Contact failed validation.' });
   }
 
-  return ContactListContact.find({ listId })
+  return ContactListContact.find({userId, listId })
     .then (( result ) => {
       const contactId = result.map ((x => x.contactId));
-      return Contact.deleteMany ({ _id: contactId})
+      return Contact.deleteMany ({ _id: contactId, userId})
         .then (() => {
-          return ContactListContact.deleteMany({ listId: listId })
+          return ContactListContact.deleteMany({ listId: listId, userId})
             .then(() => {
-              return ContactList.deleteOne({ _id: listId })
+              return ContactList.deleteOne({ _id: listId, userId})
                 .then(() => {
                   return res.send({ message: 'List deleted.' });
                 })
@@ -303,20 +302,21 @@ function removeList(req, res) {
 function updateList(req, res) {
   const userId = req.userId;
   const listId = req.body.listId;
-  const UpdatedListName = req.body.UpdatedListName;
+  const updatedListName = req.body.updatedListName;
   // Validate
   if (typeof listId !== 'string' ||
-      typeof UpdatedListName !== 'string' ) {
+      typeof updatedListName !== 'string' ) {
     return res.status(422).json({ message: 'Request failed validation.' });
   }
 
   return ContactList.findOneAndUpdate({
+    userId: userId,
     _id: listId,
   },
   {
     $set:
     {
-      listName: UpdatedListName,
+      listName: updatedListName,
     }
   })
   .then(() => {
@@ -336,12 +336,12 @@ function updateList(req, res) {
  * @param {*} res response object
  * @returns {*}
  */
-function returnContactsWithLists(req, res) {
+function getContactsWithLists(req, res) {
   const userId = req.userId;
   return Contact.find({ userId })
     .then((result) => {
-      const listIdArr = result.map((e => e._id));
-      return ContactListContact.find({ 'contactId': { '$in': listIdArr } })
+      const contactIdArr = result.map((e => e._id));
+      return ContactListContact.find({userId: userId, 'contactId': { '$in': contactIdArr } })
         .then((result2) => {
           const filteredResult = result2.map((x) => {
             return {
@@ -375,10 +375,10 @@ function returnContactsWithContactLists(req, res) {
   if (typeof listId !== 'string' ) {
     return res.status(422).json({ message: 'Request failed validation.' });
   }
-  return ContactListContact.find({ listId })
+  return ContactListContact.find({ userId, listId })
     .then((result) => {
       const contactId = result.map((x => x.contactId));
-      return Contact.find({ '_id': { '$in': contactId } })
+      return Contact.find({ userId: userId, '_id': { '$in': contactId } })
         .then((filteredResult) => {
           const resultFiltered = filteredResult.map((x) => {
               return {

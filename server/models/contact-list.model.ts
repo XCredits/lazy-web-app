@@ -12,7 +12,6 @@ const ContactListSchema = new Schema({
 
 ContactListSchema.index({ refId: 1, listId: 1 });
 ContactListSchema.index({ listId: 1 });
-ContactListSchema.index({ refId: 1 });
 ContactListSchema.index({ refId: 1, listName: 1 });
 
 
