@@ -5,7 +5,6 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { MatDialog } from '@angular/material';
 import { Router } from '@angular/router';
-import { ConsoleReporter } from 'jasmine';
 
 export interface ContactElements {
   position: number;
@@ -60,7 +59,6 @@ export class ContactsViewComponent implements OnInit {
     this.contactsArr = [];
     this.http.post('/api/contacts/view-contacts', { })
         .subscribe ((data: any) => {
-            console.log(data);
             this.contactsArr = data;
             this.dataSource = new MatTableDataSource<ContactElements>(this.contactsArr);
             this.loadContactsLists();
@@ -78,15 +76,18 @@ export class ContactsViewComponent implements OnInit {
 
   loadContactsRelations = function () {
     this.http.post('api/contacts/get-contacts-with-lists', {})
-    .subscribe((data: any) => {
+      .subscribe((data: any) => {
         this.listsConnections = data;
         for (const index of this.contactsArr) {
-            for (const relation of this.listsConnections) {
-                if ( relation['contactId'] === index ['contactId']) {
-                    const fm = this.lists.find(el => el.listId === relation['listId']);
-                    index.listName = fm.listName;
-                }
+          for (const relation of this.listsConnections) {
+            if (relation['listId']) {
+              if (relation['contactId'] === index['contactId']) {
+                const fm = this.lists.find(el => el.listId === relation['listId']);
+                index.listName = fm.listName;
+              }
             }
+
+          }
         }
       });
 
@@ -142,7 +143,10 @@ export class ContactsViewComponent implements OnInit {
       .subscribe((result) => {
         if (result.message === 'Contact updated.' ) {
           this.listAddMessage = 'Contact updated.';
-          this.isViewAll = false;
+          this.isViewAll = true;
+          this.isEditContact = false;
+          this.loadContacts();
+
         }
       });
   };

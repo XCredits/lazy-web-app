@@ -49,13 +49,10 @@ export class ContactsListDetailsComponent implements OnInit {
 
   openDeleteContact = function (contact) {
     this.contactId = contact.contactId;
-    console.log(contact);
-    console.log(this.contactId);
     this.deleteContactName = contact.givenName + ' ' + contact.familyName;
   };
 
   deleteContact = function () {
-    console.log(this.contactId);
     this.http.post('/api/contacts/delete-contact', {
       'contactId': this.contactId,
     })
