@@ -90,7 +90,7 @@ export class ContactsViewComponent implements OnInit {
       'contactId': this.contactId,
     })
       .subscribe((result) => {
-        if (result.message === 'Contact deleted' ) {
+        if (result.message === 'Contact deleted.' ) {
             this.loadContacts();
             this.resetForm();
         }

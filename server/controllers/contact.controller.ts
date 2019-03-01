@@ -124,9 +124,9 @@ function deleteContact(req, res) {
     return res.status(422).json({ message: 'Contact failed validation.' });
   }
 
-  return ContactListContact.deleteOne( {contactId: contactId } )
+  return ContactListContact.deleteMany( {contactId: contactId } )
   .then(() => {
-    return Contact.deleteOne( {_id: contactId } )
+    return Contact.deleteMany( {userId: userId, _id: contactId } )
       .then(() => {
         return res.send({ message: 'Contact deleted.' });
       })
@@ -180,7 +180,7 @@ function getContactDetails(req, res) {
     return res.status(422).json({ message: 'Contact failed validation.' });
   }
 
-  Contact.findOne({ _id: contactId })
+  Contact.findOne({ userId: userId, _id: contactId })
     .then(resultContact => {
       const resultsFiltered = {
         _id: resultContact._id,
@@ -270,11 +270,11 @@ function deleteList(req, res) {
   return ContactListContact.find({ listId })
     .then (( result ) => {
       const contactId = result.map ((x => x.contactId));
-      return Contact.deleteMany ({ _id: contactId})
+      return Contact.deleteMany ({userId: userId, _id: contactId})
         .then (() => {
           return ContactListContact.deleteMany({ listId: listId })
             .then(() => {
-              return ContactList.deleteOne({ _id: listId })
+              return ContactList.deleteMany({ refId: userId, _id: listId })
                 .then(() => {
                   return res.send({ message: 'List deleted.' });
                 })
@@ -306,6 +306,7 @@ function editList(req, res) {
   }
 
   return ContactList.findOneAndUpdate({
+    refId: userId,
     _id: listId,
   },
   {
@@ -373,7 +374,7 @@ function getContactsWithContactLists(req, res) {
   return ContactListContact.find({ listId })
     .then((result) => {
       const contactId = result.map((x => x.contactId));
-      return Contact.find({ '_id': { '$in': contactId } })
+      return Contact.find({userId: userId, '_id': { '$in': contactId } })
         .then((filteredResult) => {
           const resultFiltered = filteredResult.map((x) => {
               return {
