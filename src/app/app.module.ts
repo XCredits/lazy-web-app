@@ -87,13 +87,17 @@ import { CreateOrganizationComponent } from './create-organization/create-organi
 import { UpdateOrganizationComponent } from './update-organization/update-organization.component';
 import { AddUserComponent } from './add-user/add-user.component';
 import { ContactsComponent } from './contacts/contacts.component';
-import { ContactsAddComponent } from './contacts/contacts-add/contacts-add.component';
+import { ContactsListViewComponent } from './contacts/contacts-list-view/contacts-list-view.component';
+import { ContactsListDetailsComponent } from './contacts/contacts-list-details/contacts-list-details.component';
+import { ContactsListAddComponent } from './contacts/contacts-list-add/contacts-list-add.component';
 import { ContactsViewComponent } from './contacts/contacts-view/contacts-view.component';
-import { ContactsFavComponent } from './contacts/contacts-fav/contacts-fav.component';
+import { ContactsAddComponent } from './contacts/contacts-add/contacts-add.component';
+import { ContactDetailsComponent } from './contacts/contacts-details/contacts-details.component';
 import { ConnectionComponent } from './connections/connections.component';
 import { ConnectionsAddComponent } from './connections/connections-add/connections-add.component';
 import { ConnectionsSentComponent } from './connections/connections-sent/connections-sent.component';
 import { ConnectionsRequestComponent } from './connections/connections-request/connections-request.component';
+import { ConnectionsRequestDetailsComponent } from './connections/connections-request-details/connections-request-details.component';
 import { ConnectionsViewComponent } from './connections/connections-view/connections-view.component';
 
 @NgModule({
@@ -123,18 +127,22 @@ import { ConnectionsViewComponent } from './connections/connections-view/connect
     FooterComponent,
     ChangeThemeComponent,
     ContactsComponent,
-    ContactsAddComponent,
-    ContactsFavComponent,
+    ContactsListViewComponent,
     ContactsViewComponent,
+    ContactsAddComponent,
+    ContactDetailsComponent,
     ConnectionComponent,
     ConnectionsAddComponent,
     ConnectionsSentComponent,
     ConnectionsRequestComponent,
+    ConnectionsRequestDetailsComponent,
     ConnectionsViewComponent,
     OrganizationComponent,
     CreateOrganizationComponent,
     UpdateOrganizationComponent,
     AddUserComponent,
+    ContactsListDetailsComponent,
+    ContactsListAddComponent,
   ],
   imports: [
     BrowserModule,
@@ -268,12 +276,26 @@ import { ConnectionsViewComponent } from './connections/connections-view/connect
             component: ContactsViewComponent,
           },
           {
-            path: 'fav',
-            component: ContactsFavComponent,
-          },
-          {
             path: 'add',
             component: ContactsAddComponent,
+          },
+          {
+            path: 'view/:contactId',
+            component: ContactDetailsComponent,
+          },
+          {
+            path: 'lists',
+            component: ContactsListViewComponent,
+          },
+          {
+            path: 'lists/add',
+            component: ContactsListAddComponent,
+          },
+          {
+            path: 'lists/:listId',
+            component: ContactsListDetailsComponent,
+            canActivate: [AuthGuard],
+
           }
         ]
       },
@@ -303,7 +325,14 @@ import { ConnectionsViewComponent } from './connections/connections-view/connect
           },
           {
             path: 'request',
-            component: ConnectionsRequestComponent
+            component: ConnectionsRequestComponent,
+          },
+          {
+            path: 'request/:requestUserId',
+            component: ConnectionsRequestDetailsComponent,
+            data: { title: 'Request details' },
+            canActivate: [AuthGuard],
+
           }
          ]
       },

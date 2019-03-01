@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
+
 
 @Component({
   selector: 'app-contacts-add',
@@ -9,42 +11,64 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 })
 export class ContactsAddComponent implements OnInit {
   form: FormGroup;
-  waiting = false;
-  formErrorMessage: string;
-  submitSuccess: boolean;
+  displayedColumns: string[] = ['select', 'listName', 'Action'];
+  contactAddMessage: string;
+  isEditMode: boolean;
+  lists: { listId: string, listName: string, numberOfContacts: number }[] = [];
 
   constructor(
     private http: HttpClient,
-  ) { }
+    private router: Router, ) { }
 
   ngOnInit() {
-    this.form = new FormGroup ({
+    this.contactAddMessage = undefined;
+    this.isEditMode = true;
+    this.form = new FormGroup({
       givenName: new FormControl(''),
       familyName: new FormControl(''),
       email: new FormControl('', [Validators.required, Validators.email]),
+      contactList: new FormControl(''),
     });
+
+    this.loadContactsLists();
+
   }
 
-  submit = function (formData) {
-    if (this.form.invalid) {
-      return;
-    }
-    // Clear state from previous submissions
-    this.formErrorMessage = undefined;
-    this.submitSuccess = false;
-    this.waiting = true;
-    this.http.post('/api/contacts/add', {
-      'givenName': formData.givenName,
-      'familyName': formData.familyName,
-      'email': formData.email
+
+  loadContactsLists = function () {
+    this.http.post('/api/contacts-list/view-lists', {})
+      .subscribe((data: any) => {
+        this.lists = data;
+      });
+  };
+
+  addContact = function (newContact) {
+
+    this.http.post('/api/contacts/add-contact', {
+      'givenName': newContact.givenName,
+      'familyName': newContact.familyName,
+      'email': newContact.email,
+      'contactListId': newContact.contactList.listId,
     })
-      .subscribe(data => {
-          this.waiting = false;
-          this.submitSuccess = true;
-        },
-        errorResponse => {
-            this.waiting = false;
-            this.formErrorMessage = 'There was a problem submitting the form.';
+      .subscribe((result) => {
+        this.isEditMode = false;
+        switch (result.message) {
+              case 'Success.':
+                this.router.navigate(['/contacts/view/' + result.contactId]);
+              break;
+              case 'Problem finding a list.':
+              case 'Problem creating a list.':
+                this.contactAddMessage = 'Contact cannot be created.';
+              break;
+              default:
+                this.contactAddMessage = 'Something went wrong, please try again later.';
+            }
         });
   };
+
+
+  submit = function () {
+  };
+
+
 }

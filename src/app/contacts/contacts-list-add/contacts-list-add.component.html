@@ -1,0 +1,47 @@
+<div class="simple-form-aligner" *ngIf='isEditMode'>
+  <mat-card class="simple-form-card">
+    <mat-card-title>Create list </mat-card-title>
+    <mat-card-content>
+      <form [formGroup]="form" (ngSubmit)="submit(form.value)">
+        <div class="form-group">
+          <mat-form-field class="simple-form-field-50">
+            <input matInput placeholder="List name" name="listName" formControlName="listName">
+          </mat-form-field>
+          <span 
+          *ngIf='formErrorMessage' 
+          class="text-error-color">
+            {{formErrorMessage}}
+        </span>
+    
+          <br>
+          <div style="text-align: center">
+            <button [disabled]="waiting" class="simple-form-button" color="primary" mat-raised-button type="submit"
+              value="submit" (click)="addList(form.value)">
+              Create
+            </button>
+            &nbsp;
+            &nbsp;
+            <button [disabled]="waiting" class="simple-form-button" color="Basic" mat-raised-button type="submit"
+              value="submit" routerLink='/contacts/lists'>
+              Cancel
+            </button>
+          </div>
+          <mat-progress-spinner *ngIf="waiting" color="primary" mode="indeterminate" class="simple-form-spinner"
+            [diameter]=22>
+          </mat-progress-spinner>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>
+
+<div *ngIf='listAddMessage !== undefined'>
+  <div *ngIf='!isEditMode'>
+    <mat-card>
+    <mat-card-title> {{listAddMessage}}</mat-card-title>
+    <button routerLink='/contacts/lists' class="simple-form-button" color="primary" mat-raised-button>
+      Ok
+    </button>
+  </mat-card>
+  </div>
+</div>

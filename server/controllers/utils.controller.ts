@@ -7,6 +7,7 @@ export {
   isValidUsername,
   isValidDisplayUsername,
   normalizeUsername,
+  normalizeContact,
   usernameRegex,
   displayUsernameRegex,
 };
@@ -40,4 +41,19 @@ function normalizeUsername(username) {
       .split('_').join('')
       .split('-').join('')
       .toLowerCase();
+}
+
+
+/**
+ *
+ * @param {string} contact
+ * @return {string}
+ */
+function normalizeContact(contact) {
+  return contact
+      .split('.').join('')
+      .split('_').join('')
+      .split('-').join('')
+      .toLowerCase()
+      .charAt(0).toUpperCase() + contact.slice(1).toLowerCase();
 }
