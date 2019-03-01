@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { ConnectionComponent } from '../connections.component';
+import { Router } from '@angular/router';
 
 
 export interface ConnectionRequestElements {
@@ -29,7 +30,7 @@ export class ConnectionsRequestComponent implements OnInit {
   constructor(
     private http: HttpClient,
     private connectionRoute: ConnectionComponent,
-  ) { }
+    private router: Router, ) { }
 
   ngOnInit() {
     this.formErrorMessage = undefined;
@@ -119,4 +120,10 @@ export class ConnectionsRequestComponent implements OnInit {
         // Update notification counter in parent.
         this.connectionRoute.loadPageCounters();
   };
+
+  onSelect(contact) {
+    console.log('This user for ID ' + contact.userId );
+    this.router.navigate(['/connections/request/' + contact.userId]);
+
+  }
 }

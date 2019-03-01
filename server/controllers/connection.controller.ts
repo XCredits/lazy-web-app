@@ -9,6 +9,7 @@ module.exports = function (app) {
   app.post('/api/connection/add-request', auth.jwt, addRequest);
   app.post('/api/connection/get-pending-requests', auth.jwt, getPendingRequests);
   app.post('/api/connection/get-connections', auth.jwt, getConnections);
+  app.post('/api/connection/get-connections-details', auth.jwt, getPendingConnectionDetails);
   app.post('/api/connection/action-request', auth.jwt, actionConnectionRequest);
   app.post('/api/connection/get-pending-request-count', auth.jwt, getPendingRequestCount);
   app.post('/api/connection/get-connection-count', auth.jwt, getConnectionCount);
@@ -70,7 +71,10 @@ function addRequest(req, res) {
                     connectionReq.updateTimestamp = Date.now();
                     return connectionReq.save()
                         .then(() => {
-                          return res.send({ message: 'Success' });
+                          return res.status(200).send({
+                            message: 'Success'
+                          }); // return res.send({ message: 'Success' });
+
                         })
                         .catch((error) => {
                           return res.status(500)
@@ -425,3 +429,51 @@ function removeConnection(req, res) {
           .send({ message: 'Could not remove connection' });
       });
 }
+
+
+
+
+
+
+/**
+ * return list of pending users
+ * @param {*} req request object
+ * @param {*} res response object
+ * @return {*}
+ */
+function getPendingConnectionDetails(req, res) {
+    // Save the login userId
+    const userId = req.userId;
+    const senderUserId = req.body.senderUserId;
+    // Validate
+    if (typeof senderUserId !== 'string')  {
+      return res.status(422).json({ message: 'Request failed validation' });
+    }
+  return ConnectionRequest.findOne({
+    senderUserId: senderUserId,
+    receiverUserId: userId,
+    active: true,
+    snoozed: false,
+  })
+    .then((connectionDetails) => {
+      return User.findOne({ '_id': connectionDetails.senderUserId })
+        .then(user => {
+          const resultsFiltered = {
+              username: user.username,
+              givenName: user.givenName,
+              familyName: user.familyName,
+              userId: user._id,
+              sendTimestamp: connectionDetails.sendTimestamp,
+            };
+          res.send(resultsFiltered);
+        })
+        .catch((err) => {
+          res.status(500).send({ message: 'Error retrieving request details' });
+        });
+    })
+    .catch((err) => {
+      res.status(500).send({ message: 'Error retrieving request details' });
+    });
+}
+
+
