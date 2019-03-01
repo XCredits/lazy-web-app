@@ -37,7 +37,7 @@ export class ContactsListDetailsComponent implements OnInit {
   }
 
   loadListContact = function () {
-    this.http.post('/api/contacts/view-list-contacts', {
+    this.http.post('/api/contacts/get-contacts-with-contactlists', {
       'listId': this.listIdURL,
     })
       .subscribe((result) => {
@@ -51,7 +51,7 @@ export class ContactsListDetailsComponent implements OnInit {
   };
 
   deleteContact = function () {
-    this.http.post('/api/contacts/delete-contact', {
+    this.http.post('/api/contacts/delete', {
       'contactId': this.contactId,
     })
       .subscribe((result) => {

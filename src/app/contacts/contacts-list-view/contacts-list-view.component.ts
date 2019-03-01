@@ -49,7 +49,7 @@ export class ContactsListViewComponent implements OnInit {
   loadLists = function () {
     this.dataSource = [];
     this.lists = [];
-    this.http.post('/api/contacts-list/view-lists', { })
+    this.http.post('/api/contacts-list/view', { })
         .subscribe ((data: any) => {
           this.lists = data;
           for (const counter of this.lists) {
@@ -83,7 +83,7 @@ export class ContactsListViewComponent implements OnInit {
         }
       }
 
-      this.http.post('/api/contacts-list/remove-list', {
+      this.http.post('/api/contacts-list/delete', {
             'listId': this.listDetails.listId,
           })
           .subscribe((result) => {
@@ -121,7 +121,7 @@ export class ContactsListViewComponent implements OnInit {
   };
 
   updateList = function (contact) {
-    this.http.post('/api/contacts-list/update-list', {
+    this.http.post('/api/contacts-list/edit', {
       'listId': this.listDetails.listId,
       'UpdatedListName': contact.listName,
     })

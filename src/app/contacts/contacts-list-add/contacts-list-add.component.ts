@@ -33,7 +33,7 @@ export class ContactsListAddComponent implements OnInit {
       this.formErrorMessage = 'Please type a valid list name.';
        return;
     }
-    this.http.post('/api/contacts-list/add-list', {
+    this.http.post('/api/contacts-list/add', {
       'listName': form.listName,
     })
       .subscribe((result) => {

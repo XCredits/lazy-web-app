@@ -36,7 +36,7 @@ export class ContactsAddComponent implements OnInit {
 
 
   loadContactsLists = function () {
-    this.http.post('/api/contacts-list/view-lists', {})
+    this.http.post('/api/contacts-list/view', {})
       .subscribe((data: any) => {
         this.lists = data;
       });
@@ -44,7 +44,7 @@ export class ContactsAddComponent implements OnInit {
 
   addContact = function (newContact) {
 
-    this.http.post('/api/contacts/add-contact', {
+    this.http.post('/api/contacts/add', {
       'givenName': newContact.givenName,
       'familyName': newContact.familyName,
       'email': newContact.email,

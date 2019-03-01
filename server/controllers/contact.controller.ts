@@ -6,17 +6,17 @@ const ContactListContact = require('../models/contact-list-contact.model');
 const auth = require('./jwt-auth.controller');
 
 module.exports = function(app) {
-  app.post('/api/contacts/add-contact', auth.jwt, addContact);
-  app.post('/api/contacts/delete-contact', auth.jwt, removeContact);
-  app.post('/api/contacts/update-contact', auth.jwt, updateContact);
-  app.post('/api/contacts/view-contacts', auth.jwt, getContacts);
-  app.post('/api/contacts/view-contact-details', auth.jwt, getContactDetails);
-  app.post('/api/contacts/get-contacts-with-lists', auth.jwt, returnContactsWithLists);
-  app.post('/api/contacts/view-list-contacts', auth.jwt, returnContactsWithContactLists);
-  app.post('/api/contacts-list/view-lists', auth.jwt, getLists);
-  app.post('/api/contacts-list/add-list', auth.jwt, addList);
-  app.post('/api/contacts-list/remove-list', auth.jwt, removeList);
-  app.post('/api/contacts-list/update-list', auth.jwt, updateList);
+  app.post('/api/contacts/add', auth.jwt, addContact);
+  app.post('/api/contacts/delete', auth.jwt, deleteContact);
+  app.post('/api/contacts/edit', auth.jwt, editContact);
+  app.post('/api/contacts/view', auth.jwt, getContacts);
+  app.post('/api/contacts/details', auth.jwt, getContactDetails);
+  app.post('/api/contacts/get-contacts-with-lists', auth.jwt, getContactsWithLists);
+  app.post('/api/contacts/get-contacts-with-contactlists', auth.jwt, getContactsWithContactLists);
+  app.post('/api/contacts-list/view', auth.jwt, getLists);
+  app.post('/api/contacts-list/add', auth.jwt, addList);
+  app.post('/api/contacts-list/delete', auth.jwt, deleteList);
+  app.post('/api/contacts-list/edit', auth.jwt, editList);
 };
 
 
@@ -76,7 +76,7 @@ function addContact(req, res) {
  * @param {*} res response object
  * @return {*}
  */
-function updateContact(req, res) {
+function editContact(req, res) {
   const userId = req.userId;
   const email = req.body.email;
   let givenName = req.body.givenName;
@@ -121,7 +121,7 @@ function updateContact(req, res) {
  * @param {*} res response object
  * @return {*}
  */
-function removeContact(req, res) {
+function deleteContact(req, res) {
   const userId = req.userId;
   const contactId = req.body.contactId;
   // Validate
@@ -263,7 +263,7 @@ function addList(req, res) {
     });
 }
 
-function removeList(req, res) {
+function deleteList(req, res) {
   const userId = req.userId;
   const listId = req.body.listId;
 
@@ -300,7 +300,7 @@ function removeList(req, res) {
     });
   }
 
-function updateList(req, res) {
+function editList(req, res) {
   const userId = req.userId;
   const listId = req.body.listId;
   const UpdatedListName = req.body.UpdatedListName;
@@ -336,7 +336,7 @@ function updateList(req, res) {
  * @param {*} res response object
  * @returns {*}
  */
-function returnContactsWithLists(req, res) {
+function getContactsWithLists(req, res) {
   const userId = req.userId;
   return Contact.find({ userId })
     .then((result) => {
@@ -368,7 +368,7 @@ function returnContactsWithLists(req, res) {
  * @param {*} res response object
  * @returns {*}
  */
-function returnContactsWithContactLists(req, res) {
+function getContactsWithContactLists(req, res) {
   const userId = req.userId;
   const listId = req.body.listId;
  // Validate
