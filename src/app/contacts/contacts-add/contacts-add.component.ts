@@ -29,9 +29,7 @@ export class ContactsAddComponent implements OnInit {
       email: new FormControl('', [Validators.required, Validators.email]),
       contactList: new FormControl(''),
     });
-
     this.loadContactsLists();
-
   }
 
 
@@ -42,8 +40,8 @@ export class ContactsAddComponent implements OnInit {
       });
   };
 
-  addContact = function (newContact) {
 
+  addContact = function (newContact) {
     this.http.post('/api/contacts/add', {
       'givenName': newContact.givenName,
       'familyName': newContact.familyName,
@@ -65,7 +63,6 @@ export class ContactsAddComponent implements OnInit {
             }
         });
   };
-
 
   submit = function () {
   };

@@ -1,12 +1,11 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import {SelectionModel} from '@angular/cdk/collections';
 import { MatDialog } from '@angular/material';
 import { Router } from '@angular/router';
 
 export interface ContactElements {
-  _id: string;
+  id: string;
   userId: string;
   givenName: string;
   familyName: string;
@@ -21,8 +20,6 @@ export interface ContactElements {
 export class ContactDetailsComponent implements OnInit {
   receiverUserId: string;
   link: string;
-  displayedColumns: string[] = ['select', 'givenName', 'familyName', 'email'];
-  selection = new SelectionModel<ContactElements>(true, []);
   contactDetails: ContactElements;
   contactIdURL: string;
   modalReference = null;
@@ -35,7 +32,7 @@ export class ContactDetailsComponent implements OnInit {
 
   ngOnInit() {
     this.contactDetails = {
-      _id: '',
+      id: '',
       userId: '',
       givenName : '',
       familyName : '',
@@ -47,11 +44,11 @@ export class ContactDetailsComponent implements OnInit {
 
   loadContactDetails = function () {
     this.http.post('/api/contacts/details', {
-      'contactId': this.contactIdURL,
+        'contactId': this.contactIdURL,
     })
-      .subscribe((result) => {
+    .subscribe((result) => {
         this.contactDetails = result;
-      });
+    });
   };
 
 
@@ -68,7 +65,6 @@ export class ContactDetailsComponent implements OnInit {
   };
 
   deleteContact = function () {
-    console.log(this.contactDetails);
     this.http.post('/api/contacts/delete', {
       'contactId': this.contactDetails._id,
     })

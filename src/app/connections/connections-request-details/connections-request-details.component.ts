@@ -30,7 +30,6 @@ export class ConnectionsRequestDetailsComponent implements OnInit {
       'senderUserId': this.userIdURL,
     })
       .subscribe((data) => {
-        console.log(data);
         this.requestConnections.push(
           {
             'userId': data.userId,

@@ -122,7 +122,6 @@ export class ConnectionsRequestComponent implements OnInit {
   };
 
   onSelect(contact) {
-    console.log('This user for ID ' + contact.userId );
     this.router.navigate(['/connections/request/' + contact.userId]);
 
   }

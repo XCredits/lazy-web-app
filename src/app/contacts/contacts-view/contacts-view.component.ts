@@ -1,4 +1,3 @@
-import {MatTableDataSource} from '@angular/material';
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
@@ -28,8 +27,6 @@ export class ContactsViewComponent implements OnInit {
   formErrorMessage: string;
   contactId: string;
   contactsArr = [];
-  displayedColumns: string[] = ['select', 'givenName', 'familyName', 'email', 'listName', 'Action'];
-  dataSource = new MatTableDataSource<ContactElements>(this.contactsArr);
   isViewAll: boolean;
   isEditContact: boolean;
   selected: string;
@@ -47,18 +44,12 @@ export class ContactsViewComponent implements OnInit {
   }
 
 
-  applyFilter(filterValue: string) {
-    this.dataSource.filter = filterValue.trim().toLowerCase();
-  }
-
-
   loadContacts = function () {
     this.dataSource = [];
     this.contactsArr = [];
     this.http.post('/api/contacts/view', { })
         .subscribe ((data: any) => {
             this.contactsArr = data;
-            this.dataSource = new MatTableDataSource<ContactElements>(this.contactsArr);
             this.loadContactsLists();
         });
   };

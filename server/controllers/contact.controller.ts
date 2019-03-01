@@ -1,5 +1,4 @@
 import * as validator from 'validator';
-import { normalizeContact } from './utils.controller';
 const Contact = require('../models/contact.model');
 const ContactList = require('../models/contact-list.model');
 const ContactListContact = require('../models/contact-list-contact.model');
@@ -29,8 +28,8 @@ module.exports = function(app) {
 function addContact(req, res) {
   const userId = req.userId;
   const email = req.body.email;
-  let givenName = req.body.givenName;
-  let familyName = req.body.familyName;
+  const givenName = req.body.givenName;
+  const familyName = req.body.familyName;
   const contactListId = req.body.contactListId;
 
   // Validate
@@ -40,8 +39,6 @@ function addContact(req, res) {
     return res.status(422).json({ message: 'Request failed validation' });
   }
 
-  givenName = normalizeContact(givenName);
-  familyName = normalizeContact(familyName);
 
   const contact = new Contact({
     userId: userId,
@@ -79,8 +76,8 @@ function addContact(req, res) {
 function editContact(req, res) {
   const userId = req.userId;
   const email = req.body.email;
-  let givenName = req.body.givenName;
-  let familyName = req.body.familyName;
+  const givenName = req.body.givenName;
+  const familyName = req.body.familyName;
   const contactId = req.body.contactId;
   // Validate
   if (typeof contactId !== 'string' ||
@@ -90,8 +87,6 @@ function editContact(req, res) {
     return res.status(422).json({ message: 'Request failed validation.' });
   }
 
-  givenName = normalizeContact(givenName);
-  familyName = normalizeContact(familyName);
 
   return Contact.findOneAndUpdate({
     userId: userId,
