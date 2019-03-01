@@ -91,9 +91,10 @@ import { ContactsComponent } from './contacts/contacts.component';
 import { ContactsViewComponent } from './contacts/contacts-view/contacts-view.component';
 import { ContactsAddComponent } from './contacts/contacts-add/contacts-add.component';
 import { ContactDetailsComponent } from './contacts/contacts-details/contacts-details.component';
-import { ContactsListViewComponent } from './contacts/contacts-list-view/contacts-list-view.component';
-import { ContactsListDetailsComponent } from './contacts/contacts-list-details/contacts-list-details.component';
-import { ContactsListAddComponent } from './contacts/contacts-list-add/contacts-list-add.component';
+import { ContactsListViewComponent } from './contacts/contacts-list/contacts-list-view/contacts-list-view.component';
+import { ContactsListDetailsComponent } from './contacts/contacts-list/contacts-list-details/contacts-list-details.component';
+import { ContactsListAddComponent } from './contacts/contacts-list/contacts-list-add/contacts-list-add.component';
+import { ContactsListUpdateComponent } from './contacts/contacts-list/contacts-list-update/contacts-list-update.component';
 import { ConnectionComponent } from './connections/connections.component';
 import { ConnectionsViewComponent } from './connections/connections-view/connections-view.component';
 import { ConnectionsAddComponent } from './connections/connections-add/connections-add.component';
@@ -139,6 +140,7 @@ import { ConnectionsRequestDetailsComponent } from './connections/connections-re
     ContactsListViewComponent,
     ContactsListDetailsComponent,
     ContactsListAddComponent,
+    ContactsListUpdateComponent,
     ConnectionComponent,
     ConnectionsViewComponent,
     ConnectionsAddComponent,
@@ -300,10 +302,13 @@ import { ConnectionsRequestDetailsComponent } from './connections/connections-re
             component: ContactsListAddComponent,
           },
           {
+            path: 'lists/update',
+            component: ContactsListUpdateComponent,
+          },
+          {
             path: 'lists/:listId',
             component: ContactsListDetailsComponent,
             canActivate: [AuthGuard],
-
           }
         ]
       },

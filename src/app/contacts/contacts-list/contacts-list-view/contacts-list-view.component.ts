@@ -1,8 +1,8 @@
 import {MatTableDataSource} from '@angular/material';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Output, Input } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
-import { Router } from '@angular/router';
+import { Router, NavigationExtras } from '@angular/router';
 import { MatDialog } from '@angular/material';
 
 export interface ListDetails {
@@ -31,19 +31,24 @@ export class ContactsListViewComponent implements OnInit {
   listDetails: ListDetails;
   modalReference = null;
 
+
+
   constructor(
     private http: HttpClient,
     private router: Router,
-    private dialogService: MatDialog,
-  ) { }
+    private dialogService: MatDialog, ) { }
 
   ngOnInit() {
     this.listAddMessage = undefined;
     this.isEditMode = false;
     this.isViewAll = true;
-
     this.loadLists();
-  }
+    const navigationExtras: NavigationExtras = {
+      queryParams: {
+          'firstname': 'DCBA',
+          'lastname': 'ABCD'
+      }
+  };  }
 
 
   loadLists = function () {
@@ -112,12 +117,13 @@ export class ContactsListViewComponent implements OnInit {
 
 
   editListForm = function (list) {
-    this.isUpdateMode = true;
+    /*this.isUpdateMode = true;
     this.isViewAll = false;
     this.listDetails = list;
     this.form = new FormGroup({
       listName: new FormControl(list.listName, ),
-    });
+    });*/
+    this.router.navigate(['/contacts/lists/update'], this.navigationExtras);
   };
 
   updateList = function (contact) {
@@ -147,6 +153,14 @@ export class ContactsListViewComponent implements OnInit {
     this.isDelete = false;
     this.isUpdateMode = false;
     this.modalReference.close();
+  };
+
+  cancelForm = function() {
+    this.listAddMessage = undefined;
+    this.isEditMode = false;
+    this.isViewAll = true;
+    this.isDelete = false;
+    this.isUpdateMode = false;
   };
 
 

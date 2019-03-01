@@ -8,7 +8,7 @@ module.exports = function(app) {
   app.post('/api/contacts/add', auth.jwt, addContact);
   app.post('/api/contacts/delete', auth.jwt, deleteContact);
   app.post('/api/contacts/edit', auth.jwt, editContact);
-  app.post('/api/contacts/view', auth.jwt, getContacts);
+  app.post('/api/contacts/view', auth.jwt, getContactSummary);
   app.post('/api/contacts/details', auth.jwt, getContactDetails);
   app.post('/api/contacts/get-contacts-with-lists', auth.jwt, getContactsWithLists);
   app.post('/api/contacts/get-contacts-with-contactlists', auth.jwt, getContactsWithContactLists);
@@ -141,12 +141,12 @@ function deleteContact(req, res) {
 
 
 /**
- * returns all users for now
+ * returns all contacts summary
  * @param {*} req request object
  * @param {*} res response object
  * @returns {*}
  */
-function getContacts(req, res) {
+function getContactSummary(req, res) {
   const userId = req.userId;
   Contact.find({ userId }).sort( {givenName: 1} )
     .then((result) => {
