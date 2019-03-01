@@ -31,3 +31,19 @@
     </div>
   </mat-card-header>
 </mat-card>
+
+
+
+<ng-template #modal>
+  <mat-dialog-content>
+    <div>
+      Are you sure you want to delete the contact of <br> {{deleteContactName}}?
+    </div>
+  </mat-dialog-content>
+  <mat-dialog-actions align='center'>
+    <button (click)="resetForm()" mat-raised-button color='warn'>Cancel
+    </button>
+    <button (click)="deleteContact()" mat-raised-button cdkFocusInitial color='primary'>Yes
+    </button>
+  </mat-dialog-actions>
+</ng-template>

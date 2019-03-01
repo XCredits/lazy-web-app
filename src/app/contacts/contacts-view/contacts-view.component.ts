@@ -5,6 +5,7 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { MatDialog } from '@angular/material';
 import { Router } from '@angular/router';
+import { ConsoleReporter } from 'jasmine';
 
 export interface ContactElements {
   position: number;
@@ -59,6 +60,7 @@ export class ContactsViewComponent implements OnInit {
     this.contactsArr = [];
     this.http.post('/api/contacts/view-contacts', { })
         .subscribe ((data: any) => {
+            console.log(data);
             this.contactsArr = data;
             this.dataSource = new MatTableDataSource<ContactElements>(this.contactsArr);
             this.loadContactsLists();

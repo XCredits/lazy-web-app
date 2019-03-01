@@ -37,9 +37,11 @@
 
 <div *ngIf='listAddMessage !== undefined'>
   <div *ngIf='!isEditMode'>
+    <mat-card>
     <mat-card-title> {{listAddMessage}}</mat-card-title>
     <button routerLink='/contacts/lists' class="simple-form-button" color="primary" mat-raised-button>
       Ok
     </button>
+  </mat-card>
   </div>
 </div>

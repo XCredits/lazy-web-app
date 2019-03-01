@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-contacts-list-view',
@@ -14,7 +15,8 @@ export class ContactsListAddComponent implements OnInit {
   isEditMode: boolean;
 
   constructor(
-    private http: HttpClient, ) { }
+    private http: HttpClient,
+    private router: Router, ) { }
 
   ngOnInit() {
     this.listAddMessage = undefined;
@@ -27,7 +29,7 @@ export class ContactsListAddComponent implements OnInit {
 
   addList = function (form) {
 
-    if ( form.listName.length === 0 || this.hasWhiteSpace(form.listName) ) {
+    if ( form.listName.length === 0 ) {
       this.formErrorMessage = 'Please type a valid list name.';
        return;
     }
@@ -38,7 +40,7 @@ export class ContactsListAddComponent implements OnInit {
         this.isEditMode = false;
         switch (result.message) {
               case 'Success.':
-                this.listAddMessage = 'List created successfully.';
+              this.router.navigate(['/contacts/lists']);
               break;
               case 'List already exist.':
                 this.listAddMessage = 'List already exist, choose another name';
@@ -55,9 +57,4 @@ export class ContactsListAddComponent implements OnInit {
 
   submit = function () {
   };
-
-
-  hasWhiteSpace(listName) {
-    return listName.indexOf(' ') >= 0;
-  }
 }

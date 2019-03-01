@@ -36,7 +36,6 @@ function addContact(req, res) {
   // Validate
   if (typeof givenName !== 'string' ||
       typeof familyName !== 'string' ||
-      typeof contactListId !== 'string' ||
       !validator.isEmail(email) ) {
     return res.status(422).json({ message: 'Request failed validation' });
   }
@@ -54,7 +53,7 @@ function addContact(req, res) {
     .then((result) => {
       const contactListContact = new ContactListContact({
       contactId: result._id,
-      listId: contactListId
+      listId: ( contactListId !== null ) ? contactListId : null,
       });
       return contactListContact.save()
         .then((contactListResult) => {
@@ -386,6 +385,7 @@ function returnContactsWithContactLists(req, res) {
                 givenName: x.givenName,
                 familyName: x.familyName,
                 email: x.email,
+                contactId: x._id,
               };
           });
           res.send(resultFiltered);

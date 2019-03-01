@@ -3,11 +3,13 @@ import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import {SelectionModel} from '@angular/cdk/collections';
+import { MatDialog } from '@angular/material';
 
 export interface ContactElements {
   givenName: string;
   familyName: string;
   email: string;
+  contactId: string;
 }
 
 @Component({
@@ -20,12 +22,15 @@ export class ContactsListDetailsComponent implements OnInit {
   link: string;
   displayedColumns: string[] = ['select', 'givenName', 'familyName', 'email'];
   selection = new SelectionModel<ContactElements>(true, []);
-  listContact: { userId: string, givenName: string, familyName: string, email: string }[] = [];
+  listContact: { contactId: string, givenName: string, familyName: string, email: string }[] = [];
   dataSource = new MatTableDataSource<ContactElements>(this.listContact);
-
+  modalReference = null;
+  contactId: string;
   listIdURL: string;
   constructor(private http: HttpClient,
-    private route: ActivatedRoute, ) { }
+    private route: ActivatedRoute,
+    private dialogService: MatDialog,
+    ) { }
 
   ngOnInit() {
     this.listIdURL = this.route.snapshot.paramMap.get('listId');
@@ -42,17 +47,33 @@ export class ContactsListDetailsComponent implements OnInit {
       });
   };
 
-  isAllSelected() {
-    const numSelected = this.selection.selected.length;
-    const numRows = this.dataSource.data.length;
-    return numSelected === numRows;
+  openDeleteContact = function (contact) {
+    this.contactId = contact.contactId;
+    console.log(contact);
+    console.log(this.contactId);
+    this.deleteContactName = contact.givenName + ' ' + contact.familyName;
+  };
+
+  deleteContact = function () {
+    console.log(this.contactId);
+    this.http.post('/api/contacts/delete-contact', {
+      'contactId': this.contactId,
+    })
+      .subscribe((result) => {
+        if (result.message === 'Contact deleted.' ) {
+            this.loadListContact();
+            this.resetForm();
+        }
+      });
+  };
+
+  contactDeleteDialog(modal) {
+    this.modalReference = this.dialogService.open(modal);
   }
 
-  masterToggle() {
-    this.isAllSelected() ?
-      this.selection.clear() :
-      this.dataSource.data.forEach(row => this.selection.select(row));
-  }
+  resetForm = function() {
+    this.modalReference.close();
+  };
 
 
 }
