@@ -1,4 +1,3 @@
-import {SelectionModel} from '@angular/cdk/collections';
 import {MatTableDataSource} from '@angular/material';
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
@@ -30,7 +29,6 @@ export class ContactsViewComponent implements OnInit {
   contactId: string;
   contactsArr = [];
   displayedColumns: string[] = ['select', 'givenName', 'familyName', 'email', 'listName', 'Action'];
-  selection = new SelectionModel<ContactElements>(true, []);
   dataSource = new MatTableDataSource<ContactElements>(this.contactsArr);
   isViewAll: boolean;
   isEditContact: boolean;
@@ -86,11 +84,9 @@ export class ContactsViewComponent implements OnInit {
                 index.listName = fm.listName;
               }
             }
-
           }
         }
       });
-
   };
 
   openDeleteContact = function (contact) {
@@ -164,22 +160,7 @@ export class ContactsViewComponent implements OnInit {
     this.modalReference = this.dialogService.open(modal);
   }
 
-  isAllSelected() {
-    const numSelected = this.selection.selected.length;
-    const numRows = this.dataSource.data.length;
-    return numSelected === numRows;
-  }
-
-  masterToggle() {
-      this.isAllSelected() ?
-      this.selection.clear() :
-      this.dataSource.data.forEach(row => this.selection.select(row));
-  }
-
-
   onSelect(contact) {
     this.router.navigate(['/contacts/view/' + contact.contactId]);
-
   }
-
 }

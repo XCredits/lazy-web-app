@@ -2,7 +2,6 @@ import {MatTableDataSource} from '@angular/material';
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import {SelectionModel} from '@angular/cdk/collections';
 import { MatDialog } from '@angular/material';
 
 export interface ContactElements {
@@ -21,7 +20,6 @@ export class ContactsListDetailsComponent implements OnInit {
   receiverUserId: string;
   link: string;
   displayedColumns: string[] = ['select', 'givenName', 'familyName', 'email'];
-  selection = new SelectionModel<ContactElements>(true, []);
   listContact: { contactId: string, givenName: string, familyName: string, email: string }[] = [];
   dataSource = new MatTableDataSource<ContactElements>(this.listContact);
   modalReference = null;

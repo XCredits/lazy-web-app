@@ -1,4 +1,3 @@
-import {SelectionModel} from '@angular/cdk/collections';
 import {MatTableDataSource} from '@angular/material';
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
@@ -23,7 +22,6 @@ export class ContactsListViewComponent implements OnInit {
   form: FormGroup;
   disableButton = true;
   displayedColumns: string[] = ['select', 'listName', 'NoOfContacts', 'Action'];
-  selection = new SelectionModel<string>(true, []);
   dataSource = new MatTableDataSource<string>();
   listAddMessage: string;
   isEditMode: boolean;
@@ -164,19 +162,6 @@ export class ContactsListViewComponent implements OnInit {
   listDeleteDialog(modal) {
     this.modalReference = this.dialogService.open(modal);
   }
-
-  isAllSelected() {
-    const numSelected = this.selection.selected.length;
-    const numRows = this.lists.length;
-    return numSelected === numRows;
-  }
-
-  masterToggle() {
-      this.isAllSelected() ?
-      this.selection.clear() :
-      this.lists.forEach(row => this.selection.select(row.listId));
-  }
-
 
 
 }
