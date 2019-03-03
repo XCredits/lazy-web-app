@@ -1,0 +1,39 @@
+
+
+<div>
+  <br>
+  <mat-card-content>
+    <div class="profile-image">
+      <img mat-card-lg-image class="img-class" width="300" height="300"
+        src='https://pbs.twimg.com/profile_images/984062643798343680/MDBh6zaW_400x400.jpg'>
+    </div>
+  </mat-card-content>
+  <mat-card>Name:  {{requestConnections[0].givenName}} {{requestConnections[0].familyName}}</mat-card>
+  <mat-card>Sent on: {{requestConnections[0].sendTimestamp}}</mat-card>
+  <br>
+  <div style="text-align:center">
+      <button
+          [disabled]="disableButton"
+          class="simple-form-button" 
+          color="primary" 
+          mat-raised-button 
+          type="submit" 
+          value="submit"
+          (click)="confirmUserConnection()">
+        Confirm
+      </button>
+      &nbsp;
+      &nbsp;
+      &nbsp;
+      <button
+          [disabled]="disableButton"
+          class="simple-form-button" 
+          color="secondary" 
+          mat-raised-button 
+          type="submit" 
+          value="submit">
+        Ignore
+      </button>
+      </div>
+</div>
+  
