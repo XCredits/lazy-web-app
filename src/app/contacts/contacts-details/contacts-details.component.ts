@@ -68,7 +68,6 @@ export class ContactDetailsComponent implements OnInit {
   };
 
   deleteContact = function () {
-    console.log(this.contactDetails);
     this.http.post('/api/contacts/delete', {
       'contactId': this.contactDetails._id,
     })

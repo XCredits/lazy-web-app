@@ -6,7 +6,7 @@ import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material';
 
 export interface ListDetails {
-  listId: string;
+  id: string;
   listName: string;
   numberOfContacts: number;
 
@@ -65,9 +65,10 @@ export class ContactsListViewComponent implements OnInit {
     .subscribe((data: any) => {
 
       this.listsConnections = data;
+
       for (let i = 0 ; i < this.lists.length ; i++) {
         for (const j of this.listsConnections) {
-          if ( j.listId === this.lists[i].listId ) {
+          if ( j.listId === this.lists[i].id ) {
              this.lists[i].numberOfContacts ++;
           }
         }
@@ -78,13 +79,13 @@ export class ContactsListViewComponent implements OnInit {
 
   deleteList = function () {
     for (let i = 0 ; i < this.lists.length ; i++) {
-        if ( this.listDetails.listId === this.lists[i].listId ) {
+        if ( this.listDetails.id === this.lists[i].listId ) {
           this.lists.splice(i, 1);
         }
       }
 
       this.http.post('/api/contacts-list/delete', {
-            'listId': this.listDetails.listId,
+            'listId': this.listDetails.id,
           })
           .subscribe((result) => {
               if (result.message === 'List deleted.' ) {
@@ -122,7 +123,7 @@ export class ContactsListViewComponent implements OnInit {
 
   updateList = function (contact) {
     this.http.post('/api/contacts-list/edit', {
-      'listId': this.listDetails.listId,
+      'listId': this.listDetails.id,
       'updatedListName': contact.listName,
     })
       .subscribe((result) => {
@@ -155,7 +156,7 @@ export class ContactsListViewComponent implements OnInit {
 
 
   onSelect(list) {
-    this.router.navigate(['/contacts/lists/' + list.listId]);
+    this.router.navigate(['/contacts/lists/' + list.id]);
 
   }
 

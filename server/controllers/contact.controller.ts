@@ -49,12 +49,13 @@ function addContact(req, res) {
   return contact.save()
     .then((result) => {
       const contactListContact = new ContactListContact({
-      contactId: result.id,
-      listId: ( contactListId !== null ) ? contactListId : null,
+        userId: userId,
+        contactId: result._id,
+        listId: ( contactListId !== null ) ? contactListId : null,
       });
       return contactListContact.save()
         .then((contactListResult) => {
-            return res.send({ contactId: contactListResult.contactId });
+            return res.send({ message: 'Success.', contactId: contactListResult.contactId });
           })
           .catch((error) => {
             return res.status(500).send('Problem creating contacts list.');
@@ -207,7 +208,7 @@ function getLists(req, res) {
     .then((result) => {
       const filteredResult = result.map((x) => {
         return {
-          id: x.listId,
+          id: x._id,
           listName: x.listName,
         };
       });
@@ -336,7 +337,7 @@ function getContactsWithLists(req, res) {
   const userId = req.userId;
   return Contact.find({ userId })
     .then((result) => {
-      const contactIdArr = result.map((e => e.id));
+      const contactIdArr = result.map((e => e._id));
       return ContactListContact.find({ userId: userId, 'contactId': { '$in': contactIdArr } })
         .then((result2) => {
           const filteredResult = result2.map((x) => {

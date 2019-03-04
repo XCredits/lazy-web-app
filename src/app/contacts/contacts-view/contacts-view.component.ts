@@ -78,9 +78,9 @@ export class ContactsViewComponent implements OnInit {
         this.listsConnections = data;
         for (const index of this.contactsArr) {
           for (const relation of this.listsConnections) {
-            if (relation['listId']) {
+            if (relation['contactId']) {
               if (relation['contactId'] === index['contactId']) {
-                const fm = this.lists.find(el => el.listId === relation['listId']);
+                const fm = this.lists.find(el => el.id === relation['listId']);
                 index.listName = fm.listName;
               }
             }

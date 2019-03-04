@@ -48,7 +48,7 @@ export class ContactsAddComponent implements OnInit {
       'givenName': newContact.givenName,
       'familyName': newContact.familyName,
       'email': newContact.email,
-      'contactListId': newContact.contactList.listId,
+      'contactListId': newContact.contactList.id,
     })
       .subscribe((result) => {
         this.isEditMode = false;
