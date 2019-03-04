@@ -87,18 +87,20 @@ import { CreateOrganizationComponent } from './create-organization/create-organi
 import { UpdateOrganizationComponent } from './update-organization/update-organization.component';
 import { AddUserComponent } from './add-user/add-user.component';
 import { ContactsComponent } from './contacts/contacts.component';
-import { ContactsListViewComponent } from './contacts/contacts-list-view/contacts-list-view.component';
-import { ContactsListDetailsComponent } from './contacts/contacts-list-details/contacts-list-details.component';
-import { ContactsListAddComponent } from './contacts/contacts-list-add/contacts-list-add.component';
 import { ContactsViewComponent } from './contacts/contacts-view/contacts-view.component';
 import { ContactsAddComponent } from './contacts/contacts-add/contacts-add.component';
 import { ContactDetailsComponent } from './contacts/contacts-details/contacts-details.component';
+import { ContactsListViewComponent } from './contacts/contacts-list/contacts-list-view/contacts-list-view.component';
+import { ContactsListDetailsComponent } from './contacts/contacts-list/contacts-list-details/contacts-list-details.component';
+import { ContactsListAddComponent } from './contacts/contacts-list/contacts-list-add/contacts-list-add.component';
+import { ContactsListUpdateComponent } from './contacts/contacts-list/contacts-list-update/contacts-list-update.component';
 import { ConnectionComponent } from './connections/connections.component';
+import { ConnectionsViewComponent } from './connections/connections-view/connections-view.component';
 import { ConnectionsAddComponent } from './connections/connections-add/connections-add.component';
 import { ConnectionsSentComponent } from './connections/connections-sent/connections-sent.component';
 import { ConnectionsRequestComponent } from './connections/connections-request/connections-request.component';
 import { ConnectionsRequestDetailsComponent } from './connections/connections-request-details/connections-request-details.component';
-import { ConnectionsViewComponent } from './connections/connections-view/connections-view.component';
+
 
 @NgModule({
   declarations: [
@@ -126,23 +128,24 @@ import { ConnectionsViewComponent } from './connections/connections-view/connect
     PrivacyComponent,
     FooterComponent,
     ChangeThemeComponent,
-    ContactsComponent,
-    ContactsListViewComponent,
-    ContactsViewComponent,
-    ContactsAddComponent,
-    ContactDetailsComponent,
-    ConnectionComponent,
-    ConnectionsAddComponent,
-    ConnectionsSentComponent,
-    ConnectionsRequestComponent,
-    ConnectionsRequestDetailsComponent,
-    ConnectionsViewComponent,
     OrganizationComponent,
     CreateOrganizationComponent,
     UpdateOrganizationComponent,
     AddUserComponent,
+    ContactsComponent,
+    ContactsViewComponent,
+    ContactsAddComponent,
+    ContactDetailsComponent,
+    ContactsListViewComponent,
     ContactsListDetailsComponent,
     ContactsListAddComponent,
+    ContactsListUpdateComponent,
+    ConnectionComponent,
+    ConnectionsViewComponent,
+    ConnectionsAddComponent,
+    ConnectionsSentComponent,
+    ConnectionsRequestComponent,
+    ConnectionsRequestDetailsComponent,
   ],
   imports: [
     BrowserModule,
