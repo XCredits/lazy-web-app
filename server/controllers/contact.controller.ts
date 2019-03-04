@@ -54,7 +54,7 @@ function addContact(req, res) {
       });
       return contactListContact.save()
         .then((contactListResult) => {
-            return res.send({ message: 'Success.' , contactId: contactListResult.contactId });
+            return res.send({ contactId: contactListResult.contactId });
           })
           .catch((error) => {
             return res.status(500).send('Problem creating contacts list.');
@@ -124,7 +124,7 @@ function deleteContact(req, res) {
     return res.status(422).json({ message: 'Contact failed validation.' });
   }
 
-  return ContactListContact.deleteMany( {contactId: contactId } )
+  return ContactListContact.deleteMany( {userId, contactId: contactId } )
   .then(() => {
         return Contact.deleteMany( {userId: userId, id: contactId } )
             .then(() => {
@@ -152,7 +152,7 @@ function getContactSummary(req, res) {
     .then((result) => {
       const filteredResult = result.map((x) => {
         return {
-          contactId: x.id,
+          contactId: x._id,
           givenName: x.givenName,
           familyName: x.familyName,
           email: x.email,
@@ -180,7 +180,7 @@ function getContactDetails(req, res) {
     return res.status(422).json({ message: 'Contact failed validation.' });
   }
 
-  Contact.findOne({ userId: userId, id: contactId })
+  Contact.findOne({ userId: userId, _id: contactId })
     .then(resultContact => {
       const resultsFiltered = {
         id: resultContact.id,
@@ -207,7 +207,7 @@ function getLists(req, res) {
     .then((result) => {
       const filteredResult = result.map((x) => {
         return {
-          id: x.id,
+          id: x.listId,
           listName: x.listName,
         };
       });
@@ -374,14 +374,14 @@ function getContactsWithContactLists(req, res) {
   return ContactListContact.find({ userId, listId })
     .then((result) => {
       const contactId = result.map((x => x.contactId));
-      return Contact.find({userId: userId, 'id': { '$in': contactId } })
+      return Contact.find({userId: userId, '_id': { '$in': contactId } })
         .then((filteredResult) => {
           const resultFiltered = filteredResult.map((x) => {
               return {
                 givenName: x.givenName,
                 familyName: x.familyName,
                 email: x.email,
-                contactId: x.id,
+                contactId: x._id,
               };
           });
           res.send(resultFiltered);
