@@ -41,7 +41,7 @@ function addContact(req, res) {
 
 
   const contact = new Contact({
-    userId: userId,
+    userId,
     email,
     givenName,
     familyName,
@@ -89,7 +89,7 @@ function editContact(req, res) {
 
 
   return Contact.findOneAndUpdate({
-    userId: userId,
+     userId,
     _id: contactId,
     },
     {
@@ -203,7 +203,7 @@ function getContactDetails(req, res) {
  */
 function getLists(req, res) {
   const userId = req.userId;
-  ContactList.find({ refId: userId }).sort( {name: 1} )
+  ContactList.find({ userId }).sort( {name: 1} )
     .then((result) => {
       const filteredResult = result.map((x) => {
         return {
@@ -233,7 +233,7 @@ function addList(req, res) {
   if (typeof listName !== 'string' ) {
     return res.status(422).json({ message: 'Request failed validation.' });
   }
-  return ContactList.findOne({refId: userId , listName: listName })
+  return ContactList.findOne({ userId , listName: listName })
     .then((resultListName) => {
       if ( resultListName !== null) {
         if (listName === resultListName.listName) {
@@ -242,7 +242,7 @@ function addList(req, res) {
       } else {
         const contactList = new ContactList({
           listName: listName,
-          refId: userId,
+          userId,
         });
         return contactList.save()
           .then((result) => {
@@ -274,7 +274,7 @@ function deleteList(req, res) {
         .then (() => {
           return ContactListContact.deleteMany({ userId, listId: listId })
             .then(() => {
-              return ContactList.deleteMany({ refId: userId, _id: listId })
+              return ContactList.deleteMany({ userId, _id: listId })
                 .then(() => {
                   return res.send({ message: 'List deleted.' });
                 })
@@ -306,7 +306,7 @@ function editList(req, res) {
   }
 
   return ContactList.findOneAndUpdate({
-    refId: userId,
+    userId,
     _id: listId,
   },
   {

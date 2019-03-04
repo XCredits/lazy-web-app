@@ -6,6 +6,7 @@ const ContactListContactSchema = new Schema({
   Id: { type: String }, // auto gen
   contactId: { type: String }, // contact ref id
   listId: { type: String }, // the ID from contactList
+  userId: { type: String},
 }
 );
 
