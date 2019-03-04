@@ -55,7 +55,7 @@ export class ContactsViewComponent implements OnInit {
   loadContacts = function () {
     this.dataSource = [];
     this.contactsArr = [];
-    this.http.post('/api/contacts/view-contacts', { })
+    this.http.post('/api/contacts/view', { })
         .subscribe ((data: any) => {
             this.contactsArr = data;
             this.dataSource = new MatTableDataSource<ContactElements>(this.contactsArr);
@@ -65,7 +65,7 @@ export class ContactsViewComponent implements OnInit {
 
 
   loadContactsLists = function () {
-    this.http.post('/api/contacts-list/view-lists', {})
+    this.http.post('/api/contacts-list/view', {})
       .subscribe((data: any) => {
           this.lists = data;
           this.loadContactsRelations();
@@ -95,7 +95,7 @@ export class ContactsViewComponent implements OnInit {
   };
 
   deleteContact = function () {
-    this.http.post('/api/contacts/delete-contact', {
+    this.http.post('/api/contacts/delete', {
       'contactId': this.contactId,
     })
       .subscribe((result) => {
@@ -130,7 +130,7 @@ export class ContactsViewComponent implements OnInit {
   };
 
   updateContact = function (contact) {
-    this.http.post('/api/contacts/update-contact', {
+    this.http.post('/api/contacts/edit', {
       'contactId': this.contactId,
       'givenName': contact.givenName,
       'familyName': contact.familyName,
