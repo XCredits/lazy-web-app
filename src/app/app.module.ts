@@ -94,7 +94,7 @@ import { ContactDetailsComponent } from './contacts/contacts-details/contacts-de
 import { ContactsListViewComponent } from './contacts/contacts-list/contacts-list-view/contacts-list-view.component';
 import { ContactsListDetailsComponent } from './contacts/contacts-list/contacts-list-details/contacts-list-details.component';
 import { ContactsListAddComponent } from './contacts/contacts-list/contacts-list-add/contacts-list-add.component';
-import { ContactsListUpdateComponent } from './contacts/contacts-list/contacts-list-update/contacts-list-update.component';
+import { ContactsListEditComponent } from './contacts/contacts-list/contacts-list-edit/contacts-list-edit.component';
 import { ConnectionComponent } from './connections/connections.component';
 import { ConnectionsViewComponent } from './connections/connections-view/connections-view.component';
 import { ConnectionsAddComponent } from './connections/connections-add/connections-add.component';
@@ -141,7 +141,7 @@ import { ConnectionsRequestDetailsComponent } from './connections/connections-re
     ContactsListViewComponent,
     ContactsListDetailsComponent,
     ContactsListAddComponent,
-    ContactsListUpdateComponent,
+    ContactsListEditComponent,
     ConnectionComponent,
     ConnectionsViewComponent,
     ConnectionsAddComponent,
@@ -299,6 +299,10 @@ import { ConnectionsRequestDetailsComponent } from './connections/connections-re
           {
             path: 'lists/add',
             component: ContactsListAddComponent,
+          },
+          {
+            path: 'lists/edit/:listId',
+            component: ContactsListEditComponent,
           },
           {
             path: 'lists/:listId',

@@ -116,9 +116,8 @@ export class ContactsListViewComponent implements OnInit {
     this.isUpdateMode = true;
     this.isViewAll = false;
     this.listDetails = list;
-    this.form = new FormGroup({
-      listName: new FormControl(list.listName, ),
-    });
+    this.router.navigate(['/contacts/lists/edit/' + this.listDetails.id]);
+
   };
 
   updateList = function (contact) {

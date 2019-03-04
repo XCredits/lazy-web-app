@@ -4,11 +4,11 @@ import { HttpClient } from '@angular/common/http';
 import { Router, ActivatedRoute, NavigationExtras } from '@angular/router';
 
 @Component({
-  selector: 'app-contacts-list-update',
-  templateUrl: './contacts-list-update.component.html',
-  styleUrls: ['./contacts-list-update.component.scss']
+  selector: 'app-contacts-list-edit',
+  templateUrl: './contacts-list-edit.component.html',
+  styleUrls: ['./contacts-list-edit.component.scss']
 })
-export class ContactsListUpdateComponent implements OnInit {
+export class ContactsListEditComponent implements OnInit {
   form: FormGroup;
   formErrorMessage: string;
   listAddMessage: string;
