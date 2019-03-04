@@ -12,6 +12,7 @@ const ContactListSchema = new Schema({
 
 ContactListSchema.index({ userId: 1, listId: 1 });
 ContactListSchema.index({ listId: 1 });
+ContactListSchema.index({ userId: 1 });
 ContactListSchema.index({ userId: 1, listName: 1 });
 
 

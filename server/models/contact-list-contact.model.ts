@@ -12,6 +12,7 @@ const ContactListContactSchema = new Schema({
 
 ContactListContactSchema.index({ contactId: 1, listId: 1 });
 ContactListContactSchema.index({ listId: 1, contactId: 1 });
+ContactListContactSchema.index({ userId: 1 });
 
 
 module.exports = mongoose.model('ContactListContact', ContactListContactSchema);

@@ -6,7 +6,7 @@ import { MatDialog } from '@angular/material';
 import { Router } from '@angular/router';
 
 export interface ContactElements {
-  _id: string;
+  id: string;
   userId: string;
   givenName: string;
   familyName: string;
@@ -35,7 +35,7 @@ export class ContactDetailsComponent implements OnInit {
 
   ngOnInit() {
     this.contactDetails = {
-      _id: '',
+      id: '',
       userId: '',
       givenName : '',
       familyName : '',
