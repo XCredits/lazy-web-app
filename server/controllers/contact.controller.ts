@@ -79,11 +79,14 @@ function editContact(req, res) {
   const email = req.body.email;
   const givenName = req.body.givenName;
   const familyName = req.body.familyName;
+  const contactListId = req.body.contactListId;
   const contactId = req.body.contactId;
   // Validate
   if (typeof contactId !== 'string' ||
+      typeof contactListId !== 'string' ||
       typeof givenName !== 'string' ||
       typeof familyName !== 'string' ||
+      typeof email !== 'string' ||
       !validator.isEmail(email) ) {
     return res.status(422).json({ message: 'Request failed validation.' });
   }
@@ -91,7 +94,7 @@ function editContact(req, res) {
 
   return Contact.findOneAndUpdate({
     userId,
-    id: contactId,
+    _id: contactId,
     },
     {
       $set:

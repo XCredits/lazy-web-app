@@ -50,6 +50,5 @@ export class ConnectionsRequestDetailsComponent implements OnInit {
   };
 
   confirmUserConnection = function() {
-    console.log(this.userIdURL);
   };
 }

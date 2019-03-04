@@ -24,7 +24,6 @@ export class ContactsListUpdateComponent implements OnInit {
         this.firstname = params['firstname'];
         this.lastname = params['lastname'];
     });
-    console.log(JSON.stringify(this.route.queryParams));
 
   }
 

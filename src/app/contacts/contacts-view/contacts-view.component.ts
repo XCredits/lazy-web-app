@@ -46,12 +46,6 @@ export class ContactsViewComponent implements OnInit {
     this.loadContacts();
   }
 
-
-  applyFilter(filterValue: string) {
-    this.dataSource.filter = filterValue.trim().toLowerCase();
-  }
-
-
   loadContacts = function () {
     this.dataSource = [];
     this.contactsArr = [];
@@ -121,12 +115,7 @@ export class ContactsViewComponent implements OnInit {
     this.isViewAll = false;
     this.isEditContact = true;
     this.contactId = contact.contactId;
-    this.form = new FormGroup({
-      givenName: new FormControl(contact.givenName),
-      familyName: new FormControl(contact.familyName),
-      email: new FormControl(contact.email, [Validators.required, Validators.email]),
-      contactList: new FormControl([contact.listName]),
-    });
+    this.router.navigate(['/contacts/edit/' + contact.contactId]);
   };
 
   updateContact = function (contact) {
