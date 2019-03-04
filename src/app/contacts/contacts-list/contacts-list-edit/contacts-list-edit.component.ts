@@ -13,43 +13,53 @@ export class ContactsListEditComponent implements OnInit {
   formErrorMessage: string;
   listAddMessage: string;
   isEditMode: boolean;
-  public firstname: string;
-  public lastname: string;
+  listName: string;
+  listIdURL: string;
 
   constructor(
     private http: HttpClient,
     private router: Router,
-    private route: ActivatedRoute ) {
-      this.route.queryParams.subscribe(params => {
-        this.firstname = params['firstname'];
-        this.lastname = params['lastname'];
-    });
-
-  }
+    private route: ActivatedRoute ) { }
 
   ngOnInit() {
-
     this.listAddMessage = undefined;
-    this.isEditMode = true;
-
-    this.form = new FormGroup({
-      listName: new FormControl(''),
-    });
+    this.loadList();
+    this.listIdURL = this.route.snapshot.paramMap.get('listId');
   }
 
-  addList = function (form) {
+  loadList = function () {
+    this.dataSource = [];
+    this.lists = [];
+    this.http.post('/api/contacts-list/view', { })
+        .subscribe ((data: any) => {
+          this.lists = data;
+          for ( const list of this.lists) {
+            if ( list.id === this.listIdURL) {
+              this.listName = list.listName;
+              this.isEditMode = true;
 
+              this.form = new FormGroup({
+                listName: new FormControl(this.listName),
+              });
+            }
+          }
+        });
+  };
+
+
+  updateList = function (form) {
     if ( form.listName.length === 0 ) {
       this.formErrorMessage = 'Please type a valid list name.';
        return;
     }
-    this.http.post('/api/contacts-list/add', {
-      'listName': form.listName,
+    this.http.post('/api/contacts-list/edit', {
+      'listId': this.listIdURL,
+      'updatedListName': form.listName,
     })
       .subscribe((result) => {
         this.isEditMode = false;
         switch (result.message) {
-              case 'Success.':
+              case 'List updated.':
               this.router.navigate(['/contacts/lists']);
               break;
               case 'List already exist.':

@@ -223,7 +223,6 @@ function getLists(req, res) {
 }
 
 
-
 /**
  * add a list
  * @param {*} req request object
@@ -311,7 +310,7 @@ function editList(req, res) {
 
   return ContactList.findOneAndUpdate({
     userId,
-    id: listId,
+    _id: listId,
   },
   {
     $set:

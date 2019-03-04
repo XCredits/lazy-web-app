@@ -1,6 +1,6 @@
 <div class="simple-form-aligner" *ngIf='isEditMode'>
   <mat-card class="simple-form-card">
-    <mat-card-title>Update list </mat-card-title>
+    <mat-card-title>Edit list </mat-card-title>
     <mat-card-content>
       <form [formGroup]="form" (ngSubmit)="submit(form.value)">
         <div class="form-group">
@@ -16,7 +16,7 @@
           <br>
           <div style="text-align: center">
             <button [disabled]="waiting" class="simple-form-button" color="primary" mat-raised-button type="submit"
-              value="submit" (click)="addList(form.value)">
+              value="submit" (click)="updateList(form.value)">
               Update
             </button>
             &nbsp;
