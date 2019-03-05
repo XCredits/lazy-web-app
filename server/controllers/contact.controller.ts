@@ -152,17 +152,9 @@ function deleteContact(req, res) {
  */
 function getContactSummary(req, res) {
   const userId = req.userId;
-  Contact.find({ userId }).sort( {givenName: 1} )
+  return Contact.find({ userId }, {givenName: 1, familyName: 1, email: 1 }).sort( {givenName: 1} )
     .then((result) => {
-      const filteredResult = result.map((x) => {
-        return {
-          contactId: x._id,
-          givenName: x.givenName,
-          familyName: x.familyName,
-          email: x.email,
-        };
-      });
-      return res.send(filteredResult);
+      return res.send(result);
     })
     .catch((error) => {
       return res.status(500).send({ message: 'Error retrieving users from contacts database.' });
@@ -183,17 +175,9 @@ function getContactDetails(req, res) {
   if (typeof contactId !== 'string') {
     return res.status(422).json({ message: 'Contact failed validation.' });
   }
-
-  Contact.findOne({ userId: userId, _id: contactId })
+  return Contact.findOne({ userId: userId, _id: contactId }, { userId: 1, givenName: 1, familyName: 1, email: 1})
     .then(resultContact => {
-      const resultsFiltered = {
-        id: resultContact.id,
-        userId: resultContact.userId,
-        givenName: resultContact.givenName,
-        familyName: resultContact.familyName,
-        email: resultContact.email,
-      };
-    res.send(resultsFiltered);
+      return res.send(resultContact);
     })
     .catch((error) => {
       return res.status(500).send({ message: 'Error retrieving user from contacts database.' });
@@ -207,15 +191,10 @@ function getContactDetails(req, res) {
  */
 function getLists(req, res) {
   const userId = req.userId;
-  ContactList.find({ userId }).sort( {name: 1} )
+  return ContactList.find({ userId }, { listName: 1 }).sort( {name: 1} )
     .then((result) => {
-      const filteredResult = result.map((x) => {
-        return {
-          id: x._id,
-          listName: x.listName,
-        };
-      });
-      return res.send(filteredResult);
+      console.log(result);
+      return res.send(result);
     })
     .catch((error) => {
       return res.status(500).send({ message: 'Error retrieving list form database.' });
@@ -240,7 +219,7 @@ function addList(req, res) {
     .then((resultListName) => {
       if ( resultListName !== null) {
         if (listName === resultListName.listName) {
-          res.send({ message: 'List already exist.' });
+          return res.send({ message: 'List already exist.' });
         }
       } else {
         const contactList = new ContactList({
@@ -340,15 +319,9 @@ function getContactsWithLists(req, res) {
   return Contact.find({ userId })
     .then((result) => {
       const contactIdArr = result.map((e => e._id));
-      return ContactListContact.find({ userId: userId, 'contactId': { '$in': contactIdArr } })
+      return ContactListContact.find({ userId: userId, 'contactId': { '$in': contactIdArr } }, { contactId: 1, listId: 1 })
         .then((result2) => {
-          const filteredResult = result2.map((x) => {
-            return {
-              contactId: x.contactId,
-              listId: x.listId,
-            };
-          });
-          return res.send(filteredResult);
+          return res.send(result2);
         })
         .catch((error) => {
           return res.status(500).send({ message: 'Error retrieving users from contacts database.' });
@@ -377,17 +350,9 @@ function getContactsWithContactLists(req, res) {
   return ContactListContact.find({ userId, listId })
     .then((result) => {
       const contactId = result.map((x => x.contactId));
-      return Contact.find({userId: userId, '_id': { '$in': contactId } })
+      return Contact.find({userId: userId, '_id': { '$in': contactId } }, {contactId: 1, givenName: 1, familyName: 1, email: 1})
         .then((filteredResult) => {
-          const resultFiltered = filteredResult.map((x) => {
-              return {
-                givenName: x.givenName,
-                familyName: x.familyName,
-                email: x.email,
-                contactId: x._id,
-              };
-          });
-          res.send(resultFiltered);
+          return res.send(filteredResult);
         })
         .catch((error) => {
           res.status(500).send({ message: 'Problem finding contacts.' });

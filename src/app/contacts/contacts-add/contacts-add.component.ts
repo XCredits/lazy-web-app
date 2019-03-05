@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { retry } from 'rxjs/operators';
 
 
 @Component({
@@ -48,7 +49,7 @@ export class ContactsAddComponent implements OnInit {
       'givenName': newContact.givenName,
       'familyName': newContact.familyName,
       'email': newContact.email,
-      'contactListId': newContact.contactList.id,
+      'contactListId': newContact.contactList._id,
     })
       .subscribe((result) => {
         this.isEditMode = false;

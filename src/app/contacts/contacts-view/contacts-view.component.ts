@@ -52,6 +52,8 @@ export class ContactsViewComponent implements OnInit {
     this.http.post('/api/contacts/view', { })
         .subscribe ((data: any) => {
             this.contactsArr = data;
+            console.log(data);
+
             this.dataSource = new MatTableDataSource<ContactElements>(this.contactsArr);
             this.loadContactsLists();
         });
@@ -62,6 +64,8 @@ export class ContactsViewComponent implements OnInit {
     this.http.post('/api/contacts-list/view', {})
       .subscribe((data: any) => {
           this.lists = data;
+          console.log(data);
+
           this.loadContactsRelations();
       });
   };
@@ -69,12 +73,13 @@ export class ContactsViewComponent implements OnInit {
   loadContactsRelations = function () {
     this.http.post('api/contacts/get-contacts-with-lists', {})
       .subscribe((data: any) => {
+        console.log(data);
         this.listsConnections = data;
         for (const index of this.contactsArr) {
           for (const relation of this.listsConnections) {
-            if (relation['contactId']) {
-              if (relation['contactId'] === index['contactId']) {
-                const fm = this.lists.find(el => el.id === relation['listId']);
+            if (relation['listId']) {
+              if (relation['contactId'] === index['_id']) {
+                const fm = this.lists.find(el => el._id === relation['listId']);
                 index.listName = fm.listName;
               }
             }
@@ -150,6 +155,6 @@ export class ContactsViewComponent implements OnInit {
   }
 
   onSelect(contact) {
-    this.router.navigate(['/contacts/view/' + contact.contactId]);
+    this.router.navigate(['/contacts/view/' + contact._id]);
   }
 }

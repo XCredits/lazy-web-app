@@ -66,13 +66,13 @@ export class ContactsListViewComponent implements OnInit {
 
       this.listsConnections = data;
 
-      for (let i = 0 ; i < this.lists.length ; i++) {
-        for (const j of this.listsConnections) {
-          if ( j.listId === this.lists[i].id ) {
-             this.lists[i].numberOfContacts ++;
+      for ( const listItem of this.lists) {
+          for (const j of this.listsConnections) {
+              if ( j.listId === listItem._id) {
+                  listItem.numberOfContacts ++;
+              }
           }
         }
-      }
     });
 
   };
@@ -85,7 +85,7 @@ export class ContactsListViewComponent implements OnInit {
       }
 
       this.http.post('/api/contacts-list/delete', {
-            'listId': this.listDetails.id,
+            'listId': this.listDetails._id,
           })
           .subscribe((result) => {
               if (result.message === 'List deleted.' ) {
@@ -155,7 +155,7 @@ export class ContactsListViewComponent implements OnInit {
 
 
   onSelect(list) {
-    this.router.navigate(['/contacts/lists/' + list.id]);
+    this.router.navigate(['/contacts/lists/' + list._id]);
 
   }
 
