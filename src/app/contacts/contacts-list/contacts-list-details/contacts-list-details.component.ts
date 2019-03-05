@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { MatDialog } from '@angular/material';
+import { Router } from '@angular/router';
 
 export interface ContactElements {
   givenName: string;
@@ -28,7 +29,7 @@ export class ContactsListDetailsComponent implements OnInit {
   constructor(private http: HttpClient,
     private route: ActivatedRoute,
     private dialogService: MatDialog,
-    ) { }
+    private router: Router, ) { }
 
   ngOnInit() {
     this.listIdURL = this.route.snapshot.paramMap.get('listId');
@@ -48,6 +49,7 @@ export class ContactsListDetailsComponent implements OnInit {
   openDeleteContact = function (contact) {
     this.contactId = contact.contactId;
     this.deleteContactName = contact.givenName + ' ' + contact.familyName;
+
   };
 
   deleteContact = function () {
@@ -65,6 +67,11 @@ export class ContactsListDetailsComponent implements OnInit {
   contactDeleteDialog(modal) {
     this.modalReference = this.dialogService.open(modal);
   }
+
+
+  editContact = function (contact) {
+    this.router.navigate(['/contacts/edit/' + contact.contactId]);
+  };
 
   resetForm = function() {
     this.modalReference.close();

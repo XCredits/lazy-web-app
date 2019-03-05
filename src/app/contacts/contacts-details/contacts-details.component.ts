@@ -81,6 +81,11 @@ export class ContactDetailsComponent implements OnInit {
   };
 
 
+  editContact = function () {
+    this.contactId = this.contactDetails.contactId;
+    this.router.navigate(['/contacts/edit/' + this.contactIdURL]);
+  };
+
   resetForm = function() {
     this.modalReference.close();
   };
