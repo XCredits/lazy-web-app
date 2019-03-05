@@ -1,7 +1,7 @@
-import { Component, OnInit, Output, Input } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
-import { Router, ActivatedRoute, NavigationExtras } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-contacts-list-edit',
@@ -34,7 +34,7 @@ export class ContactsListEditComponent implements OnInit {
         .subscribe ((data: any) => {
           this.lists = data;
           for ( const list of this.lists) {
-            if ( list.id === this.listIdURL) {
+            if ( list._id === this.listIdURL) {
               this.listName = list.listName;
               this.isEditMode = true;
 

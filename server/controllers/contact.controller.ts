@@ -130,7 +130,7 @@ function deleteContact(req, res) {
 
   return ContactListContact.deleteMany( {userId, contactId: contactId } )
   .then(() => {
-        return Contact.deleteMany( {userId: userId, id: contactId } )
+        return Contact.deleteMany( {userId: userId, _id: contactId } )
             .then(() => {
               return res.send({ message: 'Contact deleted.' });
             })
@@ -252,11 +252,11 @@ function deleteList(req, res) {
   return ContactListContact.find({ userId, listId })
     .then (( result ) => {
       const contactId = result.map ((x => x.contactId));
-      return Contact.deleteMany ({userId: userId, id: contactId})
+      return Contact.deleteMany ({userId: userId, _id: contactId})
         .then (() => {
           return ContactListContact.deleteMany({ userId, listId: listId })
             .then(() => {
-              return ContactList.deleteMany({ userId, id: listId })
+              return ContactList.deleteMany({ userId, _id: listId })
                 .then(() => {
                   return res.send({ message: 'List deleted.' });
                 })

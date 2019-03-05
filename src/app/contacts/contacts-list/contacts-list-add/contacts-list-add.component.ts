@@ -28,7 +28,6 @@ export class ContactsListAddComponent implements OnInit {
   }
 
   addList = function (form) {
-
     if ( form.listName.length === 0 ) {
       this.formErrorMessage = 'Please type a valid list name.';
        return;

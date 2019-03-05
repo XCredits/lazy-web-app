@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { retry } from 'rxjs/operators';
 
 
 @Component({
@@ -12,7 +11,6 @@ import { retry } from 'rxjs/operators';
 })
 export class ContactsAddComponent implements OnInit {
   form: FormGroup;
-  displayedColumns: string[] = ['select', 'listName', 'Action'];
   contactAddMessage: string;
   isEditMode: boolean;
   lists: { listId: string, listName: string, numberOfContacts: number }[] = [];

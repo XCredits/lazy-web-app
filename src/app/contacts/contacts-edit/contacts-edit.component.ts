@@ -12,7 +12,6 @@ import { Router } from '@angular/router';
 })
 export class ContactsEditComponent implements OnInit {
   form: FormGroup;
-  displayedColumns: string[] = ['select', 'listName', 'Action'];
   contactAddMessage: string;
   isEditMode: boolean;
   lists: { listId: string, listName: string, numberOfContacts: number }[] = [];

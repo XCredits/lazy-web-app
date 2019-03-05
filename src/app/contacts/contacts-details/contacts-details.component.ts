@@ -1,7 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import {SelectionModel} from '@angular/cdk/collections';
 import { MatDialog } from '@angular/material';
 import { Router } from '@angular/router';
 
@@ -20,9 +19,6 @@ export interface ContactElements {
 })
 export class ContactDetailsComponent implements OnInit {
   receiverUserId: string;
-  link: string;
-  displayedColumns: string[] = ['select', 'givenName', 'familyName', 'email'];
-  selection = new SelectionModel<ContactElements>(true, []);
   contactDetails: ContactElements;
   contactIdURL: string;
   modalReference = null;

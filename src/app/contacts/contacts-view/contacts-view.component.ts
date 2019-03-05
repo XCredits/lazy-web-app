@@ -1,21 +1,10 @@
-import {MatTableDataSource} from '@angular/material';
 import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { FormGroup } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { MatDialog } from '@angular/material';
 import { Router } from '@angular/router';
 
-export interface ContactElements {
-  position: number;
-  givenName: string;
-  familyName: number;
-  email: number;
-  listName: string;
-}
 
-export interface List {
-  value: string;
-}
 @Component({
   selector: 'app-contacts-view',
   templateUrl: './contacts-view.component.html',
@@ -23,16 +12,9 @@ export interface List {
 })
 export class ContactsViewComponent implements OnInit {
   form: FormGroup;
-  disableButton = true;
-  submitSuccess = false;
-  formErrorMessage: string;
   contactId: string;
   contactsArr = [];
-  displayedColumns: string[] = ['select', 'givenName', 'familyName', 'email', 'listName', 'Action'];
-  dataSource = new MatTableDataSource<ContactElements>(this.contactsArr);
   isViewAll: boolean;
-  isEditContact: boolean;
-  selected: string;
   deleteContactName: string;
   modalReference = null;
 
@@ -52,9 +34,6 @@ export class ContactsViewComponent implements OnInit {
     this.http.post('/api/contacts/view', { })
         .subscribe ((data: any) => {
             this.contactsArr = data;
-            console.log(data);
-
-            this.dataSource = new MatTableDataSource<ContactElements>(this.contactsArr);
             this.loadContactsLists();
         });
   };
@@ -64,8 +43,6 @@ export class ContactsViewComponent implements OnInit {
     this.http.post('/api/contacts-list/view', {})
       .subscribe((data: any) => {
           this.lists = data;
-          console.log(data);
-
           this.loadContactsRelations();
       });
   };
@@ -73,7 +50,6 @@ export class ContactsViewComponent implements OnInit {
   loadContactsRelations = function () {
     this.http.post('api/contacts/get-contacts-with-lists', {})
       .subscribe((data: any) => {
-        console.log(data);
         this.listsConnections = data;
         for (const index of this.contactsArr) {
           for (const relation of this.listsConnections) {
@@ -105,48 +81,15 @@ export class ContactsViewComponent implements OnInit {
       });
   };
 
-  openAddContactForm = function () {
-    this.isViewAll = false;
-    this.form = new FormGroup({
-      givenName: new FormControl(''),
-      familyName: new FormControl(''),
-      email: new FormControl('', [Validators.required, Validators.email]),
-      contactList: new FormControl(''),
-    });
-  };
-
-
   editContact = function (contact) {
     this.isViewAll = false;
-    this.isEditContact = true;
     this.contactId = contact.contactId;
-    this.router.navigate(['/contacts/edit/' + contact.contactId]);
+    this.router.navigate(['/contacts/edit/' + contact._id]);
   };
-
-  updateContact = function (contact) {
-    this.http.post('/api/contacts/edit', {
-      'contactId': this.contactId,
-      'givenName': contact.givenName,
-      'familyName': contact.familyName,
-      'email': contact.email,
-    })
-      .subscribe((result) => {
-        if (result.message === 'Contact updated.' ) {
-          this.listAddMessage = 'Contact updated.';
-          this.isViewAll = true;
-          this.isEditContact = false;
-          this.loadContacts();
-
-        }
-      });
-  };
-
-  submit = function () { };
 
   resetForm = function() {
     this.listAddMessage = undefined;
     this.isViewAll = true;
-    this.isEditContact = false;
     this.modalReference.close();
   };
 

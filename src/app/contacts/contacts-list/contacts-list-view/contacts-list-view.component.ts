@@ -20,13 +20,7 @@ export interface ListDetails {
 })
 export class ContactsListViewComponent implements OnInit {
   form: FormGroup;
-  disableButton = true;
-  displayedColumns: string[] = ['select', 'listName', 'NoOfContacts', 'Action'];
-  dataSource = new MatTableDataSource<string>();
-  listAddMessage: string;
-  isEditMode: boolean;
   isViewAll: boolean;
-  isUpdateMode: boolean;
   lists: { listId: string, listName: string, numberOfContacts: number }[] = [];
   listDetails: ListDetails;
   modalReference = null;
@@ -38,10 +32,7 @@ export class ContactsListViewComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.listAddMessage = undefined;
-    this.isEditMode = false;
     this.isViewAll = true;
-
     this.loadLists();
   }
 
@@ -79,7 +70,7 @@ export class ContactsListViewComponent implements OnInit {
 
   deleteList = function () {
     for (let i = 0 ; i < this.lists.length ; i++) {
-        if ( this.listDetails.id === this.lists[i].listId ) {
+        if ( this.listDetails._id === this.lists[i]._id ) {
           this.lists.splice(i, 1);
         }
       }
@@ -97,62 +88,21 @@ export class ContactsListViewComponent implements OnInit {
   openDeleteList = function (list) {
     this.listDetails = list;
     this.listId = list.contactId;
-    // this.isDelete = true;
-    // this.isViewAll = false;
   };
-
-
-  openAddListForm = function () {
-    this.isEditMode = true;
-    this.isViewAll = false;
-    this.form = new FormGroup({
-      listName: new FormControl('', ),
-    });
-  };
-
 
 
   editListForm = function (list) {
-    this.isUpdateMode = true;
     this.isViewAll = false;
     this.listDetails = list;
-    this.router.navigate(['/contacts/lists/edit/' + this.listDetails.id]);
+    this.router.navigate(['/contacts/lists/edit/' + list._id]);
 
   };
-
-  updateList = function (contact) {
-    this.http.post('/api/contacts-list/edit', {
-      'listId': this.listDetails.id,
-      'updatedListName': contact.listName,
-    })
-      .subscribe((result) => {
-        if (result.message === 'List updated.' ) {
-          this.isViewAll = true;
-          this.isEditMode = false;
-          this.isUpdateMode = false;
-          this.listAddMessage = 'List updated.';
-          this.loadLists();
-          this.router.navigate(['/contacts/lists']);
-
-
-        }
-      });
-  };
-
 
   resetForm = function() {
-    this.listAddMessage = undefined;
-    this.isEditMode = false;
     this.isViewAll = true;
-    this.isDelete = false;
-    this.isUpdateMode = false;
     this.modalReference.close();
+
   };
-
-
-  submit = function () {
-  };
-
 
   onSelect(list) {
     this.router.navigate(['/contacts/lists/' + list._id]);

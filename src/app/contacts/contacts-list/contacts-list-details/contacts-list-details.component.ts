@@ -1,16 +1,10 @@
-import {MatTableDataSource} from '@angular/material';
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { MatDialog } from '@angular/material';
 import { Router } from '@angular/router';
 
-export interface ContactElements {
-  givenName: string;
-  familyName: string;
-  email: string;
-  contactId: string;
-}
+
 
 @Component({
   selector: 'app-contacts-list-details',
@@ -20,9 +14,7 @@ export interface ContactElements {
 export class ContactsListDetailsComponent implements OnInit {
   receiverUserId: string;
   link: string;
-  displayedColumns: string[] = ['select', 'givenName', 'familyName', 'email'];
   listContact: { contactId: string, givenName: string, familyName: string, email: string }[] = [];
-  dataSource = new MatTableDataSource<ContactElements>(this.listContact);
   modalReference = null;
   contactId: string;
   listIdURL: string;
@@ -47,7 +39,7 @@ export class ContactsListDetailsComponent implements OnInit {
   };
 
   openDeleteContact = function (contact) {
-    this.contactId = contact.contactId;
+    this.contactId = contact._id;
     this.deleteContactName = contact.givenName + ' ' + contact.familyName;
 
   };
@@ -70,7 +62,7 @@ export class ContactsListDetailsComponent implements OnInit {
 
 
   editContact = function (contact) {
-    this.router.navigate(['/contacts/edit/' + contact.contactId]);
+    this.router.navigate(['/contacts/edit/' + contact._id]);
   };
 
   resetForm = function() {
