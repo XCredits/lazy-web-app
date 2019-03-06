@@ -15,6 +15,7 @@ export class ContactsListEditComponent implements OnInit {
   isEditMode: boolean;
   listName: string;
   listIdURL: string;
+  waiting: boolean;
 
   constructor(
     private http: HttpClient,
@@ -38,7 +39,6 @@ export class ContactsListEditComponent implements OnInit {
             if ( list._id === this.listIdURL) {
               this.listName = list.listName;
               this.isEditMode = true;
-
               this.form = new FormGroup({
                 listName: new FormControl(this.listName),
               });
@@ -53,11 +53,13 @@ export class ContactsListEditComponent implements OnInit {
       this.formErrorMessage = 'Please type a valid list name.';
        return;
     }
+    this.waiting = true;
     this.http.post('/api/contacts-list/edit', {
       'listId': this.listIdURL,
       'updatedListName': form.listName,
     })
       .subscribe((result) => {
+        this.waiting = false;
         this.isEditMode = false;
         switch (result.message) {
               case 'List updated.':
@@ -76,7 +78,12 @@ export class ContactsListEditComponent implements OnInit {
               default:
                 this.listAddMessage = 'Something went wrong, please try again later.';
             }
-        });
+      },
+      errorResponse => {
+        this.waiting = false;
+        // 422 or 500
+        this.formErrorMessage = 'Something went wrong, please try again later.';
+      });
   };
 
   submit = function () {

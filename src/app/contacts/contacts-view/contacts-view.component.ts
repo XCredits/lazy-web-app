@@ -66,21 +66,21 @@ export class ContactsViewComponent implements OnInit {
   };
 
   openDeleteContact = function (contact) {
-    this.contactId = contact.contactId;
-    console.log(contact);
+    this.contactId = contact._id;
     this.deleteContactName = contact.givenName + ' ' + contact.familyName;
   };
 
   deleteContact = function (contact) {
-    console.log(this.contactId);
-    return;
     this.http.post('/api/contacts/delete', {
       'contactId': this.contactId,
     })
       .subscribe((result) => {
-        if (result.message === 'Contact deleted' ) {
+        if (result.message === 'Contact deleted.' ) {
             this.loadContacts();
             this.resetForm();
+            this.snackBar.open('Contact deleted successfully', 'Dismiss', {
+              duration: 2000,
+            });
         }
       });
   };
@@ -95,9 +95,6 @@ export class ContactsViewComponent implements OnInit {
     this.listAddMessage = undefined;
     this.isViewAll = true;
     this.modalReference.close();
-    this.snackBar.open('Contact deleted successfully', 'Dismiss', {
-      duration: 2000,
-    });
   };
 
   contactDeleteDialog(modal) {

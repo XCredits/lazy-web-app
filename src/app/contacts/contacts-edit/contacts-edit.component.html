@@ -31,16 +31,13 @@
               value="submit" (click)="updateContact(form.value)">
               Update
             </button>
-            &nbsp;
-            &nbsp;
-            <button [disabled]="waiting" class="simple-form-button" color="Basic" mat-raised-button type="submit"
-              value="submit" routerLink='/contacts/view'>
-              Cancel
-            </button>
+            <mat-progress-spinner *ngIf="waiting" color="primary" mode="indeterminate" class="simple-form-spinner"
+              [diameter]=22>
+            </mat-progress-spinner>
+            <span *ngIf='formErrorMessage' class="text-error-color">
+              {{formErrorMessage}}
+            </span>
           </div>
-          <mat-progress-spinner *ngIf="waiting" color="primary" mode="indeterminate" class="simple-form-spinner"
-            [diameter]=22>
-          </mat-progress-spinner>
         </div>
       </form>
     </mat-card-content>

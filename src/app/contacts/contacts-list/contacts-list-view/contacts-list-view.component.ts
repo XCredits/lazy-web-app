@@ -81,6 +81,9 @@ export class ContactsListViewComponent implements OnInit {
           .subscribe((result) => {
               if (result.message === 'List deleted.' ) {
                   this.resetForm();
+                  this.snackBar.open('List deleted successfully', 'Dismiss', {
+                    duration: 2000,
+                  });
             }
         });
   };
@@ -101,9 +104,6 @@ export class ContactsListViewComponent implements OnInit {
   resetForm = function() {
     this.isViewAll = true;
     this.modalReference.close();
-    this.snackBar.open('List deleted successfully', 'Dismiss', {
-      duration: 2000,
-    });
 
   };
 

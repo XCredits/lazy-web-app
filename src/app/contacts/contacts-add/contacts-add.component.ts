@@ -11,8 +11,10 @@ import {MatSnackBar} from '@angular/material';
 })
 export class ContactsAddComponent implements OnInit {
   form: FormGroup;
-  contactAddMessage: string;
+  formErrorMessage: string;
   isEditMode: boolean;
+  waiting: boolean;
+
   lists: { listId: string, listName: string, numberOfContacts: number }[] = [];
 
   constructor(
@@ -21,7 +23,7 @@ export class ContactsAddComponent implements OnInit {
     private snackBar: MatSnackBar, ) { }
 
   ngOnInit() {
-    this.contactAddMessage = undefined;
+    this.formErrorMessage = undefined;
     this.isEditMode = true;
     this.form = new FormGroup({
       givenName: new FormControl(''),
@@ -44,6 +46,14 @@ export class ContactsAddComponent implements OnInit {
 
   addContact = function (newContact) {
 
+    if ( newContact.givenName.length === 0 ||
+        newContact.familyName.length === 0 ||
+        newContact.email.length === 0 ) {
+          this.formErrorMessage = 'Please type a valid inputs.';
+          return;
+    }
+
+    this.waiting = true;
     this.http.post('/api/contacts/add', {
       'givenName': newContact.givenName,
       'familyName': newContact.familyName,
@@ -51,7 +61,9 @@ export class ContactsAddComponent implements OnInit {
       'contactListId': newContact.contactList._id,
     })
       .subscribe((result) => {
+        this.waiting = false;
         this.isEditMode = false;
+        console.log(result);
         switch (result.message) {
               case 'Success.':
                 this.snackBar.open('Contact created successfully', 'Dismiss', {
@@ -61,11 +73,16 @@ export class ContactsAddComponent implements OnInit {
               break;
               case 'Problem finding a list.':
               case 'Problem creating a list.':
-                this.contactAddMessage = 'Contact cannot be created.';
+                this.formErrorMessage = 'Contact cannot be created.';
               break;
               default:
-                this.contactAddMessage = 'Something went wrong, please try again later.';
-            }
+                this.formErrorMessage = 'Something went wrong, please try again later.';
+          }
+        },
+        errorResponse => {
+          this.waiting = false;
+          // 422 or 500
+          this.formErrorMessage = 'Something went wrong, please try again later.';
         });
   };
 

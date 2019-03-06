@@ -13,8 +13,7 @@ import {MatSnackBar} from '@angular/material';
 export class ContactsListAddComponent implements OnInit {
   form: FormGroup;
   formErrorMessage: string;
-  listAddMessage: string;
-  isEditMode: boolean;
+   waiting: boolean;
 
   constructor(
     private http: HttpClient,
@@ -22,9 +21,6 @@ export class ContactsListAddComponent implements OnInit {
     private snackBar: MatSnackBar, ) { }
 
   ngOnInit() {
-    this.listAddMessage = undefined;
-    this.isEditMode = true;
-
     this.form = new FormGroup({
       listName: new FormControl(''),
     });
@@ -35,11 +31,12 @@ export class ContactsListAddComponent implements OnInit {
       this.formErrorMessage = 'Please type a valid list name.';
        return;
     }
+    this.waiting = true;
     this.http.post('/api/contacts-list/add', {
       'listName': form.listName,
     })
       .subscribe((result) => {
-        this.isEditMode = false;
+        this.waiting = false;
         switch (result.message) {
               case 'Success.':
                 this.snackBar.open('List created successfully', 'Dismiss', {
@@ -48,16 +45,21 @@ export class ContactsListAddComponent implements OnInit {
                 this.router.navigate(['/contacts/lists']);
               break;
               case 'List already exist.':
-                this.listAddMessage = 'List already exist, choose another name';
+                this.formErrorMessage = 'List already exist, choose another name';
               break;
               case 'Problem finding a list.':
               case 'Problem creating a list.':
-                this.listAddMessage = 'List cannot be created created.';
+                this.formErrorMessage = 'List cannot be created created.';
               break;
               default:
-                this.listAddMessage = 'Something went wrong, please try again later.';
+                this.formErrorMessage = 'Something went wrong, please try again later.';
             }
-        });
+      },
+      errorResponse => {
+        this.waiting = false;
+        // 422 or 500
+        this.formErrorMessage = 'Something went wrong, please try again later.';
+      });
   };
 
   submit = function () {

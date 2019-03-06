@@ -4,6 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { ActivatedRoute } from '@angular/router';
 import { Router } from '@angular/router';
 import { MatSnackBar, } from '@angular/material';
+import { ConsoleReporter } from 'jasmine';
 
 @Component({
   selector: 'app-contacts-edit',
@@ -13,6 +14,7 @@ import { MatSnackBar, } from '@angular/material';
 export class ContactsEditComponent implements OnInit {
   form: FormGroup;
   isEditMode: boolean;
+  waiting: boolean;
   lists: { listId: string, listName: string, numberOfContacts: number }[] = [];
   contactIdURL: string;
   constructor(
@@ -59,22 +61,30 @@ export class ContactsEditComponent implements OnInit {
 
   updateContact = function (newContact) {
 
+    console.log(newContact);
+    this.waiting = true;
     this.http.post('/api/contacts/edit', {
       'givenName': newContact.givenName,
       'familyName': newContact.familyName,
       'email': newContact.email,
       'contactId': this.contactIdURL,
-      'contactListId': newContact.contactList.id,
+      'contactListId': newContact.contactList._id,
     })
       .subscribe((result) => {
         this.isEditMode = false;
+        this.waiting = false;
           if ( result.message === 'Contact updated.') {
             this.snackBar.open('Contact updated successfully', 'Dismiss', {
               duration: 2000,
             });
-            this.router.navigate(['/contacts/i/' + result.contactId]);
+            this.router.navigate(['/contacts/i/' + this.contactIdURL]);
           }
-        });
+      },
+      errorResponse => {
+        this.waiting = false;
+        // 422 or 500
+        this.formErrorMessage = 'Something went wrong, please try again later.';
+      });
   };
 
 
