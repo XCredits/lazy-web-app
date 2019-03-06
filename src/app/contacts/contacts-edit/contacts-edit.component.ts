@@ -3,7 +3,7 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { ActivatedRoute } from '@angular/router';
 import { Router } from '@angular/router';
-
+import { MatSnackBar, } from '@angular/material';
 
 @Component({
   selector: 'app-contacts-edit',
@@ -18,7 +18,8 @@ export class ContactsEditComponent implements OnInit {
   constructor(
     private http: HttpClient,
     private route: ActivatedRoute,
-    private router: Router, ) { }
+    private router: Router,
+    private snackBar: MatSnackBar) { }
 
 
 
@@ -68,6 +69,9 @@ export class ContactsEditComponent implements OnInit {
       .subscribe((result) => {
         this.isEditMode = false;
           if ( result.message === 'Contact updated.') {
+            this.snackBar.open('Contact updated successfully', 'Dismiss', {
+              duration: 2000,
+            });
             this.router.navigate(['/contacts/view/']);
           }
         });

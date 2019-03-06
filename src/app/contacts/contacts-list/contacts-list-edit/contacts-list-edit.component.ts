@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { Router, ActivatedRoute } from '@angular/router';
-
+import { MatSnackBar, } from '@angular/material';
 @Component({
   selector: 'app-contacts-list-edit',
   templateUrl: './contacts-list-edit.component.html',
@@ -19,7 +19,8 @@ export class ContactsListEditComponent implements OnInit {
   constructor(
     private http: HttpClient,
     private router: Router,
-    private route: ActivatedRoute ) { }
+    private route: ActivatedRoute,
+    private snackBar: MatSnackBar, ) { }
 
   ngOnInit() {
     this.listAddMessage = undefined;
@@ -60,6 +61,9 @@ export class ContactsListEditComponent implements OnInit {
         this.isEditMode = false;
         switch (result.message) {
               case 'List updated.':
+              this.snackBar.open('List updated successfully', 'Dismiss', {
+                duration: 2000,
+              });
               this.router.navigate(['/contacts/lists']);
               break;
               case 'List already exist.':
