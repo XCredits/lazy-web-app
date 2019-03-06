@@ -1,13 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
-export interface ContactElements {
-  position: number;
-  givenName: string;
-  familyName: number;
-  email: number;
-  listName: string;
-}
 
 @Component({
   selector: 'app-contacts',
@@ -17,11 +10,14 @@ export interface ContactElements {
 
 
 export class ContactsComponent implements OnInit {
+  contacts: { id: string, givenName: string, lastName: string, email: string, listId: string }[] = [];
+  contactsLists: { id: string, listName: string, numberOfContacts: number }[] = [];
   navLinks = [];
+
   constructor( private http: HttpClient, ) { }
 
   ngOnInit() {
     this.navLinks.push('./view');
     this.navLinks.push('./lists');
-  }
+   }
 }

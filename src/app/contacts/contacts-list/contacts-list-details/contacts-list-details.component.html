@@ -18,13 +18,11 @@
       <div class="email" (click)="onSelect(contact)">
         {{contact.email}}
       </div>
-      <div class="list" (click)="onSelect(contact)">
+      <div class="list" >
         {{contact.listName}}
       </div>
       <div class="controls">
-        <button mat-icon-button (click)="editContact(contact)">
-          <mat-icon>create</mat-icon>
-        </button> <button mat-icon-button (click)="contactDeleteDialog(modal)" (click)="openDeleteContact(contact)">
+        <button mat-icon-button (click)="contactDeleteDialog(modal)" (click)="openDeleteContact(contact)">
           <mat-icon>delete</mat-icon>
         </button>
       </div>

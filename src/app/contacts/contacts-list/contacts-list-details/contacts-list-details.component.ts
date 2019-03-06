@@ -1,15 +1,10 @@
-import {MatTableDataSource} from '@angular/material';
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { MatDialog } from '@angular/material';
+import { MatDialog, MatSnackBar, } from '@angular/material';
+import { Router } from '@angular/router';
 
-export interface ContactElements {
-  givenName: string;
-  familyName: string;
-  email: string;
-  contactId: string;
-}
+
 
 @Component({
   selector: 'app-contacts-list-details',
@@ -19,16 +14,15 @@ export interface ContactElements {
 export class ContactsListDetailsComponent implements OnInit {
   receiverUserId: string;
   link: string;
-  displayedColumns: string[] = ['select', 'givenName', 'familyName', 'email'];
   listContact: { contactId: string, givenName: string, familyName: string, email: string }[] = [];
-  dataSource = new MatTableDataSource<ContactElements>(this.listContact);
   modalReference = null;
   contactId: string;
   listIdURL: string;
   constructor(private http: HttpClient,
     private route: ActivatedRoute,
     private dialogService: MatDialog,
-    ) { }
+    private router: Router,
+    private snackBar: MatSnackBar, ) { }
 
   ngOnInit() {
     this.listIdURL = this.route.snapshot.paramMap.get('listId');
@@ -37,7 +31,7 @@ export class ContactsListDetailsComponent implements OnInit {
   }
 
   loadListContact = function () {
-    this.http.post('/api/contacts/view-list-contacts', {
+    this.http.post('/api/contacts/get-contacts-with-contactlists', {
       'listId': this.listIdURL,
     })
       .subscribe((result) => {
@@ -46,16 +40,17 @@ export class ContactsListDetailsComponent implements OnInit {
   };
 
   openDeleteContact = function (contact) {
-    this.contactId = contact.contactId;
+    this.contactId = contact._id;
     this.deleteContactName = contact.givenName + ' ' + contact.familyName;
+
   };
 
   deleteContact = function () {
-    this.http.post('/api/contacts/delete-contact', {
+    this.http.post('/api/contacts-list/delete-contact', {
       'contactId': this.contactId,
     })
       .subscribe((result) => {
-        if (result.message === 'Contact deleted.' ) {
+        if (result.message === 'Contact removed.' ) {
             this.loadListContact();
             this.resetForm();
         }
@@ -66,8 +61,16 @@ export class ContactsListDetailsComponent implements OnInit {
     this.modalReference = this.dialogService.open(modal);
   }
 
+
+  onSelect(contact) {
+    this.router.navigate(['/contacts/i/' + contact._id]);
+
+  }
   resetForm = function() {
     this.modalReference.close();
+    this.snackBar.open('Contact removed successfully', 'Dismiss', {
+      duration: 2000,
+    });
   };
 
 

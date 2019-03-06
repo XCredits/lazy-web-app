@@ -41,7 +41,7 @@ function addRequest(req, res) {
           res.status(500).send('Cannot add yourself as a connection' );
         }
         return Connection.findOne({
-              userId: userId,
+              userId,
               connectionId: receivingUserId,
               status: 'connected'
             })
@@ -342,7 +342,7 @@ function getConnectionCount(req, res) {
   // Save the login userId
   const userId = req.userId;
   return Connection.count({
-        userId: userId,
+        userId,
         status: 'connected',
       })
       .then((result) => {
@@ -412,7 +412,7 @@ function removeConnection(req, res) {
       .then((result) => {
         return Connection.findOneAndUpdate({
               connectionId: req.body.senderUserId,
-              userId: userId,
+              userId,
             },
             {
               status: 'disconnected',

@@ -1,22 +1,22 @@
 import * as validator from 'validator';
-import { normalizeContact } from './utils.controller';
 const Contact = require('../models/contact.model');
 const ContactList = require('../models/contact-list.model');
 const ContactListContact = require('../models/contact-list-contact.model');
 const auth = require('./jwt-auth.controller');
 
 module.exports = function(app) {
-  app.post('/api/contacts/add-contact', auth.jwt, addContact);
-  app.post('/api/contacts/delete-contact', auth.jwt, removeContact);
-  app.post('/api/contacts/update-contact', auth.jwt, updateContact);
-  app.post('/api/contacts/view-contacts', auth.jwt, getContacts);
-  app.post('/api/contacts/view-contact-details', auth.jwt, getContactDetails);
+  app.post('/api/contacts/add', auth.jwt, addContact);
+  app.post('/api/contacts/delete', auth.jwt, deleteContact);
+  app.post('/api/contacts/edit', auth.jwt, editContact);
+  app.post('/api/contacts/view', auth.jwt, getContactSummary);
+  app.post('/api/contacts/details', auth.jwt, getContactDetails);
   app.post('/api/contacts/get-contacts-with-lists', auth.jwt, getContactsWithLists);
-  app.post('/api/contacts/view-list-contacts', auth.jwt, returnContactsWithContactLists);
-  app.post('/api/contacts-list/view-lists', auth.jwt, getLists);
-  app.post('/api/contacts-list/add-list', auth.jwt, addList);
-  app.post('/api/contacts-list/remove-list', auth.jwt, removeList);
-  app.post('/api/contacts-list/update-list', auth.jwt, updateList);
+  app.post('/api/contacts/get-contacts-with-contactlists', auth.jwt, getContactsWithContactLists);
+  app.post('/api/contacts-list/view', auth.jwt, getLists);
+  app.post('/api/contacts-list/add', auth.jwt, addList);
+  app.post('/api/contacts-list/delete', auth.jwt, deleteList);
+  app.post('/api/contacts-list/delete-contact', auth.jwt, deleteListContact);
+  app.post('/api/contacts-list/edit', auth.jwt, editList);
 };
 
 
@@ -29,8 +29,8 @@ module.exports = function(app) {
 function addContact(req, res) {
   const userId = req.userId;
   const email = req.body.email;
-  let givenName = req.body.givenName;
-  let familyName = req.body.familyName;
+  const givenName = req.body.givenName;
+  const familyName = req.body.familyName;
   const contactListId = req.body.contactListId;
 
   // Validate
@@ -40,11 +40,9 @@ function addContact(req, res) {
     return res.status(422).json({ message: 'Request failed validation' });
   }
 
-  givenName = normalizeContact(givenName);
-  familyName = normalizeContact(familyName);
 
   const contact = new Contact({
-    userId: userId,
+    userId,
     email,
     givenName,
     familyName,
@@ -52,12 +50,13 @@ function addContact(req, res) {
   return contact.save()
     .then((result) => {
       const contactListContact = new ContactListContact({
-      contactId: result._id,
-      listId: ( contactListId !== null ) ? contactListId : null,
+        userId: userId,
+        contactId: result._id,
+        listId: ( contactListId !== null ) ? contactListId : null,
       });
       return contactListContact.save()
         .then((contactListResult) => {
-            return res.send({ message: 'Success.' , contactId: contactListResult.contactId });
+            return res.send({ message: 'Success.', contactId: contactListResult.contactId });
           })
           .catch((error) => {
             return res.status(500).send('Problem creating contacts list.');
@@ -76,25 +75,26 @@ function addContact(req, res) {
  * @param {*} res response object
  * @return {*}
  */
-function updateContact(req, res) {
+function editContact(req, res) {
   const userId = req.userId;
   const email = req.body.email;
-  let givenName = req.body.givenName;
-  let familyName = req.body.familyName;
+  const givenName = req.body.givenName;
+  const familyName = req.body.familyName;
+  const contactListId = req.body.contactListId;
   const contactId = req.body.contactId;
   // Validate
   if (typeof contactId !== 'string' ||
+      typeof contactListId !== 'string' ||
       typeof givenName !== 'string' ||
       typeof familyName !== 'string' ||
+      typeof email !== 'string' ||
       !validator.isEmail(email) ) {
     return res.status(422).json({ message: 'Request failed validation.' });
   }
 
-  givenName = normalizeContact(givenName);
-  familyName = normalizeContact(familyName);
 
   return Contact.findOneAndUpdate({
-    userId: userId,
+    userId,
     _id: contactId,
     },
     {
@@ -121,7 +121,7 @@ function updateContact(req, res) {
  * @param {*} res response object
  * @return {*}
  */
-function removeContact(req, res) {
+function deleteContact(req, res) {
   const userId = req.userId;
   const contactId = req.body.contactId;
   // Validate
@@ -129,41 +129,33 @@ function removeContact(req, res) {
     return res.status(422).json({ message: 'Contact failed validation.' });
   }
 
-  return ContactListContact.delete( {userId: userId, contactId: contactId } )
-      .then(() => {
-        return Contact.deleteOne( {_id: contactId, userId: userId} )
-          .then(() => {
-            return res.send({ message: 'Contact deleted.' });
-          })
-          .catch((error) => {
-            return res.status(500).send('Problem removing contacts.');
-          });
-      })
-      .catch((error) => {
-        return res.status(500).send('Problem removing contacts.');
-      });
+  return ContactListContact.deleteMany( {userId, contactId: contactId } )
+  .then(() => {
+        return Contact.deleteMany( {userId: userId, _id: contactId } )
+            .then(() => {
+              return res.send({ message: 'Contact deleted.' });
+            })
+            .catch((error) => {
+              return res.status(500).send('Problem removing contacts.');
+            });
+        })
+        .catch((error) => {
+          return res.status(500).send('Problem removing contacts.');
+        });
 }
 
 
 /**
- * returns all users for now
+ * returns all contacts summary
  * @param {*} req request object
  * @param {*} res response object
  * @returns {*}
  */
-function getContacts(req, res) {
+function getContactSummary(req, res) {
   const userId = req.userId;
-  Contact.find({ userId }).sort( {givenName: 1} )
+  return Contact.find({ userId }, {givenName: 1, familyName: 1, email: 1 }).sort( {givenName: 1} )
     .then((result) => {
-      const filteredResult = result.map((x) => {
-        return {
-          contactId: x._id,
-          givenName: x.givenName,
-          familyName: x.familyName,
-          email: x.email,
-        };
-      });
-      return res.send(filteredResult);
+      return res.send(result);
     })
     .catch((error) => {
       return res.status(500).send({ message: 'Error retrieving users from contacts database.' });
@@ -184,16 +176,9 @@ function getContactDetails(req, res) {
   if (typeof contactId !== 'string') {
     return res.status(422).json({ message: 'Contact failed validation.' });
   }
-
-  Contact.findOne({ _id: contactId, userId: userId  })
+  return Contact.findOne({ userId: userId, _id: contactId }, { userId: 1, givenName: 1, familyName: 1, email: 1})
     .then(resultContact => {
-      const resultsFiltered = {
-        id: resultContact._id,
-        givenName: resultContact.givenName,
-        familyName: resultContact.familyName,
-        email: resultContact.email,
-      };
-    res.send(resultsFiltered);
+      return res.send(resultContact);
     })
     .catch((error) => {
       return res.status(500).send({ message: 'Error retrieving user from contacts database.' });
@@ -207,21 +192,14 @@ function getContactDetails(req, res) {
  */
 function getLists(req, res) {
   const userId = req.userId;
-  ContactList.find({ refId: userId }).sort( {name: 1} )
+  return ContactList.find({ userId }, { listName: 1 }).sort( {name: 1} )
     .then((result) => {
-      const filteredResult = result.map((x) => {
-        return {
-          id: x._id,
-          listName: x.listName,
-        };
-      });
-      return res.send(filteredResult);
+      return res.send(result);
     })
     .catch((error) => {
       return res.status(500).send({ message: 'Error retrieving list form database.' });
     });
 }
-
 
 
 /**
@@ -237,16 +215,16 @@ function addList(req, res) {
   if (typeof listName !== 'string' ) {
     return res.status(422).json({ message: 'Request failed validation.' });
   }
-  return ContactList.findOne({refId: userId , listName: listName })
+  return ContactList.findOne({ userId , listName: listName })
     .then((resultListName) => {
       if ( resultListName !== null) {
         if (listName === resultListName.listName) {
-          res.send({ message: 'List already exist.' });
+          return res.send({ message: 'List already exist.' });
         }
       } else {
         const contactList = new ContactList({
-          refId: userId,
           listName: listName,
+          userId,
         });
         return contactList.save()
           .then((result) => {
@@ -262,7 +240,7 @@ function addList(req, res) {
     });
 }
 
-function removeList(req, res) {
+function deleteList(req, res) {
   const userId = req.userId;
   const listId = req.body.listId;
 
@@ -271,14 +249,14 @@ function removeList(req, res) {
     return res.status(422).json({ message: 'Contact failed validation.' });
   }
 
-  return ContactListContact.find({userId, listId })
+  return ContactListContact.find({ userId, listId })
     .then (( result ) => {
       const contactId = result.map ((x => x.contactId));
-      return Contact.deleteMany ({ _id: contactId, userId})
+      return Contact.deleteMany ({userId: userId, _id: contactId})
         .then (() => {
-          return ContactListContact.deleteMany({ listId: listId, userId})
+          return ContactListContact.deleteMany({ userId, listId: listId })
             .then(() => {
-              return ContactList.deleteOne({ _id: listId, userId})
+              return ContactList.deleteMany({ userId, _id: listId })
                 .then(() => {
                   return res.send({ message: 'List deleted.' });
                 })
@@ -299,7 +277,29 @@ function removeList(req, res) {
     });
   }
 
-function updateList(req, res) {
+
+
+  function deleteListContact(req, res) {
+    const userId = req.userId;
+    const contactId = req.body.contactId;
+
+    // Validate
+    if (typeof contactId !== 'string' ) {
+      return res.status(422).json({ message: 'Contact failed validation.' });
+    }
+
+    return ContactListContact.deleteMany({ userId, contactId })
+      .then(() => {
+            return res.send({ message: 'Contact removed.' });
+          })
+          .catch((error) => {
+            return res.status(500).send('Problem removing contact.');
+          });
+    }
+
+
+
+function editList(req, res) {
   const userId = req.userId;
   const listId = req.body.listId;
   const updatedListName = req.body.updatedListName;
@@ -310,7 +310,7 @@ function updateList(req, res) {
   }
 
   return ContactList.findOneAndUpdate({
-    userId: userId,
+    userId,
     _id: listId,
   },
   {
@@ -341,15 +341,9 @@ function getContactsWithLists(req, res) {
   return Contact.find({ userId })
     .then((result) => {
       const contactIdArr = result.map((e => e._id));
-      return ContactListContact.find({userId: userId, 'contactId': { '$in': contactIdArr } })
+      return ContactListContact.find({ userId: userId, 'contactId': { '$in': contactIdArr } }, { contactId: 1, listId: 1 })
         .then((result2) => {
-          const filteredResult = result2.map((x) => {
-            return {
-              contactId: x.contactId,
-              listId: x.listId,
-            };
-          });
-          return res.send(filteredResult);
+          return res.send(result2);
         })
         .catch((error) => {
           return res.status(500).send({ message: 'Error retrieving users from contacts database.' });
@@ -368,7 +362,7 @@ function getContactsWithLists(req, res) {
  * @param {*} res response object
  * @returns {*}
  */
-function returnContactsWithContactLists(req, res) {
+function getContactsWithContactLists(req, res) {
   const userId = req.userId;
   const listId = req.body.listId;
  // Validate
@@ -378,17 +372,9 @@ function returnContactsWithContactLists(req, res) {
   return ContactListContact.find({ userId, listId })
     .then((result) => {
       const contactId = result.map((x => x.contactId));
-      return Contact.find({ userId: userId, '_id': { '$in': contactId } })
+      return Contact.find({userId: userId, '_id': { '$in': contactId } }, {contactId: 1, givenName: 1, familyName: 1, email: 1})
         .then((filteredResult) => {
-          const resultFiltered = filteredResult.map((x) => {
-              return {
-                givenName: x.givenName,
-                familyName: x.familyName,
-                email: x.email,
-                contactId: x._id,
-              };
-          });
-          res.send(resultFiltered);
+          return res.send(filteredResult);
         })
         .catch((error) => {
           res.status(500).send({ message: 'Problem finding contacts.' });

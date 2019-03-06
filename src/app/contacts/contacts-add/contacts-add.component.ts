@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-
+import {MatSnackBar} from '@angular/material';
 
 @Component({
   selector: 'app-contacts-add',
@@ -11,17 +11,19 @@ import { Router } from '@angular/router';
 })
 export class ContactsAddComponent implements OnInit {
   form: FormGroup;
-  displayedColumns: string[] = ['select', 'listName', 'Action'];
-  contactAddMessage: string;
+  formErrorMessage: string;
   isEditMode: boolean;
+  waiting: boolean;
+
   lists: { listId: string, listName: string, numberOfContacts: number }[] = [];
 
   constructor(
     private http: HttpClient,
-    private router: Router, ) { }
+    private router: Router,
+    private snackBar: MatSnackBar, ) { }
 
   ngOnInit() {
-    this.contactAddMessage = undefined;
+    this.formErrorMessage = undefined;
     this.isEditMode = true;
     this.form = new FormGroup({
       givenName: new FormControl(''),
@@ -36,7 +38,7 @@ export class ContactsAddComponent implements OnInit {
 
 
   loadContactsLists = function () {
-    this.http.post('/api/contacts-list/view-lists', {})
+    this.http.post('/api/contacts-list/view', {})
       .subscribe((data: any) => {
         this.lists = data;
       });
@@ -44,28 +46,45 @@ export class ContactsAddComponent implements OnInit {
 
   addContact = function (newContact) {
 
-    this.http.post('/api/contacts/add-contact', {
+    if ( newContact.givenName.length === 0 ||
+        newContact.familyName.length === 0 ||
+        newContact.email.length === 0 ) {
+          this.formErrorMessage = 'Please type a valid inputs.';
+          return;
+    }
+
+    this.waiting = true;
+    this.http.post('/api/contacts/add', {
       'givenName': newContact.givenName,
       'familyName': newContact.familyName,
       'email': newContact.email,
-      'contactListId': newContact.contactList.listId,
+      'contactListId': newContact.contactList._id,
     })
       .subscribe((result) => {
+        this.waiting = false;
         this.isEditMode = false;
+        console.log(result);
         switch (result.message) {
               case 'Success.':
-                this.router.navigate(['/contacts/view/' + result.contactId]);
+                this.snackBar.open('Contact created successfully', 'Dismiss', {
+                  duration: 2000,
+                });
+                this.router.navigate(['/contacts/i/' + result.contactId]);
               break;
               case 'Problem finding a list.':
               case 'Problem creating a list.':
-                this.contactAddMessage = 'Contact cannot be created.';
+                this.formErrorMessage = 'Contact cannot be created.';
               break;
               default:
-                this.contactAddMessage = 'Something went wrong, please try again later.';
-            }
+                this.formErrorMessage = 'Something went wrong, please try again later.';
+          }
+        },
+        errorResponse => {
+          this.waiting = false;
+          // 422 or 500
+          this.formErrorMessage = 'Something went wrong, please try again later.';
         });
   };
-
 
   submit = function () {
   };

@@ -1,21 +1,10 @@
-import {MatTableDataSource} from '@angular/material';
 import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { FormGroup } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
-import { MatDialog } from '@angular/material';
+import { MatDialog, MatSnackBar } from '@angular/material';
 import { Router } from '@angular/router';
 
-export interface ContactElements {
-  position: number;
-  givenName: string;
-  familyName: number;
-  email: number;
-  listName: string;
-}
 
-export interface List {
-  value: string;
-}
 @Component({
   selector: 'app-contacts-view',
   templateUrl: './contacts-view.component.html',
@@ -23,49 +12,36 @@ export interface List {
 })
 export class ContactsViewComponent implements OnInit {
   form: FormGroup;
-  disableButton = true;
-  submitSuccess = false;
-  formErrorMessage: string;
   contactId: string;
   contactsArr = [];
-  displayedColumns: string[] = ['select', 'givenName', 'familyName', 'email', 'listName', 'Action'];
-  dataSource = new MatTableDataSource<ContactElements>(this.contactsArr);
   isViewAll: boolean;
-  isEditContact: boolean;
-  selected: string;
   deleteContactName: string;
   modalReference = null;
 
   constructor(
     private http: HttpClient,
     private dialogService: MatDialog,
-    private router: Router, ) { }
+    private router: Router,
+    private snackBar: MatSnackBar, ) { }
 
   ngOnInit() {
     this.isViewAll = true;
     this.loadContacts();
   }
 
-
-  applyFilter(filterValue: string) {
-    this.dataSource.filter = filterValue.trim().toLowerCase();
-  }
-
-
   loadContacts = function () {
     this.dataSource = [];
     this.contactsArr = [];
-    this.http.post('/api/contacts/view-contacts', { })
+    this.http.post('/api/contacts/view', { })
         .subscribe ((data: any) => {
             this.contactsArr = data;
-            this.dataSource = new MatTableDataSource<ContactElements>(this.contactsArr);
             this.loadContactsLists();
         });
   };
 
 
   loadContactsLists = function () {
-    this.http.post('/api/contacts-list/view-lists', {})
+    this.http.post('/api/contacts-list/view', {})
       .subscribe((data: any) => {
           this.lists = data;
           this.loadContactsRelations();
@@ -79,8 +55,8 @@ export class ContactsViewComponent implements OnInit {
         for (const index of this.contactsArr) {
           for (const relation of this.listsConnections) {
             if (relation['listId']) {
-              if (relation['contactId'] === index['contactId']) {
-                const fm = this.lists.find(el => el.listId === relation['listId']);
+              if (relation['contactId'] === index['_id']) {
+                const fm = this.lists.find(el => el._id === relation['listId']);
                 index.listName = fm.listName;
               }
             }
@@ -90,69 +66,34 @@ export class ContactsViewComponent implements OnInit {
   };
 
   openDeleteContact = function (contact) {
-    this.contactId = contact.contactId;
+    this.contactId = contact._id;
     this.deleteContactName = contact.givenName + ' ' + contact.familyName;
   };
 
-  deleteContact = function () {
-    this.http.post('/api/contacts/delete-contact', {
+  deleteContact = function (contact) {
+    this.http.post('/api/contacts/delete', {
       'contactId': this.contactId,
     })
       .subscribe((result) => {
-        if (result.message === 'Contact deleted' ) {
+        if (result.message === 'Contact deleted.' ) {
             this.loadContacts();
             this.resetForm();
+            this.snackBar.open('Contact deleted successfully', 'Dismiss', {
+              duration: 2000,
+            });
         }
       });
   };
-
-  openAddContactForm = function () {
-    this.isViewAll = false;
-    this.form = new FormGroup({
-      givenName: new FormControl(''),
-      familyName: new FormControl(''),
-      email: new FormControl('', [Validators.required, Validators.email]),
-      contactList: new FormControl(''),
-    });
-  };
-
 
   editContact = function (contact) {
     this.isViewAll = false;
-    this.isEditContact = true;
     this.contactId = contact.contactId;
-    this.form = new FormGroup({
-      givenName: new FormControl(contact.givenName),
-      familyName: new FormControl(contact.familyName),
-      email: new FormControl(contact.email, [Validators.required, Validators.email]),
-      contactList: new FormControl([contact.listName]),
-    });
+    this.router.navigate(['/contacts/i/' + contact._id + '/edit']);
   };
-
-  updateContact = function (contact) {
-    this.http.post('/api/contacts/update-contact', {
-      'contactId': this.contactId,
-      'givenName': contact.givenName,
-      'familyName': contact.familyName,
-      'email': contact.email,
-    })
-      .subscribe((result) => {
-        if (result.message === 'Contact updated.' ) {
-          this.listAddMessage = 'Contact updated.';
-          this.isViewAll = true;
-          this.isEditContact = false;
-          this.loadContacts();
-
-        }
-      });
-  };
-
-  submit = function () { };
 
   resetForm = function() {
     this.listAddMessage = undefined;
     this.isViewAll = true;
-    this.isEditContact = false;
     this.modalReference.close();
   };
 
@@ -161,6 +102,7 @@ export class ContactsViewComponent implements OnInit {
   }
 
   onSelect(contact) {
-    this.router.navigate(['/contacts/view/' + contact.contactId]);
+    this.router.navigate(['/contacts/i/' + contact._id]);
+
   }
 }
