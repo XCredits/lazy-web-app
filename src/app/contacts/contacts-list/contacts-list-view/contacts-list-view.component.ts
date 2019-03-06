@@ -94,7 +94,7 @@ export class ContactsListViewComponent implements OnInit {
   editListForm = function (list) {
     this.isViewAll = false;
     this.listDetails = list;
-    this.router.navigate(['/contacts/lists/edit/' + list._id]);
+    this.router.navigate(['/contacts/lists/i/' + list._id + '/edit']);
 
   };
 
@@ -108,7 +108,7 @@ export class ContactsListViewComponent implements OnInit {
   };
 
   onSelect(list) {
-    this.router.navigate(['/contacts/lists/' + list._id]);
+    this.router.navigate(['/contacts/lists/i/' + list._id]);
 
   }
 

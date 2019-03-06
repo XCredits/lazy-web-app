@@ -46,11 +46,11 @@ export class ContactsListDetailsComponent implements OnInit {
   };
 
   deleteContact = function () {
-    this.http.post('/api/contacts/delete', {
+    this.http.post('/api/contacts-list/delete-contact', {
       'contactId': this.contactId,
     })
       .subscribe((result) => {
-        if (result.message === 'Contact deleted.' ) {
+        if (result.message === 'Contact removed.' ) {
             this.loadListContact();
             this.resetForm();
         }
@@ -62,17 +62,13 @@ export class ContactsListDetailsComponent implements OnInit {
   }
 
 
-  editContact = function (contact) {
-    this.router.navigate(['/contacts/edit/' + contact._id]);
-  };
-
   onSelect(contact) {
-    this.router.navigate(['/contacts/view/' + contact._id]);
+    this.router.navigate(['/contacts/i/' + contact._id]);
 
   }
   resetForm = function() {
     this.modalReference.close();
-    this.snackBar.open('Contact deleted successfully', 'Dismiss', {
+    this.snackBar.open('Contact removed successfully', 'Dismiss', {
       duration: 2000,
     });
   };

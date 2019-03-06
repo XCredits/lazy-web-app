@@ -57,7 +57,7 @@ export class ContactsAddComponent implements OnInit {
                 this.snackBar.open('Contact created successfully', 'Dismiss', {
                   duration: 2000,
                 });
-                this.router.navigate(['/contacts/view/' + result.contactId]);
+                this.router.navigate(['/contacts/i/' + result.contactId]);
               break;
               case 'Problem finding a list.':
               case 'Problem creating a list.':

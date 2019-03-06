@@ -15,6 +15,7 @@ module.exports = function(app) {
   app.post('/api/contacts-list/view', auth.jwt, getLists);
   app.post('/api/contacts-list/add', auth.jwt, addList);
   app.post('/api/contacts-list/delete', auth.jwt, deleteList);
+  app.post('/api/contacts-list/delete-contact', auth.jwt, deleteListContact);
   app.post('/api/contacts-list/edit', auth.jwt, editList);
 };
 
@@ -193,7 +194,6 @@ function getLists(req, res) {
   const userId = req.userId;
   return ContactList.find({ userId }, { listName: 1 }).sort( {name: 1} )
     .then((result) => {
-      console.log(result);
       return res.send(result);
     })
     .catch((error) => {
@@ -276,6 +276,28 @@ function deleteList(req, res) {
         return res.status(500).send('Problem finding list.');
     });
   }
+
+
+
+  function deleteListContact(req, res) {
+    const userId = req.userId;
+    const contactId = req.body.contactId;
+
+    // Validate
+    if (typeof contactId !== 'string' ) {
+      return res.status(422).json({ message: 'Contact failed validation.' });
+    }
+
+    return ContactListContact.deleteMany({ userId, contactId })
+      .then(() => {
+            return res.send({ message: 'Contact removed.' });
+          })
+          .catch((error) => {
+            return res.status(500).send('Problem removing contact.');
+          });
+    }
+
+
 
 function editList(req, res) {
   const userId = req.userId;

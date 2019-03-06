@@ -285,11 +285,11 @@ import { ConnectionsRequestDetailsComponent } from './connections/connections-re
             component: ContactsAddComponent,
           },
           {
-            path: 'edit/:contactId',
+            path: 'i/:contactId/edit',
             component: ContactsEditComponent,
           },
           {
-            path: 'view/:contactId',
+            path: 'i/:contactId',
             component: ContactDetailsComponent,
           },
           {
@@ -301,11 +301,11 @@ import { ConnectionsRequestDetailsComponent } from './connections/connections-re
             component: ContactsListAddComponent,
           },
           {
-            path: 'lists/edit/:listId',
+            path: 'lists/i/:listId/edit',
             component: ContactsListEditComponent,
           },
           {
-            path: 'lists/:listId',
+            path: 'lists/i/:listId',
             component: ContactsListDetailsComponent,
             canActivate: [AuthGuard],
 

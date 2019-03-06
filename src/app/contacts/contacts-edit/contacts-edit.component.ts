@@ -72,7 +72,7 @@ export class ContactsEditComponent implements OnInit {
             this.snackBar.open('Contact updated successfully', 'Dismiss', {
               duration: 2000,
             });
-            this.router.navigate(['/contacts/view/']);
+            this.router.navigate(['/contacts/i/' + result.contactId]);
           }
         });
   };

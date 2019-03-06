@@ -67,10 +67,13 @@ export class ContactsViewComponent implements OnInit {
 
   openDeleteContact = function (contact) {
     this.contactId = contact.contactId;
+    console.log(contact);
     this.deleteContactName = contact.givenName + ' ' + contact.familyName;
   };
 
-  deleteContact = function () {
+  deleteContact = function (contact) {
+    console.log(this.contactId);
+    return;
     this.http.post('/api/contacts/delete', {
       'contactId': this.contactId,
     })
@@ -85,7 +88,7 @@ export class ContactsViewComponent implements OnInit {
   editContact = function (contact) {
     this.isViewAll = false;
     this.contactId = contact.contactId;
-    this.router.navigate(['/contacts/edit/' + contact._id]);
+    this.router.navigate(['/contacts/i/' + contact._id + '/edit']);
   };
 
   resetForm = function() {
@@ -102,6 +105,7 @@ export class ContactsViewComponent implements OnInit {
   }
 
   onSelect(contact) {
-    this.router.navigate(['/contacts/view/' + contact._id]);
+    this.router.navigate(['/contacts/i/' + contact._id]);
+
   }
 }
