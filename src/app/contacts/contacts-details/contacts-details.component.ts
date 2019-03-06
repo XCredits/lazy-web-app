@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { MatDialog } from '@angular/material';
+import { MatDialog, MatSnackBar, } from '@angular/material';
 import { Router } from '@angular/router';
 
 export interface ContactElements {
@@ -26,7 +26,8 @@ export class ContactDetailsComponent implements OnInit {
   constructor(private http: HttpClient,
     private route: ActivatedRoute,
     private dialogService: MatDialog,
-    private router: Router, ) { }
+    private router: Router,
+    private snackBar: MatSnackBar, ) { }
 
 
   ngOnInit() {
@@ -70,8 +71,10 @@ export class ContactDetailsComponent implements OnInit {
       .subscribe((result) => {
         if (result.message === 'Contact deleted.' ) {
           this.modalReference.close();
+          this.snackBar.open('Contact deleted successfully', 'Dismiss', {
+            duration: 2000,
+          });
           this.router.navigate(['/contacts/view']);
-
         }
       });
   };

@@ -3,7 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { MatDialog } from '@angular/material';
+import { MatDialog, MatSnackBar, } from '@angular/material';
 
 export interface ListDetails {
   id: string;
@@ -29,7 +29,7 @@ export class ContactsListViewComponent implements OnInit {
     private http: HttpClient,
     private router: Router,
     private dialogService: MatDialog,
-  ) { }
+    private snackBar: MatSnackBar, ) { }
 
   ngOnInit() {
     this.isViewAll = true;
@@ -101,6 +101,9 @@ export class ContactsListViewComponent implements OnInit {
   resetForm = function() {
     this.isViewAll = true;
     this.modalReference.close();
+    this.snackBar.open('List deleted successfully', 'Dismiss', {
+      duration: 2000,
+    });
 
   };
 

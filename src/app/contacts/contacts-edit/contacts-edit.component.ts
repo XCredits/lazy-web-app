@@ -12,7 +12,6 @@ import { Router } from '@angular/router';
 })
 export class ContactsEditComponent implements OnInit {
   form: FormGroup;
-  contactAddMessage: string;
   isEditMode: boolean;
   lists: { listId: string, listName: string, numberOfContacts: number }[] = [];
   contactIdURL: string;
@@ -25,7 +24,6 @@ export class ContactsEditComponent implements OnInit {
 
   ngOnInit() {
 
-    this.contactAddMessage = undefined;
     this.isEditMode = false;
     this.contactIdURL = this.route.snapshot.paramMap.get('contactId');
     this.loadContactsLists();

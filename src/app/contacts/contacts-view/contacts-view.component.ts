@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
-import { MatDialog } from '@angular/material';
+import { MatDialog, MatSnackBar } from '@angular/material';
 import { Router } from '@angular/router';
 
 
@@ -21,7 +21,8 @@ export class ContactsViewComponent implements OnInit {
   constructor(
     private http: HttpClient,
     private dialogService: MatDialog,
-    private router: Router, ) { }
+    private router: Router,
+    private snackBar: MatSnackBar, ) { }
 
   ngOnInit() {
     this.isViewAll = true;
@@ -91,6 +92,9 @@ export class ContactsViewComponent implements OnInit {
     this.listAddMessage = undefined;
     this.isViewAll = true;
     this.modalReference.close();
+    this.snackBar.open('Contact deleted successfully', 'Dismiss', {
+      duration: 2000,
+    });
   };
 
   contactDeleteDialog(modal) {

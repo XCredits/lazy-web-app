@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { MatDialog } from '@angular/material';
+import { MatDialog, MatSnackBar,} from '@angular/material';
 import { Router } from '@angular/router';
 
 
@@ -21,7 +21,8 @@ export class ContactsListDetailsComponent implements OnInit {
   constructor(private http: HttpClient,
     private route: ActivatedRoute,
     private dialogService: MatDialog,
-    private router: Router, ) { }
+    private router: Router,
+    private snackBar: MatSnackBar, ) { }
 
   ngOnInit() {
     this.listIdURL = this.route.snapshot.paramMap.get('listId');
@@ -67,6 +68,9 @@ export class ContactsListDetailsComponent implements OnInit {
 
   resetForm = function() {
     this.modalReference.close();
+    this.snackBar.open('Contact deleted successfully', 'Dismiss', {
+      duration: 2000,
+    });
   };
 
 

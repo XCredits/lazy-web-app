@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
+import {MatSnackBar} from '@angular/material';
+
 
 @Component({
   selector: 'app-contacts-list-view',
@@ -16,7 +18,8 @@ export class ContactsListAddComponent implements OnInit {
 
   constructor(
     private http: HttpClient,
-    private router: Router, ) { }
+    private router: Router,
+    private snackBar: MatSnackBar, ) { }
 
   ngOnInit() {
     this.listAddMessage = undefined;
@@ -39,7 +42,10 @@ export class ContactsListAddComponent implements OnInit {
         this.isEditMode = false;
         switch (result.message) {
               case 'Success.':
-              this.router.navigate(['/contacts/lists']);
+                this.snackBar.open('List created successfully', 'Dismiss', {
+                  duration: 2000,
+                });
+                this.router.navigate(['/contacts/lists']);
               break;
               case 'List already exist.':
                 this.listAddMessage = 'List already exist, choose another name';

@@ -46,13 +46,3 @@
     </mat-card-content>
   </mat-card>
 </div>
-
-
-<div *ngIf='contactAddMessage !== undefined'>
-  <div *ngIf='!isEditMode'>
-    <mat-card-title> {{contactAddMessage}}</mat-card-title>
-    <button routerLink='/contacts/view' class="simple-form-button" color="primary" mat-raised-button>
-      Ok
-    </button>
-  </div>
-</div>

@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-
+import {MatSnackBar} from '@angular/material';
 
 @Component({
   selector: 'app-contacts-add',
@@ -17,7 +17,8 @@ export class ContactsAddComponent implements OnInit {
 
   constructor(
     private http: HttpClient,
-    private router: Router, ) { }
+    private router: Router,
+    private snackBar: MatSnackBar, ) { }
 
   ngOnInit() {
     this.contactAddMessage = undefined;
@@ -53,6 +54,9 @@ export class ContactsAddComponent implements OnInit {
         this.isEditMode = false;
         switch (result.message) {
               case 'Success.':
+                this.snackBar.open('Contact created successfully', 'Dismiss', {
+                  duration: 2000,
+                });
                 this.router.navigate(['/contacts/view/' + result.contactId]);
               break;
               case 'Problem finding a list.':
@@ -64,7 +68,6 @@ export class ContactsAddComponent implements OnInit {
             }
         });
   };
-
 
   submit = function () {
   };
