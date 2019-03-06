@@ -27,40 +27,34 @@ export class ContactsListDetailsComponent implements OnInit {
   ngOnInit() {
     this.listIdURL = this.route.snapshot.paramMap.get('listId');
     this.loadListContact();
-
   }
 
   loadListContact = function () {
-    this.http.post('/api/contacts/get-contacts-with-contactlists', {
-      'listId': this.listIdURL,
-    })
-      .subscribe((result) => {
-        this.listContact = result;
-      });
+    this.http.post('/api/contacts/list/get-contacts', {
+          'listId': this.listIdURL,
+        })
+        .subscribe(result => {
+          this.listContact = result;
+        });
   };
 
-  openDeleteContact = function (contact) {
+  openRemoveContact = function (contact, modal) {
+    this.modalReference = this.dialogService.open(modal);
     this.contactId = contact._id;
-    this.deleteContactName = contact.givenName + ' ' + contact.familyName;
-
+    this.removeContactName = contact.givenName + ' ' + contact.familyName;
   };
 
-  deleteContact = function () {
-    this.http.post('/api/contacts-list/delete-contact', {
-      'contactId': this.contactId,
-    })
-      .subscribe((result) => {
-        if (result.message === 'Contact removed.' ) {
+  removeContact = function () {
+    this.http.post('/api/contacts/list/remove-contact', {
+          'contactId': this.contactId,
+        })
+        .subscribe(result => {
+          if (result.message === 'Contact removed.' ) {
             this.loadListContact();
             this.resetForm();
-        }
-      });
+          }
+        });
   };
-
-  contactDeleteDialog(modal) {
-    this.modalReference = this.dialogService.open(modal);
-  }
-
 
   onSelect(contact) {
     this.router.navigate(['/contacts/i/' + contact._id]);

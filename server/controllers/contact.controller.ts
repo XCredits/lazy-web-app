@@ -11,12 +11,12 @@ module.exports = function(app) {
   app.post('/api/contacts/view', auth.jwt, getContactSummary);
   app.post('/api/contacts/details', auth.jwt, getContactDetails);
   app.post('/api/contacts/get-contacts-with-lists', auth.jwt, getContactsWithLists);
-  app.post('/api/contacts/get-contacts-with-contactlists', auth.jwt, getContactsWithContactLists);
-  app.post('/api/contacts-list/view', auth.jwt, getLists);
-  app.post('/api/contacts-list/add', auth.jwt, addList);
-  app.post('/api/contacts-list/delete', auth.jwt, deleteList);
-  app.post('/api/contacts-list/delete-contact', auth.jwt, deleteListContact);
-  app.post('/api/contacts-list/edit', auth.jwt, editList);
+  app.post('/api/contacts/list/get-contacts', auth.jwt, listGetContacts);
+  app.post('/api/contacts/list/view', auth.jwt, getLists);
+  app.post('/api/contacts/list/add', auth.jwt, addList);
+  app.post('/api/contacts/list/delete', auth.jwt, deleteList);
+  app.post('/api/contacts/list/remove-contact', auth.jwt, deleteListContact);
+  app.post('/api/contacts/list/edit', auth.jwt, editList);
 };
 
 
@@ -362,10 +362,10 @@ function getContactsWithLists(req, res) {
  * @param {*} res response object
  * @returns {*}
  */
-function getContactsWithContactLists(req, res) {
+function listGetContacts(req, res) {
   const userId = req.userId;
   const listId = req.body.listId;
- // Validate
+  // Validate
   if (typeof listId !== 'string' ) {
     return res.status(422).json({ message: 'Request failed validation.' });
   }

@@ -32,7 +32,7 @@ export class ContactsListEditComponent implements OnInit {
   loadList = function () {
     this.dataSource = [];
     this.lists = [];
-    this.http.post('/api/contacts-list/view', { })
+    this.http.post('/api/contacts/list/view', { })
         .subscribe ((data: any) => {
           this.lists = data;
           for ( const list of this.lists) {
@@ -54,7 +54,7 @@ export class ContactsListEditComponent implements OnInit {
        return;
     }
     this.waiting = true;
-    this.http.post('/api/contacts-list/edit', {
+    this.http.post('/api/contacts/list/edit', {
       'listId': this.listIdURL,
       'updatedListName': form.listName,
     })

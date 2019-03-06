@@ -22,7 +22,7 @@
         {{contact.listName}}
       </div>
       <div class="controls">
-        <button mat-icon-button (click)="contactDeleteDialog(modal)" (click)="openDeleteContact(contact)">
+        <button mat-icon-button (click)="openRemoveContact(contact, modal)">
           <mat-icon>delete</mat-icon>
         </button>
       </div>
@@ -35,13 +35,13 @@
 <ng-template #modal>
   <mat-dialog-content>
     <div>
-      Are you sure you want to delete the contact of <br> {{deleteContactName}}?
+      Are you sure you want to remove the contact "{{removeContactName}}" from this list?
     </div>
   </mat-dialog-content>
   <mat-dialog-actions align='center'>
     <button (click)="resetForm()" mat-raised-button color='warn'>Cancel
     </button>
-    <button (click)="deleteContact()" mat-raised-button cdkFocusInitial color='primary'>Yes
+    <button (click)="removeContact()" mat-raised-button cdkFocusInitial color='primary'>Yes
     </button>
   </mat-dialog-actions>
 </ng-template>

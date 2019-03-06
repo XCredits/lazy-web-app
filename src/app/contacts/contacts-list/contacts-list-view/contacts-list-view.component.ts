@@ -40,7 +40,7 @@ export class ContactsListViewComponent implements OnInit {
   loadLists = function () {
     this.dataSource = [];
     this.lists = [];
-    this.http.post('/api/contacts-list/view', { })
+    this.http.post('/api/contacts/list/view', { })
         .subscribe ((data: any) => {
           this.lists = data;
           for (const counter of this.lists) {
@@ -53,19 +53,17 @@ export class ContactsListViewComponent implements OnInit {
 
   loadContactsRelations = function () {
     this.http.post('/api/contacts/get-contacts-with-lists', {})
-    .subscribe((data: any) => {
-
-      this.listsConnections = data;
-
-      for ( const listItem of this.lists) {
-          for (const j of this.listsConnections) {
-              if ( j.listId === listItem._id) {
-                  listItem.numberOfContacts ++;
+        .subscribe((data: any) => {
+          this.listsConnections = data;
+          // Count the number in each list
+          for ( const listItem of this.lists) {
+              for (const j of this.listsConnections) {
+                  if ( j.listId === listItem._id) {
+                      listItem.numberOfContacts ++;
+                  }
               }
-          }
-        }
-    });
-
+            }
+        });
   };
 
   deleteList = function () {
@@ -75,7 +73,7 @@ export class ContactsListViewComponent implements OnInit {
         }
       }
 
-      this.http.post('/api/contacts-list/delete', {
+      this.http.post('/api/contacts/list/delete', {
             'listId': this.listDetails._id,
           })
           .subscribe((result) => {

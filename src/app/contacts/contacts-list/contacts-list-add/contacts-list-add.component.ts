@@ -32,7 +32,7 @@ export class ContactsListAddComponent implements OnInit {
        return;
     }
     this.waiting = true;
-    this.http.post('/api/contacts-list/add', {
+    this.http.post('/api/contacts/list/add', {
       'listName': form.listName,
     })
       .subscribe((result) => {

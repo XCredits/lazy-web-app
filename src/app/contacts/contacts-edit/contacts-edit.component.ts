@@ -36,7 +36,7 @@ export class ContactsEditComponent implements OnInit {
   }
 
   loadContactsLists = function () {
-    this.http.post('/api/contacts-list/view', {})
+    this.http.post('/api/contacts/list/view', {})
       .subscribe((data: any) => {
           this.lists = data;
       });
