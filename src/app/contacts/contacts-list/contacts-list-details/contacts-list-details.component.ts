@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { MatDialog, MatSnackBar,} from '@angular/material';
+import { MatDialog, MatSnackBar, } from '@angular/material';
 import { Router } from '@angular/router';
 
 
@@ -66,6 +66,10 @@ export class ContactsListDetailsComponent implements OnInit {
     this.router.navigate(['/contacts/edit/' + contact._id]);
   };
 
+  onSelect(contact) {
+    this.router.navigate(['/contacts/view/' + contact._id]);
+
+  }
   resetForm = function() {
     this.modalReference.close();
     this.snackBar.open('Contact deleted successfully', 'Dismiss', {
