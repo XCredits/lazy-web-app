@@ -4,7 +4,6 @@ import { HttpClient } from '@angular/common/http';
 import { ActivatedRoute } from '@angular/router';
 import { Router } from '@angular/router';
 import { MatSnackBar, } from '@angular/material';
-import { ConsoleReporter } from 'jasmine';
 
 @Component({
   selector: 'app-contacts-edit',
@@ -15,7 +14,7 @@ export class ContactsEditComponent implements OnInit {
   form: FormGroup;
   isEditMode: boolean;
   waiting: boolean;
-  lists: { listId: string, listName: string, numberOfContacts: number }[] = [];
+  groups: { groupId: string, groupName: string, numberOfContacts: number }[] = [];
   contactIdURL: string;
   constructor(
     private http: HttpClient,
@@ -29,16 +28,16 @@ export class ContactsEditComponent implements OnInit {
 
     this.isEditMode = false;
     this.contactIdURL = this.route.snapshot.paramMap.get('contactId');
-    this.loadContactsLists();
+    this.loadContactsGroups();
     this.loadContactDetails();
 
 
   }
 
-  loadContactsLists = function () {
-    this.http.post('/api/contacts/list/view', {})
+  loadContactsGroups = function () {
+    this.http.post('/api/contacts/group/view', {})
       .subscribe((data: any) => {
-          this.lists = data;
+          this.groups = data;
       });
   };
 
@@ -54,7 +53,7 @@ export class ContactsEditComponent implements OnInit {
           givenName: new FormControl(data.givenName),
           familyName: new FormControl(data.familyName),
           email: new FormControl(data.email, [Validators.required, Validators.email]),
-          contactList: new FormControl(),
+          contactGroup: new FormControl(),
         });
       });
   };
@@ -68,7 +67,7 @@ export class ContactsEditComponent implements OnInit {
       'familyName': newContact.familyName,
       'email': newContact.email,
       'contactId': this.contactIdURL,
-      'contactListId': newContact.contactList._id,
+      'contactGroupId': newContact.contactGroup._id,
     })
       .subscribe((result) => {
         this.isEditMode = false;

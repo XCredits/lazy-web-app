@@ -6,11 +6,11 @@ import {MatSnackBar} from '@angular/material';
 
 
 @Component({
-  selector: 'app-contacts-list-view',
-  templateUrl: './contacts-list-add.component.html',
-  styleUrls: ['./contacts-list-add.component.scss']
+  selector: 'app-contacts-group-view',
+  templateUrl: './contacts-group-add.component.html',
+  styleUrls: ['./contacts-group-add.component.scss']
 })
-export class ContactsListAddComponent implements OnInit {
+export class ContactsGroupAddComponent implements OnInit {
   form: FormGroup;
   formErrorMessage: string;
    waiting: boolean;
@@ -22,34 +22,34 @@ export class ContactsListAddComponent implements OnInit {
 
   ngOnInit() {
     this.form = new FormGroup({
-      listName: new FormControl(''),
+      groupName: new FormControl(''),
     });
   }
 
-  addList = function (form) {
-    if ( form.listName.length === 0 ) {
-      this.formErrorMessage = 'Please type a valid list name.';
+  addGroup = function (form) {
+    if ( form.groupName.length === 0 ) {
+      this.formErrorMessage = 'Please type a valid group name.';
        return;
     }
     this.waiting = true;
-    this.http.post('/api/contacts/list/add', {
-      'listName': form.listName,
+    this.http.post('/api/contacts/group/add', {
+      'groupName': form.groupName,
     })
       .subscribe((result) => {
         this.waiting = false;
         switch (result.message) {
               case 'Success.':
-                this.snackBar.open('List created successfully', 'Dismiss', {
+                this.snackBar.open('Group created successfully', 'Dismiss', {
                   duration: 2000,
                 });
-                this.router.navigate(['/contacts/lists']);
+                this.router.navigate(['/contacts/groups']);
               break;
-              case 'List already exist.':
-                this.formErrorMessage = 'List already exist, choose another name';
+              case 'Group already exist.':
+                this.formErrorMessage = 'Group already exist, choose another name';
               break;
-              case 'Problem finding a list.':
-              case 'Problem creating a list.':
-                this.formErrorMessage = 'List cannot be created created.';
+              case 'Problem finding a group.':
+              case 'Problem creating a group.':
+                this.formErrorMessage = 'Group cannot be created created.';
               break;
               default:
                 this.formErrorMessage = 'Something went wrong, please try again later.';

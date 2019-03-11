@@ -15,7 +15,7 @@ export class ContactsAddComponent implements OnInit {
   isEditMode: boolean;
   waiting: boolean;
 
-  lists: { listId: string, listName: string, numberOfContacts: number }[] = [];
+  groups: { groupId: string, groupName: string, numberOfContacts: number }[] = [];
 
   constructor(
     private http: HttpClient,
@@ -29,18 +29,18 @@ export class ContactsAddComponent implements OnInit {
       givenName: new FormControl(''),
       familyName: new FormControl(''),
       email: new FormControl('', [Validators.required, Validators.email]),
-      contactList: new FormControl(''),
+      contactGroup: new FormControl(''),
     });
 
-    this.loadContactsLists();
+    this.loadContactsGroups();
 
   }
 
 
-  loadContactsLists = function () {
-    this.http.post('/api/contacts/list/view', {})
+  loadContactsGroups = function () {
+    this.http.post('/api/contacts/group/view', {})
       .subscribe((data: any) => {
-        this.lists = data;
+        this.groups = data;
       });
   };
 
@@ -58,7 +58,7 @@ export class ContactsAddComponent implements OnInit {
       'givenName': newContact.givenName,
       'familyName': newContact.familyName,
       'email': newContact.email,
-      'contactListId': newContact.contactList._id,
+      'contactGroupId': newContact.contactGroup._id,
     })
       .subscribe((result) => {
         this.waiting = false;
@@ -71,8 +71,8 @@ export class ContactsAddComponent implements OnInit {
                 });
                 this.router.navigate(['/contacts/i/' + result.contactId]);
               break;
-              case 'Problem finding a list.':
-              case 'Problem creating a list.':
+              case 'Problem finding a group.':
+              case 'Problem creating a group.':
                 this.formErrorMessage = 'Contact cannot be created.';
               break;
               default:

@@ -26,8 +26,18 @@ export class ContactsViewComponent implements OnInit {
 
   ngOnInit() {
     this.isViewAll = true;
-    this.loadContacts();
+    // this.loadContacts();
+    this.loadSample();
   }
+
+
+  loadSample = function () {
+    this.http.post('/api/contacts/sample', {})
+      .subscribe((data: any) => {
+
+        console.log(data);
+      });
+  };
 
   loadContacts = function () {
     this.dataSource = [];
@@ -35,29 +45,29 @@ export class ContactsViewComponent implements OnInit {
     this.http.post('/api/contacts/view', { })
         .subscribe ((data: any) => {
             this.contactsArr = data;
-            this.loadContactsLists();
+            this.loadContactsGroups();
         });
   };
 
 
-  loadContactsLists = function () {
-    this.http.post('/api/contacts/list/view', {})
+  loadContactsGroups = function () {
+    this.http.post('/api/contacts/group/view', {})
       .subscribe((data: any) => {
-          this.lists = data;
+          this.groups = data;
           this.loadContactsRelations();
       });
   };
 
   loadContactsRelations = function () {
-    this.http.post('api/contacts/get-contacts-with-lists', {})
+    this.http.post('api/contacts/get-contacts-with-groups', {})
       .subscribe((data: any) => {
-        this.listsConnections = data;
+        this.groupsConnections = data;
         for (const index of this.contactsArr) {
-          for (const relation of this.listsConnections) {
-            if (relation['listId']) {
+          for (const relation of this.groupsConnections) {
+            if (relation['groupId']) {
               if (relation['contactId'] === index['_id']) {
-                const fm = this.lists.find(el => el._id === relation['listId']);
-                index.listName = fm.listName;
+                const fm = this.groups.find(el => el._id === relation['groupId']);
+                index.groupName = fm.groupName;
               }
             }
           }
@@ -92,7 +102,7 @@ export class ContactsViewComponent implements OnInit {
   };
 
   resetForm = function() {
-    this.listAddMessage = undefined;
+    this.groupAddMessage = undefined;
     this.isViewAll = true;
     this.modalReference.close();
   };

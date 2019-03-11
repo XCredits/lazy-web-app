@@ -19,9 +19,9 @@
           </mat-form-field>
           <br>
           <mat-form-field>
-            <mat-select placeholder="Choose a list" name="contactList" formControlName="contactList">
-              <mat-option *ngFor="let lst of lists" [value]="lst">
-                {{lst.listName}}
+            <mat-select placeholder="Choose a group" name="contactGroup" formControlName="contactGroup">
+              <mat-option *ngFor="let lst of groups" [value]="lst">
+                {{lst.groupName}}
               </mat-option>
             </mat-select>
           </mat-form-field>

@@ -7,17 +7,17 @@ import { Router } from '@angular/router';
 
 
 @Component({
-  selector: 'app-contacts-list-details',
-  templateUrl: './contacts-list-details.component.html',
-  styleUrls: ['./contacts-list-details.component.scss']
+  selector: 'app-contacts-group-details',
+  templateUrl: './contacts-group-details.component.html',
+  styleUrls: ['./contacts-group-details.component.scss']
 })
-export class ContactsListDetailsComponent implements OnInit {
+export class ContactsGroupDetailsComponent implements OnInit {
   receiverUserId: string;
   link: string;
-  listContact: { contactId: string, givenName: string, familyName: string, email: string }[] = [];
+  groupContact: { contactId: string, givenName: string, familyName: string, email: string }[] = [];
   modalReference = null;
   contactId: string;
-  listIdURL: string;
+  groupIdURL: string;
   constructor(private http: HttpClient,
     private route: ActivatedRoute,
     private dialogService: MatDialog,
@@ -25,16 +25,16 @@ export class ContactsListDetailsComponent implements OnInit {
     private snackBar: MatSnackBar, ) { }
 
   ngOnInit() {
-    this.listIdURL = this.route.snapshot.paramMap.get('listId');
-    this.loadListContact();
+    this.groupIdURL = this.route.snapshot.paramMap.get('groupId');
+    this.loadGroupContact();
   }
 
-  loadListContact = function () {
-    this.http.post('/api/contacts/list/get-contacts', {
-          'listId': this.listIdURL,
+  loadGroupContact = function () {
+    this.http.post('/api/contacts/group/get-contacts', {
+          'groupId': this.groupIdURL,
         })
         .subscribe(result => {
-          this.listContact = result;
+          this.groupContact = result;
         });
   };
 
@@ -45,12 +45,12 @@ export class ContactsListDetailsComponent implements OnInit {
   };
 
   removeContact = function () {
-    this.http.post('/api/contacts/list/remove-contact', {
+    this.http.post('/api/contacts/group/remove-contact', {
           'contactId': this.contactId,
         })
         .subscribe(result => {
           if (result.message === 'Contact removed.' ) {
-            this.loadListContact();
+            this.loadGroupContact();
             this.resetForm();
           }
         });
