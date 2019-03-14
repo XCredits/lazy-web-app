@@ -195,6 +195,8 @@ function getContactSummary(req, res) {
     .catch(error => {
       return res.status(500).send({ message: 'Error retrieving groups from database.' });
     });
+
+
 }
 
 
