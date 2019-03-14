@@ -17,7 +17,7 @@ module.exports = function(app) {
   app.post('/api/contacts/group/delete', auth.jwt, deleteGroup);
   app.post('/api/contacts/group/remove-contact', auth.jwt, deleteGroupContact);
   app.post('/api/contacts/group/edit', auth.jwt, editGroup);
-  app.post('/api/contacts/sample', auth.jwt, getContactsWithGroups);
+  app.post('/api/contacts/sample', auth.jwt, getContactsWithGroupz);
 };
 
 
@@ -225,61 +225,34 @@ function getGroups(req, res) {
 function getContactsWithGroupz(req, res) {
   const userId = req.userId;
   return Contact.find({ userId: userId })
-      .then(contactsIdArr => {
-        const promiseArray: Promise<any>[] = [];
-        for (const i of contactsIdArr) {
-          const getContactGroupPromise = ContactGroupContact.find({
-            userId: userId,
-            'contactId': i._id,
-          });
-          promiseArray.push(getContactGroupPromise);
-        }
-        return Promise.all(promiseArray)
-            .then(resultArray => {
-              console.log(resultArray);
-              const groupList = [];
-              for (const l of resultArray) {
-                if (groupList.indexOf(l.groupId) === -1) {
-                  groupList.push(l.groupId);
-                }
-              }
-              const contacts = [];
-              ContactGroup.find({
-                userId: userId,
-                'groupId': { '$in': groupList },
-              })
-              .then((results) => {
-                  console.log(results);
-                  for (let i = 0; i < results.length; i++) {
-                    // if ( results[i].groupId !== null ) {
-                      // if ( contactsIdArr[i]._id === results[i].groupId ) {
-                        contacts.push({
-                          groupId: results[i],
-                          _id: contactsIdArr[i]._id,
-                          givenName: contactsIdArr[i].givenName,
-                          familyName: contactsIdArr[i].familyName,
-                        });
-                     // }
-                  // }
-                  }
-                  console.log(contacts);
-                  res.send(contacts);
-                })
-                .catch((error) => {
-                  console.log(error);
-                  return res.status(500).send({ message: 'Error retrieving groups from database..' });
-                });
-            })
-            .catch(error => {
-              return res.status(500).send({ message: 'Error retrieving groups from database.' });
-            })
-            .catch(error => {
-              return res.status(500).send({ message: 'Error retrieving groups from database.' });
-            });
-      })
-      .catch(error => {
-        return res.status(500).send({ message: 'Error retrieving groups from database.' });
-      });
+    .then(contactsIdArr => {
+      const promiseArray: Promise<any>[] = [];
+      for (const i of contactsIdArr) {
+        const getContactGroupPromise = ContactGroupContact.find({
+          userId: userId,
+          'contactId': i._id,
+        });
+        promiseArray.push( i._id, i.givenName, i.familyName, getContactGroupPromise);
+      }
+      return Promise.all(promiseArray)
+        .then(resultArray => {
+          console.log(resultArray);
+          for ( const el of resultArray) {
+            console.log(el);
+          }
+          res.send(resultArray);
+        })
+        .catch((error) => {
+          console.log(error);
+          return res.status(500).send({ message: 'Error retrieving groups from database..' });
+        });
+    })
+    .catch(error => {
+      return res.status(500).send({ message: 'Error retrieving groups from database.' });
+    })
+    .catch(error => {
+      return res.status(500).send({ message: 'Error retrieving groups from database.' });
+    });
 }
 
 
