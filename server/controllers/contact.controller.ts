@@ -10,14 +10,12 @@ module.exports = function(app) {
   app.post('/api/contacts/edit', auth.jwt, editContact);
   app.post('/api/contacts/view', auth.jwt, getContactSummary);
   app.post('/api/contacts/details', auth.jwt, getContactDetails);
-  app.post('/api/contacts/get-contacts-with-groups', auth.jwt, getContactsWithGroups);
   app.post('/api/contacts/group/get-contacts', auth.jwt, groupGetContacts);
   app.post('/api/contacts/group/view', auth.jwt, getGroups);
   app.post('/api/contacts/group/add', auth.jwt, addGroup);
   app.post('/api/contacts/group/delete', auth.jwt, deleteGroup);
   app.post('/api/contacts/group/remove-contact', auth.jwt, deleteGroupContact);
   app.post('/api/contacts/group/edit', auth.jwt, editGroup);
-  app.post('/api/contacts/sample', auth.jwt, getContactsWithGroupz);
 };
 
 
@@ -154,12 +152,49 @@ function deleteContact(req, res) {
  */
 function getContactSummary(req, res) {
   const userId = req.userId;
-  return Contact.find({ userId }, {givenName: 1, familyName: 1, email: 1 }).sort( {givenName: 1} )
-    .then((result) => {
-      return res.send(result);
+  return Contact.find({ userId: userId })
+    .then(contactsIdArr => {
+      const promiseArray: Promise<any>[] = [];
+      for (const i of contactsIdArr) {
+        const getContactGroupPromise = ContactGroupContact.find({
+          userId: userId,
+          'contactId': i._id,
+        });
+        // promiseArray.push( i._id, i.givenName, i.familyName, getContactGroupPromise );
+        promiseArray.push(getContactGroupPromise);
+      }
+      return Promise.all(promiseArray)
+        .then(resultArray => {
+          const contactsResult = [];
+          let groupFilter = '';
+          for (let i = 0; i < contactsIdArr.length; i++) {
+            groupFilter = '';
+            for (let element = 0; element < resultArray.length; element++) {
+              if (resultArray[element].length !== 0) {
+                if (String(resultArray[element][0]['contactId']) === String(contactsIdArr[i]._id)) {
+                  groupFilter = resultArray[element][0]['groupId'];
+                }
+              }
+            }
+            contactsResult.push({
+              _id: contactsIdArr[i]._id,
+              givenName: contactsIdArr[i].givenName,
+              familyName: contactsIdArr[i].familyName,
+              groupId: groupFilter,
+            });
+          }
+          res.send(contactsResult);
+        })
+        .catch((error) => {
+          console.log(error);
+          return res.status(500).send({ message: 'Error retrieving groups from database..' });
+        });
     })
-    .catch((error) => {
-      return res.status(500).send({ message: 'Error retrieving users from contacts database.' });
+    .catch(error => {
+      return res.status(500).send({ message: 'Error retrieving groups from database.' });
+    })
+    .catch(error => {
+      return res.status(500).send({ message: 'Error retrieving groups from database.' });
     });
 }
 
@@ -222,73 +257,6 @@ function getGroups(req, res) {
 }
 
 
-function getContactsWithGroupz(req, res) {
-  const userId = req.userId;
-  return Contact.find({ userId: userId })
-    .then(contactsIdArr => {
-      const promiseArray: Promise<any>[] = [];
-      for (const i of contactsIdArr) {
-        const getContactGroupPromise = ContactGroupContact.find({
-          userId: userId,
-          'contactId': i._id,
-        });
-        // promiseArray.push( i._id, i.givenName, i.familyName, getContactGroupPromise );
-        promiseArray.push( getContactGroupPromise );
-      }
-      return Promise.all(promiseArray)
-        .then(resultArray => {
-          /*console.log(contactsIdArr);
-          console.log('--');
-          console.log(resultArray);
-          console.log('--');
-          console.log(resultArray[0]);
-          console.log('--');
-          console.log(resultArray[1]);
-          console.log('--');
-          console.log('--');
-          console.log('--');
-
-          console.log(resultArray[1][0]['contactId']);
-          console.log(resultArray[1][0]);
-          console.log(resultArray[1].length);*/
-          const contactsResult = [];
-          let groupFilter = '';
-          for ( let i = 0; i < contactsIdArr.length; i++ ) {
-            groupFilter = '';
-            for (let element = 0; element < resultArray.length; element++) {
-              if (resultArray[element].length !== 0) {
-                if (String (resultArray[element][0]['contactId']) === String ( contactsIdArr[i]._id)) {
-                  groupFilter = resultArray[element][0]['groupId'];
-                  console.log(groupFilter);
-                }
-              }
-            }
-            contactsResult.push({
-              _id: contactsIdArr[i]._id,
-              givenName: contactsIdArr[i].givenName,
-              familyName: contactsIdArr[i].familyName,
-              groupId: groupFilter,
-            });
-          }
-          for ( const el of contactsResult) {
-            console.log(el);
-          }
-          res.send(contactsResult);
-        })
-        .catch((error) => {
-          console.log(error);
-          return res.status(500).send({ message: 'Error retrieving groups from database..' });
-        });
-    })
-    .catch(error => {
-      return res.status(500).send({ message: 'Error retrieving groups from database.' });
-    })
-    .catch(error => {
-      return res.status(500).send({ message: 'Error retrieving groups from database.' });
-    });
-}
-
-
 /**
  * add a group
  * @param {*} req request object
@@ -337,10 +305,10 @@ function deleteGroup(req, res) {
   }
 
   return ContactGroupContact.find({ userId, groupId })
-    .then (( result ) => {
-      const contactId = result.map ((x => x.contactId));
-      return Contact.deleteMany ({userId: userId, _id: contactId})
-        .then (() => {
+    .then((result) => {
+      const contactId = result.map((x => x.contactId));
+      return Contact.deleteMany({ userId: userId, _id: contactId })
+        .then(() => {
           return ContactGroupContact.deleteMany({ userId, groupId: groupId })
             .then(() => {
               return ContactGroup.deleteMany({ userId, _id: groupId })
@@ -351,18 +319,18 @@ function deleteGroup(req, res) {
                   return res.status(500).send('Problem removing group.');
                 });
             })
-            .catch ((error) => {
+            .catch((error) => {
               return res.status(500).send('Problem group contacts.');
             });
         })
-        .catch ((error) => {
+        .catch((error) => {
           return res.status(500).send('Problem removing groups links.');
-      });
+        });
     })
-    .catch ((error) => {
-        return res.status(500).send('Problem finding group.');
+    .catch((error) => {
+      return res.status(500).send('Problem finding group.');
     });
-  }
+}
 
 
 
@@ -386,6 +354,12 @@ function deleteGroup(req, res) {
 
 
 
+/**
+ * edit group name
+ * @param {*} req request object
+ * @param {*} res response object
+ * @returns {*}
+ */
 function editGroup(req, res) {
   const userId = req.userId;
   const groupId = req.body.groupId;
@@ -414,59 +388,6 @@ function editGroup(req, res) {
       .send({ message: 'Could not update Group.' });
   });
 }
-
-
-/**
- * returns all users with contacts
- * @param {*} req request object
- * @param {*} res response object
- * @returns {*}
- */
-function getContactsWithGroups(req, res) {
-  const userId = req.userId;
-  return Contact.find({ userId })
-    .then((result) => {
-      const contactIdArr = result.map((e => e._id));
-      return ContactGroupContact.find({ userId: userId, 'contactId': { '$in': contactIdArr } }, { contactId: 1, groupId: 1 })
-          .then((result2) => {
-            const contacts = [];
-            for (const cont of result) {
-              for (const grp of result2) {
-                if (grp['groupId']) {
-                  if (grp['contactId'] === cont['_id']) {
-                    const fm = this.groups.find(el => el._id === grp['groupId']);
-                    cont.groupName = fm.groupName;
-                  }
-                }
-              contacts.push({
-                _id: cont._id,
-                givenName: cont.givenName,
-                familyName: cont.familyName,
-                groupId: result2[0].contactId,
-               });
-            }
-           /* const resultsFiltered = result2.map((x) => {
-              return {
-                userId: result._id,
-                givenName: result.givenName,
-                familyName: result.familyName,
-                groupId: x.groupId,
-              };
-          });*/
-          console.log(contacts);
-          res.send(contacts);
-          })
-          .catch((error) => {
-            console.log(error);
-            return res.status(500).send({ message: 'Error retrieving users from contacts database.' });
-          });
-    })
-    .catch((error) => {
-      console.log(error);
-      return res.status(500).send({ message: 'Error retrieving users from contacts database.' });
-    });
-}
-
 
 
 /**

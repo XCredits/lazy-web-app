@@ -26,8 +26,8 @@ export class ContactsViewComponent implements OnInit {
 
   ngOnInit() {
     this.isViewAll = true;
-    // this.loadContacts();
-    this.loadSample();
+    this.loadContacts();
+    // this.loadSample();
   }
 
 
@@ -54,26 +54,9 @@ export class ContactsViewComponent implements OnInit {
     this.http.post('/api/contacts/group/view', {})
       .subscribe((data: any) => {
           this.groups = data;
-          this.loadContactsRelations();
       });
   };
 
-  loadContactsRelations = function () {
-    this.http.post('api/contacts/get-contacts-with-groups', {})
-      .subscribe((data: any) => {
-        this.groupsConnections = data;
-        for (const index of this.contactsArr) {
-          for (const relation of this.groupsConnections) {
-            if (relation['groupId']) {
-              if (relation['contactId'] === index['_id']) {
-                const fm = this.groups.find(el => el._id === relation['groupId']);
-                index.groupName = fm.groupName;
-              }
-            }
-          }
-        }
-      });
-  };
 
   openDeleteContact = function (contact) {
     this.contactId = contact._id;
