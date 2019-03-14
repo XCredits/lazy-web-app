@@ -237,12 +237,32 @@ function getContactsWithGroupz(req, res) {
       }
       return Promise.all(promiseArray)
         .then(resultArray => {
-          console.log(contactsIdArr);
+          /*console.log(contactsIdArr);
           console.log('--');
           console.log(resultArray);
+          console.log('--');
+          console.log(resultArray[0]);
+          console.log('--');
+          console.log(resultArray[1]);
+          console.log('--');
+          console.log('--');
+          console.log('--');
+
+          console.log(resultArray[1][0]['contactId']);
+          console.log(resultArray[1][0]);
+          console.log(resultArray[1].length);*/
           const contactsResult = [];
+          let groupFilter = '';
           for ( let i = 0; i < contactsIdArr.length; i++ ) {
-            const groupFilter = resultArray.find (element => element.contactId === contactsIdArr[i]._id);
+            groupFilter = '';
+            for (let element = 0; element < resultArray.length; element++) {
+              if (resultArray[element].length !== 0) {
+                if (String (resultArray[element][0]['contactId']) === String ( contactsIdArr[i]._id)) {
+                  groupFilter = resultArray[element][0]['groupId'];
+                  console.log(groupFilter);
+                }
+              }
+            }
             contactsResult.push({
               _id: contactsIdArr[i]._id,
               givenName: contactsIdArr[i].givenName,
