@@ -410,15 +410,6 @@ function editGroup(req, res) {
 }
 
 
-for (const index of this.contactsArr) {
-  for (const relation of this.groupsConnections) {
-    if (relation['groupId']) {
-      if (relation['contactId'] === index['_id']) {
-        const fm = this.groups.find(el => el._id === relation['groupId']);
-        index.groupName = fm.groupName;
-      }
-    }
-  }
 /**
  * returns all users with contacts
  * @param {*} req request object
@@ -437,12 +428,10 @@ function getContactsWithGroups(req, res) {
               for (const grp of result2) {
                 if (grp['groupId']) {
                   if (grp['contactId'] === cont['_id']) {
-
+                    const fm = this.groups.find(el => el._id === grp['groupId']);
+                    cont.groupName = fm.groupName;
                   }
                 }
-
-
-
               contacts.push({
                 _id: cont._id,
                 givenName: cont.givenName,
@@ -502,4 +491,3 @@ function groupGetContacts(req, res) {
       res.status(500).send({ message: 'Problem finding group.' });
     });
 }
-
