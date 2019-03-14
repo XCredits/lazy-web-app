@@ -3,6 +3,7 @@ import { FormGroup } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { MatDialog, MatSnackBar } from '@angular/material';
 import { Router } from '@angular/router';
+import { concat } from 'rxjs';
 
 
 @Component({
@@ -14,6 +15,8 @@ export class ContactsViewComponent implements OnInit {
   form: FormGroup;
   contactId: string;
   contactsArr = [];
+  contacts: { id: string, familyName: string, givenName: string, groupId: string, groupName: string }[] = [];
+
   isViewAll: boolean;
   deleteContactName: string;
   modalReference = null;
@@ -25,35 +28,38 @@ export class ContactsViewComponent implements OnInit {
     private snackBar: MatSnackBar, ) { }
 
   ngOnInit() {
-    this.isViewAll = true;
     this.loadContacts();
-    // this.loadSample();
   }
 
-
-  loadSample = function () {
-    this.http.post('/api/contacts/sample', {})
-      .subscribe((data: any) => {
-
-        console.log(data);
-      });
-  };
 
   loadContacts = function () {
     this.dataSource = [];
     this.contactsArr = [];
     this.http.post('/api/contacts/view', { })
         .subscribe ((data: any) => {
-            this.contactsArr = data;
+            this.contacts = data;
             this.loadContactsGroups();
+            console.log(this.contacts);
         });
   };
 
 
   loadContactsGroups = function () {
-    this.http.post('/api/contacts/group/view', {})
+    this.http.post('/api/contacts/group/get-groups', {})
       .subscribe((data: any) => {
           this.groups = data;
+
+          for ( let contact = 0 ; contact < this.contacts.length ; contact++) {
+            for ( const group of this.groups) {
+              if (String (group._id) === String( this.contacts[contact].groupId ) ) {
+                console.log('mathching');
+                this.contacts[contact].groupName = group.groupName;
+              }
+            }
+          }
+          console.log(this.contacts);
+          this.isViewAll = true;
+
       });
   };
 

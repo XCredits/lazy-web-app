@@ -10,8 +10,9 @@ module.exports = function(app) {
   app.post('/api/contacts/edit', auth.jwt, editContact);
   app.post('/api/contacts/view', auth.jwt, getContactSummary);
   app.post('/api/contacts/details', auth.jwt, getContactDetails);
+  app.post('/api/contacts/group/get-groups', auth.jwt, getGroups);
   app.post('/api/contacts/group/get-contacts', auth.jwt, groupGetContacts);
-  app.post('/api/contacts/group/view', auth.jwt, getGroups);
+  app.post('/api/contacts/group/view', auth.jwt, getGroupsSummary);
   app.post('/api/contacts/group/add', auth.jwt, addGroup);
   app.post('/api/contacts/group/delete', auth.jwt, deleteGroup);
   app.post('/api/contacts/group/remove-contact', auth.jwt, deleteGroupContact);
@@ -160,7 +161,6 @@ function getContactSummary(req, res) {
           userId: userId,
           'contactId': i._id,
         });
-        // promiseArray.push( i._id, i.givenName, i.familyName, getContactGroupPromise );
         promiseArray.push(getContactGroupPromise);
       }
       return Promise.all(promiseArray)
@@ -220,13 +220,15 @@ function getContactDetails(req, res) {
       return res.status(500).send({ message: 'Error retrieving user from contacts database.' });
     });
 }
+
+
 /**
- * returns all groups
+ * returns all groups counted
  * @param {*} req request object
  * @param {*} res response object
  * @returns {*}
  */
-function getGroups(req, res) {
+function getGroupsSummary(req, res) {
   const userId = req.userId;
   return ContactGroup.find({ userId: userId })
       .then(groupIdArr => {
@@ -334,7 +336,7 @@ function deleteGroup(req, res) {
 
 
 
-  function deleteGroupContact(req, res) {
+function deleteGroupContact(req, res) {
     const userId = req.userId;
     const contactId = req.body.contactId;
 
@@ -391,7 +393,7 @@ function editGroup(req, res) {
 
 
 /**
- * returns groups of contacts
+ * returns all groups
  * @param {*} req request object
  * @param {*} res response object
  * @returns {*}
@@ -418,3 +420,24 @@ function groupGetContacts(req, res) {
       res.status(500).send({ message: 'Problem finding group.' });
     });
 }
+
+
+
+/**
+ * returns groups of contacts
+ * @param {*} req request object
+ * @param {*} res response object
+ * @returns {*}
+ */
+function getGroups(req, res) {
+  const userId = req.userId;
+
+  return ContactGroup.find({ userId: userId })
+      .then(result => {
+          return res.send(result);
+        })
+        .catch((error) => {
+          res.status(500).send({ message: 'Problem finding groups.' });
+        });
+}
+

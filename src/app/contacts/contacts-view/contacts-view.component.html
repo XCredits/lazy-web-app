@@ -1,5 +1,5 @@
 <div *ngIf='isViewAll'>
-  <div class="container" *ngIf='contactsArr.length === 0'>
+  <div class="container" *ngIf='contacts.length === 0'>
     <mat-card>
       <div class="col-md-8 offset-md-2">
         <p> You dont have contacts </p>
@@ -14,7 +14,7 @@
   </button>
   <br>
   <br>
-  <mat-card style="margin: 2px;" *ngFor="let contact of contactsArr">
+  <mat-card style="margin: 2px;" *ngFor="let contact of contacts">
     <mat-card-header>
       <img mat-card-avatar src="/assets/img/profile-demo.jpg">
       <div class="contactStyle">
