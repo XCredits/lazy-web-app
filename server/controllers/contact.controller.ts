@@ -186,7 +186,6 @@ function getContactSummary(req, res) {
           res.send(contactsResult);
         })
         .catch((error) => {
-          console.log(error);
           return res.status(500).send({ message: 'Error retrieving groups from database..' });
         });
     })
@@ -246,7 +245,6 @@ function getGroupsSummary(req, res) {
               for ( let i = 0; i < groupIdArr.length; i++ ) {
                 groupResults.push({_id: groupIdArr[i]._id, groupName: groupIdArr[i].groupName, numberOfContacts: resultArray[i] });
               }
-              console.log(groupResults);
               return res.send(groupResults);
             })
             .catch((error) => {

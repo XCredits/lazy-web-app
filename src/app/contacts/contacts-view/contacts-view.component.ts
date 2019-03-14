@@ -39,7 +39,6 @@ export class ContactsViewComponent implements OnInit {
         .subscribe ((data: any) => {
             this.contacts = data;
             this.loadContactsGroups();
-            console.log(this.contacts);
         });
   };
 
@@ -52,12 +51,10 @@ export class ContactsViewComponent implements OnInit {
           for ( let contact = 0 ; contact < this.contacts.length ; contact++) {
             for ( const group of this.groups) {
               if (String (group._id) === String( this.contacts[contact].groupId ) ) {
-                console.log('mathching');
                 this.contacts[contact].groupName = group.groupName;
               }
             }
           }
-          console.log(this.contacts);
           this.isViewAll = true;
 
       });
