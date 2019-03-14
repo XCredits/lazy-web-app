@@ -226,13 +226,14 @@ function getContactsWithGroupz(req, res) {
   const userId = req.userId;
   return Contact.find({ userId: userId })
     .then(contactsIdArr => {
-      const promiseArray: Promise<any>[] = [];
+      const promiseArray: Promise<{id: string, givenName: string, familyName: string, group: any}>[] = [];
       for (const i of contactsIdArr) {
         const getContactGroupPromise = ContactGroupContact.find({
           userId: userId,
           'contactId': i._id,
         });
-        promiseArray.push( i._id, i.givenName, i.familyName, getContactGroupPromise);
+        const obj = {id: i._id, givenName: i.givenName, familyName: i.familyName, group: getContactGroupPromise};
+        promiseArray.push( obj );
       }
       return Promise.all(promiseArray)
         .then(resultArray => {
