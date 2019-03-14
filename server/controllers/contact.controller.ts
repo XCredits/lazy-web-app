@@ -226,22 +226,34 @@ function getContactsWithGroupz(req, res) {
   const userId = req.userId;
   return Contact.find({ userId: userId })
     .then(contactsIdArr => {
-      const promiseArray: Promise<{id: string, givenName: string, familyName: string, group: any}>[] = [];
+      const promiseArray: Promise<any>[] = [];
       for (const i of contactsIdArr) {
         const getContactGroupPromise = ContactGroupContact.find({
           userId: userId,
           'contactId': i._id,
         });
-        const obj = {id: i._id, givenName: i.givenName, familyName: i.familyName, group: getContactGroupPromise};
-        promiseArray.push( obj );
+        // promiseArray.push( i._id, i.givenName, i.familyName, getContactGroupPromise );
+        promiseArray.push( getContactGroupPromise );
       }
       return Promise.all(promiseArray)
         .then(resultArray => {
+          console.log(contactsIdArr);
+          console.log('--');
           console.log(resultArray);
-          for ( const el of resultArray) {
+          const contactsResult = [];
+          for ( let i = 0; i < contactsIdArr.length; i++ ) {
+            const groupFilter = resultArray.find (element => element.contactId === contactsIdArr[i]._id);
+            contactsResult.push({
+              _id: contactsIdArr[i]._id,
+              givenName: contactsIdArr[i].givenName,
+              familyName: contactsIdArr[i].familyName,
+              groupId: groupFilter,
+            });
+          }
+          for ( const el of contactsResult) {
             console.log(el);
           }
-          res.send(resultArray);
+          res.send(contactsResult);
         })
         .catch((error) => {
           console.log(error);
