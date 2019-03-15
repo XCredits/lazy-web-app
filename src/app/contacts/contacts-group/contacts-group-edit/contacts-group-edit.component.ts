@@ -62,22 +62,22 @@ export class ContactsGroupEditComponent implements OnInit {
         this.waiting = false;
         this.isEditMode = false;
         switch (result.message) {
-              case 'Group updated.':
-              this.snackBar.open('Group updated successfully', 'Dismiss', {
-                duration: 2000,
-              });
-              this.router.navigate(['/contacts/groups']);
-              break;
-              case 'Group already exist.':
-                this.groupAddMessage = 'Group already exist, choose another name';
-              break;
-              case 'Problem finding a group.':
-              case 'Problem creating a group.':
-                this.groupAddMessage = 'Group cannot be created created.';
-              break;
-              default:
-                this.groupAddMessage = 'Something went wrong, please try again later.';
-            }
+          case 'Group updated.':
+            this.snackBar.open('Group updated successfully', 'Dismiss', {
+              duration: 2000,
+            });
+            this.router.navigate(['/contacts/groups']);
+            break;
+          case 'Group already exist.':
+            this.groupAddMessage = 'Group already exist, choose another name';
+            break;
+          case 'Problem finding a group.':
+          case 'Problem creating a group.':
+            this.groupAddMessage = 'Group cannot be created created.';
+            break;
+          default:
+            this.groupAddMessage = 'Something went wrong, please try again later.';
+        }
       },
       errorResponse => {
         this.waiting = false;

@@ -52,7 +52,6 @@ export class ContactDetailsComponent implements OnInit {
   };
 
 
-
   contactDeleteDialog(modal) {
     this.modalReference = this.dialogService.open(modal);
   }
@@ -68,15 +67,15 @@ export class ContactDetailsComponent implements OnInit {
     this.http.post('/api/contacts/delete', {
       'contactId': this.contactDetails._id,
     })
-      .subscribe((result) => {
-        if (result.message === 'Contact deleted.' ) {
-          this.modalReference.close();
-          this.snackBar.open('Contact deleted successfully', 'Dismiss', {
-            duration: 2000,
-          });
-          this.router.navigate(['/contacts/view']);
-        }
-      });
+    .subscribe((result) => {
+      if (result.message === 'Contact deleted.' ) {
+        this.modalReference.close();
+        this.snackBar.open('Contact deleted successfully', 'Dismiss', {
+          duration: 2000,
+        });
+        this.router.navigate(['/contacts/view']);
+      }
+    });
   };
 
 

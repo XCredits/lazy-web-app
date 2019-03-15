@@ -38,22 +38,22 @@ export class ContactsGroupAddComponent implements OnInit {
       .subscribe((result) => {
         this.waiting = false;
         switch (result.message) {
-              case 'Success.':
-                this.snackBar.open('Group created successfully', 'Dismiss', {
-                  duration: 2000,
-                });
-                this.router.navigate(['/contacts/groups']);
-              break;
-              case 'Group already exist.':
-                this.formErrorMessage = 'Group already exist, choose another name';
-              break;
-              case 'Problem finding a group.':
-              case 'Problem creating a group.':
-                this.formErrorMessage = 'Group cannot be created created.';
-              break;
-              default:
-                this.formErrorMessage = 'Something went wrong, please try again later.';
-            }
+          case 'Success.':
+            this.snackBar.open('Group created successfully', 'Dismiss', {
+              duration: 2000,
+            });
+            this.router.navigate(['/contacts/groups']);
+            break;
+          case 'Group already exist.':
+            this.formErrorMessage = 'Group already exist, choose another name';
+            break;
+          case 'Problem finding a group.':
+          case 'Problem creating a group.':
+            this.formErrorMessage = 'Group cannot be created created.';
+            break;
+          default:
+            this.formErrorMessage = 'Something went wrong, please try again later.';
+        }
       },
       errorResponse => {
         this.waiting = false;

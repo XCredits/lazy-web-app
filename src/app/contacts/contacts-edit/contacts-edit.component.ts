@@ -36,9 +36,9 @@ export class ContactsEditComponent implements OnInit {
 
   loadContactsGroups = function () {
     this.http.post('/api/contacts/group/view', {})
-      .subscribe((data: any) => {
-          this.groups = data;
-      });
+        .subscribe((data: any) => {
+            this.groups = data;
+        });
   };
 
 
@@ -46,21 +46,18 @@ export class ContactsEditComponent implements OnInit {
     this.http.post('/api/contacts/details', {
       'contactId': this.contactIdURL,
     })
-      .subscribe((data: any) => {
-
-        this.isEditMode = true;
-        this.form = new FormGroup({
-          givenName: new FormControl(data.givenName),
-          familyName: new FormControl(data.familyName),
-          email: new FormControl(data.email, [Validators.required, Validators.email]),
-          contactGroup: new FormControl(),
-        });
+    .subscribe((data: any) => {
+      this.isEditMode = true;
+      this.form = new FormGroup({
+        givenName: new FormControl(data.givenName),
+        familyName: new FormControl(data.familyName),
+        email: new FormControl(data.email, [Validators.required, Validators.email]),
+        contactGroup: new FormControl(),
       });
+    });
   };
 
   updateContact = function (newContact) {
-
-    console.log(newContact);
     this.waiting = true;
     this.http.post('/api/contacts/edit', {
       'givenName': newContact.givenName,
@@ -85,7 +82,6 @@ export class ContactsEditComponent implements OnInit {
         this.formErrorMessage = 'Something went wrong, please try again later.';
       });
   };
-
 
   submit = function () {
   };

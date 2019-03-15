@@ -3,7 +3,6 @@ import { FormGroup } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { MatDialog, MatSnackBar } from '@angular/material';
 import { Router } from '@angular/router';
-import { concat } from 'rxjs';
 
 
 @Component({
@@ -45,19 +44,18 @@ export class ContactsViewComponent implements OnInit {
 
   loadContactsGroups = function () {
     this.http.post('/api/contacts/group/get-groups', {})
-      .subscribe((data: any) => {
+        .subscribe((data: any) => {
           this.groups = data;
 
-          for ( let contact = 0 ; contact < this.contacts.length ; contact++) {
-            for ( const group of this.groups) {
-              if (String (group._id) === String( this.contacts[contact].groupId ) ) {
+          for (let contact = 0; contact < this.contacts.length; contact++) {
+            for (const group of this.groups) {
+              if (String(group._id) === String(this.contacts[contact].groupId)) {
                 this.contacts[contact].groupName = group.groupName;
               }
             }
           }
           this.isViewAll = true;
-
-      });
+        });
   };
 
 
@@ -70,15 +68,15 @@ export class ContactsViewComponent implements OnInit {
     this.http.post('/api/contacts/delete', {
       'contactId': this.contactId,
     })
-      .subscribe((result) => {
-        if (result.message === 'Contact deleted.' ) {
-            this.loadContacts();
-            this.resetForm();
-            this.snackBar.open('Contact deleted successfully', 'Dismiss', {
-              duration: 2000,
-            });
-        }
-      });
+    .subscribe((result) => {
+      if (result.message === 'Contact deleted.') {
+        this.loadContacts();
+        this.resetForm();
+        this.snackBar.open('Contact deleted successfully', 'Dismiss', {
+          duration: 2000,
+        });
+      }
+    });
   };
 
   editContact = function (contact) {
