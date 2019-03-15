@@ -11,7 +11,7 @@ const ContactGroupContactSchema = new Schema({
 
 ContactGroupContactSchema.index({ contactId: 1, groupId: 1 });
 ContactGroupContactSchema.index({ groupId: 1, contactId: 1 });
-ContactGroupContactSchema.index({ userId: 1 });
+ContactGroupContactSchema.index({ userId: 1, groupId: 1 });
 
 
 module.exports = mongoose.model('ContactGroupContact', ContactGroupContactSchema);
