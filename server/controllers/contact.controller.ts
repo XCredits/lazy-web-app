@@ -324,7 +324,7 @@ function deleteGroup(req, res) {
                         });
                   })
                   .catch(error => {
-                    return res.status(500).send('Problem group contacts.');
+                    return res.status(500).send('Problem removing group contacts.');
                   });
             })
             .catch(error => {
