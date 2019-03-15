@@ -1,7 +1,7 @@
 import * as validator from 'validator';
 const Contact = require('../models/contact.model');
-const ContactList = require('../models/contact-list.model');
-const ContactListContact = require('../models/contact-list-contact.model');
+const ContactGroup = require('../models/contact-group.model');
+const ContactGroupContact = require('../models/contact-group-contact.model');
 const auth = require('./jwt-auth.controller');
 
 module.exports = function(app) {
@@ -10,18 +10,18 @@ module.exports = function(app) {
   app.post('/api/contacts/edit', auth.jwt, editContact);
   app.post('/api/contacts/view', auth.jwt, getContactSummary);
   app.post('/api/contacts/details', auth.jwt, getContactDetails);
-  app.post('/api/contacts/get-contacts-with-lists', auth.jwt, getContactsWithLists);
-  app.post('/api/contacts/list/get-contacts', auth.jwt, listGetContacts);
-  app.post('/api/contacts/list/view', auth.jwt, getLists);
-  app.post('/api/contacts/list/add', auth.jwt, addList);
-  app.post('/api/contacts/list/delete', auth.jwt, deleteList);
-  app.post('/api/contacts/list/remove-contact', auth.jwt, deleteListContact);
-  app.post('/api/contacts/list/edit', auth.jwt, editList);
+  app.post('/api/contacts/group/get-groups', auth.jwt, getGroups);
+  app.post('/api/contacts/group/get-contacts', auth.jwt, groupGetContacts);
+  app.post('/api/contacts/group/view', auth.jwt, getGroupsSummary);
+  app.post('/api/contacts/group/add', auth.jwt, addGroup);
+  app.post('/api/contacts/group/delete', auth.jwt, deleteGroup);
+  app.post('/api/contacts/group/remove-contact', auth.jwt, deleteGroupContact);
+  app.post('/api/contacts/group/edit', auth.jwt, editGroup);
 };
 
 
 /**
- * join a contact list
+ * join a contact group
  * @param {*} req request object
  * @param {*} res response object
  * @return {*}
@@ -31,7 +31,7 @@ function addContact(req, res) {
   const email = req.body.email;
   const givenName = req.body.givenName;
   const familyName = req.body.familyName;
-  const contactListId = req.body.contactListId;
+  const contactGroupId = req.body.contactGroupId;
 
   // Validate
   if (typeof givenName !== 'string' ||
@@ -40,7 +40,6 @@ function addContact(req, res) {
     return res.status(422).json({ message: 'Request failed validation' });
   }
 
-
   const contact = new Contact({
     userId,
     email,
@@ -48,29 +47,29 @@ function addContact(req, res) {
     familyName,
   });
   return contact.save()
-    .then((result) => {
-      const contactListContact = new ContactListContact({
-        userId: userId,
-        contactId: result._id,
-        listId: ( contactListId !== null ) ? contactListId : null,
-      });
-      return contactListContact.save()
-        .then((contactListResult) => {
-            return res.send({ message: 'Success.', contactId: contactListResult.contactId });
-          })
-          .catch((error) => {
-            return res.status(500).send('Problem creating contacts list.');
-          });
-    })
-    .catch((error) => {
+      .then(result => {
+        const contactGroupContact = new ContactGroupContact({
+          userId: userId,
+          contactId: result._id,
+          groupId: ( contactGroupId !== null ) ? contactGroupId : null,
+        });
+        return contactGroupContact.save()
+            .then(contactGroupResult => {
+                return res.send({ message: 'Success.', contactId: contactGroupResult.contactId });
+              })
+              .catch(error => {
+                return res.status(500).send('Problem creating contacts group.');
+              });
+      })
+      .catch(error => {
         return res.status(500).send('Problem saving contacts.');
-    });
+      });
 }
 
 
 
 /**
- * join a contact list
+ * edit a contact group
  * @param {*} req request object
  * @param {*} res response object
  * @return {*}
@@ -80,18 +79,17 @@ function editContact(req, res) {
   const email = req.body.email;
   const givenName = req.body.givenName;
   const familyName = req.body.familyName;
-  const contactListId = req.body.contactListId;
+  const contactGroupId = req.body.contactGroupId;
   const contactId = req.body.contactId;
   // Validate
   if (typeof contactId !== 'string' ||
-      typeof contactListId !== 'string' ||
+      typeof contactGroupId !== 'string' ||
       typeof givenName !== 'string' ||
       typeof familyName !== 'string' ||
       typeof email !== 'string' ||
       !validator.isEmail(email) ) {
     return res.status(422).json({ message: 'Request failed validation.' });
   }
-
 
   return Contact.findOneAndUpdate({
     userId,
@@ -100,15 +98,15 @@ function editContact(req, res) {
     {
       $set:
       {
-          familyName: familyName,
-          givenName: givenName,
-          email: email,
+        familyName: familyName,
+        givenName: givenName,
+        email: email,
       }
     })
-    .then(() => {
+    .then(error => {
       return res.send({ message: 'Contact updated.' });
     })
-    .catch(() => {
+    .catch(error => {
       res.status(500)
         .send({ message: 'Could not update contact.' });
     });
@@ -116,7 +114,7 @@ function editContact(req, res) {
 
 
 /**
- * join a contact list
+ * delete a contact
  * @param {*} req request object
  * @param {*} res response object
  * @return {*}
@@ -129,37 +127,69 @@ function deleteContact(req, res) {
     return res.status(422).json({ message: 'Contact failed validation.' });
   }
 
-  return ContactListContact.deleteMany( {userId, contactId: contactId } )
-  .then(() => {
-        return Contact.deleteMany( {userId: userId, _id: contactId } )
+  return ContactGroupContact.deleteMany({ userId, contactId: contactId })
+      .then(() => {
+        return Contact.deleteMany({ userId: userId, _id: contactId })
             .then(() => {
               return res.send({ message: 'Contact deleted.' });
             })
-            .catch((error) => {
+            .catch(error => {
               return res.status(500).send('Problem removing contacts.');
             });
-        })
-        .catch((error) => {
-          return res.status(500).send('Problem removing contacts.');
-        });
+      })
+      .catch(error => {
+        return res.status(500).send('Problem removing contacts.');
+      });
 }
 
 
 /**
- * returns all contacts summary
+ * returns contacts summary
  * @param {*} req request object
  * @param {*} res response object
  * @returns {*}
  */
 function getContactSummary(req, res) {
   const userId = req.userId;
-  return Contact.find({ userId }, {givenName: 1, familyName: 1, email: 1 }).sort( {givenName: 1} )
-    .then((result) => {
-      return res.send(result);
-    })
-    .catch((error) => {
-      return res.status(500).send({ message: 'Error retrieving users from contacts database.' });
-    });
+  return Contact.find({ userId: userId })
+      .then(contactsIdArr => {
+        const promiseArray: Promise<any>[] = [];
+        for (const i of contactsIdArr) {
+          const getContactGroupPromise = ContactGroupContact.find({
+            userId: userId,
+            'contactId': i._id,
+          });
+          promiseArray.push(getContactGroupPromise);
+        }
+        return Promise.all(promiseArray)
+            .then(resultArray => {
+              const contactsResult = [];
+              let groupFilter = '';
+              for (let i = 0; i < contactsIdArr.length; i++) {
+                groupFilter = '';
+                for (let element = 0; element < resultArray.length; element++) {
+                  if (resultArray[element].length !== 0) {
+                    if (String(resultArray[element][0]['contactId']) === String(contactsIdArr[i]._id)) {
+                      groupFilter = resultArray[element][0]['groupId'];
+                    }
+                  }
+                }
+                contactsResult.push({
+                  _id: contactsIdArr[i]._id,
+                  givenName: contactsIdArr[i].givenName,
+                  familyName: contactsIdArr[i].familyName,
+                  groupId: groupFilter,
+                });
+              }
+              res.send(contactsResult);
+            })
+            .catch(error => {
+              return res.status(500).send({ message: 'Error retrieving groups from database..' });
+            });
+      })
+      .catch(error => {
+        return res.status(500).send({ message: 'Error retrieving groups from database.' });
+      });
 }
 
 
@@ -176,110 +206,145 @@ function getContactDetails(req, res) {
   if (typeof contactId !== 'string') {
     return res.status(422).json({ message: 'Contact failed validation.' });
   }
-  return Contact.findOne({ userId: userId, _id: contactId }, { userId: 1, givenName: 1, familyName: 1, email: 1})
-    .then(resultContact => {
-      return res.send(resultContact);
-    })
-    .catch((error) => {
-      return res.status(500).send({ message: 'Error retrieving user from contacts database.' });
-    });
-}
-/**
- * returns all lists
- * @param {*} req request object
- * @param {*} res response object
- * @returns {*}
- */
-function getLists(req, res) {
-  const userId = req.userId;
-  return ContactList.find({ userId }, { listName: 1 }).sort( {name: 1} )
-    .then((result) => {
-      return res.send(result);
-    })
-    .catch((error) => {
-      return res.status(500).send({ message: 'Error retrieving list form database.' });
-    });
+  return Contact.findOne({ userId: userId, _id: contactId }, { userId: 1, givenName: 1, familyName: 1, email: 1 })
+      .then(resultContact => {
+        return res.send(resultContact);
+      })
+      .catch(error => {
+        return res.status(500).send({ message: 'Error retrieving user from contacts database.' });
+      });
 }
 
 
 /**
- * add a list
+ * returns all groups counted
  * @param {*} req request object
  * @param {*} res response object
  * @returns {*}
  */
-function addList(req, res) {
+function getGroupsSummary(req, res) {
   const userId = req.userId;
-  const listName = req.body.listName;
+  return ContactGroup.find({ userId: userId })
+      .then(groupIdArr => {
+        const promiseArray: Promise<any>[] = [];
+        for (const i of groupIdArr) {
+          const getContactPromise = ContactGroupContact.countDocuments({
+            userId: userId,
+            'groupId': i._id,
+          });
+          promiseArray.push(getContactPromise);
+        }
+        return Promise.all(promiseArray)
+            .then(resultArray => {
+              const groupResults = [];
+              for ( let i = 0; i < groupIdArr.length; i++ ) {
+                groupResults.push({_id: groupIdArr[i]._id, groupName: groupIdArr[i].groupName, numberOfContacts: resultArray[i] });
+              }
+              return res.send(groupResults);
+            })
+            .catch(error => {
+              return res.status(500).send({ message: 'Error retrieving groups from database.' });
+            });
+      })
+      .catch(error => {
+        return res.status(500).send({ message: 'Error retrieving groups from database.' });
+      });
+}
+
+
+/**
+ * add a group
+ * @param {*} req request object
+ * @param {*} res response object
+ * @returns {*}
+ */
+function addGroup(req, res) {
+  const userId = req.userId;
+  const groupName = req.body.groupName;
   // Validate
-  if (typeof listName !== 'string' ) {
+  if (typeof groupName !== 'string') {
     return res.status(422).json({ message: 'Request failed validation.' });
   }
-  return ContactList.findOne({ userId , listName: listName })
-    .then((resultListName) => {
-      if ( resultListName !== null) {
-        if (listName === resultListName.listName) {
-          return res.send({ message: 'List already exist.' });
-        }
-      } else {
-        const contactList = new ContactList({
-          listName: listName,
-          userId,
-        });
-        return contactList.save()
-          .then((result) => {
-            return res.send({ message: 'Success.' });
-          })
-          .catch((error) => {
-            return res.status(500).send('Problem creating a list.');
+  return ContactGroup.findOne({ userId, groupName: groupName })
+      .then(resultGroupName => {
+        if (resultGroupName !== null) {
+          if (groupName === resultGroupName.groupName) {
+            return res.send({ message: 'Group already exist.' });
+          }
+        } else {
+          const contactGroup = new ContactGroup({
+            groupName: groupName,
+            userId,
           });
-      }
-    })
-    .catch((error) => {
-      return res.status(500).send('Problem finding a list.');
-    });
+          return contactGroup.save()
+              .then(result => {
+                return res.send({ message: 'Success.' });
+              })
+              .catch(error => {
+                return res.status(500).send('Problem creating a group.');
+              });
+        }
+      })
+      .catch(error => {
+        return res.status(500).send('Problem finding a group.');
+      });
 }
 
-function deleteList(req, res) {
+
+
+
+/**
+ * delete a group
+ * @param {*} req request object
+ * @param {*} res response object
+ * @returns {*}
+ */
+function deleteGroup(req, res) {
   const userId = req.userId;
-  const listId = req.body.listId;
+  const groupId = req.body.groupId;
 
   // Validate
-  if (typeof listId !== 'string' ) {
+  if (typeof groupId !== 'string' ) {
     return res.status(422).json({ message: 'Contact failed validation.' });
   }
 
-  return ContactListContact.find({ userId, listId })
-    .then (( result ) => {
-      const contactId = result.map ((x => x.contactId));
-      return Contact.deleteMany ({userId: userId, _id: contactId})
-        .then (() => {
-          return ContactListContact.deleteMany({ userId, listId: listId })
+  return ContactGroupContact.find({ userId, groupId })
+      .then(result => {
+        const contactId = result.map((x => x.contactId));
+        return Contact.deleteMany({ userId: userId, _id: contactId })
             .then(() => {
-              return ContactList.deleteMany({ userId, _id: listId })
-                .then(() => {
-                  return res.send({ message: 'List deleted.' });
-                })
-                .catch((error) => {
-                  return res.status(500).send('Problem removing list.');
-                });
+              return ContactGroupContact.deleteMany({ userId, groupId: groupId })
+                  .then(() => {
+                    return ContactGroup.deleteMany({ userId, _id: groupId })
+                        .then(() => {
+                          return res.send({ message: 'Group deleted.' });
+                        })
+                        .catch(error => {
+                          return res.status(500).send('Problem removing group.');
+                        });
+                  })
+                  .catch(error => {
+                    return res.status(500).send('Problem group contacts.');
+                  });
             })
-            .catch ((error) => {
-              return res.status(500).send('Problem list contacts.');
+            .catch(error => {
+              return res.status(500).send('Problem removing groups links.');
             });
-        })
-        .catch ((error) => {
-          return res.status(500).send('Problem removing lists links.');
+      })
+      .catch(error => {
+        return res.status(500).send('Problem finding group.');
       });
-    })
-    .catch ((error) => {
-        return res.status(500).send('Problem finding list.');
-    });
-  }
+}
 
 
 
-  function deleteListContact(req, res) {
+/**
+ * remove a contact from a group
+ * @param {*} req request object
+ * @param {*} res response object
+ * @returns {*}
+ */
+function deleteGroupContact(req, res) {
     const userId = req.userId;
     const contactId = req.body.contactId;
 
@@ -288,100 +353,99 @@ function deleteList(req, res) {
       return res.status(422).json({ message: 'Contact failed validation.' });
     }
 
-    return ContactListContact.deleteMany({ userId, contactId })
+    return ContactGroupContact.deleteMany({ userId, contactId })
       .then(() => {
             return res.send({ message: 'Contact removed.' });
           })
-          .catch((error) => {
+          .catch(error => {
             return res.status(500).send('Problem removing contact.');
           });
     }
 
 
 
-function editList(req, res) {
+/**
+ * edit group name
+ * @param {*} req request object
+ * @param {*} res response object
+ * @returns {*}
+ */
+function editGroup(req, res) {
   const userId = req.userId;
-  const listId = req.body.listId;
-  const updatedListName = req.body.updatedListName;
+  const groupId = req.body.groupId;
+  const updatedGroupName = req.body.updatedGroupName;
   // Validate
-  if (typeof listId !== 'string' ||
-      typeof updatedListName !== 'string' ) {
+  if (typeof groupId !== 'string' ||
+    typeof updatedGroupName !== 'string') {
     return res.status(422).json({ message: 'Request failed validation.' });
   }
 
-  return ContactList.findOneAndUpdate({
+  return ContactGroup.findOneAndUpdate({
     userId,
-    _id: listId,
+    _id: groupId,
   },
-  {
-    $set:
     {
-      listName: updatedListName,
-    }
-  })
-  .then(() => {
-    return res.send({ message: 'List updated.' });
-  })
-  .catch((error) => {
-    res.status(500)
-      .send({ message: 'Could not update List.' });
-  });
-}
-
-
-
-/**
- * returns all users with contacts
- * @param {*} req request object
- * @param {*} res response object
- * @returns {*}
- */
-function getContactsWithLists(req, res) {
-  const userId = req.userId;
-  return Contact.find({ userId })
-    .then((result) => {
-      const contactIdArr = result.map((e => e._id));
-      return ContactListContact.find({ userId: userId, 'contactId': { '$in': contactIdArr } }, { contactId: 1, listId: 1 })
-        .then((result2) => {
-          return res.send(result2);
-        })
-        .catch((error) => {
-          return res.status(500).send({ message: 'Error retrieving users from contacts database.' });
-        });
+      $set:
+      {
+        groupName: updatedGroupName,
+      }
     })
-    .catch((error) => {
-      return res.status(500).send({ message: 'Error retrieving users from contacts database.' });
+    .then(() => {
+      return res.send({ message: 'Group updated.' });
+    })
+    .catch(error => {
+      res.status(500)
+        .send({ message: 'Could not update Group.' });
     });
 }
 
 
-
 /**
- * returns lists of contacts
+ * returns all groups
  * @param {*} req request object
  * @param {*} res response object
  * @returns {*}
  */
-function listGetContacts(req, res) {
+function groupGetContacts(req, res) {
   const userId = req.userId;
-  const listId = req.body.listId;
+  const groupId = req.body.groupId;
   // Validate
-  if (typeof listId !== 'string' ) {
+  if (typeof groupId !== 'string') {
     return res.status(422).json({ message: 'Request failed validation.' });
   }
-  return ContactListContact.find({ userId, listId })
-    .then((result) => {
-      const contactId = result.map((x => x.contactId));
-      return Contact.find({userId: userId, '_id': { '$in': contactId } }, {contactId: 1, givenName: 1, familyName: 1, email: 1})
-        .then((filteredResult) => {
-          return res.send(filteredResult);
-        })
-        .catch((error) => {
-          res.status(500).send({ message: 'Problem finding contacts.' });
-        });
-    })
-    .catch((error) => {
-      res.status(500).send({ message: 'Problem finding list.' });
-    });
+  return ContactGroupContact.find({ userId, groupId })
+      .then((result) => {
+        const contactId = result.map((x => x.contactId));
+        return Contact.find({ userId: userId, '_id': { '$in': contactId } }, { contactId: 1, givenName: 1, familyName: 1, email: 1 })
+            .then((filteredResult) => {
+              return res.send(filteredResult);
+            })
+            .catch(error => {
+              res.status(500).send({ message: 'Problem finding contacts.' });
+            });
+      })
+      .catch(error => {
+        res.status(500).send({ message: 'Problem finding group.' });
+      });
+}
+
+
+
+/**
+ * returns groups of contacts
+ * @param {*} req request object
+ * @param {*} res response object
+ * @returns {*}
+ */
+function getGroups(req, res) {
+  const userId = req.userId;
+
+  return ContactGroup.find({ userId: userId })
+      .then(result => {
+        return res.send(result);
+      })
+      .catch(error => {
+        res.status(500).send({ message: 'Problem finding groups.' });
+      });
 }
 

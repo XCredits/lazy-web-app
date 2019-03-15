@@ -10,14 +10,14 @@ import { HttpClient } from '@angular/common/http';
 
 
 export class ContactsComponent implements OnInit {
-  contacts: { id: string, givenName: string, lastName: string, email: string, listId: string }[] = [];
-  contactsLists: { id: string, listName: string, numberOfContacts: number }[] = [];
+  contacts: { id: string, givenName: string, lastName: string, email: string, groupId: string }[] = [];
+  contactsGroups: { id: string, groupName: string, numberOfContacts: number }[] = [];
   navLinks = [];
 
   constructor( private http: HttpClient, ) { }
 
   ngOnInit() {
     this.navLinks.push('./view');
-    this.navLinks.push('./lists');
+    this.navLinks.push('./groups');
    }
 }

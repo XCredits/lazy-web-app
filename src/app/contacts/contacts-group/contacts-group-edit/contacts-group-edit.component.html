@@ -1,18 +1,18 @@
-<div class="simple-form-aligner" >
+<div class="simple-form-aligner" *ngIf='isEditMode'>
   <mat-card class="simple-form-card">
-    <mat-card-title>Create list </mat-card-title>
+    <mat-card-title>Edit group </mat-card-title>
     <mat-card-content>
       <form [formGroup]="form" (ngSubmit)="submit(form.value)">
         <div class="form-group">
           <mat-form-field class="simple-form-field-50">
-            <input matInput placeholder="List name" name="listName" formControlName="listName">
+            <input matInput placeholder="Group name" name="groupName" formControlName="groupName">
           </mat-form-field>
           <br>
           <br>
           <div style="text-align: center">
             <button [disabled]="waiting" class="simple-form-button" color="primary" mat-raised-button type="submit"
-              value="submit" (click)="addList(form.value)">
-              Create
+              value="submit" (click)="updateGroup(form.value)">
+              Update
             </button>
             <mat-progress-spinner *ngIf="waiting" color="primary" mode="indeterminate" class="simple-form-spinner"
               [diameter]=22>

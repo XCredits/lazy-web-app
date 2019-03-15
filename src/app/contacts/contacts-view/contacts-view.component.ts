@@ -14,6 +14,8 @@ export class ContactsViewComponent implements OnInit {
   form: FormGroup;
   contactId: string;
   contactsArr = [];
+  contacts: { id: string, familyName: string, givenName: string, groupId: string, groupName: string }[] = [];
+
   isViewAll: boolean;
   deleteContactName: string;
   modalReference = null;
@@ -29,41 +31,32 @@ export class ContactsViewComponent implements OnInit {
     this.loadContacts();
   }
 
+
   loadContacts = function () {
     this.dataSource = [];
     this.contactsArr = [];
     this.http.post('/api/contacts/view', { })
         .subscribe ((data: any) => {
-            this.contactsArr = data;
-            this.loadContactsLists();
+            this.contacts = data;
+            this.loadContactsGroups();
         });
   };
 
 
-  loadContactsLists = function () {
-    this.http.post('/api/contacts/list/view', {})
-      .subscribe((data: any) => {
-          this.lists = data;
-          this.loadContactsRelations();
-      });
-  };
-
-  loadContactsRelations = function () {
-    this.http.post('api/contacts/get-contacts-with-lists', {})
-      .subscribe((data: any) => {
-        this.listsConnections = data;
-        for (const index of this.contactsArr) {
-          for (const relation of this.listsConnections) {
-            if (relation['listId']) {
-              if (relation['contactId'] === index['_id']) {
-                const fm = this.lists.find(el => el._id === relation['listId']);
-                index.listName = fm.listName;
+  loadContactsGroups = function () {
+    this.http.post('/api/contacts/group/get-groups', {})
+        .subscribe((data: any) => {
+          this.groups = data;
+          for (const contact of this.contacts) {
+            for (const group of this.groups) {
+              if (String(group._id) === String(contact.groupId)) {
+                contact.groupName = group.groupName;
               }
             }
           }
-        }
-      });
+        });
   };
+
 
   openDeleteContact = function (contact) {
     this.contactId = contact._id;
@@ -74,15 +67,15 @@ export class ContactsViewComponent implements OnInit {
     this.http.post('/api/contacts/delete', {
       'contactId': this.contactId,
     })
-      .subscribe((result) => {
-        if (result.message === 'Contact deleted.' ) {
-            this.loadContacts();
-            this.resetForm();
-            this.snackBar.open('Contact deleted successfully', 'Dismiss', {
-              duration: 2000,
-            });
-        }
-      });
+    .subscribe((result) => {
+      if (result.message === 'Contact deleted.') {
+        this.loadContacts();
+        this.resetForm();
+        this.snackBar.open('Contact deleted successfully', 'Dismiss', {
+          duration: 2000,
+        });
+      }
+    });
   };
 
   editContact = function (contact) {
@@ -92,7 +85,7 @@ export class ContactsViewComponent implements OnInit {
   };
 
   resetForm = function() {
-    this.listAddMessage = undefined;
+    this.groupAddMessage = undefined;
     this.isViewAll = true;
     this.modalReference.close();
   };

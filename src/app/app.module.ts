@@ -91,10 +91,10 @@ import { ContactsViewComponent } from './contacts/contacts-view/contacts-view.co
 import { ContactsAddComponent } from './contacts/contacts-add/contacts-add.component';
 import { ContactsEditComponent } from './contacts/contacts-edit/contacts-edit.component';
 import { ContactDetailsComponent } from './contacts/contacts-details/contacts-details.component';
-import { ContactsListViewComponent } from './contacts/contacts-list/contacts-list-view/contacts-list-view.component';
-import { ContactsListDetailsComponent } from './contacts/contacts-list/contacts-list-details/contacts-list-details.component';
-import { ContactsListAddComponent } from './contacts/contacts-list/contacts-list-add/contacts-list-add.component';
-import { ContactsListEditComponent } from './contacts/contacts-list/contacts-list-edit/contacts-list-edit.component';
+import { ContactsGroupViewComponent } from './contacts/contacts-group/contacts-group-view/contacts-group-view.component';
+import { ContactsGroupDetailsComponent } from './contacts/contacts-group/contacts-group-details/contacts-group-details.component';
+import { ContactsGroupAddComponent } from './contacts/contacts-group/contacts-group-add/contacts-group-add.component';
+import { ContactsGroupEditComponent } from './contacts/contacts-group/contacts-group-edit/contacts-group-edit.component';
 import { ConnectionComponent } from './connections/connections.component';
 import { ConnectionsViewComponent } from './connections/connections-view/connections-view.component';
 import { ConnectionsAddComponent } from './connections/connections-add/connections-add.component';
@@ -138,10 +138,10 @@ import { ConnectionsRequestDetailsComponent } from './connections/connections-re
     ContactsAddComponent,
     ContactsEditComponent,
     ContactDetailsComponent,
-    ContactsListViewComponent,
-    ContactsListDetailsComponent,
-    ContactsListAddComponent,
-    ContactsListEditComponent,
+    ContactsGroupViewComponent,
+    ContactsGroupDetailsComponent,
+    ContactsGroupAddComponent,
+    ContactsGroupEditComponent,
     ConnectionComponent,
     ConnectionsViewComponent,
     ConnectionsAddComponent,
@@ -293,20 +293,20 @@ import { ConnectionsRequestDetailsComponent } from './connections/connections-re
             component: ContactDetailsComponent,
           },
           {
-            path: 'lists',
-            component: ContactsListViewComponent,
+            path: 'groups',
+            component: ContactsGroupViewComponent,
           },
           {
-            path: 'lists/add',
-            component: ContactsListAddComponent,
+            path: 'groups/add',
+            component: ContactsGroupAddComponent,
           },
           {
-            path: 'lists/i/:listId/edit',
-            component: ContactsListEditComponent,
+            path: 'groups/i/:groupId/edit',
+            component: ContactsGroupEditComponent,
           },
           {
-            path: 'lists/i/:listId',
-            component: ContactsListDetailsComponent,
+            path: 'groups/i/:groupId',
+            component: ContactsGroupDetailsComponent,
             canActivate: [AuthGuard],
 
           }
