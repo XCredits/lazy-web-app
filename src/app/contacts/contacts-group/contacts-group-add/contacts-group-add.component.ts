@@ -62,6 +62,6 @@ export class ContactsGroupAddComponent implements OnInit {
       });
   };
 
-  submit = function () {
+  submit = function (from) {
   };
 }
