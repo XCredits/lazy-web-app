@@ -27,6 +27,7 @@ export class ContactsViewComponent implements OnInit {
     private snackBar: MatSnackBar, ) { }
 
   ngOnInit() {
+    this.isViewAll = true;
     this.loadContacts();
   }
 
@@ -46,15 +47,13 @@ export class ContactsViewComponent implements OnInit {
     this.http.post('/api/contacts/group/get-groups', {})
         .subscribe((data: any) => {
           this.groups = data;
-
-          for (let contact = 0; contact < this.contacts.length; contact++) {
+          for (const contact of this.contacts) {
             for (const group of this.groups) {
-              if (String(group._id) === String(this.contacts[contact].groupId)) {
-                this.contacts[contact].groupName = group.groupName;
+              if (String(group._id) === String(contact.groupId)) {
+                contact.groupName = group.groupName;
               }
             }
           }
-          this.isViewAll = true;
         });
   };
 
