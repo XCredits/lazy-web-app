@@ -56,10 +56,10 @@ function addContact(req, res) {
         return contactGroupContact.save()
             .then(contactGroupResult => {
                 return res.send({ message: 'Success.', contactId: contactGroupResult.contactId });
-              })
-              .catch(error => {
-                return res.status(500).send('Problem creating contacts group.');
-              });
+            })
+            .catch(error => {
+              return res.status(500).send('Problem creating contacts group.');
+            });
       })
       .catch(error => {
         return res.status(500).send('Problem saving contacts.');
@@ -92,24 +92,24 @@ function editContact(req, res) {
   }
 
   return Contact.findOneAndUpdate({
-    userId,
-    _id: contactId,
-    },
-    {
-      $set:
-      {
-        familyName: familyName,
-        givenName: givenName,
-        email: email,
-      }
-    })
-    .then(error => {
-      return res.send({ message: 'Contact updated.' });
-    })
-    .catch(error => {
-      res.status(500)
-        .send({ message: 'Could not update contact.' });
-    });
+          userId,
+          _id: contactId,
+        },
+        {
+          $set:
+          {
+            familyName: familyName,
+            givenName: givenName,
+            email: email,
+          }
+      })
+      .then(error => {
+        return res.send({ message: 'Contact updated.' });
+      })
+      .catch(error => {
+        res.status(500)
+          .send({ message: 'Could not update contact.' });
+      });
 }
 
 
@@ -152,9 +152,9 @@ function deleteContact(req, res) {
 function getContactSummary(req, res) {
   const userId = req.userId;
   return Contact.find({ userId: userId })
-      .then(contactsIdArr => {
+      .then(contactsArr => {
         const promiseArray: Promise<any>[] = [];
-        for (const i of contactsIdArr) {
+        for (const i of contactsArr) {
           const getContactGroupPromise = ContactGroupContact.find({
             userId: userId,
             'contactId': i._id,
@@ -165,19 +165,19 @@ function getContactSummary(req, res) {
             .then(resultArray => {
               const contactsResult = [];
               let groupFilter = '';
-              for (let i = 0; i < contactsIdArr.length; i++) {
+              for (let i = 0; i < contactsArr.length; i++) {
                 groupFilter = '';
                 for (let element = 0; element < resultArray.length; element++) {
                   if (resultArray[element].length !== 0) {
-                    if (String(resultArray[element][0]['contactId']) === String(contactsIdArr[i]._id)) {
+                    if (String(resultArray[element][0]['contactId']) === String(contactsArr[i]._id)) {
                       groupFilter = resultArray[element][0]['groupId'];
                     }
                   }
                 }
                 contactsResult.push({
-                  _id: contactsIdArr[i]._id,
-                  givenName: contactsIdArr[i].givenName,
-                  familyName: contactsIdArr[i].familyName,
+                  _id: contactsArr[i]._id,
+                  givenName: contactsArr[i].givenName,
+                  familyName: contactsArr[i].familyName,
                   groupId: groupFilter,
                 });
               }
