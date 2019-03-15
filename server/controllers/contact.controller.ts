@@ -381,14 +381,14 @@ function editGroup(req, res) {
   }
 
   return ContactGroup.findOneAndUpdate({
-    userId,
-    _id: groupId,
-  },
-    {
-      $set:
+        userId,
+        _id: groupId,
+      },
       {
-        groupName: updatedGroupName,
-      }
+        $set:
+        {
+          groupName: updatedGroupName,
+        }
     })
     .then(() => {
       return res.send({ message: 'Group updated.' });
@@ -416,7 +416,8 @@ function groupGetContacts(req, res) {
   return ContactGroupContact.find({ userId, groupId })
       .then((result) => {
         const contactId = result.map((x => x.contactId));
-        return Contact.find({ userId: userId, '_id': { '$in': contactId } }, { contactId: 1, givenName: 1, familyName: 1, email: 1 })
+        return Contact.find({ userId: userId, '_id': { '$in': contactId } },
+              { contactId: 1, givenName: 1, familyName: 1, email: 1 })
             .then((filteredResult) => {
               return res.send(filteredResult);
             })
