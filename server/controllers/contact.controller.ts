@@ -169,30 +169,18 @@ function getContactSummary(req, res) {
         }
         return Promise.all(promiseArray)
             .then(resultArray => {
-              console.log(promiseArray.length);
-              console.log('----');
-              console.log(resultArray[resultArray.length - 1].length);
-              console.log('----');
-              console.log(resultArray[resultArray.length - 1][0]);
-              console.log('----');
-              const array1 = [];
-              for (const ee of resultArray) {
-                console.log(ee);
-                array1.push(ee);
+              const contactsGroupArr = [];
+              for (const contactRelation of resultArray) {
+                contactsGroupArr.push(contactRelation[0]);
               }
-              console.log('----*');
-              console.log(array1[array1.length - 1]['_id']);
-              console.log('----*');
-             // console.log(array1[1][0]);
               const contactsResult = [];
               let groupFilter = '';
               for (let i = 0; i < contactsArr.length; i++) {
                 groupFilter = '';
-                for (let element = 0; element < resultArray.length; element++) {
+                for (let element = 0; element < contactsGroupArr.length; element++) {
                   if (resultArray[element].length !== 0) {
-                    // console.log(resultArray[element]);
-                    if (String(resultArray[element][0]['contactId']) === String(contactsArr[i]._id)) {
-                      groupFilter = resultArray[element][0]['groupId'];
+                    if (String(resultArray[element]['contactId']) === String(contactsArr[i]._id)) {
+                      groupFilter = resultArray[element]['groupId'];
                     }
                   }
                 }
