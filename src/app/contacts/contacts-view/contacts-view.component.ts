@@ -28,7 +28,11 @@ export class ContactsViewComponent implements OnInit {
 
   ngOnInit() {
     this.isViewAll = true;
-    this.loadContacts();
+    // this.loadContacts();
+    this.http.post('/api/sample', { })
+        .subscribe ((data: any) => {
+            this.contacts = data;
+        });
   }
 
 
