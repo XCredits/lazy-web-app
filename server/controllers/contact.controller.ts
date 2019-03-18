@@ -17,7 +17,7 @@ module.exports = function(app) {
   app.post('/api/contacts/group/delete', auth.jwt, deleteGroup);
   app.post('/api/contacts/group/remove-contact', auth.jwt, deleteGroupContact);
   app.post('/api/contacts/group/edit', auth.jwt, editGroup);
-  app.post('/api/sample', auth.jwt, getContactSummary);
+  app.post('/api/sample', auth.jwt, testFun);
 };
 
 
@@ -143,6 +143,27 @@ function deleteContact(req, res) {
       });
 }
 
+function testFun(req, res) {
+  const userId = req.userId;
+  return Contact.find({ userId: userId })
+      .then(contactsArr => {
+
+         console.log(contactsArr[0]['_id']);
+         const contactId = contactsArr.map((x => x._id));
+
+          return ContactGroupContact.find({ userId: userId, 'contactId': { '$in': contactId } },
+              { contactId: 1, groupId: 1, userId: 1 })
+          .then(result => {
+            console.log('ee');
+            console.log(result);
+          });
+
+      })
+      .catch(error => {
+        return res.status(500).send({ message: 'Error retrieving groups from database.' });
+      });
+}
+
 /**
  * returns contacts summary
  * @param {*} req request object
@@ -178,9 +199,10 @@ function getContactSummary(req, res) {
               for (let i = 0; i < contactsArr.length; i++) {
                 groupFilter = '';
                 for (let element = 0; element < contactsGroupArr.length; element++) {
-                  if (resultArray[element].length !== 0) {
-                    if (String(resultArray[element]['contactId']) === String(contactsArr[i]._id)) {
-                      groupFilter = resultArray[element]['groupId'];
+                  console.log(element);
+                  if (contactsGroupArr[element].length !== 0) {
+                    if (String(contactsGroupArr[element]['contactId']) === String(contactsArr[i]._id)) {
+                      groupFilter = contactsGroupArr[element]['groupId'];
                     }
                   }
                 }
@@ -191,6 +213,7 @@ function getContactSummary(req, res) {
                   groupId: groupFilter,
                 });
               }
+              console.log(contactsResult);
               res.send(contactsResult);
             })
             .catch(error => {
