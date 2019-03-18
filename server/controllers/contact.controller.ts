@@ -17,7 +17,7 @@ module.exports = function(app) {
   app.post('/api/contacts/group/delete', auth.jwt, deleteGroup);
   app.post('/api/contacts/group/remove-contact', auth.jwt, deleteGroupContact);
   app.post('/api/contacts/group/edit', auth.jwt, editGroup);
-  app.post('/api/sample', auth.jwt, testFun);
+  app.post('/api/sample', auth.jwt, getContactSummary);
 };
 
 
@@ -143,52 +143,6 @@ function deleteContact(req, res) {
       });
 }
 
-function testFun(req, res) {
-  const userId = req.userId;
-  return Contact.find({ userId: userId })
-  .then(contactsArr => {
-    const promiseArray: Promise<any>[] = [];
-
-    for (const contact of contactsArr) {
-      const getContactGroupPromise = ContactGroupContact.find({
-        userId: userId,
-        'contactId': contact._id,
-      },
-      {
-        contactId: 1,
-        groupId: 1,
-        userId: 1
-      })
-      .then(result => {
-        // console.log(result);
-        for ( const ee of result) {
-          promiseArray.push(ee);
-        }
-        console.log(promiseArray.length);
-        const unique_array: Promise<any>[] = [];
-
-        for (let i = 0; i < promiseArray.length; i++) {
-          if (unique_array.indexOf(promiseArray[i]) === -1) {
-              unique_array.push( promiseArray [i] );
-          }
-      }
-      return Promise.all(unique_array)
-            .then(resultArray => {
-
-              console.log(resultArray);
-            });
-
-    // console.log(contactsArr);
-    // console.log(contactsArr.length);
-    // res.send(contactsArr);
-
-  })
-  .catch(error => {
-    return res.status(500).send({ message: 'Error retrieving groups from database.' });
-  });
-}
-
-
 /**
  * returns contacts summary
  * @param {*} req request object
@@ -215,14 +169,15 @@ function getContactSummary(req, res) {
         }
         return Promise.all(promiseArray)
             .then(resultArray => {
-              console.log(promiseArray);
+              console.log(promiseArray.length);
               console.log('----');
-             // console.log(resultArray[resultArray.length - 1].length);
+              console.log(resultArray[resultArray.length - 1].length);
               console.log('----');
-             // console.log(resultArray[resultArray.length - 1][0]);
+              console.log(resultArray[resultArray.length - 1][0]);
               console.log('----');
               const array1 = [];
               for (const ee of resultArray) {
+                console.log(ee);
                 array1.push(ee);
               }
               console.log('----*');
