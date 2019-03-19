@@ -16,6 +16,10 @@ export class ContactsAddComponent implements OnInit {
   waiting: boolean;
 
   groups: { groupId: string, groupName: string, numberOfContacts: number }[] = [];
+  toppings = new FormControl();
+  toppingList: string[] = ['Extra cheese', 'Mushroom', 'Onion', 'Pepperoni', 'Sausage', 'Tomato'];
+  toppingSelection = [];
+
 
   constructor(
     private http: HttpClient,
@@ -34,6 +38,12 @@ export class ContactsAddComponent implements OnInit {
     this.loadContactsGroups();
   }
 
+  onSelection(selection) {
+
+    console.log(selection);
+    this.toppingSelection.push(selection);
+    console.log(this.toppingSelection.length);
+  }
 
   loadContactsGroups = function () {
     this.http.post('/api/contacts/group/view', {})
