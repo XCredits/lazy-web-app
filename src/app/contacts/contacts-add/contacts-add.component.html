@@ -19,23 +19,21 @@
           </mat-form-field>
           <br>
           <mat-form-field>
-            <mat-select placeholder="Toppings" [formControl]="toppings" multiple (ngModelChange)="onSelection($event)">
+            <mat-select placeholder="Choose a group" [formControl]="groupForm" multiple (ngModelChange)="onSelection($event)">
               <mat-select-trigger>
-                {{toppings.value ? toppings.value[0] : ''}}
-                <span *ngIf="toppings.value?.length > 1" class="example-additional-selection">
-                  (+{{toppings.value.length - 1}} {{toppings.value?.length === 2 ? 'other' : 'others'}})
+                {{groupForm.value ? groupForm.value[0].groupName : ''}}
+                <span *ngIf="groupForm.value?.length > 1" class="example-additional-selection">
+                  (+{{groupForm.value.length - 1}} {{groupForm.value?.length === 2 ? 'other' : 'others'}})
                 </span>
               </mat-select-trigger>
-              <mat-option *ngFor="let topping of toppingList" [value]="topping">{{topping}}</mat-option>
+              <mat-option *ngFor="let topping of groups" [value]="topping">{{topping.groupName}}</mat-option>
             </mat-select>
           </mat-form-field>
-          <div *ngIf='rendered'>
-          <div *ngFor="let options of toppingSelection">
+          <div *ngFor="let options of groupsSelection">
           <mat-card >
-            {{options}}
+            {{options.groupName}}
           </mat-card>
         </div>
-      </div>
           <br>
           <br>
           <div style="text-align: center">
