@@ -88,22 +88,10 @@ export class ContactsAddComponent implements OnInit {
 
 
   onSelection(selection) {
-
-    console.log(selection);
-
     this.groupsSelection.push(selection.groupName);
-
-
-
-    console.log(this.groupsSelection);
   }
 
   unselectGroup(group) {
-    console.log( group);
-
     this.groupsSelection.splice( this.groupsSelection.indexOf(group) , 1);
-    console.log(this.groupsSelection);
-
-
   }
 }
