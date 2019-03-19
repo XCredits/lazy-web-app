@@ -21,7 +21,9 @@
           <mat-form-field>
             <mat-select placeholder="Choose a group" [formControl]="groupForm" multiple (ngModelChange)="onSelection($event)">
               <mat-select-trigger>
-                {{groupForm.value ? groupForm.value[0].groupName : ''}}
+                <div *ngIf='groupForm.value'>
+                {{groupForm.value[0].groupName }}
+              </div>
                 <span *ngIf="groupForm.value?.length > 1" class="example-additional-selection">
                   (+{{groupForm.value.length - 1}} {{groupForm.value?.length === 2 ? 'other' : 'others'}})
                 </span>
