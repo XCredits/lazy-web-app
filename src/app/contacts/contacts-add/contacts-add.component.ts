@@ -103,7 +103,8 @@ export class ContactsAddComponent implements OnInit {
   unselectGroup(group) {
     console.log( group);
 
-    this.groupsSelection.slice( this.groupsSelection.indexOf(group) , 1);
+    this.groupsSelection.splice( this.groupsSelection.indexOf(group) , 1);
+    console.log(this.groupsSelection);
 
 
   }
