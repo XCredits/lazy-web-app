@@ -14,7 +14,7 @@ export class ContactsAddComponent implements OnInit {
   formErrorMessage: string;
   isEditMode: boolean;
   waiting: boolean;
-  groups: { groupId: string, groupName: string, numberOfContacts: number }[] = [];
+  groups: { groupId: string, groupName: string }[] = [];
   groupForm = new FormControl();
   groupsSelection = [];
 
@@ -36,16 +36,9 @@ export class ContactsAddComponent implements OnInit {
     this.loadContactsGroups();
   }
 
-  onSelection(selection) {
-
-    this.groupsSelection = [];
-    for (const groupSelect of selection) {
-      this.groupsSelection.push(groupSelect);
-    }
-  }
 
   loadContactsGroups = function () {
-    this.http.post('/api/contacts/group/view', {})
+    this.http.post('/api/contacts/group/get-groups', {})
         .subscribe((data: any) => {
           this.groups = data;
         });
@@ -95,4 +88,15 @@ export class ContactsAddComponent implements OnInit {
   };
 
 
+  onSelection(selection) {
+
+    this.groupsSelection = [];
+    for (const groupSelect of selection) {
+      this.groupsSelection.push(groupSelect);
+    }
+  }
+
+  unselectGroup(group) {
+    console.log( group);
+  }
 }

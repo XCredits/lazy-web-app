@@ -429,7 +429,7 @@ function groupGetContacts(req, res) {
 function getGroups(req, res) {
   const userId = req.userId;
 
-  return ContactGroup.find({ userId: userId })
+  return ContactGroup.find({ userId: userId }, { groupName: 1 })
       .then(result => {
         return res.send(result);
       })

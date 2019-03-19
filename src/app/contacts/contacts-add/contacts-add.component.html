@@ -32,7 +32,11 @@
           <div *ngFor="let options of groupsSelection">
           <mat-card >
             {{options.groupName}}
+            <button mat-icon-button (click)="unselectGroup(options)">
+              <mat-icon >delete</mat-icon>
+            </button>
           </mat-card>
+          <br>
         </div>
           <br>
           <br>
