@@ -19,40 +19,47 @@
           </mat-form-field>
           <br>
           <mat-form-field>
-            <mat-select placeholder="Choose a group" name="contactGroup" formControlName="contactGroup" (ngModelChange)="onSelection($event)">
+            <mat-select placeholder="Choose a group" name="contactGroup" formControlName="contactGroup"
+              (ngModelChange)="onSelection($event)">
               <mat-option *ngFor="let lst of groups" [value]="lst">
                 {{lst.groupName}}
               </mat-option>
             </mat-select>
           </mat-form-field>
-          <div *ngFor="let group of groupsSelection">
-          <mat-card >
-            {{group}}
-            <button mat-icon-button (click)="unselectGroup(group)">
-              <mat-icon class="group-remove-icon" aria-hidden="false">remove_circle</mat-icon>
-            </button>
-          </mat-card>
-          <br>
+        <div *ngIf='groupsSelection.length > 0'>
+          <div class="simple-form-aligner">
+            <mat-card class="simple-form-card">
+              <div class="cardList">
+
+                <div *ngFor="let group of groupsSelection">
+                  <mat-card class="cardList">
+                    {{group}}
+                    <button mat-icon-button (click)="unselectGroup(group)">
+                      <mat-icon class="cardList">remove_circle</mat-icon>
+                    </button>
+                  </mat-card>
+
+
+                </div>
+              </div>
+            </mat-card>
+          </div>
         </div>
-          <br>
-          <br>
+
+
+
+
           <div style="text-align: center">
             <button [disabled]="waiting" class="simple-form-button" color="primary" mat-raised-button type="submit"
               value="submit" (click)="addContact(form.value)">
               Create
             </button>
-            <mat-progress-spinner
-              *ngIf="waiting"
-              color="primary"
-              mode="indeterminate"
-              class="simple-form-spinner"
+            <mat-progress-spinner *ngIf="waiting" color="primary" mode="indeterminate" class="simple-form-spinner"
               [diameter]=22>
-          </mat-progress-spinner>
-          <span 
-              *ngIf='formErrorMessage' 
-              class="text-error-color">
-            {{formErrorMessage}}
-          </span>
+            </mat-progress-spinner>
+            <span *ngIf='formErrorMessage' class="text-error-color">
+              {{formErrorMessage}}
+            </span>
           </div>
         </div>
       </form>
