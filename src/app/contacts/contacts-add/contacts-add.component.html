@@ -26,28 +26,22 @@
               </mat-option>
             </mat-select>
           </mat-form-field>
-        <div *ngIf='groupsSelection.length > 0'>
-          <div class="simple-form-aligner">
-            <mat-card class="simple-form-card">
-              <div class="cardList">
-
-                <div *ngFor="let group of groupsSelection">
-                  <mat-card class="cardList">
-                    {{group}}
-                    <button mat-icon-button (click)="unselectGroup(group)">
-                      <mat-icon class="cardList">remove_circle</mat-icon>
-                    </button>
-                  </mat-card>
-
-
+          <div *ngIf='groupsSelection.length > 0'>
+            <div class="simple-form-aligner">
+              <mat-card class="simple-form-card">
+                <div class="cardList">
+                  <div *ngFor="let group of groupsSelection">
+                    <mat-card class="cardList">
+                      {{group}}
+                      <button mat-icon-button (click)="unselectGroup(group)">
+                        <mat-icon class="cardList">remove_circle</mat-icon>
+                      </button>
+                    </mat-card>
+                  </div>
                 </div>
-              </div>
-            </mat-card>
+              </mat-card>
+            </div>
           </div>
-        </div>
-
-
-
 
           <div style="text-align: center">
             <button [disabled]="waiting" class="simple-form-button" color="primary" mat-raised-button type="submit"
