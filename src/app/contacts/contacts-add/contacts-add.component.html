@@ -29,11 +29,13 @@
               <mat-option *ngFor="let topping of toppingList" [value]="topping">{{topping}}</mat-option>
             </mat-select>
           </mat-form-field>
+          <div *ngIf='rendered'>
           <div *ngFor="let options of toppingSelection">
           <mat-card >
             {{options}}
           </mat-card>
         </div>
+      </div>
           <br>
           <br>
           <div style="text-align: center">

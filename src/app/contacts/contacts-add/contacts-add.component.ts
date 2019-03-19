@@ -14,7 +14,7 @@ export class ContactsAddComponent implements OnInit {
   formErrorMessage: string;
   isEditMode: boolean;
   waiting: boolean;
-
+  rendered: boolean;
   groups: { groupId: string, groupName: string, numberOfContacts: number }[] = [];
   toppings = new FormControl();
   toppingList: string[] = ['Extra cheese', 'Mushroom', 'Onion', 'Pepperoni', 'Sausage', 'Tomato'];
@@ -40,9 +40,15 @@ export class ContactsAddComponent implements OnInit {
 
   onSelection(selection) {
 
+    this.rendered = false;
     console.log(selection);
-    this.toppingSelection.push(selection);
+    console.log(selection.length);
+    this.toppingSelection = [];
+    for (const sele of selection) {
+      this.toppingSelection.push(sele);
+    }
     console.log(this.toppingSelection.length);
+    this.rendered = true;
   }
 
   loadContactsGroups = function () {
