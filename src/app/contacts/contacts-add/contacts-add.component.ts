@@ -15,7 +15,6 @@ export class ContactsAddComponent implements OnInit {
   isEditMode: boolean;
   waiting: boolean;
   groups: { groupId: string, groupName: string }[] = [];
-  groupForm = new FormControl();
   groupsSelection = [];
 
 
@@ -90,10 +89,9 @@ export class ContactsAddComponent implements OnInit {
 
   onSelection(selection) {
 
-    this.groupsSelection = [];
-    for (const groupSelect of selection) {
-      this.groupsSelection.push(groupSelect);
-    }
+    console.log(selection);
+
+    this.groupsSelection.push(selection.groupName);
 
 
 

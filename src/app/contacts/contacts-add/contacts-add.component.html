@@ -19,22 +19,16 @@
           </mat-form-field>
           <br>
           <mat-form-field>
-            <mat-select placeholder="Choose a group" [formControl]="groupForm" multiple (ngModelChange)="onSelection($event)">
-              <mat-select-trigger>
-                <div *ngIf='groupForm.value'>
-                {{groupForm.value[0].groupName }}
-              </div>
-                <span *ngIf="groupForm.value?.length > 1" class="example-additional-selection">
-                  (+{{groupForm.value.length - 1}} {{groupForm.value?.length === 2 ? 'other' : 'others'}})
-                </span>
-              </mat-select-trigger>
-              <mat-option *ngFor="let grp of groups" [value]="grp">{{grp.groupName}}</mat-option>
+            <mat-select placeholder="Choose a group" name="contactGroup" formControlName="contactGroup" (ngModelChange)="onSelection($event)">
+              <mat-option *ngFor="let lst of groups" [value]="lst">
+                {{lst.groupName}}
+              </mat-option>
             </mat-select>
           </mat-form-field>
-          <div *ngFor="let options of groupsSelection">
+          <div *ngFor="let group of groupsSelection">
           <mat-card >
-            {{options.groupName}}
-            <button mat-icon-button (click)="unselectGroup(options)">
+            {{group}}
+            <button mat-icon-button (click)="unselectGroup(group)">
               <mat-icon >delete</mat-icon>
             </button>
           </mat-card>
