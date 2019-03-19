@@ -28,7 +28,7 @@
                   (+{{groupForm.value.length - 1}} {{groupForm.value?.length === 2 ? 'other' : 'others'}})
                 </span>
               </mat-select-trigger>
-              <mat-option *ngFor="let topping of groups" [value]="topping">{{topping.groupName}}</mat-option>
+              <mat-option *ngFor="let grp of groups" [value]="grp">{{grp.groupName}}</mat-option>
             </mat-select>
           </mat-form-field>
           <div *ngFor="let options of groupsSelection">

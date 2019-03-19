@@ -94,9 +94,17 @@ export class ContactsAddComponent implements OnInit {
     for (const groupSelect of selection) {
       this.groupsSelection.push(groupSelect);
     }
+
+
+
+    console.log(this.groupsSelection);
   }
 
   unselectGroup(group) {
     console.log( group);
+
+    this.groupsSelection.slice( this.groupsSelection.indexOf(group) , 1);
+
+
   }
 }
