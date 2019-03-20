@@ -39,7 +39,6 @@ function addContact(req, res) {
       !validator.isEmail(email) ) {
     return res.status(422).json({ message: 'Request failed validation' });
   }
-
   const contact = new Contact({
     userId,
     email,
@@ -60,7 +59,7 @@ function addContact(req, res) {
         }
         return Promise.all(promiseArray)
             .then(contactGroupResult => {
-                return res.send({ message: 'Success.', contactId: contactGroupResult.contactId });
+                return res.send({ message: 'Success.', contactId: result._id });
             })
             .catch(error => {
               return res.status(500).send('Problem creating contacts group.');

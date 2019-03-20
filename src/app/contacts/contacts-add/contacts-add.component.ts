@@ -29,7 +29,7 @@ export class ContactsAddComponent implements OnInit {
   groupCtrl = new FormControl();
   filteredGroups: Observable<string[]>;
   selectedGroups: string[];
-
+  groupsIds = [];
 
 
   @ViewChild('groupInput') groupInput: ElementRef<HTMLInputElement>;
@@ -69,13 +69,11 @@ export class ContactsAddComponent implements OnInit {
   };
 
   addContact = function (newContact) {
-    console.log(this.groups);
-    console.log(this.selectedGroups);
+    this.groupsIds = [];
     for (const i of this.selectedGroups) {
-     console.log(this.groups.indexOf(String(i)));
-      // console.log(this.groups [this.groups.indexOf(i)].groupName);
+      this.groupsIds.push(this.groups[this.groups.findIndex(g => g.groupName === i)]._id);
     }
-    return;
+
     if ( newContact.givenName.length === 0 ||
         newContact.familyName.length === 0 ||
         newContact.email.length === 0 ) {
@@ -88,7 +86,7 @@ export class ContactsAddComponent implements OnInit {
       'givenName': newContact.givenName,
       'familyName': newContact.familyName,
       'email': newContact.email,
-      'contactGroupIds': this.groupsSelection,
+      'contactGroupIds': this.groupsIds,
     })
     .subscribe((result) => {
       this.waiting = false;
