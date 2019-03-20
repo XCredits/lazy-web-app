@@ -1,8 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ElementRef, ViewChild} from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import {MatSnackBar} from '@angular/material';
+import {MatSnackBar, MatAutocompleteSelectedEvent, MatChipInputEvent, MatAutocomplete} from '@angular/material';
+import {Observable} from 'rxjs';
+import {map, startWith} from 'rxjs/operators';
+import {COMMA, ENTER} from '@angular/cdk/keycodes';
 
 @Component({
   selector: 'app-contacts-add',
@@ -17,11 +20,28 @@ export class ContactsAddComponent implements OnInit {
   groups: { groupId: string, groupName: string }[] = [];
   groupsSelection = [];
 
+  // Chips code
+  visible = true;
+  selectable = true;
+  removable = true;
+  addOnBlur = true;
+  separatorKeysCodes: number[] = [ENTER, COMMA];
+  fruitCtrl = new FormControl();
+  filteredFruits: Observable<string[]>;
+  fruits: string[] = ['Lemon'];
+  allFruits: string[] = ['Apple', 'Lemon', 'Lime', 'Orange', 'Strawberry'];
+  @ViewChild('fruitInput') fruitInput: ElementRef<HTMLInputElement>;
+  @ViewChild('auto') matAutocomplete: MatAutocomplete;
+
 
   constructor(
     private http: HttpClient,
     private router: Router,
-    private snackBar: MatSnackBar, ) { }
+    private snackBar: MatSnackBar, ) {
+      this.filteredFruits = this.fruitCtrl.valueChanges.pipe(
+        startWith(null),
+        map((fruit: string | null) => fruit ? this._filter(fruit) : this.allFruits.slice()));
+     }
 
   ngOnInit() {
     this.formErrorMessage = undefined;
@@ -56,7 +76,7 @@ export class ContactsAddComponent implements OnInit {
       'givenName': newContact.givenName,
       'familyName': newContact.familyName,
       'email': newContact.email,
-      'contactGroupId': newContact.contactGroup._id,
+      'contactGroupIds': this.groupsSelection,
     })
     .subscribe((result) => {
       this.waiting = false;
@@ -88,10 +108,59 @@ export class ContactsAddComponent implements OnInit {
 
 
   onSelection(selection) {
-    this.groupsSelection.push(selection.groupName);
+    this.groupsSelection.push(selection);
+    console.log(this.groupsSelection);
   }
 
   unselectGroup(group) {
     this.groupsSelection.splice( this.groupsSelection.indexOf(group) , 1);
+    console.log(this.groupsSelection);
+
+  }
+
+
+
+
+
+  // Chips code
+  private _filter(value: string): string[] {
+    const filterValue = value.toLowerCase();
+
+    return this.allFruits.filter(fruit => fruit.toLowerCase().indexOf(filterValue) === 0);
+  }
+
+  add(event: MatChipInputEvent): void {
+    // Add fruit only when MatAutocomplete is not open
+    // To make sure this does not conflict with OptionSelected Event
+    if (!this.matAutocomplete.isOpen) {
+      const input = event.input;
+      const value = event.value;
+
+      // Add our fruit
+      if ((value || '').trim()) {
+        this.fruits.push(value.trim());
+      }
+
+      // Reset the input value
+      if (input) {
+        input.value = '';
+      }
+
+      this.fruitCtrl.setValue(null);
+    }
+  }
+
+  remove(fruit: string): void {
+    const index = this.fruits.indexOf(fruit);
+
+    if (index >= 0) {
+      this.fruits.splice(index, 1);
+    }
+  }
+
+  selected(event: MatAutocompleteSelectedEvent): void {
+    this.fruits.push(event.option.viewValue);
+    this.fruitInput.nativeElement.value = '';
+    this.fruitCtrl.setValue(null);
   }
 }

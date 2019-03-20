@@ -31,7 +31,7 @@ function addContact(req, res) {
   const email = req.body.email;
   const givenName = req.body.givenName;
   const familyName = req.body.familyName;
-  const contactGroupId = req.body.contactGroupId;
+  const contactGroupIds = req.body.contactGroupIds;
 
   // Validate
   if (typeof givenName !== 'string' ||
@@ -48,12 +48,17 @@ function addContact(req, res) {
   });
   return contact.save()
       .then(result => {
-        const contactGroupContact = new ContactGroupContact({
-          userId: userId,
-          contactId: result._id,
-          groupId: ( contactGroupId !== null ) ? contactGroupId : null,
-        });
-        return contactGroupContact.save()
+        const promiseArray: Promise<any>[] = [];
+        for (const i of contactGroupIds) {
+          const contactGroupContact = new ContactGroupContact({
+            userId: userId,
+            contactId: result._id,
+            groupId: ( i._id !== null ) ? i._id : null,
+          });
+          const saveEvent = contactGroupContact.save();
+          promiseArray.push(saveEvent);
+        }
+        return Promise.all(promiseArray)
             .then(contactGroupResult => {
                 return res.send({ message: 'Success.', contactId: contactGroupResult.contactId });
             })

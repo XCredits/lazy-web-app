@@ -21,7 +21,7 @@
           <mat-form-field>
             <mat-select placeholder="Choose a group" name="contactGroup" formControlName="contactGroup"
               (ngModelChange)="onSelection($event)">
-              <mat-option *ngFor="let lst of groups" [value]="lst">
+              <mat-option *ngFor="let lst of allGroups" [value]="lst">
                 {{lst.groupName}}
               </mat-option>
             </mat-select>
@@ -32,7 +32,7 @@
                 <div class="cardList">
                   <div *ngFor="let group of groupsSelection">
                     <mat-card class="cardList">
-                      {{group}}
+                      {{group.groupName}}
                       <button mat-icon-button (click)="unselectGroup(group)">
                         <mat-icon class="cardList">remove_circle</mat-icon>
                       </button>
@@ -42,7 +42,7 @@
               </mat-card>
             </div>
           </div>
-
+          <br>
           <div style="text-align: center">
             <button [disabled]="waiting" class="simple-form-button" color="primary" mat-raised-button type="submit"
               value="submit" (click)="addContact(form.value)">
@@ -60,3 +60,34 @@
     </mat-card-content>
   </mat-card>
 </div>
+
+<br>
+<br>
+<br>
+
+<mat-form-field class="example-chip-list">
+    <mat-chip-list #chipList>
+      <mat-chip
+        *ngFor="let fruit of fruits"
+        [selectable]="selectable"
+        [removable]="removable"
+        (removed)="remove(fruit)">
+        {{fruit}}
+        <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
+      </mat-chip>
+      <input
+        placeholder="New fruit..."
+        #fruitInput
+        [formControl]="fruitCtrl"
+        [matAutocomplete]="auto"
+        [matChipInputFor]="chipList"
+        [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+        [matChipInputAddOnBlur]="addOnBlur"
+        (matChipInputTokenEnd)="add($event)">
+    </mat-chip-list>
+    <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selected($event)">
+      <mat-option *ngFor="let fruit of filteredFruits | async" [value]="fruit">
+        {{fruit}}
+      </mat-option>
+    </mat-autocomplete>
+  </mat-form-field>
