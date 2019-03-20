@@ -21,7 +21,6 @@ export class ContactsAddComponent implements OnInit {
   _groups = [];
   groupsSelection = [];
 
-  // Chips code
   visible = true;
   selectable = true;
   removable = true;
@@ -52,10 +51,7 @@ export class ContactsAddComponent implements OnInit {
       contactGroup: new FormControl(''),
     });
     this.loadContactsGroups();
-
-
   }
-
 
   loadContactsGroups = function () {
     this.http.post('/api/contacts/group/get-groups', {})
@@ -64,18 +60,21 @@ export class ContactsAddComponent implements OnInit {
           for ( const g of data) {
             this._groups.push(g.groupName);
           }
-
           this.filteredGroups = this.groupCtrl.valueChanges.pipe(
             startWith(null),
             map((grp: string | null) => grp ? this._filter(grp) : this._groups.slice()));
             // the default selected group.
             this.selectedGroups = [this._groups[0]];
-
         });
   };
 
   addContact = function (newContact) {
+    console.log(this.groups);
     console.log(this.selectedGroups);
+    for (const i of this.selectedGroups) {
+     console.log(this.groups.indexOf(String(i)));
+      // console.log(this.groups [this.groups.indexOf(i)].groupName);
+    }
     return;
     if ( newContact.givenName.length === 0 ||
         newContact.familyName.length === 0 ||
@@ -120,23 +119,8 @@ export class ContactsAddComponent implements OnInit {
   };
 
 
-  onSelection(selection) {
-    this.groupsSelection.push(selection);
-    console.log(this.groupsSelection);
-  }
-
-  unselectGroup(group) {
-    this.groupsSelection.splice( this.groupsSelection.indexOf(group) , 1);
-    console.log(this.groupsSelection);
-
-  }
-
-
-
-  // Chips code
   private _filter(value: string): string[] {
     const filterValue = value.toLowerCase();
-
     return this._groups.filter(grp => grp.toLowerCase().indexOf(filterValue) === 0);
   }
 
@@ -147,7 +131,7 @@ export class ContactsAddComponent implements OnInit {
       const input = event.input;
       const value = event.value;
 
-      // Add our fruit
+      // Add your group
       if ((value || '').trim()) {
         this.selectedGroups.push(value.trim());
       }
@@ -156,22 +140,24 @@ export class ContactsAddComponent implements OnInit {
       if (input) {
         input.value = '';
       }
-
       this.groupCtrl.setValue(null);
     }
   }
 
   remove(grp: string): void {
     const index = this.selectedGroups.indexOf(grp);
-
     if (index >= 0) {
       this.selectedGroups.splice(index, 1);
     }
   }
 
   selected(event: MatAutocompleteSelectedEvent): void {
-    this.selectedGroups.push(event.option.viewValue);
-    this.groupInput.nativeElement.value = '';
-    this.groupCtrl.setValue(null);
+    // Selected if only unique
+    if (this.selectedGroups.indexOf(event.option.viewValue) === -1) {
+      this.selectedGroups.push(event.option.viewValue);
+      this.groupInput.nativeElement.value = '';
+      this.groupCtrl.setValue(null);
+      console.log(this.selectedGroups);
+    }
   }
 }
