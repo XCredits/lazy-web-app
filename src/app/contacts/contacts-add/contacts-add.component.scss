@@ -3,29 +3,5 @@
 }
 
 
-.example-additional-selection {
-  opacity: 0.75;
-  font-size: 0.75em;
-}
-
-.group-remove-icon {
-  padding: 0 90%;
-}
 
 
-
-
-.cardList {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  justify-content: flex-start;
-}
-/* Column Gap */
-.cardList > * {
-  box-sizing: border-box;
-}
-.cardList > * {
-  margin-right: 10px;
-  margin-bottom: 10px;
-}

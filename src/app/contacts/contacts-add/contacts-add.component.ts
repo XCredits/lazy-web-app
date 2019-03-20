@@ -18,6 +18,7 @@ export class ContactsAddComponent implements OnInit {
   isEditMode: boolean;
   waiting: boolean;
   groups: { groupId: string, groupName: string }[] = [];
+  _groups = [];
   groupsSelection = [];
 
   // Chips code
@@ -26,22 +27,20 @@ export class ContactsAddComponent implements OnInit {
   removable = true;
   addOnBlur = true;
   separatorKeysCodes: number[] = [ENTER, COMMA];
-  fruitCtrl = new FormControl();
-  filteredFruits: Observable<string[]>;
-  fruits: string[] = ['Lemon'];
-  allFruits: string[] = ['Apple', 'Lemon', 'Lime', 'Orange', 'Strawberry'];
-  @ViewChild('fruitInput') fruitInput: ElementRef<HTMLInputElement>;
+  groupCtrl = new FormControl();
+  filteredGroups: Observable<string[]>;
+  selectedGroups: string[];
+
+
+
+  @ViewChild('groupInput') groupInput: ElementRef<HTMLInputElement>;
   @ViewChild('auto') matAutocomplete: MatAutocomplete;
 
 
   constructor(
     private http: HttpClient,
     private router: Router,
-    private snackBar: MatSnackBar, ) {
-      this.filteredFruits = this.fruitCtrl.valueChanges.pipe(
-        startWith(null),
-        map((fruit: string | null) => fruit ? this._filter(fruit) : this.allFruits.slice()));
-     }
+    private snackBar: MatSnackBar, ) { }
 
   ngOnInit() {
     this.formErrorMessage = undefined;
@@ -53,6 +52,8 @@ export class ContactsAddComponent implements OnInit {
       contactGroup: new FormControl(''),
     });
     this.loadContactsGroups();
+
+
   }
 
 
@@ -60,10 +61,22 @@ export class ContactsAddComponent implements OnInit {
     this.http.post('/api/contacts/group/get-groups', {})
         .subscribe((data: any) => {
           this.groups = data;
+          for ( const g of data) {
+            this._groups.push(g.groupName);
+          }
+
+          this.filteredGroups = this.groupCtrl.valueChanges.pipe(
+            startWith(null),
+            map((grp: string | null) => grp ? this._filter(grp) : this._groups.slice()));
+            // the default selected group.
+            this.selectedGroups = [this._groups[0]];
+
         });
   };
 
   addContact = function (newContact) {
+    console.log(this.selectedGroups);
+    return;
     if ( newContact.givenName.length === 0 ||
         newContact.familyName.length === 0 ||
         newContact.email.length === 0 ) {
@@ -120,17 +133,15 @@ export class ContactsAddComponent implements OnInit {
 
 
 
-
-
   // Chips code
   private _filter(value: string): string[] {
     const filterValue = value.toLowerCase();
 
-    return this.allFruits.filter(fruit => fruit.toLowerCase().indexOf(filterValue) === 0);
+    return this._groups.filter(grp => grp.toLowerCase().indexOf(filterValue) === 0);
   }
 
   add(event: MatChipInputEvent): void {
-    // Add fruit only when MatAutocomplete is not open
+    // Add group only when MatAutocomplete is not open
     // To make sure this does not conflict with OptionSelected Event
     if (!this.matAutocomplete.isOpen) {
       const input = event.input;
@@ -138,7 +149,7 @@ export class ContactsAddComponent implements OnInit {
 
       // Add our fruit
       if ((value || '').trim()) {
-        this.fruits.push(value.trim());
+        this.selectedGroups.push(value.trim());
       }
 
       // Reset the input value
@@ -146,21 +157,21 @@ export class ContactsAddComponent implements OnInit {
         input.value = '';
       }
 
-      this.fruitCtrl.setValue(null);
+      this.groupCtrl.setValue(null);
     }
   }
 
-  remove(fruit: string): void {
-    const index = this.fruits.indexOf(fruit);
+  remove(grp: string): void {
+    const index = this.selectedGroups.indexOf(grp);
 
     if (index >= 0) {
-      this.fruits.splice(index, 1);
+      this.selectedGroups.splice(index, 1);
     }
   }
 
   selected(event: MatAutocompleteSelectedEvent): void {
-    this.fruits.push(event.option.viewValue);
-    this.fruitInput.nativeElement.value = '';
-    this.fruitCtrl.setValue(null);
+    this.selectedGroups.push(event.option.viewValue);
+    this.groupInput.nativeElement.value = '';
+    this.groupCtrl.setValue(null);
   }
 }
