@@ -163,15 +163,22 @@ function getContactSummary(req, res) {
             .then(result => {
               const contacts = [];
               for (let element = 0; element < contactsArr.length; element++) {
-                const grp = result.find(el => String(el.contactId) === String(contactsArr[element]['_id']));
+                const grp = result.filter(el => String(el.contactId) === String(contactsArr[element]['_id']));
+                console.log(grp.length);
                 if (grp != null) {
+                  // console.log(grp[0]);
+                  // console.log(grp.contactId + '    ' + grp.groupId);
+                }
+                /*const grp = result.find(el => String(el.contactId) === String(contactsArr[element]['_id']));
+                if (grp != null) {
+                  console.log(grp);
                   contacts.push({
                     _id: contactsArr[element]._id,
                     givenName: contactsArr[element].givenName,
                     familyName: contactsArr[element].familyName,
                     groupId: (grp != null) ? grp.groupId : null,
                   });
-                }
+                }*/
               }
               res.send(contacts);
             })

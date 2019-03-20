@@ -55,6 +55,7 @@ export class ContactsViewComponent implements OnInit {
             }
           }
         });
+        console.log(this.contacts);
   };
 
 
