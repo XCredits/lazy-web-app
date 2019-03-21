@@ -164,21 +164,23 @@ function getContactSummary(req, res) {
               const contacts = [];
               for (let element = 0; element < contactsArr.length; element++) {
                 const grp = result.filter(el => String(el.contactId) === String(contactsArr[element]['_id']));
-                console.log(grp.length);
-                if (grp != null) {
-                  // console.log(grp[0]);
-                  // console.log(grp.contactId + '    ' + grp.groupId);
+                if (grp.length > 0) {
+                  // for ( const i of grp) {
+                    contacts.push({
+                      _id: contactsArr[element]._id,
+                      givenName: contactsArr[element].givenName,
+                      familyName: contactsArr[element].familyName,
+                      groupId: grp,
+                    });
+                  // }
+                } else {// if grp length is 0 => contact without group
+                    contacts.push({
+                      _id: contactsArr[element]._id,
+                      givenName: contactsArr[element].givenName,
+                      familyName: contactsArr[element].familyName,
+                      groupId: null,
+                    });
                 }
-                /*const grp = result.find(el => String(el.contactId) === String(contactsArr[element]['_id']));
-                if (grp != null) {
-                  console.log(grp);
-                  contacts.push({
-                    _id: contactsArr[element]._id,
-                    givenName: contactsArr[element].givenName,
-                    familyName: contactsArr[element].familyName,
-                    groupId: (grp != null) ? grp.groupId : null,
-                  });
-                }*/
               }
               res.send(contacts);
             })
