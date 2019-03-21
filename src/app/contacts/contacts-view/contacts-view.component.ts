@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormGroup } from '@angular/forms';
+import { FormGroup, FormGroupName } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { MatDialog, MatSnackBar } from '@angular/material';
 import { Router } from '@angular/router';
@@ -43,19 +43,31 @@ export class ContactsViewComponent implements OnInit {
   };
 
 
+  getGroupName = function (groupId) {
+    let groupName: string;
+    for ( const s of this.groups) {
+      if ( groupId === s._id ) {
+        groupName = s.groupName;
+        break;
+      }
+    }
+    return groupName;
+  };
+
   loadContactsGroups = function () {
     this.http.post('/api/contacts/group/get-groups', {})
         .subscribe((data: any) => {
           this.groups = data;
           for (const contact of this.contacts) {
-            for (const group of this.groups) {
-              if (String(group._id) === String(contact.groupId)) {
-                contact.groupName = group.groupName;
+            if ( contact.groupId != null) {
+              const dat = [];
+              for ( const i of contact.groupId ) {
+                dat.push(this.getGroupName(i));
+              }
+              contact.groupName = dat;
               }
             }
-          }
         });
-        console.log(this.contacts);
   };
 
 
