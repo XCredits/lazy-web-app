@@ -6,7 +6,6 @@ import {MatSnackBar, MatAutocompleteSelectedEvent, MatChipInputEvent, MatAutocom
 import {Observable} from 'rxjs';
 import {map, startWith} from 'rxjs/operators';
 import {COMMA, ENTER} from '@angular/cdk/keycodes';
-import { ContactsGroupDetailsComponent } from '../contacts-group/contacts-group-details/contacts-group-details.component';
 
 @Component({
   selector: 'app-contacts-add',
@@ -124,11 +123,18 @@ export class ContactsAddComponent implements OnInit {
   }
 
   add(event: MatChipInputEvent): void {
-    if (this.groups.indexOf( String(event.value) ) === -1) {
+    // Validate the typed group
+    let groupExists = false;
+    for (const comparedName of this.groups) {
+      if ( comparedName.groupName === event.value) {
+          groupExists = true;
+          break;
+      }
+    }
+    if (!groupExists) {
       return;
     }
-    console.log(event.value);
-    console.log(event.input);
+
     // Add group only when MatAutocomplete is not open
     // To make sure this does not conflict with OptionSelected Event
     if (!this.matAutocomplete.isOpen) {
