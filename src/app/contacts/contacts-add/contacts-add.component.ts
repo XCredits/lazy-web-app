@@ -64,7 +64,7 @@ export class ContactsAddComponent implements OnInit {
             startWith(null),
             map((grp: string | null) => grp ? this._filter(grp) : this._groups.slice()));
             // the default selected group.
-            this.selectedGroups = [this._groups[0]];
+            this.selectedGroups = [];
         });
   };
 
@@ -155,7 +155,6 @@ export class ContactsAddComponent implements OnInit {
       this.selectedGroups.push(event.option.viewValue);
       this.groupInput.nativeElement.value = '';
       this.groupCtrl.setValue(null);
-      console.log(this.selectedGroups);
     }
   }
 }
