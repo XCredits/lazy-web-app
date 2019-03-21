@@ -162,28 +162,18 @@ function getContactSummary(req, res) {
           { contactId: 1, groupId: 1, userId: 1 })
             .then(result => {
               const contacts = [];
-              for (let element = 0; element < contactsArr.length; element++) {
-                const grp = result.filter(el => String(el.contactId) === String(contactsArr[element]['_id']));
-                 if (grp.length > 0) {
-                  const groupsIdArr = [];
-                   for ( const i of grp) {
-                      groupsIdArr.push (i.groupId);
-                   }
-                    contacts.push({
-                      _id: contactsArr[element]._id,
-                      givenName: contactsArr[element].givenName,
-                      familyName: contactsArr[element].familyName,
-                      groupId: groupsIdArr,
-                    });
-                  // }
-                } else {// if grp length is 0 => contact without group
-                    contacts.push({
-                      _id: contactsArr[element]._id,
-                      givenName: contactsArr[element].givenName,
-                      familyName: contactsArr[element].familyName,
-                      groupId: null,
-                    });
-                }
+              for (let index = 0; index < contactsArr.length; index++) {
+                const groupsArr = result.filter(element => String(element.contactId) === String(contactsArr[index]['_id']));
+                const groupsIdArr = [];
+                  for (const i of groupsArr) {
+                    groupsIdArr.push(i.groupId);
+                  }
+                  contacts.push({
+                    _id: contactsArr[index]._id,
+                    givenName: contactsArr[index].givenName,
+                    familyName: contactsArr[index].familyName,
+                    groupId: groupsIdArr,
+                  });
               }
               res.send(contacts);
             })
