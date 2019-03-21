@@ -1,6 +1,6 @@
 <div class="simple-form-aligner" *ngIf='isEditMode'>
   <mat-card class="simple-form-card">
-    <mat-card-title>Create contact </mat-card-title>
+    <mat-card-title>Edit contact </mat-card-title>
     <mat-card-content>
       <form [formGroup]="form" (ngSubmit)="submit(form.value)">
         <div class="form-group">
@@ -18,28 +18,18 @@
             </mat-error>
           </mat-form-field>
           <br>
-          <mat-form-field class="example-chip-list">
-            <mat-chip-list #chipList>
-              <mat-chip *ngFor="let group of selectedGroups" [selectable]="selectable" [removable]="removable"
-                (removed)="remove(group)">
-                {{group}}
-                <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
-              </mat-chip>
-              <input placeholder="Choose a group..." #groupInput [formControl]="groupCtrl" [matAutocomplete]="auto"
-                [matChipInputFor]="chipList" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                [matChipInputAddOnBlur]="addOnBlur" (matChipInputTokenEnd)="add($event)">
-            </mat-chip-list>
-            <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selected($event)">
-              <mat-option *ngFor="let group of filteredGroups | async" [value]="group">
-                {{group}}
+          <mat-form-field>
+            <mat-select placeholder="Choose a group" name="contactGroup" formControlName="contactGroup">
+              <mat-option *ngFor="let lst of groups" [value]="lst">
+                {{lst.groupName}}
               </mat-option>
-            </mat-autocomplete>
+            </mat-select>
           </mat-form-field>
           <br>
           <div style="text-align: center">
             <button [disabled]="waiting" class="simple-form-button" color="primary" mat-raised-button type="submit"
-              value="submit" (click)="addContact(form.value)">
-              Create
+              value="submit" (click)="updateContact(form.value)">
+              Update
             </button>
             <mat-progress-spinner *ngIf="waiting" color="primary" mode="indeterminate" class="simple-form-spinner"
               [diameter]=22>
@@ -53,7 +43,3 @@
     </mat-card-content>
   </mat-card>
 </div>
-
-<br>
-<br>
-<br>

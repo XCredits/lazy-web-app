@@ -1,23 +1,19 @@
 
 
-.contactStyle {
+.ListStyle {
   width: 100%;
   display: flex;
   flex-wrap: wrap;
   padding: 10px;
   justify-content: space-between;
- .name {
+ .listName {
   width: 180px;
   flex-grow: 1;
  }
- .email {
+ .contactsNumber {
   width: 180px;
   flex-grow: 1;
  } 
- .email {
-  width: 180px;
-  flex-grow: 1;
- }
  .controls {
   flex-grow: 1;
   text-align: right;
