@@ -52,7 +52,7 @@ function addContact(req, res) {
           const contactGroupContact = new ContactGroupContact({
             userId: userId,
             contactId: result._id,
-            groupId: ( i !== null ) ? i : null,
+            groupId: i,
           });
           const saveEvent = contactGroupContact.save();
           promiseArray.push(saveEvent);
@@ -83,11 +83,10 @@ function editContact(req, res) {
   const email = req.body.email;
   const givenName = req.body.givenName;
   const familyName = req.body.familyName;
-  const contactGroupId = req.body.contactGroupId;
+  const contactGroupIds = req.body.contactGroupIds;
   const contactId = req.body.contactId;
   // Validate
   if (typeof contactId !== 'string' ||
-      typeof contactGroupId !== 'string' ||
       typeof givenName !== 'string' ||
       typeof familyName !== 'string' ||
       typeof email !== 'string' ||
@@ -107,13 +106,34 @@ function editContact(req, res) {
             email: email,
           }
       })
-      .then(error => {
-        return res.send({ message: 'Contact updated.' });
-      })
-      .catch(error => {
-        res.status(500)
-          .send({ message: 'Could not update contact.' });
-      });
+      .then(contactResult => {
+        return ContactGroupContact.deleteMany({ userId, contactId: contactId })
+            .then(() => {
+              const promiseArray: Promise<any>[] = [];
+              for (const i of contactGroupIds) {
+                const contactGroupContact = new ContactGroupContact({
+                  userId: userId,
+                  contactId: contactId,
+                  groupId: i,
+                });
+                const saveEvent = contactGroupContact.save();
+                promiseArray.push(saveEvent);
+              }
+              return Promise.all(promiseArray)
+                  .then(contactGroupResult => {
+                      return res.send({ message: 'Contact updated.' });
+                    })
+                    .catch(errorResult => {
+                      return res.status(500).send('Problem creating contacts group.');
+                    });
+                  })
+                .catch(error => {
+                  res.status(500).send({ message: 'Could not update contact.' });
+                });
+        })
+        .catch(error => {
+          res.status(500) .send({ message: 'Could not update contact.' });
+        });
 }
 
 
