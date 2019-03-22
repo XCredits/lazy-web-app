@@ -63,11 +63,11 @@ export class ContactsEditComponent implements OnInit {
       'contactId': this.contactIdURL,
     })
     .subscribe((data: any) => {
-      console.log(data);
-      console.log(data.groups.length);
       if (this.groups != null) {
         for (const i of data.groups) {
           this.ContactGroupsArr.push(this.getGroupName(i.groupId));
+          this._groups.push(this.getGroupName(i.groupId));
+
         }
       }
 
