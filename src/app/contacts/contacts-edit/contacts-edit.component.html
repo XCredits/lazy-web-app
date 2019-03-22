@@ -26,6 +26,8 @@
             </mat-select>
           </mat-form-field>
           <br>
+          {{ContactGroupsArr}}
+          <br>
           <div style="text-align: center">
             <button [disabled]="waiting" class="simple-form-button" color="primary" mat-raised-button type="submit"
               value="submit" (click)="updateContact(form.value)">

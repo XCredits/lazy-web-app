@@ -16,6 +16,8 @@ export class ContactsEditComponent implements OnInit {
   waiting: boolean;
   groups: { groupId: string, groupName: string, numberOfContacts: number }[] = [];
   contactIdURL: string;
+  ContactGroupsArr = [];
+
   constructor(
     private http: HttpClient,
     private route: ActivatedRoute,
@@ -29,7 +31,6 @@ export class ContactsEditComponent implements OnInit {
     this.isEditMode = false;
     this.contactIdURL = this.route.snapshot.paramMap.get('contactId');
     this.loadContactsGroups();
-    this.loadContactDetails();
 
 
   }
@@ -38,6 +39,7 @@ export class ContactsEditComponent implements OnInit {
     this.http.post('/api/contacts/group/view', {})
         .subscribe((data: any) => {
             this.groups = data;
+            this.loadContactDetails();
         });
   };
 
@@ -47,12 +49,20 @@ export class ContactsEditComponent implements OnInit {
       'contactId': this.contactIdURL,
     })
     .subscribe((data: any) => {
+      console.log(data);
+      console.log(data.groups.length);
+      if (this.groups != null) {
+        for (const i of data.groups) {
+          this.ContactGroupsArr.push(this.getGroupName(i.groupId));
+        }
+      }
+
       this.isEditMode = true;
       this.form = new FormGroup({
         givenName: new FormControl(data.givenName),
         familyName: new FormControl(data.familyName),
         email: new FormControl(data.email, [Validators.required, Validators.email]),
-        contactGroup: new FormControl(),
+        contactGroup: new FormControl(this.ContactGroupsArr),
       });
     });
   };
@@ -86,5 +96,17 @@ export class ContactsEditComponent implements OnInit {
   submit = function () {
   };
 
+
+
+  getGroupName = function (groupId) {
+    let groupName: string;
+    for ( const s of this.groups) {
+      if ( groupId === s._id ) {
+        groupName = s.groupName;
+        break;
+      }
+    }
+    return groupName;
+  };
 
 }

@@ -202,12 +202,25 @@ function getContactDetails(req, res) {
   }
   return Contact.findOne({ userId: userId, _id: contactId }, { userId: 1, givenName: 1, familyName: 1, email: 1 })
       .then(resultContact => {
-        return res.send(resultContact);
+        return ContactGroupContact.find({ userId: userId, 'contactId': resultContact._id }, {groupId: 1, _id: 0})
+            .then ( result => {
+              const resultsFiltered = {
+                givenName: resultContact.givenName,
+                familyName: resultContact.familyName,
+                email: resultContact.email,
+                groups: result,
+              };
+              return res.send(resultsFiltered);
+            })
+            .catch(error => {
+              return res.status(500).send({ message: 'Error retrieving user from contacts database.' });
+            });
       })
       .catch(error => {
         return res.status(500).send({ message: 'Error retrieving user from contacts database.' });
       });
 }
+
 
 
 /**
