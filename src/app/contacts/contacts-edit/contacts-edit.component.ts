@@ -90,12 +90,20 @@ export class ContactsEditComponent implements OnInit {
 
   updateContact = function (newContact) {
     this.waiting = true;
+
+    this.groupsIds = [];
+    for (const i of this.selectedGroups) {
+      this.groupsIds.push(this.groups[this.groups.findIndex(g => g.groupName === i)]._id);
+    }
+
+    console.log(this.groupsIds);
+    return;
     this.http.post('/api/contacts/edit', {
       'givenName': newContact.givenName,
       'familyName': newContact.familyName,
       'email': newContact.email,
       'contactId': this.contactIdURL,
-      'contactGroupId': newContact.contactGroup._id,
+      'contactGroupId': this.groupsIds,
     })
       .subscribe((result) => {
         this.isEditMode = false;
