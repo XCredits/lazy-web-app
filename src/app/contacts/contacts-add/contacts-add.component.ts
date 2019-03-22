@@ -31,10 +31,8 @@ export class ContactsAddComponent implements OnInit {
   selectedGroups: string[];
   groupsIds = [];
 
-
   @ViewChild('groupInput') groupInput: ElementRef<HTMLInputElement>;
   @ViewChild('auto') matAutocomplete: MatAutocomplete;
-
 
   constructor(
     private http: HttpClient,
