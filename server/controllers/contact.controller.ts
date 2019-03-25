@@ -128,7 +128,8 @@ function editContact(req, res) {
                     });
                   })
                 .catch(error => {
-                  res.status(500).send({ message: 'Could not update contact.' });
+                  res.status(500).send(
+                      { message: 'Could not update contact.' });
                 });
         })
         .catch(error => {
@@ -178,31 +179,36 @@ function getContactSummary(req, res) {
   return Contact.find({ userId: userId })
       .then(contactsArr => {
         const contactId = contactsArr.map((x => x._id));
-        return ContactGroupContact.find({ userId: userId, 'contactId': { '$in': contactId } },
-          { contactId: 1, groupId: 1, userId: 1 })
+        return ContactGroupContact.find(
+              { userId: userId, contactId: { $in: contactId } },
+              { contactId: 1, groupId: 1, userId: 1 })
             .then(result => {
               const contacts = [];
               for (let index = 0; index < contactsArr.length; index++) {
-                const groupsArr = result.filter(element => String(element.contactId) === String(contactsArr[index]['_id']));
+                const groupsArr = result.filter(element =>
+                    String(element.contactId) ===
+                    String(contactsArr[index]['_id']));
                 const groupsIdArr = [];
-                  for (const i of groupsArr) {
-                    groupsIdArr.push(i.groupId);
-                  }
-                  contacts.push({
-                    _id: contactsArr[index]._id,
-                    givenName: contactsArr[index].givenName,
-                    familyName: contactsArr[index].familyName,
-                    groupId: groupsIdArr,
-                  });
+                for (const i of groupsArr) {
+                  groupsIdArr.push(i.groupId);
+                }
+                contacts.push({
+                  _id: contactsArr[index]._id,
+                  givenName: contactsArr[index].givenName,
+                  familyName: contactsArr[index].familyName,
+                  groupId: groupsIdArr,
+                });
               }
               res.send(contacts);
             })
             .catch(error => {
-              return res.status(500).send({ message: 'Error retrieving groups from database..' });
+              return res.status(500).send(
+                  { message: 'Error retrieving groups from database..' });
             });
       })
       .catch(error => {
-        return res.status(500).send({ message: 'Error retrieving groups from database.' });
+        return res.status(500).send(
+            { message: 'Error retrieving groups from database.' });
       });
 }
 
@@ -220,9 +226,12 @@ function getContactDetails(req, res) {
   if (typeof contactId !== 'string') {
     return res.status(422).json({ message: 'Contact failed validation.' });
   }
-  return Contact.findOne({ userId: userId, _id: contactId }, { userId: 1, givenName: 1, familyName: 1, email: 1 })
+  return Contact.findOne({ userId: userId, _id: contactId },
+        { userId: 1, givenName: 1, familyName: 1, email: 1 })
       .then(resultContact => {
-        return ContactGroupContact.find({ userId: userId, 'contactId': resultContact._id }, {groupId: 1, _id: 0})
+        return ContactGroupContact.find(
+              { userId: userId, contactId: resultContact._id },
+              {groupId: 1, _id: 0})
             .then ( result => {
               const resultsFiltered = {
                 givenName: resultContact.givenName,
@@ -233,11 +242,13 @@ function getContactDetails(req, res) {
               return res.send(resultsFiltered);
             })
             .catch(error => {
-              return res.status(500).send({ message: 'Error retrieving user from contacts database.' });
+              return res.status(500).send(
+                  { message: 'Error retrieving user from contacts database.' });
             });
       })
       .catch(error => {
-        return res.status(500).send({ message: 'Error retrieving user from contacts database.' });
+        return res.status(500).send(
+            { message: 'Error retrieving user from contacts database.' });
       });
 }
 
@@ -257,7 +268,7 @@ function getGroupsSummary(req, res) {
         for (const i of groupIdArr) {
           const getContactPromise = ContactGroupContact.countDocuments({
             userId: userId,
-            'groupId': i._id,
+            groupId: i._id,
           });
           promiseArray.push(getContactPromise);
         }
@@ -265,7 +276,9 @@ function getGroupsSummary(req, res) {
             .then(resultArray => {
               const groupResults = [];
               for ( let i = 0; i < groupIdArr.length; i++ ) {
-                groupResults.push({_id: groupIdArr[i]._id, groupName: groupIdArr[i].groupName, numberOfContacts: resultArray[i] });
+                groupResults.push({_id: groupIdArr[i]._id,
+                    groupName: groupIdArr[i].groupName,
+                    numberOfContacts: resultArray[i] });
               }
               return res.send(groupResults);
             })
@@ -381,12 +394,12 @@ function deleteGroupContact(req, res) {
     }
 
     return ContactGroupContact.deleteMany({ userId, contactId })
-      .then(() => {
-            return res.send({ message: 'Contact removed.' });
-          })
-          .catch(error => {
-            return res.status(500).send('Problem removing contact.');
-          });
+        .then(() => {
+          return res.send({ message: 'Contact removed.' });
+        })
+        .catch(error => {
+          return res.status(500).send('Problem removing contact.');
+        });
     }
 
 
@@ -443,7 +456,7 @@ function groupGetContacts(req, res) {
   return ContactGroupContact.find({ userId, groupId })
       .then((result) => {
         const contactId = result.map((x => x.contactId));
-        return Contact.find({ userId: userId, '_id': { '$in': contactId } },
+        return Contact.find({ userId: userId, _id: { $in: contactId } },
               { contactId: 1, givenName: 1, familyName: 1, email: 1 })
             .then((filteredResult) => {
               return res.send(filteredResult);
