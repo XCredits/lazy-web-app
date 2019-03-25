@@ -108,8 +108,8 @@ function editContact(req, res) {
             email: email,
           }
       })
-      .then(contactResult => {
-        return ContactGroupContact.deleteMany({ userId, contactId: contactId })
+      .then(() => {
+        return ContactGroupContact.deleteMany({ userId, contactId })
             .then(() => {
               const promiseArray: Promise<any>[] = [];
               for (const i of contactGroupIds) {
@@ -156,9 +156,9 @@ function deleteContact(req, res) {
     return res.status(422).json({ message: 'Contact failed validation.' });
   }
 
-  return ContactGroupContact.deleteMany({ userId, contactId: contactId })
+  return ContactGroupContact.deleteMany({ userId, contactId })
       .then(() => {
-        return Contact.deleteMany({ userId: userId, _id: contactId })
+        return Contact.deleteMany({ _id: contactId })
             .then(() => {
               return res.send({ message: 'Contact deleted.' });
             })
@@ -358,35 +358,20 @@ function deleteGroup(req, res) {
     return res.status(422).json({ message: 'Contact failed validation.' });
   }
 
-  return ContactGroupContact.find({ userId, groupId })
-      .then(result => {
-        const contactId = result.map((x => x.contactId));
-        return Contact.deleteMany({ userId: userId, _id: contactId })
+  return ContactGroupContact.deleteMany({ groupId, userId })
+      .then(() => {
+        return ContactGroup.deleteMany({ _id: groupId })
             .then(() => {
-              return ContactGroupContact.deleteMany({ userId, groupId: groupId })
-                  .then(() => {
-                    return ContactGroup.deleteMany({ userId, _id: groupId })
-                        .then(() => {
-                          return res.send({ message: 'Group deleted.' });
-                        })
-                        .catch(error => {
-                          return res.status(500).send(
-                              { message: 'Problem removing group.'});
-                        });
-                  })
-                  .catch(error => {
-                    return res.status(500).send(
-                        { message: 'Problem removing group contacts.'});
-                  });
+              return res.send({ message: 'Group deleted.' });
             })
             .catch(error => {
               return res.status(500).send(
-                  { message: 'Problem removing groups links.'});
+                { message: 'Problem removing group.' });
             });
       })
       .catch(error => {
         return res.status(500).send(
-            { message: 'Problem finding group.'});
+          { message: 'Problem removing group contacts.' });
       });
 }
 
