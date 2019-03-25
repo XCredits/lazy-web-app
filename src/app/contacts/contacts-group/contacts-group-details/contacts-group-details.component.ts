@@ -71,5 +71,9 @@ export class ContactsGroupDetailsComponent implements OnInit {
     });
   };
 
+  cancelDelete = function() {
+    this.modalReference.close();
+  };
+
 
 }
