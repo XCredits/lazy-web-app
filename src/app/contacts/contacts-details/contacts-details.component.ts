@@ -69,11 +69,15 @@ export class ContactDetailsComponent implements OnInit {
     })
     .subscribe((result) => {
       if (result.message === 'Contact deleted.' ) {
-        this.modalReference.close();
-        this.snackBar.open('Contact deleted successfully', 'Dismiss', {
+        this.snackBar.open( 'Contact deleted successfully', 'Dismiss', {
           duration: 2000,
         });
+        this.modalReference.close();
         this.router.navigate(['/contacts/view']);
+      } else {
+        this.snackBar.open( result.message, 'Dismiss', {
+          duration: 2000,
+        });
       }
     });
   };

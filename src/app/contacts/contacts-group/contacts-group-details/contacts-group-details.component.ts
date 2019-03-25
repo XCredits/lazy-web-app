@@ -52,7 +52,11 @@ export class ContactsGroupDetailsComponent implements OnInit {
           if (result.message === 'Contact removed.' ) {
             this.loadGroupContact();
             this.resetForm();
-          }
+          } else {
+            this.snackBar.open( result.message, 'Dismiss', {
+              duration: 2000,
+            });
+        }
         });
   };
 

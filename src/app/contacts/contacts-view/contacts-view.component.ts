@@ -84,10 +84,10 @@ export class ContactsViewComponent implements OnInit {
       if (result.message === 'Contact deleted.') {
         this.loadContacts();
         this.resetForm();
-        this.snackBar.open('Contact deleted successfully', 'Dismiss', {
-          duration: 2000,
-        });
       }
+      this.snackBar.open( result.message, 'Dismiss', {
+        duration: 2000,
+      });
     });
   };
 
