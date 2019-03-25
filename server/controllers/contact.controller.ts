@@ -158,7 +158,7 @@ function deleteContact(req, res) {
 
   return ContactGroupContact.deleteMany({ userId, contactId })
       .then(() => {
-        return Contact.deleteMany({ _id: contactId })
+        return Contact.deleteMany({ _id: contactId, userId: userId })
             .then(() => {
               return res.send({ message: 'Contact deleted.' });
             })
@@ -360,7 +360,7 @@ function deleteGroup(req, res) {
 
   return ContactGroupContact.deleteMany({ groupId, userId })
       .then(() => {
-        return ContactGroup.deleteMany({ _id: groupId })
+        return ContactGroup.deleteMany({ _id: groupId, userId: userId })
             .then(() => {
               return res.send({ message: 'Group deleted.' });
             })
