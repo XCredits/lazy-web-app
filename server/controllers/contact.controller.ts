@@ -62,11 +62,13 @@ function addContact(req, res) {
                 return res.send({ message: 'Success.', contactId: result._id });
             })
             .catch(error => {
-              return res.status(500).send('Problem creating contacts group.');
+              return res.status(500).send(
+                  { message: 'Problem creating contacts group.'});
             });
       })
       .catch(error => {
-        return res.status(500).send('Problem saving contacts.');
+        return res.status(500).send(
+            { message: 'Problem saving contacts.'});
       });
 }
 
@@ -124,16 +126,18 @@ function editContact(req, res) {
                       return res.send({ message: 'Contact updated.' });
                     })
                     .catch(errorResult => {
-                      return res.status(500).send('Problem creating contacts group.');
+                      return res.status(500).send(
+                        { message: 'Problem creating contacts group.'});
                     });
                   })
                 .catch(error => {
                   res.status(500).send(
-                      { message: 'Could not update contact.' });
+                    { message: 'Could not update contact.' });
                 });
         })
         .catch(error => {
-          res.status(500) .send({ message: 'Could not update contact.' });
+          res.status(500) .send(
+            { message: 'Could not update contact.' });
         });
 }
 
@@ -159,11 +163,13 @@ function deleteContact(req, res) {
               return res.send({ message: 'Contact deleted.' });
             })
             .catch(error => {
-              return res.status(500).send('Problem removing contacts.');
+              return res.status(500).send(
+                    { message: 'Problem removing contacts.'});
             });
       })
       .catch(error => {
-        return res.status(500).send('Problem removing contacts.');
+        return res.status(500).send(
+              { message: 'Problem removing contacts.'});
       });
 }
 
@@ -283,11 +289,13 @@ function getGroupsSummary(req, res) {
               return res.send(groupResults);
             })
             .catch(error => {
-              return res.status(500).send({ message: 'Error retrieving groups from database.' });
+              return res.status(500).send(
+                  { message: 'Error retrieving groups from database.' });
             });
       })
       .catch(error => {
-        return res.status(500).send({ message: 'Error retrieving groups from database.' });
+        return res.status(500).send(
+            { message: 'Error retrieving groups from database.' });
       });
 }
 
@@ -321,12 +329,14 @@ function addGroup(req, res) {
                 return res.send({ message: 'Success.' });
               })
               .catch(error => {
-                return res.status(500).send('Problem creating a group.');
+                return res.status(500).send(
+                    { message: 'Problem creating a group.'});
               });
         }
       })
       .catch(error => {
-        return res.status(500).send('Problem finding a group.');
+        return res.status(500).send(
+            { message: 'Problem finding a group.'});
       });
 }
 
@@ -360,19 +370,23 @@ function deleteGroup(req, res) {
                           return res.send({ message: 'Group deleted.' });
                         })
                         .catch(error => {
-                          return res.status(500).send('Problem removing group.');
+                          return res.status(500).send(
+                              { message: 'Problem removing group.'});
                         });
                   })
                   .catch(error => {
-                    return res.status(500).send('Problem removing group contacts.');
+                    return res.status(500).send(
+                        { message: 'Problem removing group contacts.'});
                   });
             })
             .catch(error => {
-              return res.status(500).send('Problem removing groups links.');
+              return res.status(500).send(
+                  { message: 'Problem removing groups links.'});
             });
       })
       .catch(error => {
-        return res.status(500).send('Problem finding group.');
+        return res.status(500).send(
+            { message: 'Problem finding group.'});
       });
 }
 
@@ -398,7 +412,8 @@ function deleteGroupContact(req, res) {
           return res.send({ message: 'Contact removed.' });
         })
         .catch(error => {
-          return res.status(500).send('Problem removing contact.');
+          return res.status(500).send(
+              { message: 'Problem removing contact.'});
         });
     }
 
@@ -431,11 +446,12 @@ function editGroup(req, res) {
         }
     })
     .then(() => {
-      return res.send({ message: 'Group updated.' });
+      return res.send(
+          { message: 'Group updated.' });
     })
     .catch(error => {
-      res.status(500)
-        .send({ message: 'Could not update Group.' });
+      res.status(500).send(
+          { message: 'Could not update Group.' });
     });
 }
 
@@ -462,11 +478,13 @@ function groupGetContacts(req, res) {
               return res.send(filteredResult);
             })
             .catch(error => {
-              res.status(500).send({ message: 'Problem finding contacts.' });
+              res.status(500).send(
+                  { message: 'Problem finding contacts.' });
             });
       })
       .catch(error => {
-        res.status(500).send({ message: 'Problem finding group.' });
+        res.status(500).send(
+            { message: 'Problem finding group.' });
       });
 }
 
@@ -486,7 +504,8 @@ function getGroups(req, res) {
         return res.send(result);
       })
       .catch(error => {
-        res.status(500).send({ message: 'Problem finding groups.' });
+        res.status(500).send(
+            { message: 'Problem finding groups.' });
       });
 }
 
