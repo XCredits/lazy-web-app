@@ -31,10 +31,8 @@ export class ContactsAddComponent implements OnInit {
   selectedGroups: string[];
   groupsIds = [];
 
-
   @ViewChild('groupInput') groupInput: ElementRef<HTMLInputElement>;
   @ViewChild('auto') matAutocomplete: MatAutocomplete;
-
 
   constructor(
     private http: HttpClient,
@@ -64,7 +62,7 @@ export class ContactsAddComponent implements OnInit {
             startWith(null),
             map((grp: string | null) => grp ? this._filter(grp) : this._groups.slice()));
             // the default selected group.
-            this.selectedGroups = [this._groups[0]];
+            this.selectedGroups = [];
         });
   };
 
@@ -123,6 +121,18 @@ export class ContactsAddComponent implements OnInit {
   }
 
   add(event: MatChipInputEvent): void {
+    // Validate the typed group
+    let groupExists = false;
+    for (const comparedName of this.groups) {
+      if ( comparedName.groupName === event.value) {
+          groupExists = true;
+          break;
+      }
+    }
+    if (!groupExists) {
+      return;
+    }
+
     // Add group only when MatAutocomplete is not open
     // To make sure this does not conflict with OptionSelected Event
     if (!this.matAutocomplete.isOpen) {
@@ -155,7 +165,6 @@ export class ContactsAddComponent implements OnInit {
       this.selectedGroups.push(event.option.viewValue);
       this.groupInput.nativeElement.value = '';
       this.groupCtrl.setValue(null);
-      console.log(this.selectedGroups);
     }
   }
 }

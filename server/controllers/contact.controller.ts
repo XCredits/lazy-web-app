@@ -52,7 +52,7 @@ function addContact(req, res) {
           const contactGroupContact = new ContactGroupContact({
             userId: userId,
             contactId: result._id,
-            groupId: ( i !== null ) ? i : null,
+            groupId: i,
           });
           const saveEvent = contactGroupContact.save();
           promiseArray.push(saveEvent);
@@ -83,11 +83,10 @@ function editContact(req, res) {
   const email = req.body.email;
   const givenName = req.body.givenName;
   const familyName = req.body.familyName;
-  const contactGroupId = req.body.contactGroupId;
+  const contactGroupIds = req.body.contactGroupIds;
   const contactId = req.body.contactId;
   // Validate
   if (typeof contactId !== 'string' ||
-      typeof contactGroupId !== 'string' ||
       typeof givenName !== 'string' ||
       typeof familyName !== 'string' ||
       typeof email !== 'string' ||
@@ -107,13 +106,34 @@ function editContact(req, res) {
             email: email,
           }
       })
-      .then(error => {
-        return res.send({ message: 'Contact updated.' });
-      })
-      .catch(error => {
-        res.status(500)
-          .send({ message: 'Could not update contact.' });
-      });
+      .then(contactResult => {
+        return ContactGroupContact.deleteMany({ userId, contactId: contactId })
+            .then(() => {
+              const promiseArray: Promise<any>[] = [];
+              for (const i of contactGroupIds) {
+                const contactGroupContact = new ContactGroupContact({
+                  userId: userId,
+                  contactId: contactId,
+                  groupId: i,
+                });
+                const saveEvent = contactGroupContact.save();
+                promiseArray.push(saveEvent);
+              }
+              return Promise.all(promiseArray)
+                  .then(contactGroupResult => {
+                      return res.send({ message: 'Contact updated.' });
+                    })
+                    .catch(errorResult => {
+                      return res.status(500).send('Problem creating contacts group.');
+                    });
+                  })
+                .catch(error => {
+                  res.status(500).send({ message: 'Could not update contact.' });
+                });
+        })
+        .catch(error => {
+          res.status(500) .send({ message: 'Could not update contact.' });
+        });
 }
 
 
@@ -162,28 +182,18 @@ function getContactSummary(req, res) {
           { contactId: 1, groupId: 1, userId: 1 })
             .then(result => {
               const contacts = [];
-              for (let element = 0; element < contactsArr.length; element++) {
-                const grp = result.filter(el => String(el.contactId) === String(contactsArr[element]['_id']));
-                 if (grp.length > 0) {
-                  const groupsIdArr = [];
-                   for ( const i of grp) {
-                      groupsIdArr.push (i.groupId);
-                   }
-                    contacts.push({
-                      _id: contactsArr[element]._id,
-                      givenName: contactsArr[element].givenName,
-                      familyName: contactsArr[element].familyName,
-                      groupId: groupsIdArr,
-                    });
-                  // }
-                } else {// if grp length is 0 => contact without group
-                    contacts.push({
-                      _id: contactsArr[element]._id,
-                      givenName: contactsArr[element].givenName,
-                      familyName: contactsArr[element].familyName,
-                      groupId: null,
-                    });
-                }
+              for (let index = 0; index < contactsArr.length; index++) {
+                const groupsArr = result.filter(element => String(element.contactId) === String(contactsArr[index]['_id']));
+                const groupsIdArr = [];
+                  for (const i of groupsArr) {
+                    groupsIdArr.push(i.groupId);
+                  }
+                  contacts.push({
+                    _id: contactsArr[index]._id,
+                    givenName: contactsArr[index].givenName,
+                    familyName: contactsArr[index].familyName,
+                    groupId: groupsIdArr,
+                  });
               }
               res.send(contacts);
             })
@@ -212,12 +222,25 @@ function getContactDetails(req, res) {
   }
   return Contact.findOne({ userId: userId, _id: contactId }, { userId: 1, givenName: 1, familyName: 1, email: 1 })
       .then(resultContact => {
-        return res.send(resultContact);
+        return ContactGroupContact.find({ userId: userId, 'contactId': resultContact._id }, {groupId: 1, _id: 0})
+            .then ( result => {
+              const resultsFiltered = {
+                givenName: resultContact.givenName,
+                familyName: resultContact.familyName,
+                email: resultContact.email,
+                groups: result,
+              };
+              return res.send(resultsFiltered);
+            })
+            .catch(error => {
+              return res.status(500).send({ message: 'Error retrieving user from contacts database.' });
+            });
       })
       .catch(error => {
         return res.status(500).send({ message: 'Error retrieving user from contacts database.' });
       });
 }
+
 
 
 /**

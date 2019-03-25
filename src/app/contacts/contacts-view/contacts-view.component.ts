@@ -60,11 +60,11 @@ export class ContactsViewComponent implements OnInit {
           this.groups = data;
           for (const contact of this.contacts) {
             if ( contact.groupId != null) {
-              const dat = [];
+              const ContactGroupsArr = [];
               for ( const i of contact.groupId ) {
-                dat.push(this.getGroupName(i));
+                ContactGroupsArr.push(this.getGroupName(i));
               }
-              contact.groupName = dat;
+              contact.groupName = ContactGroupsArr;
               }
             }
         });
