@@ -1,4 +1,5 @@
 import * as validator from 'validator';
+import { uploadSingleImage } from '../services/image-upload';
 const Contact = require('../models/contact.model');
 const ContactGroup = require('../models/contact-group.model');
 const ContactGroupContact = require('../models/contact-group-contact.model');
@@ -17,6 +18,7 @@ module.exports = function(app) {
   app.post('/api/contacts/group/delete', auth.jwt, deleteGroup);
   app.post('/api/contacts/group/remove-contact', auth.jwt, deleteGroupContact);
   app.post('/api/contacts/group/edit', auth.jwt, editGroup);
+  app.post('/api/contacts/image-upload', auth.jwt, imageUpload);
 };
 
 
@@ -494,3 +496,43 @@ function getGroups(req, res) {
       });
 }
 
+
+// contact logo upload
+function imageUpload(req, res) {
+
+  console.log('image upload ');
+  console.log(req.query);
+  const userId = req.userId;
+  const contactId = req.query.id;
+  if (typeof userId !== 'string') {
+    return res.status(500).send({ message: 'Request validation failed' });
+  }
+
+  return uploadSingleImage(req, res, function (err) {
+    if (err) {
+      return res.status(422).send({
+        errors: [{ title: 'Image Upload error', detail: err.message }]
+      });
+    }
+    return Contact.findOne({ '_id': contactId })
+      .then((result) => {
+        result.logo = req.file.fileLocation;
+        return result.save()
+          .then(() => {
+            return res.status(200).send({
+              message: 'Image uploaded successfully'
+            });
+          })
+          .catch(() => {
+            return res.status(500).send({
+              message: 'Image upload failed'
+            });
+          });
+      })
+      .catch((error) => {
+        return res.status(500).send({
+          message: error
+        });
+      });
+  });
+}

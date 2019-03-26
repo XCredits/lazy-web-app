@@ -34,6 +34,15 @@ export class ContactsEditComponent implements OnInit {
   selectedGroups: string[];
   groupsIds = [];
 
+  imageUploadRoute = '/api/contacts/image-upload';
+  logo: string;
+  sub: any;
+  selectedRatio = 4 / 3;
+  options: any = {
+    size: 'dialog-centered',
+    panelClass: 'custom-modalbox'
+  };
+
 
   @ViewChild('groupInput') groupInput: ElementRef<HTMLInputElement>;
   @ViewChild('auto') matAutocomplete: MatAutocomplete;
@@ -187,5 +196,19 @@ export class ContactsEditComponent implements OnInit {
       this.groupCtrl.setValue(null);
     }
   }
+
+
+
+
+handleImageUpload(imageUrl: string) {
+  this.snackBar.open('Image Uploaded Successfully', 'Dismiss', {
+    duration: 5000,
+    verticalPosition: 'top',
+    horizontalPosition: 'right',
+  });
+}
+
+handleImageError() {
+}
 
 }
