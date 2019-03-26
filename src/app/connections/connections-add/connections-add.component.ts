@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { UserService, User } from '../../user.service';
 import { FormGroup, FormControl } from '@angular/forms';
-import {MatSnackBar, MatAutocompleteSelectedEvent, MatChipInputEvent, MatAutocomplete} from '@angular/material';
+import {MatSnackBar } from '@angular/material';
 import { Router } from '@angular/router';
 
 @Component({
@@ -23,6 +23,10 @@ export class ConnectionsAddComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    this.userService.userObservable
+    .subscribe(user => {
+      this.user = user;
+    });
     this.form = new FormGroup({
       username: new FormControl(''),
     });

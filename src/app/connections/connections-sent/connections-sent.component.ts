@@ -1,4 +1,4 @@
-import {MatTableDataSource, MatDialog} from '@angular/material';
+import { MatDialog, MatSnackBar} from '@angular/material';
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { UserService, User } from '../../user.service';
@@ -19,7 +19,8 @@ export class ConnectionsSentComponent implements OnInit {
   constructor(
     private http: HttpClient,
     private userService: UserService,
-    private dialogService: MatDialog, ) { }
+    private dialogService: MatDialog,
+    private snackBar: MatSnackBar, ) { }
 
   ngOnInit() {
     this.userService.userObservable
@@ -46,22 +47,24 @@ export class ConnectionsSentComponent implements OnInit {
   deleteConnection = function () {
     this.http.post('/api/connection/action-request', {
       'userId': this.user.id,
-      'senderUserId': this.deleteSentRequest.userId,
       'action': 'cancel',
+      'senderUserId': this.deleteSentRequest.userId,
     })
-      .subscribe((result) => {
-        if (result.message === 'Request cancelled' ) {
-            this.connectionSent.splice (this.connectionSent.indexOf(this.deleteSentRequest), 1 );
-            this.resetForm();
-        }
-      },
-      errorResponse => {
-        this.waiting = false;
-        // 422 or 500
-        this.snackBar.open('Request cannot be delete, try later.', 'Dismiss', {
+    .subscribe((result) => {
+      if (result.message === 'Request cancelled') {
+        this.connectionSent.splice(this.connectionSent.indexOf(this.deleteSentRequest), 1);
+        this.resetForm();
+        this.snackBar.open('Request canceled.', 'Dismiss', {
           duration: 2000,
         });
+      }
+    },
+    errorResponse => {
+      // 422 or 500
+      this.snackBar.open('Request cannot be deleted, try later.', 'Dismiss', {
+        duration: 2000,
       });
+    });
   };
 
   resetForm = function() {
