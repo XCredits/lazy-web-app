@@ -12,8 +12,8 @@ import { UserService, User } from '../../user.service';
 export class ConnectionsSentComponent implements OnInit {
   user: User;
   connectionSent: { userId: string, givenName: string, familyName: string }[] = [];
-  modalReference = null;
   deleteSentRequest: { userId: string, givenName: string, familyName: string };
+  modalReference = null;
 
 
   constructor(

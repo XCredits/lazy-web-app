@@ -1,8 +1,9 @@
-import {MatTableDataSource} from '@angular/material';
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
+import { UserService, User } from '../../user.service';
+import { MatSnackBar, } from '@angular/material';
+import { ConnectionComponent } from '../connections.component';
 
 
 @Component({
@@ -11,44 +12,78 @@ import { Router } from '@angular/router';
   styleUrls: ['./connections-request-details.component.scss']
 })
 export class ConnectionsRequestDetailsComponent implements OnInit {
-  receiverUserId: string;
-  link: string;
-  displayedColumns: string[] = [ 'Given Name', 'Family Name', 'Action'];
-  requestConnections: { userId: string, givenName: string, familyName: string, sendTimestamp: Date }[] = [];
+  user: User;
+  isConnectionRequestLoaded: boolean;
+  requestConnection: { userId: string, givenName: string, familyName: string, sendTimestamp: Date };
   userIdURL: string;
-  constructor(private http: HttpClient,
-    private route: ActivatedRoute, ) { }
+  constructor(
+    private http: HttpClient,
+    private userService: UserService,
+    private connectionRoute: ConnectionComponent,
+    private router: Router,
+    private route: ActivatedRoute,
+    private snackBar: MatSnackBar, ) { }
+
 
   ngOnInit() {
+    this.userService.userObservable
+      .subscribe(user => {
+        this.user = user;
+      });
     this.userIdURL = this.route.snapshot.paramMap.get('requestUserId');
     this.loadConfirmedRequests();
   }
 
   loadConfirmedRequests = function () {
-    this.requestConnections = [];
     this.http.post('/api/connection/get-connections-details', {
       'senderUserId': this.userIdURL,
     })
       .subscribe((data) => {
-        this.requestConnections.push(
-          {
-            'userId': data.userId,
-            'givenName': data.givenName,
-            'familyName': data.familyName,
-            'sendTimestamp': new Date(data.sendTimestamp),
-          });
+        this.requestConnection = data;
+        this.requestConnection.sendTimestamp = new Date(this.requestConnection.sendTimestamp);
+        this.isConnectionRequestLoaded = true;
       });
   };
 
-  deleteConnection = function (connection) {
-    this.http.post('/api/connection/remove-connection', {
-      'senderUserId': connection.userId,
+  ignoreConnectionRequest = function () {
+    this.http.post('/api/connection/action-request', {
+      'userId': this.user.id,
+      'action': 'reject',
+      'senderUserId': this.requestConnection.userId,
     })
-      .subscribe(() => {
-        this.loadConfirmedRequests();
+    .subscribe((returnedResult) => {
+      if (returnedResult.message === 'Request rejected') {
+        this.connectionRoute.loadPageCounters();
+        this.router.navigate(['/connections/request/']);
+      }
+    },
+    errorResponse => {
+      // 422 or 500
+      this.snackBar.open('Request cannot be deleted, try later.', 'Dismiss', {
+        duration: 2000,
       });
+    });
   };
 
-  confirmUserConnection = function() {
+  confirmConnectionRequest = function() {
+    this.http.post('/api/connection/action-request', {
+      'userId': this.user.id,
+      'action': 'accept',
+      'senderUserId': this.requestConnection.userId,
+    })
+    .subscribe(returnedResult => {
+      if (returnedResult.message === 'Request accepted') {
+        this.connectionRoute.loadPageCounters();
+        this.router.navigate(['/connections/request/']);
+      }
+    },
+    errorResponse => {
+      // 422 or 500
+      this.snackBar.open('Request cannot be approved, try later.', 'Dismiss', {
+        duration: 2000,
+      });
+    });
+
   };
+
 }

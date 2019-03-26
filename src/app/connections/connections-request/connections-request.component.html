@@ -5,24 +5,24 @@
         </div>
     </mat-card>
 </div>
-
-<mat-card style="margin: 2px;" *ngFor="let contact of pendingConnections">
+ 
+<mat-card style="margin: 2px;" *ngFor="let connection of pendingConnections">
     <mat-card-header>
         <img mat-card-avatar src="/assets/img/profile-demo.jpg">
         <div class="contactStyle">
-            <div class="givenName">
-                {{contact.givenName}}
+            <div class="givenName" (click)="onSelect(connection)">
+                {{connection.givenName}}
             </div>
-            <div class="familyName">
-                {{contact.familyName}}
+            <div class="familyName" (click)="onSelect(connection)">
+                {{connection.familyName}}
             </div>
             <div class="controls" >
                 <button class="simple-form-button" color="primary" mat-raised-button
-                    (click)="approveUserConnection(contact)">
+                    (click)="approveUserConnection(connection)">
                     Confirm
                 </button>
                 &nbsp;
-                <button class="simple-form-button" mat-raised-button (click)="ignoreSentConfirmation(contact,modal)">
+                <button class="simple-form-button" mat-raised-button (click)="ignoreSentConfirmation(connection,modal)">
                     Ignore
                 </button>
             </div>

@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { ConnectionComponent } from '../connections.component';
 import { UserService, User } from '../../user.service';
-
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-connections-request',
@@ -22,6 +22,7 @@ export class ConnectionsRequestComponent implements OnInit {
     private connectionRoute: ConnectionComponent,
     private dialogService: MatDialog,
     private snackBar: MatSnackBar,
+    private router: Router,
   ) { }
 
   ngOnInit() {
@@ -75,6 +76,9 @@ export class ConnectionsRequestComponent implements OnInit {
     this.modalReference.close();
   };
 
+  onSelect(connection) {
+    this.router.navigate(['/connections/request/' + connection.userId]);
+  }
 
   approveUserConnection = function (connectionRequest) {
     this.pendingRequest = connectionRequest;
@@ -83,7 +87,7 @@ export class ConnectionsRequestComponent implements OnInit {
       'action': 'accept',
       'senderUserId': connectionRequest.userId,
     })
-    .subscribe((returnedResult) => {
+    .subscribe(returnedResult => {
       if (returnedResult.message === 'Request accepted') {
         this.pendingConnections.splice(this.pendingConnections.indexOf(this.pendingRequest), 1);
         this.connectionRoute.loadPageCounters();
