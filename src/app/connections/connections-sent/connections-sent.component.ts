@@ -47,7 +47,6 @@ export class ConnectionsSentComponent implements OnInit {
   deleteConnection = function () {
     this.http.post('/api/connection/action-request', {
       'userId': this.user.id,
-      'senderUserId': this.deleteSentRequest.userId,
       'action': 'cancel',
       'senderUserId': this.deleteSentRequest.userId,
     })
