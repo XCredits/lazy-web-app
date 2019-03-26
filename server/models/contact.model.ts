@@ -7,7 +7,7 @@ const ContactSchema = new Schema({
   givenName: { type: String },
   familyName: { type: String },
   email: { type: String },
-  logo: {type: String},
+  contactImage: {type: String},
 
   }
 );

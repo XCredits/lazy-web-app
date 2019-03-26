@@ -35,7 +35,7 @@ export class ContactsEditComponent implements OnInit {
   groupsIds = [];
 
   imageUploadRoute = '/api/contacts/image-upload';
-  logo: string;
+  contactImage: string;
   sub: any;
   selectedRatio = 4 / 3;
   options: any = {
@@ -94,6 +94,7 @@ export class ContactsEditComponent implements OnInit {
         email: new FormControl(data.email, [Validators.required, Validators.email]),
         contactGroup: new FormControl(this.ContactGroupsArr),
       });
+      this.contactImage = data.contactImage;
     });
   };
 

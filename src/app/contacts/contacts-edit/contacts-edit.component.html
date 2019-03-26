@@ -5,8 +5,8 @@
 
 
     <div class="profile-logo">
-      <img *ngIf='logo' mat-card-lg-image class="img-class" [src]="logo" alt='Organization Logo'>
-      <img *ngIf='!logo' mat-card-lg-image class="defaultLogo" alt='profile image here'>
+      <img *ngIf='contactImage' mat-card-lg-image class="img-class" [src]="contactImage" alt='Organization Logo'>
+      <img *ngIf='!contactImage' mat-card-lg-image class="defaultLogo" alt='profile image here'>
       <div class="app-image-upload-positioner">
         <app-image-upload (imageUploaded)="handleImageUpload($event)" (imageError)="handleImageError()"
           [imageUploadRoute]="imageUploadRoute" [ratio]="selectedRatio" [id]="contactIdURL">

@@ -205,6 +205,7 @@ function getContactSummary(req, res) {
                   givenName: contactsArr[index].givenName,
                   familyName: contactsArr[index].familyName,
                   groupId: groupsIdArr,
+                  contactImage: contactsArr[index].contactImage,
                 });
               }
               res.send(contacts);
@@ -235,7 +236,7 @@ function getContactDetails(req, res) {
     return res.status(422).json({ message: 'Contact failed validation.' });
   }
   return Contact.findOne({ userId: userId, _id: contactId },
-        { userId: 1, givenName: 1, familyName: 1, email: 1 })
+        { userId: 1, givenName: 1, familyName: 1, email: 1, contactImage: 1 })
       .then(resultContact => {
         return ContactGroupContact.find(
               { userId: userId, contactId: resultContact._id },
@@ -246,6 +247,7 @@ function getContactDetails(req, res) {
                 familyName: resultContact.familyName,
                 email: resultContact.email,
                 groups: result,
+                contactImage: resultContact.contactImage,
               };
               return res.send(resultsFiltered);
             })
@@ -500,8 +502,6 @@ function getGroups(req, res) {
 // contact logo upload
 function imageUpload(req, res) {
 
-  console.log('image upload ');
-  console.log(req.query);
   const userId = req.userId;
   const contactId = req.query.id;
   if (typeof userId !== 'string') {
@@ -516,7 +516,7 @@ function imageUpload(req, res) {
     }
     return Contact.findOne({ '_id': contactId })
       .then((result) => {
-        result.logo = req.file.fileLocation;
+        result.contactImage = req.file.fileLocation;
         return result.save()
           .then(() => {
             return res.status(200).send({

@@ -14,7 +14,7 @@ export class ContactsViewComponent implements OnInit {
   form: FormGroup;
   contactId: string;
   contactsArr = [];
-  contacts: { id: string, familyName: string, givenName: string, groupId: string, groupName: string }[] = [];
+  contacts: { id: string, familyName: string, givenName: string, groupId: string, groupName: string, contactImage: string }[] = [];
 
   isViewAll: boolean;
   deleteContactName: string;
