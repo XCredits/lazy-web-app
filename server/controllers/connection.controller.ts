@@ -38,7 +38,7 @@ function addRequest(req, res) {
       .then((resultUsername) => {
         const receivingUserId = resultUsername.refId;
         if (userId === receivingUserId) {
-          res.status(500).send('Cannot add yourself as a connection' );
+          return res.status(500).send({ message: 'Cannot add yourself as a connection' });
         }
         return Connection.findOne({
               userId,
@@ -47,7 +47,7 @@ function addRequest(req, res) {
             })
             .then((resultConnection) => {
               if ( resultConnection !== null ) {
-                return res.status(500).send({ message: 'Already connected' });
+                return res.send({ message: 'Already connected' });
               }
               return ConnectionRequest.findOne({
                     senderUserId: userId,
@@ -56,7 +56,7 @@ function addRequest(req, res) {
                   })
                   .then((resultConnectionRequest) => {
                     if ( resultConnectionRequest !== null ) {
-                      return res.status(500).send({ message: 'Already connected' });
+                      return res.send({ message: 'Already connected' });
                     }
                     // Making new connection
                     const connectionReq = new ConnectionRequest();
@@ -74,12 +74,12 @@ function addRequest(req, res) {
                         })
                         .catch((error) => {
                           return res.status(500)
-                              .json({ message: 'Could not save connection request' });
+                              .json({ message: 'Could not save connection request'});
                         });
                   })
                   .catch(() => {
                     return res.status(500)
-                        .send( 'Problem finding connection requests' );
+                        .send({ message: 'Problem finding connection requests'});
                   });
             });
         })
