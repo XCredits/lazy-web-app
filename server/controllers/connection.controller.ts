@@ -407,6 +407,7 @@ function removeConnection(req, res) {
   return Connection.findOneAndUpdate({
         connectionId: userId,
         userId: req.body.senderUserId,
+        status: 'connected',
       },
       {
         status: 'disconnected',
@@ -415,6 +416,7 @@ function removeConnection(req, res) {
         return Connection.findOneAndUpdate({
               connectionId: req.body.senderUserId,
               userId,
+              status: 'connected',
             },
             {
               status: 'disconnected',
