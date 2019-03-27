@@ -4,12 +4,13 @@ import { ActivatedRoute } from '@angular/router';
 import { MatDialog, MatSnackBar, } from '@angular/material';
 import { Router } from '@angular/router';
 
-export interface ContactElements {
+export interface ContactElement {
   id: string;
   userId: string;
   givenName: string;
   familyName: string;
   email: string;
+  contactImage: string;
 }
 
 @Component({
@@ -19,7 +20,7 @@ export interface ContactElements {
 })
 export class ContactDetailsComponent implements OnInit {
   receiverUserId: string;
-  contactDetails: ContactElements;
+  contactDetails: ContactElement;
   contactIdURL: string;
   modalReference = null;
   contactId: string;
@@ -37,6 +38,7 @@ export class ContactDetailsComponent implements OnInit {
       givenName : '',
       familyName : '',
       email: '',
+      contactImage: '',
     };
     this.contactIdURL = this.route.snapshot.paramMap.get('contactId');
     this.loadContactDetails();

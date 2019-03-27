@@ -27,6 +27,7 @@ export class ContactsViewComponent implements OnInit {
     private snackBar: MatSnackBar, ) { }
 
   ngOnInit() {
+
     this.isViewAll = true;
     this.loadContacts();
   }
