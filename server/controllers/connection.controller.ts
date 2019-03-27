@@ -40,7 +40,7 @@ function addRequest(req, res) {
       .then((resultUsername) => {
         const receivingUserId = resultUsername.refId;
         if (userId === receivingUserId) {
-          return res.status(500).send({ message: 'Cannot add yourself as a connection' });
+          return res.status(500).send({ message: 'Cannot add same user' });
         }
         return Connection.findOne({
               userId,
@@ -49,7 +49,7 @@ function addRequest(req, res) {
             })
             .then((resultConnection) => {
               if ( resultConnection !== null ) {
-                return res.send({ message: 'Already connected' });
+                return res.status(500).send({ message: 'Already connected' });
               }
               return ConnectionRequest.findOne({
                     senderUserId: userId,
@@ -58,7 +58,7 @@ function addRequest(req, res) {
                   })
                   .then((resultConnectionRequest) => {
                     if ( resultConnectionRequest !== null ) {
-                      return res.send({ message: 'Already connected' });
+                      return res.status(500).send({ message: 'Already connected' });
                     }
                     // Making new connection
                     const connectionReq = new ConnectionRequest();

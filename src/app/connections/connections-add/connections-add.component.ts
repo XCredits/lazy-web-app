@@ -53,16 +53,10 @@ export class ConnectionsAddComponent implements OnInit {
       'username': formData.username,
     })
       .subscribe(returnedResult => {
-        switch (returnedResult.message) {
-          case 'Success':
-            this.requestFromMessage = 'Request sent successfully';
-            break;
-          case 'Already connected':
-            this.requestFromMessage = 'You are already connected';
-            break;
-          default:
-            this.requestFromMessage = 'Cannot process add users now';
-            break;
+        if ( returnedResult.message === 'Success') {
+          this.requestFromMessage = 'Request sent successfully';
+        } else {
+          this.requestFromMessage = 'Cannot process add users now';
         }
         this.snackBar.open(this.requestFromMessage, 'Dismiss', {
           duration: 2000,
@@ -71,13 +65,33 @@ export class ConnectionsAddComponent implements OnInit {
         this.resetForm();
       },
       errorResponse => {
-        this.waiting = false;
-        // 422 or 500
-        this.snackBar.open(errorResponse.error.message, 'Dismiss', {
-          duration: 2000,
+          this.waiting = false;
+          // 422 or 500
+          switch (errorResponse.error.message) {
+            case 'Cannot add same user':
+              this.requestFromMessage = 'Cannot add yourself as a connection';
+              break;
+            case 'Already connected':
+              this.requestFromMessage = 'You are already connected';
+              break;
+            case 'Could not save connection request':
+              this.requestFromMessage = 'Connection request cannot be processed';
+              break;
+            case 'Problem finding connection requests':
+              this.requestFromMessage = 'Problem finding connection requests';
+              break;
+            case 'Problem finding connections':
+              this.requestFromMessage = 'Problem finding connections';
+              break;
+            default:
+              this.requestFromMessage = 'Cannot process add users now!';
+              break;
+          }
+          this.snackBar.open(errorResponse.error.message, 'Dismiss', {
+            duration: 2000,
+          });
+          this.resetForm();
         });
-        this.resetForm();
-      });
 
   };
 }
