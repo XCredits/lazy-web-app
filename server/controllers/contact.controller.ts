@@ -51,12 +51,12 @@ function addContact(req, res) {
       .then(result => {
         const promiseArray: Promise<any>[] = [];
         for (const i of contactGroupIds) {
-          const ContactGroupMembers = new ContactGroupMembers({
+          const contactGroupMembers = new ContactGroupMembers({
             userId: userId,
             contactId: result._id,
             groupId: i,
           });
-          const saveEvent = ContactGroupMembers.save();
+          const saveEvent = contactGroupMembers.save();
           promiseArray.push(saveEvent);
         }
         return Promise.all(promiseArray)
@@ -115,12 +115,12 @@ function editContact(req, res) {
             .then(() => {
               const promiseArray: Promise<any>[] = [];
               for (const i of contactGroupIds) {
-                const ContactGroupMembers = new ContactGroupMembers({
+                const contactGroupMembers = new ContactGroupMembers({
                   userId: userId,
                   contactId: contactId,
                   groupId: i,
                 });
-                const saveEvent = ContactGroupMembers.save();
+                const saveEvent = contactGroupMembers.save();
                 promiseArray.push(saveEvent);
               }
               return Promise.all(promiseArray)

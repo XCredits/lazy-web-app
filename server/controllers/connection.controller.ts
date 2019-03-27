@@ -148,7 +148,7 @@ function getPendingRequests(req, res) {
       .then(findPendingConnections);
 }
 
- 
+
 /**
  * request user connection based on status { Confirmed }
  * @param {*} req request object
