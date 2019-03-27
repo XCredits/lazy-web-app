@@ -1,6 +1,6 @@
 <mat-card style="margin: 2px;">
   <mat-card-header>
-    <img mat-card-avatar src="/assets/img/profile-demo.jpg">
+    <img mat-card-avatar [src]="contactDetails.contactImage">
     <div class="contactStyle">
       <div class="name">
         {{contactDetails.givenName}}

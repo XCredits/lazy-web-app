@@ -14,7 +14,7 @@ export class ContactsViewComponent implements OnInit {
   form: FormGroup;
   contactId: string;
   contactsArr = [];
-  contacts: { id: string, familyName: string, givenName: string, groupId: string, groupName: string }[] = [];
+  contacts: { id: string, familyName: string, givenName: string, groupId: string, groupName: string, contactImage: string }[] = [];
 
   isViewAll: boolean;
   deleteContactName: string;
@@ -27,6 +27,7 @@ export class ContactsViewComponent implements OnInit {
     private snackBar: MatSnackBar, ) { }
 
   ngOnInit() {
+
     this.isViewAll = true;
     this.loadContacts();
   }
@@ -84,10 +85,10 @@ export class ContactsViewComponent implements OnInit {
       if (result.message === 'Contact deleted.') {
         this.loadContacts();
         this.resetForm();
-        this.snackBar.open('Contact deleted successfully', 'Dismiss', {
-          duration: 2000,
-        });
       }
+      this.snackBar.open( result.message, 'Dismiss', {
+        duration: 2000,
+      });
     });
   };
 

@@ -16,7 +16,7 @@
   <br>
   <mat-card style="margin: 2px;" *ngFor="let contact of contacts">
     <mat-card-header>
-      <img mat-card-avatar src="/assets/img/profile-demo.jpg">
+      <img mat-card-avatar [src]="contact.contactImage">
       <div class="contactStyle">
         <div class="name" (click)="onSelect(contact)">
           {{contact.givenName}}

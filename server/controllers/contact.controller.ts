@@ -1,7 +1,8 @@
 import * as validator from 'validator';
+import { uploadSingleImage } from '../services/image-upload';
 const Contact = require('../models/contact.model');
 const ContactGroup = require('../models/contact-group.model');
-const ContactGroupContact = require('../models/contact-group-contact.model');
+const ContactGroupMembers = require('../models/contact-group-contact.model');
 const auth = require('./jwt-auth.controller');
 
 module.exports = function(app) {
@@ -17,6 +18,7 @@ module.exports = function(app) {
   app.post('/api/contacts/group/delete', auth.jwt, deleteGroup);
   app.post('/api/contacts/group/remove-contact', auth.jwt, deleteGroupContact);
   app.post('/api/contacts/group/edit', auth.jwt, editGroup);
+  app.post('/api/contacts/image-upload', auth.jwt, imageUpload);
 };
 
 
@@ -49,12 +51,12 @@ function addContact(req, res) {
       .then(result => {
         const promiseArray: Promise<any>[] = [];
         for (const i of contactGroupIds) {
-          const contactGroupContact = new ContactGroupContact({
+          const ContactGroupMembers = new ContactGroupMembers({
             userId: userId,
             contactId: result._id,
             groupId: i,
           });
-          const saveEvent = contactGroupContact.save();
+          const saveEvent = ContactGroupMembers.save();
           promiseArray.push(saveEvent);
         }
         return Promise.all(promiseArray)
@@ -109,16 +111,16 @@ function editContact(req, res) {
           }
       })
       .then(() => {
-        return ContactGroupContact.deleteMany({ userId, contactId })
+        return ContactGroupMembers.deleteMany({ userId, contactId })
             .then(() => {
               const promiseArray: Promise<any>[] = [];
               for (const i of contactGroupIds) {
-                const contactGroupContact = new ContactGroupContact({
+                const ContactGroupMembers = new ContactGroupMembers({
                   userId: userId,
                   contactId: contactId,
                   groupId: i,
                 });
-                const saveEvent = contactGroupContact.save();
+                const saveEvent = ContactGroupMembers.save();
                 promiseArray.push(saveEvent);
               }
               return Promise.all(promiseArray)
@@ -156,7 +158,7 @@ function deleteContact(req, res) {
     return res.status(422).json({ message: 'Contact failed validation.' });
   }
 
-  return ContactGroupContact.deleteMany({ userId, contactId })
+  return ContactGroupMembers.deleteMany({ userId, contactId })
       .then(() => {
         return Contact.deleteMany({ _id: contactId, userId: userId })
             .then(() => {
@@ -185,7 +187,7 @@ function getContactSummary(req, res) {
   return Contact.find({ userId: userId })
       .then(contactsArr => {
         const contactId = contactsArr.map((x => x._id));
-        return ContactGroupContact.find(
+        return ContactGroupMembers.find(
               { userId: userId, contactId: { $in: contactId } },
               { contactId: 1, groupId: 1, userId: 1 })
             .then(result => {
@@ -203,6 +205,7 @@ function getContactSummary(req, res) {
                   givenName: contactsArr[index].givenName,
                   familyName: contactsArr[index].familyName,
                   groupId: groupsIdArr,
+                  contactImage: contactsArr[index].contactImage,
                 });
               }
               res.send(contacts);
@@ -233,9 +236,9 @@ function getContactDetails(req, res) {
     return res.status(422).json({ message: 'Contact failed validation.' });
   }
   return Contact.findOne({ userId: userId, _id: contactId },
-        { userId: 1, givenName: 1, familyName: 1, email: 1 })
+        { userId: 1, givenName: 1, familyName: 1, email: 1, contactImage: 1 })
       .then(resultContact => {
-        return ContactGroupContact.find(
+        return ContactGroupMembers.find(
               { userId: userId, contactId: resultContact._id },
               {groupId: 1, _id: 0})
             .then ( result => {
@@ -244,6 +247,7 @@ function getContactDetails(req, res) {
                 familyName: resultContact.familyName,
                 email: resultContact.email,
                 groups: result,
+                contactImage: resultContact.contactImage,
               };
               return res.send(resultsFiltered);
             })
@@ -272,7 +276,7 @@ function getGroupsSummary(req, res) {
       .then(groupIdArr => {
         const promiseArray: Promise<any>[] = [];
         for (const i of groupIdArr) {
-          const getContactPromise = ContactGroupContact.countDocuments({
+          const getContactPromise = ContactGroupMembers.countDocuments({
             userId: userId,
             groupId: i._id,
           });
@@ -358,7 +362,7 @@ function deleteGroup(req, res) {
     return res.status(422).json({ message: 'Contact failed validation.' });
   }
 
-  return ContactGroupContact.deleteMany({ groupId, userId })
+  return ContactGroupMembers.deleteMany({ groupId, userId })
       .then(() => {
         return ContactGroup.deleteMany({ _id: groupId, userId: userId })
             .then(() => {
@@ -392,7 +396,7 @@ function deleteGroupContact(req, res) {
       return res.status(422).json({ message: 'Contact failed validation.' });
     }
 
-    return ContactGroupContact.deleteMany({ userId, contactId })
+    return ContactGroupMembers.deleteMany({ userId, contactId })
         .then(() => {
           return res.send({ message: 'Contact removed.' });
         })
@@ -454,7 +458,7 @@ function groupGetContacts(req, res) {
   if (typeof groupId !== 'string') {
     return res.status(422).json({ message: 'Request failed validation.' });
   }
-  return ContactGroupContact.find({ userId, groupId })
+  return ContactGroupMembers.find({ userId, groupId })
       .then((result) => {
         const contactId = result.map((x => x.contactId));
         return Contact.find({ userId: userId, _id: { $in: contactId } },
@@ -494,3 +498,41 @@ function getGroups(req, res) {
       });
 }
 
+
+// contact logo upload
+function imageUpload(req, res) {
+
+  const userId = req.userId;
+  const contactId = req.query.id;
+  if (typeof userId !== 'string') {
+    return res.status(500).send({ message: 'Request validation failed' });
+  }
+
+  return uploadSingleImage(req, res, function (err) {
+    if (err) {
+      return res.status(422).send({
+        errors: [{ title: 'Image Upload error', detail: err.message }]
+      });
+    }
+    return Contact.findOne({ '_id': contactId })
+      .then((result) => {
+        result.contactImage = req.file.fileLocation;
+        return result.save()
+          .then(() => {
+            return res.status(200).send({
+              message: 'Image uploaded successfully'
+            });
+          })
+          .catch(() => {
+            return res.status(500).send({
+              message: 'Image upload failed'
+            });
+          });
+      })
+      .catch((error) => {
+        return res.status(500).send({
+          message: error
+        });
+      });
+  });
+}

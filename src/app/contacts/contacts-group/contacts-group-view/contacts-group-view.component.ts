@@ -57,11 +57,13 @@ export class ContactsGroupViewComponent implements OnInit {
           .subscribe((result) => {
               if (result.message === 'Group deleted.' ) {
                   this.resetForm();
-                  this.snackBar.open('Group deleted successfully', 'Dismiss', {
-                    duration: 2000,
-                  });
-            }
-        });
+              } else {
+                this.snackBar.open( result.message, 'Dismiss', {
+                  duration: 2000,
+                });
+              }
+
+           });
   };
 
   openDeleteGroup = function (group) {

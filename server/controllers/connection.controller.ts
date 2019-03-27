@@ -14,6 +14,8 @@ module.exports = function (app) {
   app.post('/api/connection/get-connection-count', auth.jwt, getConnectionCount);
   app.post('/api/connection/get-sent-request', auth.jwt, getSentRequests);
   app.post('/api/connection/remove-connection', auth.jwt, removeConnection);
+  app.post('/api/connection/get-connections-details', auth.jwt, getPendingConnectionDetails);
+
 };
 
 /**
@@ -38,7 +40,7 @@ function addRequest(req, res) {
       .then((resultUsername) => {
         const receivingUserId = resultUsername.refId;
         if (userId === receivingUserId) {
-          res.status(500).send('Cannot add yourself as a connection' );
+          return res.status(500).send({ message: 'Cannot add yourself as a connection' });
         }
         return Connection.findOne({
               userId,
@@ -47,7 +49,7 @@ function addRequest(req, res) {
             })
             .then((resultConnection) => {
               if ( resultConnection !== null ) {
-                return res.status(500).send({ message: 'Already connected' });
+                return res.send({ message: 'Already connected' });
               }
               return ConnectionRequest.findOne({
                     senderUserId: userId,
@@ -56,7 +58,7 @@ function addRequest(req, res) {
                   })
                   .then((resultConnectionRequest) => {
                     if ( resultConnectionRequest !== null ) {
-                      return res.status(500).send({ message: 'Already connected' });
+                      return res.send({ message: 'Already connected' });
                     }
                     // Making new connection
                     const connectionReq = new ConnectionRequest();
@@ -74,12 +76,12 @@ function addRequest(req, res) {
                         })
                         .catch((error) => {
                           return res.status(500)
-                              .json({ message: 'Could not save connection request' });
+                              .json({ message: 'Could not save connection request'});
                         });
                   })
                   .catch(() => {
                     return res.status(500)
-                        .send( 'Problem finding connection requests' );
+                        .send({ message: 'Problem finding connection requests'});
                   });
             });
         })
@@ -146,7 +148,7 @@ function getPendingRequests(req, res) {
       .then(findPendingConnections);
 }
 
-
+ 
 /**
  * request user connection based on status { Confirmed }
  * @param {*} req request object
@@ -405,6 +407,7 @@ function removeConnection(req, res) {
   return Connection.findOneAndUpdate({
         connectionId: userId,
         userId: req.body.senderUserId,
+        status: 'connected',
       },
       {
         status: 'disconnected',
@@ -413,6 +416,7 @@ function removeConnection(req, res) {
         return Connection.findOneAndUpdate({
               connectionId: req.body.senderUserId,
               userId,
+              status: 'connected',
             },
             {
               status: 'disconnected',
@@ -430,3 +434,39 @@ function removeConnection(req, res) {
           .send({ message: 'Could not remove connection' });
       });
 }
+
+
+function getPendingConnectionDetails(req, res) {
+    // Save the login userId
+    const userId = req.userId;
+    const senderUserId = req.body.senderUserId;
+    // Validate
+    if (typeof senderUserId !== 'string') {
+      return res.status(422).json({ message: 'Request failed validation' });
+    }
+   return ConnectionRequest.findOne({
+      senderUserId: senderUserId,
+      receiverUserId: userId,
+      active: true,
+      snoozed: false,
+    })
+    .then((connectionDetails) => {
+      return User.findOne({ '_id': connectionDetails.senderUserId })
+          .then(user => {
+            const resultsFiltered = {
+              username: user.username,
+              givenName: user.givenName,
+              familyName: user.familyName,
+              userId: user._id,
+              sendTimestamp: connectionDetails.sendTimestamp,
+            };
+            res.send(resultsFiltered);
+          })
+          .catch((err) => {
+            res.status(500).send({ message: 'Error retrieving request details' });
+          });
+    })
+    .catch((err) => {
+      res.status(500).send({ message: 'Error retrieving request details' });
+    });
+  }
